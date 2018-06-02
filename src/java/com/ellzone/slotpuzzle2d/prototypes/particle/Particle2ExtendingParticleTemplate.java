@@ -99,18 +99,22 @@ public class Particle2ExtendingParticleTemplate extends ParticleTemplate {
                 if (reelSlot.getSy() < dampPoint) {
                     if (saveAmplitude) {
                         saveAmplitude = false;
-                        savedSy = reelSlot.getSy();
+                        savedSy = getNearestStartOfReelFrame(reelSlot);
                         savedAmplitude = (dampPoint - savedSy);
                     }
-                    float ds = dampenedSine(savedAmplitude, 1.0f, (float) (2 * Math.PI), plotTime++/30, 0);
-                    reelSlot.setSy(savedSy+ds);
-                }
+                    float ds = dampenedSine(savedAmplitude, 1.0f, (float) (2 * Math.PI), plotTime++ / 20, 0);
+                    reelSlot.setSy(savedSy + ds);
+                 }
             }
             reelSlot.update(delta);
         }
 	}
-	
-	private void drawGraphPoint(ShapeRenderer shapeRenderer, Vector2 newPoint) {
+
+    private float getNearestStartOfReelFrame(ReelTile reelSlot) {
+        return reelSlot.getSy() - (reelSlot.getSy() % 40);
+    }
+
+    private void drawGraphPoint(ShapeRenderer shapeRenderer, Vector2 newPoint) {
         if (points.size >= 2) {
             shapeRenderer.setProjectionMatrix(viewport.getCamera().combined);
 			shapeRenderer.begin(ShapeRenderer.ShapeType.Line);
