@@ -57,8 +57,6 @@ public class Particle3ExtendingParticleTemplate extends ParticleTemplate {
 		initialiseParticles();
         initialiseDampenedSine();
 		shapeRenderer = new ShapeRenderer();
-
-		Gdx.app.log("Slot_Puzzle", "displayWindowWidth"+displayWindowWidth);
 	}
 	
 	@Override
@@ -125,16 +123,13 @@ public class Particle3ExtendingParticleTemplate extends ParticleTemplate {
                 reelSlot.setSy(reelParticles.get(0).position.getY());
             } else {
                 if (reelSlot.getSy() < dampPoint) {
-                    if (saveAmplitude) {
-                        saveAmplitude = false;
-                        savedSy = reelSlot.getSy() + reelTiles.getReelTileTextureHeight() - (reelSlot.getSy() % slotReelScrollheight);
-                        savedAmplitude = (dampPoint - savedSy);
-                    }
+                    if (saveAmplitude)
+                        calaculateSavedAmplitude(reelSlot);
+                    
                     float ds = dampenedSine(savedAmplitude, 1.0f, (float) (3 * Math.PI), plotTime++ / 32, 0);
-                    float dsEndReel = ds + reelSlot.getEndReel() * 32;
-                    addGraphPoint(new Vector2(graphStep++ % displayWindowWidth, (displayWindowHeight / 2 + dsEndReel)));
-                    reelSlot.setSy(savedSy + dsEndReel);
-                    if(Math.abs(ds)<0.0000001f) {
+                    addGraphPoint(new Vector2(graphStep++ % displayWindowWidth, (displayWindowHeight / 2 + savedSy + ds)));
+                    reelSlot.setSy(savedSy + ds);
+                    if(Math.abs(ds) < 0.0000001f) {
                         reinitialiseParticle(0);
                         reelSlot.setEndReel(com.ellzone.slotpuzzle2d.utils.Random.getInstance().nextInt(reels.getReels().length - 1));
                     }
@@ -143,8 +138,18 @@ public class Particle3ExtendingParticleTemplate extends ParticleTemplate {
             reelSlot.update(delta);
         }
 	}
-	
-	private void addGraphPoint(Vector2 newPoint) {
+
+    private void calaculateSavedAmplitude(ReelTile reelSlot) {
+        saveAmplitude = false;
+        savedSy = getNearestStartOfReelFrame(reelSlot);
+        savedAmplitude = (dampPoint - savedSy);
+    }
+
+    private float getNearestStartOfReelFrame(ReelTile reelSlot) {
+        return reelSlot.getSy() - (reelSlot.getSy() % reelSlot.getWidth());
+    }
+
+    private void addGraphPoint(Vector2 newPoint) {
         points.add(newPoint);
     }
 
@@ -168,7 +173,7 @@ public class Particle3ExtendingParticleTemplate extends ParticleTemplate {
 		batch.begin();
 		for (ReelTile reelSlot : reelTilesArray) {
 			reelSlot.draw(batch);
-			reelSprites[reelSlot.getEndReel()].setX(32);
+			reelSprites[reelSlot.getEndReel()].setX(reelSlot.getWidth());
 			reelSprites[reelSlot.getEndReel()].draw(batch);
 		}
 		batch.end();
