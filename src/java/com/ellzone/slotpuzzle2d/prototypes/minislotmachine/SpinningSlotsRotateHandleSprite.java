@@ -33,6 +33,7 @@ import com.ellzone.slotpuzzle2d.sprites.ReelTile;
 import com.ellzone.slotpuzzle2d.tweenengine.SlotPuzzleTween;
 import com.ellzone.slotpuzzle2d.tweenengine.Timeline;
 import com.ellzone.slotpuzzle2d.utils.Assets;
+import com.ellzone.slotpuzzle2d.utils.AssetsAnnotation;
 import com.ellzone.slotpuzzle2d.utils.PixmapProcessors;
 import aurelienribon.tweenengine.equations.Back;
 import aurelienribon.tweenengine.equations.Cubic;
@@ -69,25 +70,17 @@ public class SpinningSlotsRotateHandleSprite extends SPPrototypeTemplate {
 
     @Override
 	protected void loadAssetsOverride() {
-		Assets.inst().load("reel/reels.pack.atlas", TextureAtlas.class);
-		Assets.inst().load("slot_handle/slot_handle.pack.atlas", TextureAtlas.class);
-		Assets.inst().load("sounds/pull-lever1.wav", Sound.class);
-		Assets.inst().load("sounds/click2.wav", Sound.class);
-		Assets.inst().load("sounds/reel-stopped.wav", Sound.class);
-		Assets.inst().update();
-		Assets.inst().finishLoading();
-
-		slotHandleAtlas = Assets.inst().get("slot_handle/slot_handle.pack.atlas", TextureAtlas.class);
-		slotHandle = slotHandleAtlas.createSprite("slot_handle");
+		slotHandleAtlas = annotationAssetManager.get(AssetsAnnotation.SLOT_HANDLE);
+        slotHandle = slotHandleAtlas.createSprite("slot_handle");
 		slotHandleBase = slotHandleAtlas.createSprite("slot_handle_base");
 		slotHandle.setOrigin(15.0f, 10.0f);
 		slotHandle.setPosition(510, 95);
 		slotHandleBase.setPosition(500, 75);
 				
-		pullLeverSound = Assets.inst().get("sounds/pull-lever1.wav");
-		reelSpinningSound = Assets.inst().get("sounds/click2.wav");
-		reelStoppingSound = Assets.inst().get("sounds/reel-stopped.wav");
-	}
+        pullLeverSound = annotationAssetManager.get(AssetsAnnotation.SOUND_PULL_LEVER);
+        reelSpinningSound = annotationAssetManager.get(AssetsAnnotation.SOUND_REEL_SPINNING);
+        reelStoppingSound = annotationAssetManager.get(AssetsAnnotation.SOUND_REEL_STOPPED);
+    }
 
 	@Override
 	protected void disposeOverride() {
