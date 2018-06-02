@@ -75,6 +75,7 @@ public abstract class SPPrototypeTemplate extends SPPrototype {
 		initialiseScreen();
 		initialiseCamera();
         annotationAssetManager = loadAssets();
+        loadAssetsOverride();
         reels = initialiseReels(annotationAssetManager);
         initialiseUniversalTweenEngine();
         initialiseOverride();
@@ -91,8 +92,6 @@ public abstract class SPPrototypeTemplate extends SPPrototype {
         annotationAssetManager.load(new AssetsAnnotation());
         annotationAssetManager.finishLoading();
 
-        loadAssetsOverride();
-
         return annotationAssetManager;
     }
 
@@ -107,6 +106,9 @@ public abstract class SPPrototypeTemplate extends SPPrototype {
             sprite.setY((float) displayWindowHeight / 2 - sprite.getHeight() / 2);
             i++;
         }
+        spriteWidth = (int) sprites[0].getWidth();
+        spriteHeight = (int) sprites[0].getHeight();
+
         return reels;
     }
 	

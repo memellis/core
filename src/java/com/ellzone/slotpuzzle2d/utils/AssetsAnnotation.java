@@ -41,6 +41,7 @@ public class AssetsAnnotation {
     public static String CARDDECK = "playingcards/carddeck.atlas",
                          REELS = "reel/reels.pack.atlas",
                          SLOT_HANDLE = "slot_handle/slot_handle.pack.atlas",
+                         SLOT_HANDLE_ANIMATION = "handle/handle.pack.atlas",
                          SPLASH = "splash/pack.atlas",
                          SPLASH3 = "splash/splash3.pack.atlas",
                          TILES = "tiles/tiles.pack.atlas";

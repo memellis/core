@@ -53,7 +53,6 @@ public class SpinningSlots extends SPPrototypeTemplate {
 	private AnimatedHandle animatedHandle;
 	private TextureAtlas handleAtlas;
 	private int reelSpriteHelp;
-	private Sprite[] sprites;
 	 
 	@Override
 	protected void initialiseOverride() {
@@ -66,7 +65,8 @@ public class SpinningSlots extends SPPrototypeTemplate {
 
     @Override
 	protected void loadAssetsOverride() {
-		pullLeverSound = annotationAssetManager.get(AssetsAnnotation.SOUND_PULL_LEVER);
+		handleAtlas = annotationAssetManager.get(AssetsAnnotation.SLOT_HANDLE_ANIMATION);
+	    pullLeverSound = annotationAssetManager.get(AssetsAnnotation.SOUND_PULL_LEVER);
 		reelSpinningSound = annotationAssetManager.get(AssetsAnnotation.SOUND_REEL_SPINNING);
 		reelStoppingSound = annotationAssetManager.get(AssetsAnnotation.SOUND_REEL_STOPPED);
 	}
@@ -83,7 +83,6 @@ public class SpinningSlots extends SPPrototypeTemplate {
             reel.update(dt);
         }
         animatedHandle.update(dt);
-		
 	}
 
 	@Override
@@ -113,8 +112,8 @@ public class SpinningSlots extends SPPrototypeTemplate {
         slotReelScrollTexture = new Texture(slotReelScrollPixmap);
         for (int i=0; i<3; i++) {
             AnimatedReel reel = new AnimatedReel(slotReelScrollTexture, 0, 0, spriteWidth, spriteHeight, spriteWidth, spriteHeight, 0, reelSpinningSound, reelStoppingSound, tweenManager);
-            reel.setX(i*spriteWidth + cam.viewportWidth / 2);
-            reel.setY(cam.viewportHeight / 2);
+            reel.setX(i*spriteWidth + displayWindowWidth / 2);
+            reel.setY(displayWindowHeight / 2);
             reel.setSx(0);
             reel.setSy(0);
             reel.setEndReel(random.nextInt(sprites.length - 1));
