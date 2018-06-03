@@ -85,7 +85,15 @@ public class Particle5ExtendingParticleTemplate extends ParticleTemplate {
 	private void initialiseDampenedSine() {
         dampenedSines = new Array<DampenedSine>();
         for (ReelTile reel : reelTilesArray) {
-            dampenedSine = new DampenedSine(0, reel.getSy(), 0, 0, 0, slotReelScrollheight * 20, slotReelScrollheight, reel.getEndReel());
+            dampenedSine = new DampenedSine(0,
+                                             reel.getSy(),
+                                            0,
+                                            0,
+                                            0,
+                                            slotReelScrollheight * 20,
+                                             slotReelScrollheight,
+                                             reel.getEndReel(),
+                                             (int) reel.getWidth());
             dampenedSine.setCallback(dsCallback);
             dampenedSine.setCallbackTriggers(SPPhysicsCallback.PARTICLE_UPDATE + SPPhysicsCallback.END);
             dampenedSine.setUserData(reel);
@@ -169,7 +177,7 @@ public class Particle5ExtendingParticleTemplate extends ParticleTemplate {
 		batch.begin();
         for (ReelTile reelTile : reelTilesArray) {
             reelTile.draw(batch);
-            reelSprites[reelTile.getEndReel()].setX(32);
+            reelSprites[reelTile.getEndReel()].setX(reelTile.getWidth());
 			reelSprites[reelTile.getEndReel()].draw(batch);
 		}
         batch.end();

@@ -114,7 +114,15 @@ public class Particle4 extends SPPrototype {
 
     private void initialiseDampenedSine() {
         dampenedSines = new Array<DampenedSine>();
-        dampenedSine = new DampenedSine(0, reelTiles.get(0).getSy(), 0, 0, 0, slotReelScrollheight * 20, slotReelScrollheight, reelTiles.get(0).getEndReel());
+        dampenedSine = new DampenedSine(0,
+                                         reelTiles.get(0).getSy(),
+                                        0,
+                                        0,
+                                        0,
+                                        slotReelScrollheight * 20,
+                                         slotReelScrollheight,
+                                         reelTiles.get(0).getEndReel(),
+                                         (int) reelTiles.get(0).getWidth());
         dampenedSine.setCallback(new SPPhysicsCallback() {
             public void onEvent(int type, SPPhysicsEvent event) {
                 delegateDSCallback(type);

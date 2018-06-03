@@ -78,7 +78,16 @@ public class Particle4ExtendingParticleTemplate extends ParticleTemplate {
 	
     private void initialiseDampenedSine() {
         dampenedSines = new Array<DampenedSine>();
-        dampenedSine = new DampenedSine(0, reelTilesArray.get(0).getSy(), 0, 0, 0, slotReelScrollheight * 20, slotReelScrollheight, reelTilesArray.get(0).getEndReel());
+        dampenedSine = new DampenedSine(0,
+				                        reelTilesArray.get(0).getSy(),
+				                       0,
+				                       0,
+				                       0,
+				                       slotReelScrollheight * 20,
+				                        slotReelScrollheight,
+				                        reelTilesArray.get(0).getEndReel(),
+                                        (int) reelTilesArray.get(0).getWidth());
+
         dampenedSine.setCallback(new SPPhysicsCallback() {
 				public void onEvent(int type, SPPhysicsEvent event) {
 					delegateDSCallback(type);
@@ -97,7 +106,13 @@ public class Particle4ExtendingParticleTemplate extends ParticleTemplate {
                 dampenedSines.get(0).initialiseDampenedSine();
                 dampenedSines.get(0).position.y = 0;
                 dampenedSines.get(0).setEndReel(reelTilesArray.get(0).getEndReel());
-            }
+				dampenedSines.get(0).setCallback(new SPPhysicsCallback() {
+					public void onEvent(int type, SPPhysicsEvent event) {
+						delegateDSCallback(type);
+					};
+				});
+
+			}
         }
     }
 	

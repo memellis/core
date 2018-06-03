@@ -99,7 +99,7 @@ public class Particle2ExtendingParticleTemplate extends ParticleTemplate {
                 if (reelSlot.getSy() < dampPoint) {
                     if (saveAmplitude)
                         calculateSavedAmplitude(reelSlot);
-                    
+
                     float ds = dampenedSine(savedAmplitude, 1.0f, (float) (2 * Math.PI), plotTime++ / 20, 0);
                     reelSlot.setSy(savedSy + ds);
                  }

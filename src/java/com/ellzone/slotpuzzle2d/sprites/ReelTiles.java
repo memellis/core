@@ -44,7 +44,8 @@ public class ReelTiles {
 	    reelTile.setY(0);
 	    reelTile.setSx(0);
 	    reelTile.setEndReel(Random.getInstance().nextInt(reels.getReels().length - 1));
-	    reelTile.setSy(slotReelScrollTexture.getHeight() + 128 + reelTile.getEndReel() * reels.getReelHeight() );
+	    //reelTile.setSy(slotReelScrollTexture.getHeight() + 128 + reelTile.getEndReel() * reels.getReelHeight() );
+		reelTile.setSy(slotReelScrollTexture.getHeight() + reelTile.getEndReel() * reels.getReelHeight() );
 	    reelTiles.add(reelTile);
 	}
 	
