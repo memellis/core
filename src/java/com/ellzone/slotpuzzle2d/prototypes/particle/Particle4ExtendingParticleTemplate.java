@@ -119,7 +119,7 @@ public class Particle4ExtendingParticleTemplate extends ParticleTemplate {
         batch.begin();
         for (ReelTile reelTile : reelTilesArray) {
             reelTile.draw(batch);
- 			reelSprites[reelTile.getEndReel()].setX(32);
+ 			reelSprites[reelTile.getEndReel()].setX(reelTile.getWidth());
 			reelSprites[reelTile.getEndReel()].draw(batch);
 		}
         batch.end();

@@ -19,8 +19,8 @@ package com.ellzone.slotpuzzle2d.physics;
 public class DampenedSine extends Particle {
 	public static final float VELOCITY_MIN = 2.0f;
 	public static final float MIN_DAMPENED_SINE_VALUE = 0.0000001f;
-	public static final int PLOTTIME_DIVISOR_DAMPER = 32;
-	public static final int SPRITE_SQUARE_SIZE = 32;
+	public static final int PLOTTIME_DIVISOR_DAMPER = 40;
+	public static final int SPRITE_SQUARE_SIZE = 40;
 	public static enum DSState { INITIALISED, UPDATING_DAMPENED_SINE, UPDATING_PARTICLE};
 	public float dsEndReel;
 	private Vector accelerator;
@@ -90,7 +90,7 @@ public class DampenedSine extends Particle {
 		    }
 		} 
 	}
-	
+
 	private void updateDampenedSine() {
 		dsState = DSState.UPDATING_DAMPENED_SINE;
 		velocity.mulitplyBy(0.97f);
