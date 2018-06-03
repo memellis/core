@@ -123,13 +123,16 @@ public class Particle3ExtendingParticleTemplate extends ParticleTemplate {
                 reelSlot.setSy(reelParticles.get(0).position.getY());
             } else {
                 if (reelSlot.getSy() < dampPoint) {
-                    if (saveAmplitude)
-                        calaculateSavedAmplitude(reelSlot);
-                    
-                    float ds = dampenedSine(savedAmplitude, 1.0f, (float) (3 * Math.PI), plotTime++ / 32, 0);
-                    addGraphPoint(new Vector2(graphStep++ % displayWindowWidth, (displayWindowHeight / 2 + savedSy + ds)));
-                    reelSlot.setSy(savedSy + ds);
-                    if(Math.abs(ds) < 0.0000001f) {
+                    if (saveAmplitude) {
+                        saveAmplitude = false;
+                        savedSy = reelSlot.getSy() + reelTiles.getReelTileTextureHeight() - (reelSlot.getSy() % slotReelScrollheight);
+                        savedAmplitude = (dampPoint - savedSy);
+                    }
+                    float ds = dampenedSine(savedAmplitude, 1.0f, (float) (3 * Math.PI), plotTime++ / (reelSlot.getWidth() / 2), 0);
+                    float dsEndReel = ds + reelSlot.getEndReel() * reelSlot.getWidth();
+                    addGraphPoint(new Vector2(graphStep++ % displayWindowWidth, (displayWindowHeight / 2 + dsEndReel)));
+                    reelSlot.setSy(savedSy + dsEndReel);
+                    if(Math.abs(ds)<0.0000001f) {
                         reinitialiseParticle(0);
                         reelSlot.setEndReel(com.ellzone.slotpuzzle2d.utils.Random.getInstance().nextInt(reels.getReels().length - 1));
                     }
@@ -138,18 +141,8 @@ public class Particle3ExtendingParticleTemplate extends ParticleTemplate {
             reelSlot.update(delta);
         }
 	}
-
-    private void calaculateSavedAmplitude(ReelTile reelSlot) {
-        saveAmplitude = false;
-        savedSy = getNearestStartOfReelFrame(reelSlot);
-        savedAmplitude = (dampPoint - savedSy);
-    }
-
-    private float getNearestStartOfReelFrame(ReelTile reelSlot) {
-        return reelSlot.getSy() - (reelSlot.getSy() % reelSlot.getWidth());
-    }
-
-    private void addGraphPoint(Vector2 newPoint) {
+	
+	private void addGraphPoint(Vector2 newPoint) {
         points.add(newPoint);
     }
 
