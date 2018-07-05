@@ -38,11 +38,14 @@ import com.ellzone.slotpuzzle2d.physics.DampenedSineParticle;
 import com.ellzone.slotpuzzle2d.prototypes.SPPrototypeTemplate;
 import com.ellzone.slotpuzzle2d.sprites.AnimatedReel;
 import com.ellzone.slotpuzzle2d.sprites.LightButton;
+import com.ellzone.slotpuzzle2d.sprites.ReelStoppedSpinningEvent;
 import com.ellzone.slotpuzzle2d.sprites.ReelTile;
+import com.ellzone.slotpuzzle2d.sprites.ReelTileEvent;
+import com.ellzone.slotpuzzle2d.sprites.ReelTileListener;
 import com.ellzone.slotpuzzle2d.sprites.SlotHandleSprite;
 import com.ellzone.slotpuzzle2d.tweenengine.SlotPuzzleTween;
 import com.ellzone.slotpuzzle2d.tweenengine.Timeline;
-import com.ellzone.slotpuzzle2d.utils.Assets;
+import com.ellzone.slotpuzzle2d.utils.AssetsAnnotation;
 import com.ellzone.slotpuzzle2d.utils.PixmapProcessors;
 
 import java.util.Random;
@@ -68,6 +71,7 @@ public class SpinningSlotsWithMatchesWin extends SPPrototypeTemplate {
     private Box2DDebugRenderer debugRenderer;
     private RayHandler rayHandler;
     private Array<LightButton> lightButtons;
+    private Array<PointLight> levelLights;
 
     @Override
     protected void initialiseOverride() {
@@ -77,7 +81,6 @@ public class SpinningSlotsWithMatchesWin extends SPPrototypeTemplate {
 
     @Override
     protected void initialiseScreenOverride() {
-
     }
 
     private void createHoldButtons() {
@@ -109,7 +112,7 @@ public class SpinningSlotsWithMatchesWin extends SPPrototypeTemplate {
         float slotHandleSpriteCenterX = slotHandleSprintBoundingRectangle.getX() + slotHandleSprintBoundingRectangle.getWidth() / 2;
         float slotHandleSpriteCenterY = slotHandleSprintBoundingRectangle.getY() + slotHandleSprintBoundingRectangle.getHeight() / 2;
         handleLight.setPosition(slotHandleSpriteCenterX / PIXELS_PER_METER, slotHandleSpriteCenterY / PIXELS_PER_METER);
-
+        
         PointLight reelHelperLight = new PointLight(rayHandler, 32);
         reelHelperLight.setActive(true);
         reelHelperLight.setColor(Color.RED);
@@ -122,23 +125,25 @@ public class SpinningSlotsWithMatchesWin extends SPPrototypeTemplate {
             lightButton.getSprite().setSize(32 / PIXELS_PER_METER, 32 / PIXELS_PER_METER);
             lightButtons.add(lightButton);
         }
+        
+        levelLights = new Array<>();
+        levelLights.add(createLevelLight((int) slotHandleSpriteCenterX, (int) slotHandleSpriteCenterY - 120));
+        levelLights.add(createLevelLight((int) slotHandleSpriteCenterX, (int) slotHandleSpriteCenterY + 120));
+    }
+
+    private PointLight createLevelLight(int x, int y) {
+        PointLight levelLight = new PointLight(rayHandler,4);
+        levelLight.setActive(true);
+        return levelLight;
     }
 
     @Override
     protected void loadAssetsOverride() {
-        Assets.inst().load("reel/reels.pack.atlas", TextureAtlas.class);
-        Assets.inst().load("slot_handle/slot_handle.pack.atlas", TextureAtlas.class);
-        Assets.inst().load("sounds/pull-lever1.wav", Sound.class);
-        Assets.inst().load("sounds/click2.wav", Sound.class);
-        Assets.inst().load("sounds/reel-stopped.wav", Sound.class);
-        Assets.inst().update();
-        Assets.inst().finishLoading();
-
-        slotHandleAtlas = Assets.inst().get("slot_handle/slot_handle.pack.atlas", TextureAtlas.class);
-        pullLeverSound = Assets.inst().get("sounds/pull-lever1.wav");
-        reelSpinningSound = Assets.inst().get("sounds/click2.wav");
-        reelStoppingSound = Assets.inst().get("sounds/reel-stopped.wav");
-    }
+        slotHandleAtlas = annotationAssetManager.get(AssetsAnnotation.SLOT_HANDLE);
+        pullLeverSound = annotationAssetManager.get(AssetsAnnotation.SOUND_PULL_LEVER);
+        reelSpinningSound = annotationAssetManager.get(AssetsAnnotation.SOUND_REEL_SPINNING);
+        reelStoppingSound = annotationAssetManager.get(AssetsAnnotation.SOUND_REEL_STOPPED);
+     }
 
     @Override
     public void resize(int width, int height) {
@@ -165,6 +170,31 @@ public class SpinningSlotsWithMatchesWin extends SPPrototypeTemplate {
 
     @Override
     protected void renderOverride(float dt) {
+        renderReels();
+        renderLightButtons();
+        renderRayHandler();
+        renderWorld();
+    }
+
+    private void renderWorld() {
+        debugRenderer.render(world, lightViewport.getCamera().combined);
+    }
+
+    private void renderRayHandler() {
+        rayHandler.setCombinedMatrix(lightViewport.getCamera().combined);
+        rayHandler.updateAndRender();
+    }
+
+    private void renderLightButtons() {
+        batch.setProjectionMatrix(lightViewport.getCamera().combined);
+        batch.begin();
+        for (LightButton lightButton : lightButtons) {
+            lightButton.getSprite().draw(batch);
+        }
+        batch.end();
+    }
+
+    private void renderReels() {
         batch.begin();
         for (AnimatedReel reel : reels) {
             reel.draw(batch);
@@ -173,15 +203,6 @@ public class SpinningSlotsWithMatchesWin extends SPPrototypeTemplate {
         }
         slotHandleSprite.draw(batch);
         batch.end();
-        batch.setProjectionMatrix(lightViewport.getCamera().combined);
-        batch.begin();
-        for (LightButton lightButton : lightButtons) {
-            lightButton.getSprite().draw(batch);
-        }
-        batch.end();
-        rayHandler.setCombinedMatrix(lightViewport.getCamera().combined);
-        rayHandler.updateAndRender();
-        debugRenderer.render(world, lightViewport.getCamera().combined);
     }
 
     @Override
@@ -199,13 +220,18 @@ public class SpinningSlotsWithMatchesWin extends SPPrototypeTemplate {
         Pixmap slotReelScrollPixmap = PixmapProcessors.createPixmapToAnimate(sprites);
         Texture slotReelScrollTexture = new Texture(slotReelScrollPixmap);
         for (int i = 0; i < 3; i++) {
-            AnimatedReel animatedReel = new AnimatedReel(slotReelScrollTexture, 0, 0, spriteWidth, spriteHeight, spriteWidth, spriteHeight * 3, 0, reelSpinningSound, reelStoppingSound, tweenManager);
-            animatedReel.setX(i * spriteWidth + displayWindowWidth / 2);
-            animatedReel.setY((displayWindowHeight + 3 * spriteHeight) / 2);
-            animatedReel.setSx(0);
-            animatedReel.setEndReel(random.nextInt(sprites.length - 1));
-            reels.add(animatedReel);
+            addReel(slotReelScrollTexture, i);
         }
+    }
+
+    private void addReel(Texture slotReelScrollTexture, int i) {
+        AnimatedReel animatedReel = new AnimatedReel(slotReelScrollTexture, 0, 0, spriteWidth, spriteHeight, spriteWidth, spriteHeight * 3, 0, reelSpinningSound, reelStoppingSound, tweenManager);
+        animatedReel.setX(i * spriteWidth + displayWindowWidth / 2);
+        animatedReel.setY((displayWindowHeight + 3 * spriteHeight) / 2);
+        animatedReel.setSx(0);
+        animatedReel.setEndReel(random.nextInt(sprites.length - 1));
+        animatedReel.getReel().addListener(new ReelStoppedListener().invoke());
+        reels.add(animatedReel);
     }
 
     private void createIntroSequence() {
@@ -268,54 +294,87 @@ public class SpinningSlotsWithMatchesWin extends SPPrototypeTemplate {
         if (Gdx.input.justTouched()) {
             touch = touch.set(Gdx.input.getX(), Gdx.input.getY());
             touch = viewport.unproject(touch);
-            for (AnimatedReel animatedReel : reels) {
-                if (animatedReel.getReel().getBoundingRectangle().contains(touch)) {
-                    if (animatedReel.getReel().isSpinning()) {
-                        if (animatedReel.getDampenedSineState() == DampenedSineParticle.DSState.UPDATING_DAMPENED_SINE) {
-                            reelSpriteHelp = animatedReel.getReel().getCurrentReel();
-                            animatedReel.getReel().setEndReel(reelSpriteHelp - 1 < 0 ? 0 : reelSpriteHelp - 1);
-                        }
-                    } else {
-                        animatedReel.setEndReel(random.nextInt(sprites.length - 1));
-                        animatedReel.reinitialise();
-                        animatedReel.getReel().startSpinning();
-                    }
-                }
-            }
-            if (slotHandleSprite.getBoundingRectangle().contains(touch)) {
-                boolean reelsNotSpinning = true;
-                for (AnimatedReel animatedReel : reels) {
-                    if (animatedReel.getReel().isSpinning()) {
-                        reelsNotSpinning = false;
-                    }
-                }
-                if (reelsNotSpinning) {
-                    slotHandleSprite.pullSlotHandle();
-                    pullLeverSound.play();
-                    int i = 0;
-                    for (AnimatedReel animatedReel : reels) {
-                        if (!lightButtons.get(i).getLight().isActive()) {
-                            animatedReel.setEndReel(random.nextInt(sprites.length - 1));
-                            animatedReel.reinitialise();
-                            animatedReel.getReel().startSpinning();
-                        }
-                        i++;
-                    }
-                } else {
-                    reelStoppingSound.play();
-                }
-            }
+            handleReelsTouched();
+            handleSlotHandleIsTouch();
             touch = touch.set(Gdx.input.getX(), Gdx.input.getY());
             touch = lightViewport.unproject(touch);
-            for (LightButton lightButton : lightButtons) {
-                if (lightButton.getSprite().getBoundingRectangle().contains(touch.x, touch.y)) {
-                    if (lightButton.getLight().isActive()) {
-                        lightButton.getLight().setActive(false);
-                    } else {
-                        lightButton.getLight().setActive(true);
-                    }
+            handleLightButtonTouched();
+        }
+    }
+
+    private void handleLightButtonTouched() {
+        for (LightButton lightButton : lightButtons) {
+            if (lightButton.getSprite().getBoundingRectangle().contains(touch.x, touch.y)) {
+                if (lightButton.getLight().isActive()) {
+                    lightButton.getLight().setActive(false);
+                } else {
+                    lightButton.getLight().setActive(true);
                 }
             }
+        }
+    }
+
+    private void handleSlotHandleIsTouch() {
+        if (slotHandleSprite.getBoundingRectangle().contains(touch)) {
+            if (isReelsNotSpinning()) {
+                slotHandlePulled();
+            } else {
+                reelStoppingSound.play();
+            }
+        }
+    }
+
+    private void slotHandlePulled() {
+        slotHandleSprite.pullSlotHandle();
+        pullLeverSound.play();
+        int i = 0;
+        for (AnimatedReel animatedReel : reels) {
+            if (!lightButtons.get(i).getLight().isActive()) {
+                animatedReel.setEndReel(random.nextInt(sprites.length - 1));
+                animatedReel.reinitialise();
+                animatedReel.getReel().startSpinning();
+            }
+            i++;
+        }
+    }
+
+    private boolean isReelsNotSpinning() {
+        boolean reelsNotSpinning = true;
+        for (AnimatedReel animatedReel : reels) {
+            if (animatedReel.getReel().isSpinning()) {
+                reelsNotSpinning = false;
+            }
+        }
+        return reelsNotSpinning;
+    }
+
+    private void handleReelsTouched() {
+        for (AnimatedReel animatedReel : reels) {
+            if (animatedReel.getReel().getBoundingRectangle().contains(touch)) {
+                if (animatedReel.getReel().isSpinning()) {
+                    if (animatedReel.getDampenedSineState() == DampenedSineParticle.DSState.UPDATING_DAMPENED_SINE) {
+                        reelSpriteHelp = animatedReel.getReel().getCurrentReel();
+                        animatedReel.getReel().setEndReel(reelSpriteHelp - 1 < 0 ? 0 : reelSpriteHelp - 1);
+                    }
+                } else {
+                    animatedReel.setEndReel(random.nextInt(sprites.length - 1));
+                    animatedReel.reinitialise();
+                    animatedReel.getReel().startSpinning();
+                }
+            }
+        }
+    }
+
+    private class ReelStoppedListener {
+        public ReelTileListener invoke() {
+            return new ReelTileListener() {
+                @Override
+                public void actionPerformed(ReelTileEvent event, ReelTile source) {
+                    if (event instanceof ReelStoppedSpinningEvent) {
+                        System.out.println("Reel Stopped Spinning");
+                    }
+                }
+            };
         }
     }
 }
