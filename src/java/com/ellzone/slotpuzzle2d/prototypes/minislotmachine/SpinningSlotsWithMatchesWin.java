@@ -36,6 +36,9 @@ import com.ellzone.slotpuzzle2d.effects.ReelAccessor;
 import com.ellzone.slotpuzzle2d.effects.SpriteAccessor;
 import com.ellzone.slotpuzzle2d.physics.DampenedSineParticle;
 import com.ellzone.slotpuzzle2d.prototypes.SPPrototypeTemplate;
+import com.ellzone.slotpuzzle2d.puzzlegrid.PuzzleGrid;
+import com.ellzone.slotpuzzle2d.puzzlegrid.PuzzleGridTypeReelTile;
+import com.ellzone.slotpuzzle2d.puzzlegrid.ReelTileGridValue;
 import com.ellzone.slotpuzzle2d.sprites.AnimatedReel;
 import com.ellzone.slotpuzzle2d.sprites.LightButton;
 import com.ellzone.slotpuzzle2d.sprites.ReelStoppedSpinningEvent;
@@ -72,6 +75,8 @@ public class SpinningSlotsWithMatchesWin extends SPPrototypeTemplate {
     private RayHandler rayHandler;
     private Array<LightButton> lightButtons;
     private Array<PointLight> levelLights;
+    private int[][] reelGrid = new int[3][3];
+    private int levelLightX, levelLightY;
 
     @Override
     protected void initialiseOverride() {
@@ -127,13 +132,19 @@ public class SpinningSlotsWithMatchesWin extends SPPrototypeTemplate {
         }
         
         levelLights = new Array<>();
-        levelLights.add(createLevelLight((int) slotHandleSpriteCenterX, (int) slotHandleSpriteCenterY - 120));
-        levelLights.add(createLevelLight((int) slotHandleSpriteCenterX, (int) slotHandleSpriteCenterY + 120));
+        System.out.println("slotHandleSpriteCenterY="+slotHandleSpriteCenterY);
+        //levelLights.add(createLevelLight((int) slotHandleSpriteCenterX, (int) slotHandleSpriteCenterY));
+        //levelLights.add(createLevelLight((int) slotHandleSpriteCenterX, (int) slotHandleSpriteCenterY + 120));
+        levelLights.add(createLevelLight((int) slotHandleSpriteCenterX, 300));
+        levelLightX = (int) slotHandleSpriteCenterX;
+        levelLightY = (int) 300;
     }
 
     private PointLight createLevelLight(int x, int y) {
         PointLight levelLight = new PointLight(rayHandler,4);
         levelLight.setActive(true);
+        levelLight.setColor(Color.GRAY);
+        levelLight.setPosition(x / PIXELS_PER_METER, y / PIXELS_PER_METER);
         return levelLight;
     }
 
@@ -372,9 +383,38 @@ public class SpinningSlotsWithMatchesWin extends SPPrototypeTemplate {
                 public void actionPerformed(ReelTileEvent event, ReelTile source) {
                     if (event instanceof ReelStoppedSpinningEvent) {
                         System.out.println("Reel Stopped Spinning");
+                        matchReels();
                     }
                 }
             };
         }
+    }
+
+    private void matchReels() {
+        captureReelPositions();
+        PuzzleGrid.printGrid(reelGrid);
+        PuzzleGridTypeReelTile puzzleGrid = new PuzzleGridTypeReelTile();
+        ReelTileGridValue[][] matchGrid = puzzleGrid.populateMatchGrid(reelGrid);
+        puzzleGrid.printGrid(matchGrid);
+    }
+
+    private void captureReelPositions() {
+        for (int r = 0; r < reelGrid.length; r++) {
+            for (int c = 0; c < reelGrid[0].length; c++) {
+                reelGrid[r][c] = getReelPosition(r, c);
+            }
+        }
+    }
+
+    private int getReelPosition(int r, int c) {
+        int reelPosition = reels.get(c).getEndReel() + r;
+        if (reelPosition < 0)
+            reelPosition = sprites.length - 1;
+        else {
+            if(reelPosition > sprites.length - 1) {
+                reelPosition = 0;
+            }
+        }
+        return reelPosition;
     }
 }

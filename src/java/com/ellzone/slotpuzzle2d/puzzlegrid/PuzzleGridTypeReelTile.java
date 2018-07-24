@@ -515,6 +515,86 @@ public class PuzzleGridTypeReelTile {
         return matchGrid;
     }
 
+    public ReelTileGridValue[][] populateMatchGrid(int[][] puzzleGrid) {
+        ReelTileGridValue[][] matchGrid = new ReelTileGridValue[puzzleGrid.length][puzzleGrid[0].length];
+        for (int r = 0; r < puzzleGrid.length; r++) {
+            for (int c = 0; c < puzzleGrid[0].length; c++) {
+                matchGrid[r][c] = new ReelTileGridValue(r, c, -1, puzzleGrid[r][c]);
+            }
+        }
+        return matchGrid;
+    }
+
+    public ReelTileGridValue[][] createGridLinks(ReelTileGridValue[][] puzzleGrid) {
+        for (int r = 0; r < puzzleGrid.length; r++) {
+            for (int c = 0; c < puzzleGrid[0].length; c++) {
+                withinLeftCorner(puzzleGrid, r, c);
+                withinRightCorner(puzzleGrid, r, c);
+            }
+        }
+        return puzzleGrid;
+    }
+
+    private void withinRightCorner(ReelTileGridValue[][] puzzleGrid, int r, int c) {
+        if (isWithInRightCorner(r + 1, puzzleGrid.length)) {
+            isNorthSouthEquals(puzzleGrid, r, c);
+            if (isWithInRightCorner(c + 1, puzzleGrid[0].length)) {
+                if (puzzleGrid[r][c].value == puzzleGrid[r + 1][c + 1].value) {
+                    puzzleGrid[r + 1][c + 1].setNeReelTileGridValue(puzzleGrid[r][c]);
+                    puzzleGrid[r][c].setSwReelTileGridValue(puzzleGrid[r + 1][c + 1]);
+                }
+            }
+            if (isWithinLeftCorner(c)) {
+                if (puzzleGrid[r][c].value == puzzleGrid[r + 1][c - 1].value) {
+                    puzzleGrid[r + 1][c - 1].nwReelTileGridValue = puzzleGrid[r][c];
+                    puzzleGrid[r][c].setSeReelTileGridValue(puzzleGrid[r + 1][c - 1]);
+                 }
+            }
+        }
+        if (isWithInRightCorner(c + 1, puzzleGrid[0].length)) {
+            if (puzzleGrid[r][c].value == puzzleGrid[r][c + 1].value) {
+                puzzleGrid[r][c + 1].setWReelTileGridValue(puzzleGrid[r][c]);
+                puzzleGrid[r][c].setEReelTileGridValue(puzzleGrid[r][c + 1]);
+            }
+        }
+    }
+
+    private void isNorthSouthEquals(ReelTileGridValue[][] puzzleGrid, int r, int c) {
+        if (puzzleGrid[r][c].value == puzzleGrid[r + 1][c].value) {
+            puzzleGrid[r + 1][c].setNReelTileGridValue(puzzleGrid[r][c]);
+            puzzleGrid[r][c].setSReelTileGridValue(puzzleGrid[r + 1][c]);
+        }
+    }
+
+    private void withinLeftCorner(ReelTileGridValue[][] puzzleGrid, int r, int c) {
+        if (isWithinLeftCorner(r)) {
+            if (puzzleGrid[r][c].value == puzzleGrid[r - 1][c].value) {
+                puzzleGrid[r - 1][c].setNReelTileGridValue(puzzleGrid[r][c]);
+                puzzleGrid[r][c].setSReelTileGridValue(puzzleGrid[r - 1][c]);
+            }
+            if (isWithinLeftCorner(c)) {
+                if (puzzleGrid[r][c].value == puzzleGrid[r - 1][c - 1].value) {
+                    puzzleGrid[r - 1][c - 1].setNwReelTileGridValue(puzzleGrid[r][c]);
+                    puzzleGrid[r][c].setSeReelTileGridValue(puzzleGrid[r - 1][c - 1]);
+                }
+            }
+        }
+        if (isWithinLeftCorner(c)) {
+            if (puzzleGrid[r][c].value == puzzleGrid[r][c - 1].value) {
+                puzzleGrid[r][c - 1].setEReelTileGridValue(puzzleGrid[r][c]);
+                puzzleGrid[r][c].setWReelTileGridValue(puzzleGrid[r][c - 1]);
+            }
+        }
+    }
+
+    private boolean isWithinLeftCorner(int rowOrColumn) {
+        return (rowOrColumn - 1) >= 0;
+    }
+
+    private boolean isWithInRightCorner(int rowOrColumn, int rightCornerBoundary) {
+        return (rowOrColumn < rightCornerBoundary);
+    }
+
     public static int getRowFromLevel(float y, int levelHeight) {
         int row = (int) (y - PlayScreen.PUZZLE_GRID_START_Y) / PlayScreen.TILE_HEIGHT;
         row = levelHeight - 1 - row;
@@ -577,5 +657,44 @@ public class PuzzleGridTypeReelTile {
             }
         }
         return matchedSlotBatch;
+    }
+
+    public Array<ReelTileGridValue> depthFirstSearchIncludeDiagonals(ReelTileGridValue startReelTile) {
+        Array<ReelTileGridValue> localMatchedSlotBatch = new Array<ReelTileGridValue>();
+        ReelTileGridValue currentReelTile;
+        Stack<ReelTileGridValue> reelTileGridValuesStack = new Stack<ReelTileGridValue>();
+        reelTileGridValuesStack.push(startReelTile);
+        while (!reelTileGridValuesStack.empty()) {
+            currentReelTile = reelTileGridValuesStack.pop();
+            if (!currentReelTile.getDiscovered()) {
+                currentReelTile.setDiscovered(true);
+                localMatchedSlotBatch.add(currentReelTile);
+                if (currentReelTile.getNReelTileGridValue() != null) {
+                    reelTileGridValuesStack.push(currentReelTile.getNReelTileGridValue());
+                }
+                if (currentReelTile.getNeReelTileGridValue() != null) {
+                    reelTileGridValuesStack.push(currentReelTile.getNeReelTileGridValue());
+                }
+                if (currentReelTile.getEReelTileGridValue() != null) {
+                    reelTileGridValuesStack.push(currentReelTile.getEReelTileGridValue());
+                }
+                if (currentReelTile.getSeReelTileGridValue() != null) {
+                    reelTileGridValuesStack.push(currentReelTile.getSeReelTileGridValue());
+                }
+                if (currentReelTile.getSReelTileGridValue() != null) {
+                    reelTileGridValuesStack.push(currentReelTile.getSReelTileGridValue());
+                }
+                if (currentReelTile.getSwReelTileGridValue() != null) {
+                    reelTileGridValuesStack.push(currentReelTile.getSwReelTileGridValue());
+                }
+                if (currentReelTile.getWReelTileGridValue() != null) {
+                    reelTileGridValuesStack.push(currentReelTile.getWReelTileGridValue());
+                }
+                if (currentReelTile.getNwReelTileGridValue() != null) {
+                    reelTileGridValuesStack.push(currentReelTile.getNwReelTileGridValue());
+                }
+            }
+        }
+        return localMatchedSlotBatch;
     }
 }

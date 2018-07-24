@@ -131,7 +131,6 @@ public class PuzzleGrid {
 		return matchedSlots;
 	}
 
-	
 	public int[][] initialiseGrid(int[][] puzzleGrid) {
 		for (int r = 0; r < puzzleGrid.length; r++) {
 			for (int c = 0; c < puzzleGrid[r].length; c++) {

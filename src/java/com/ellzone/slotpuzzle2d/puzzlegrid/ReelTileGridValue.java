@@ -175,6 +175,22 @@ public class ReelTileGridValue extends TupleValueIndex {
         this.wReelTileGridValue = wReelTileGridValue;
     }
 
+    public void setNeReelTileGridValue(ReelTileGridValue neReelTileGridValue) {
+        this.neReelTileGridValue = neReelTileGridValue;
+    }
+
+    public void setNwReelTileGridValue(ReelTileGridValue nwReelTileGridValue) {
+        this.nwReelTileGridValue = nwReelTileGridValue;
+    }
+
+    public void setSeReelTileGridValue(ReelTileGridValue seReelTileGridValue) {
+        this.seReelTileGridValue = seReelTileGridValue;
+    }
+
+    public void setSwReelTileGridValue(ReelTileGridValue swReelTileGridValue) {
+        this.swReelTileGridValue = swReelTileGridValue;
+    }
+
     public static ReelTileGridValue newInstance(ReelTileGridValue reelTileGridValue) {
         return new ReelTileGridValue(reelTileGridValue.getReelTile(), reelTileGridValue.getR(), reelTileGridValue.getC(), reelTileGridValue.getIndex(), reelTileGridValue.getValue(), reelTileGridValue.getN(), reelTileGridValue.getE(), reelTileGridValue.getS(), reelTileGridValue.getW(), reelTileGridValue.getNe(), reelTileGridValue.getSe(), reelTileGridValue.getSw(), reelTileGridValue.getNw());
     }
