@@ -19,16 +19,11 @@ package com.ellzone.slotpuzzle2d.puzzlegrid;
 import com.ellzone.slotpuzzle2d.sprites.ReelTile;
 
 public class ReelTileGridValue extends TupleValueIndex {
-    public ReelTile reelTile, n, e, s, w, ne, se, nw, sw;
+    public ReelTile reelTile;
     private boolean discovered = false;
-    public ReelTileGridValue nReelTileGridValue,
-                             eReelTileGridValue,
-                             sReelTileGridValue,
-                             wReelTileGridValue,
-                             neReelTileGridValue,
-                             seReelTileGridValue,
-                             swReelTileGridValue,
-                             nwReelTileGridValue;
+
+    public ReelTile[] reelTileNeighbours = new ReelTile[Compass.values().length];
+    public ReelTileGridValue[] gridValueNeighbours = new ReelTileGridValue[Compass.values().length];
 
     public enum Compass {NORTH, EAST, SOUTH, WEST, NORTHEAST, SOUTHEAST, SOUTHWEST, NORTHWEST};
 
@@ -49,14 +44,14 @@ public class ReelTileGridValue extends TupleValueIndex {
                              ReelTile n, ReelTile e, ReelTile s, ReelTile w, ReelTile ne, ReelTile se, ReelTile sw, ReelTile nw) {
         super(r, c, index, value);
         this.reelTile = reelTile;
-        this.n = n;
-        this.e = e;
-        this.s = s;
-        this.w = w;
-        this.ne = ne;
-        this.se = se;
-        this.sw = sw;
-        this.nw = nw;
+        reelTileNeighbours[Compass.NORTH.ordinal()] = n;
+        reelTileNeighbours[Compass.EAST.ordinal()] = e;
+        reelTileNeighbours[Compass.SOUTH.ordinal()] = s;
+        reelTileNeighbours[Compass.WEST.ordinal()] = w;
+        reelTileNeighbours[Compass.NORTHEAST.ordinal()] = ne;
+        reelTileNeighbours[Compass.SOUTHEAST.ordinal()] = se;
+        reelTileNeighbours[Compass.SOUTHWEST.ordinal()] = sw;
+        reelTileNeighbours[Compass.NORTHWEST.ordinal()] = nw;
     }
 
     public ReelTileGridValue(ReelTile reelTile, int r, int c, int index, int value,
@@ -65,22 +60,21 @@ public class ReelTileGridValue extends TupleValueIndex {
                              ReelTileGridValue neReelTileGridValue, ReelTileGridValue seReelTileGridValue, ReelTileGridValue swReelTileGridValue, ReelTileGridValue nwReelTileGridValue) {
         super(r, c, index, value);
         this.reelTile = reelTile;
-        this.n = n;
-        this.e = e;
-        this.s = s;
-        this.w = w;
-        this.ne = ne;
-        this.se = se;
-        this.sw = sw;
-        this.nw = nw;
-        this.nReelTileGridValue = nReelTileGridValue;
-        this.eReelTileGridValue = eReelTileGridValue;
-        this.sReelTileGridValue = sReelTileGridValue;
-        this.wReelTileGridValue = wReelTileGridValue;
-        this.neReelTileGridValue = neReelTileGridValue;
-        this.seReelTileGridValue = seReelTileGridValue;
-        this.swReelTileGridValue = swReelTileGridValue;
-        this.nwReelTileGridValue = nwReelTileGridValue;
+        reelTileNeighbours[Compass.NORTH.ordinal()] = n;
+        reelTileNeighbours[Compass.EAST.ordinal()] = e;
+        reelTileNeighbours[Compass.SOUTH.ordinal()] = s;
+        reelTileNeighbours[Compass.WEST.ordinal()] = w;
+        reelTileNeighbours[Compass.NORTHEAST.ordinal()] = ne;
+        reelTileNeighbours[Compass.SOUTHEAST.ordinal()] = se;
+        reelTileNeighbours[Compass.SOUTHWEST.ordinal()] = sw;
+        reelTileNeighbours[Compass.NORTHWEST.ordinal()] = nw;
+        gridValueNeighbours[Compass.NORTH.ordinal()] = nReelTileGridValue;
+        gridValueNeighbours[Compass.EAST.ordinal()] = eReelTileGridValue;
+        gridValueNeighbours[Compass.SOUTH.ordinal()] = sReelTileGridValue;
+        gridValueNeighbours[Compass.NORTHEAST.ordinal()] = neReelTileGridValue;
+        gridValueNeighbours[Compass.SOUTHEAST.ordinal()] = seReelTileGridValue;
+        gridValueNeighbours[Compass.SOUTHWEST.ordinal()] = swReelTileGridValue;
+        gridValueNeighbours[Compass.NORTHWEST.ordinal()] = nwReelTileGridValue;
     }
 
     public void setReelTile(ReelTile reelTile) {
@@ -88,35 +82,35 @@ public class ReelTileGridValue extends TupleValueIndex {
     }
 
     public void setN(ReelTile n) {
-        this.n = n;
+        reelTileNeighbours[Compass.NORTH.ordinal()] = n;
     }
 
     public void setE(ReelTile e) {
-        this.e = e;
+        reelTileNeighbours[Compass.EAST.ordinal()] = e;
     }
 
     public void setS(ReelTile s) {
-        this.s = s;
+        reelTileNeighbours[Compass.SOUTH.ordinal()] = s;
     }
 
     public void setW(ReelTile w) {
-        this.w = w;
+        reelTileNeighbours[Compass.WEST.ordinal()] = w;
     }
 
     public void setNe(ReelTile ne) {
-        this.ne = ne;
+        reelTileNeighbours[Compass.NORTHEAST.ordinal()] = ne;
     }
 
     public void setSe(ReelTile se) {
-        this.se = se;
+        reelTileNeighbours[Compass.SOUTHEAST.ordinal()] = se;
     }
 
     public void setNw(ReelTile ne) {
-        this.nw = nw;
+        reelTileNeighbours[Compass.NORTHEAST.ordinal()] = ne;
     }
 
     public void setSw(ReelTile sw) {
-        this.sw = sw;
+        reelTileNeighbours[Compass.SOUTHWEST.ordinal()] = sw;
     }
 
     public void setDiscovered(boolean discovered) {
@@ -128,67 +122,67 @@ public class ReelTileGridValue extends TupleValueIndex {
     }
 
     public ReelTile getN() {
-        return this.n;
+        return reelTileNeighbours[Compass.NORTH.ordinal()];
     }
 
     public ReelTile getE() {
-        return this.e;
+        return reelTileNeighbours[Compass.EAST.ordinal()];
     }
 
     public ReelTile getS() {
-        return this.s;
+        return reelTileNeighbours[Compass.SOUTH.ordinal()];
     }
 
     public ReelTile getW() {
-        return this.w;
+        return reelTileNeighbours[Compass.WEST.ordinal()];
     }
 
     public ReelTile getNe() {
-        return this.ne;
+        return reelTileNeighbours[Compass.NORTHEAST.ordinal()];
     }
 
     public ReelTile getSe() {
-        return this.se;
+        return reelTileNeighbours[Compass.SOUTHEAST.ordinal()];
     }
 
     public ReelTile getNw() {
-        return this.nw;
+        return reelTileNeighbours[Compass.NORTHWEST.ordinal()];
     }
 
     public ReelTile getSw() {
-        return this.sw;
+        return reelTileNeighbours[Compass.SOUTHWEST.ordinal()];
     }
 
     public void setNReelTileGridValue(ReelTileGridValue nReelTileGridValue) {
-        this.nReelTileGridValue = nReelTileGridValue;
+        gridValueNeighbours[Compass.NORTH.ordinal()] = nReelTileGridValue;
     }
 
     public void setEReelTileGridValue(ReelTileGridValue eReelTileGridValue) {
-        this.eReelTileGridValue = eReelTileGridValue;
+        gridValueNeighbours[Compass.EAST.ordinal()] = eReelTileGridValue;
     }
 
     public void setSReelTileGridValue(ReelTileGridValue sReelTileGridValue) {
-        this.sReelTileGridValue = sReelTileGridValue;
+        gridValueNeighbours[Compass.SOUTH.ordinal()] = sReelTileGridValue;
     }
 
     public void setWReelTileGridValue(ReelTileGridValue wReelTileGridValue) {
-        this.wReelTileGridValue = wReelTileGridValue;
+        gridValueNeighbours[Compass.WEST.ordinal()] = wReelTileGridValue;
     }
 
     public void setNeReelTileGridValue(ReelTileGridValue neReelTileGridValue) {
-        this.neReelTileGridValue = neReelTileGridValue;
+        gridValueNeighbours[Compass.NORTHEAST.ordinal()] = neReelTileGridValue;
     }
 
     public void setNwReelTileGridValue(ReelTileGridValue nwReelTileGridValue) {
-        this.nwReelTileGridValue = nwReelTileGridValue;
+        gridValueNeighbours[Compass.NORTHWEST.ordinal()] = nwReelTileGridValue;
     }
 
     public void setSeReelTileGridValue(ReelTileGridValue seReelTileGridValue) {
-        this.seReelTileGridValue = seReelTileGridValue;
+        gridValueNeighbours[Compass.SOUTHEAST.ordinal()] = seReelTileGridValue;
     }
 
     public void setSwReelTileGridValue(ReelTileGridValue swReelTileGridValue) {
-        this.swReelTileGridValue = swReelTileGridValue;
+        gridValueNeighbours[Compass.SOUTHWEST.ordinal()] = swReelTileGridValue;
     }
 
     public static ReelTileGridValue newInstance(ReelTileGridValue reelTileGridValue) {
@@ -196,35 +190,35 @@ public class ReelTileGridValue extends TupleValueIndex {
     }
 
     public ReelTileGridValue getNReelTileGridValue() {
-        return  this.nReelTileGridValue;
+        return gridValueNeighbours[Compass.NORTH.ordinal()];
     }
 
     public ReelTileGridValue getEReelTileGridValue() {
-        return this.eReelTileGridValue;
+        return gridValueNeighbours[Compass.EAST.ordinal()];
     }
 
     public ReelTileGridValue getSReelTileGridValue() {
-        return this.sReelTileGridValue;
+        return gridValueNeighbours[Compass.SOUTH.ordinal()];
     }
 
     public ReelTileGridValue getWReelTileGridValue() {
-        return this.wReelTileGridValue;
+        return gridValueNeighbours[Compass.WEST.ordinal()];
     }
 
     public ReelTileGridValue getNeReelTileGridValue() {
-        return this.neReelTileGridValue;
+        return gridValueNeighbours[Compass.NORTHEAST.ordinal()];
     }
 
     public ReelTileGridValue getSeReelTileGridValue() {
-        return this.seReelTileGridValue;
+        return gridValueNeighbours[Compass.SOUTHEAST.ordinal()];
     }
 
     public ReelTileGridValue getSwReelTileGridValue() {
-        return this.swReelTileGridValue;
+        return gridValueNeighbours[Compass.SOUTHWEST.ordinal()];
     }
 
     public ReelTileGridValue getNwReelTileGridValue() {
-        return this.nwReelTileGridValue;
+        return gridValueNeighbours[Compass.NORTHWEST.ordinal()];
     }
 
     public boolean getDiscovered() {

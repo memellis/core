@@ -540,14 +540,14 @@ public class PuzzleGridTypeReelTile {
             isNorthSouthEquals(puzzleGrid, r, c);
             if (isWithInRightCorner(c + 1, puzzleGrid[0].length)) {
                 if (puzzleGrid[r][c].value == puzzleGrid[r + 1][c + 1].value) {
-                    puzzleGrid[r + 1][c + 1].setNeReelTileGridValue(puzzleGrid[r][c]);
-                    puzzleGrid[r][c].setSwReelTileGridValue(puzzleGrid[r + 1][c + 1]);
+                    puzzleGrid[r + 1][c + 1].setNwReelTileGridValue(puzzleGrid[r][c]);
+                    puzzleGrid[r][c].setSeReelTileGridValue(puzzleGrid[r + 1][c + 1]);
                 }
             }
             if (isWithinLeftCorner(c)) {
                 if (puzzleGrid[r][c].value == puzzleGrid[r + 1][c - 1].value) {
-                    puzzleGrid[r + 1][c - 1].nwReelTileGridValue = puzzleGrid[r][c];
-                    puzzleGrid[r][c].setSeReelTileGridValue(puzzleGrid[r + 1][c - 1]);
+                    puzzleGrid[r + 1][c - 1].setNeReelTileGridValue(puzzleGrid[r][c]);
+                    puzzleGrid[r][c].setSwReelTileGridValue(puzzleGrid[r + 1][c - 1]);
                  }
             }
         }
@@ -574,8 +574,8 @@ public class PuzzleGridTypeReelTile {
             }
             if (isWithinLeftCorner(c)) {
                 if (puzzleGrid[r][c].value == puzzleGrid[r - 1][c - 1].value) {
-                    puzzleGrid[r - 1][c - 1].setNwReelTileGridValue(puzzleGrid[r][c]);
-                    puzzleGrid[r][c].setSeReelTileGridValue(puzzleGrid[r - 1][c - 1]);
+                    puzzleGrid[r - 1][c - 1].setSeReelTileGridValue(puzzleGrid[r][c]);
+                    puzzleGrid[r][c].setNwReelTileGridValue(puzzleGrid[r - 1][c - 1]);
                 }
             }
         }

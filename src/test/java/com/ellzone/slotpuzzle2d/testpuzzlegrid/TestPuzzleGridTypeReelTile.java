@@ -74,17 +74,17 @@ public class TestPuzzleGridTypeReelTile {
     @Test
     public void testCreateGridLinks() {
         resultsGrid = puzzleGridTypeReelTile.createGridLinks(puzzleGrid);
-        assertThat(resultsGrid[0][0].swReelTileGridValue, is(resultsGrid[1][1]));
-        assertThat(resultsGrid[1][1].neReelTileGridValue, is(resultsGrid[0][0]));
-        assertThat(resultsGrid[0][1].seReelTileGridValue, is(resultsGrid[1][0]));
-        assertThat(resultsGrid[1][0].nwReelTileGridValue, is(resultsGrid[0][1]));
-        assertThat(resultsGrid[0][1].swReelTileGridValue, is(resultsGrid[1][2]));
-        assertThat(resultsGrid[1][2].neReelTileGridValue, is(resultsGrid[0][1]));
-        assertThat(resultsGrid[1][1].seReelTileGridValue, is(resultsGrid[2][0]));
-        assertThat(resultsGrid[2][0].nwReelTileGridValue, is(resultsGrid[1][1]));
-        assertThat(resultsGrid[1][1].sReelTileGridValue,  is(resultsGrid[2][1]));
-        assertThat(resultsGrid[2][1].nReelTileGridValue,  is(resultsGrid[1][1]));
-        assertThat(resultsGrid[2][2].neReelTileGridValue, is(resultsGrid[1][1]));
-        assertThat(resultsGrid[1][1].swReelTileGridValue, is(resultsGrid[2][2]));
+        assertThat(resultsGrid[0][0].getSeReelTileGridValue(), is(resultsGrid[1][1]));
+        assertThat(resultsGrid[1][1].getNwReelTileGridValue(), is(resultsGrid[0][0]));
+        assertThat(resultsGrid[0][1].getSwReelTileGridValue(), is(resultsGrid[1][0]));
+        assertThat(resultsGrid[1][0].getNeReelTileGridValue(), is(resultsGrid[0][1]));
+        assertThat(resultsGrid[0][1].getSeReelTileGridValue(), is(resultsGrid[1][2]));
+        assertThat(resultsGrid[1][2].getNwReelTileGridValue(), is(resultsGrid[0][1]));
+        assertThat(resultsGrid[1][1].getSeReelTileGridValue(), is(resultsGrid[2][2]));
+        assertThat(resultsGrid[2][2].getNwReelTileGridValue(), is(resultsGrid[1][1]));
+        assertThat(resultsGrid[1][1].getSReelTileGridValue(),  is(resultsGrid[2][1]));
+        assertThat(resultsGrid[2][1].getNReelTileGridValue(),  is(resultsGrid[1][1]));
+        assertThat(resultsGrid[2][0].getNeReelTileGridValue(), is(resultsGrid[1][1]));
+        assertThat(resultsGrid[1][1].getSwReelTileGridValue(), is(resultsGrid[2][0]));
     }
 }
