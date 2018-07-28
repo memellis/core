@@ -25,7 +25,22 @@ public class ReelTileGridValue extends TupleValueIndex {
     public ReelTile[] reelTileNeighbours = new ReelTile[Compass.values().length];
     public ReelTileGridValue[] gridValueNeighbours = new ReelTileGridValue[Compass.values().length];
 
-    public enum Compass {NORTH, EAST, SOUTH, WEST, NORTHEAST, SOUTHEAST, SOUTHWEST, NORTHWEST};
+    public enum Compass {
+        NORTH, NORTHEAST, EAST, SOUTHEAST, SOUTH, SOUTHWEST, WEST, NORTHWEST;
+        private static Compass[] compasses = Compass.values();
+
+        public static Compass getCompass(int index) {
+            return index < compasses.length ? compasses[index] : null;
+        }
+
+        public static int getLastIndex() {
+            return compasses.length - 1;
+        }
+
+        public static int getLenth() {
+            return compasses.length;
+        }
+     };
 
     public ReelTileGridValue() {
         super();
@@ -151,6 +166,14 @@ public class ReelTileGridValue extends TupleValueIndex {
 
     public ReelTile getSw() {
         return reelTileNeighbours[Compass.SOUTHWEST.ordinal()];
+    }
+
+    public void setCompassPoint(Compass point, ReelTileGridValue reelTileGridValue) {
+        gridValueNeighbours[point.ordinal()] = reelTileGridValue;
+    }
+
+    public ReelTileGridValue getCompassPoint(Compass point) {
+        return gridValueNeighbours[point.ordinal()];
     }
 
     public void setNReelTileGridValue(ReelTileGridValue nReelTileGridValue) {

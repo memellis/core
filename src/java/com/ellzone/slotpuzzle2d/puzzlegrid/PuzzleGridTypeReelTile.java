@@ -24,6 +24,8 @@ import com.ellzone.slotpuzzle2d.sprites.ReelTile;
 import java.text.MessageFormat;
 import java.util.Stack;
 
+import static com.ellzone.slotpuzzle2d.puzzlegrid.ReelTileGridValue.*;
+
 public class PuzzleGridTypeReelTile {
     public static final float FLOAT_ROUNDING_DELTA_FOR_BOX2D = 1.0f;
 
@@ -427,16 +429,16 @@ public class PuzzleGridTypeReelTile {
     public static Array<ReelTileGridValue> adjustMatchSlotDuplicates(Array<ReelTileGridValue> matchedSlots, Array<ReelTileGridValue> duplicateMatchedSlots) {
         int i = 0;
         while (i < duplicateMatchedSlots.size) {
-            linkDuplicatesForReelTiles(matchedSlots, duplicateMatchedSlots.get(i), duplicateMatchedSlots.get(i+1), ReelTileGridValue.Compass.NORTH);
-            linkDuplicatesForReelTiles(matchedSlots, duplicateMatchedSlots.get(i), duplicateMatchedSlots.get(i+1), ReelTileGridValue.Compass.EAST);
-            linkDuplicatesForReelTiles(matchedSlots, duplicateMatchedSlots.get(i), duplicateMatchedSlots.get(i+1), ReelTileGridValue.Compass.SOUTH);
-            linkDuplicatesForReelTiles(matchedSlots, duplicateMatchedSlots.get(i), duplicateMatchedSlots.get(i+1), ReelTileGridValue.Compass.WEST);
+            linkDuplicatesForReelTiles(matchedSlots, duplicateMatchedSlots.get(i), duplicateMatchedSlots.get(i+1), Compass.NORTH);
+            linkDuplicatesForReelTiles(matchedSlots, duplicateMatchedSlots.get(i), duplicateMatchedSlots.get(i+1), Compass.EAST);
+            linkDuplicatesForReelTiles(matchedSlots, duplicateMatchedSlots.get(i), duplicateMatchedSlots.get(i+1), Compass.SOUTH);
+            linkDuplicatesForReelTiles(matchedSlots, duplicateMatchedSlots.get(i), duplicateMatchedSlots.get(i+1), Compass.WEST);
             i = i + 2;
         }
         return matchedSlots;
     }
 
-    private static void linkDuplicatesForReelTiles(Array<ReelTileGridValue> matchSlots, ReelTileGridValue value1, ReelTileGridValue value2, ReelTileGridValue.Compass compass) {
+    private static void linkDuplicatesForReelTiles(Array<ReelTileGridValue> matchSlots, ReelTileGridValue value1, ReelTileGridValue value2, Compass compass) {
         switch (compass) {
             case NORTH:
                 if ((value1.getN() == null) && (value2.getN() != null)) {
@@ -528,71 +530,42 @@ public class PuzzleGridTypeReelTile {
     public ReelTileGridValue[][] createGridLinks(ReelTileGridValue[][] puzzleGrid) {
         for (int r = 0; r < puzzleGrid.length; r++) {
             for (int c = 0; c < puzzleGrid[0].length; c++) {
-                withinLeftCorner(puzzleGrid, r, c);
-                withinRightCorner(puzzleGrid, r, c);
+                puzzleGrid = createGridLink(puzzleGrid, r, c);
             }
         }
         return puzzleGrid;
     }
 
-    private void withinRightCorner(ReelTileGridValue[][] puzzleGrid, int r, int c) {
-        if (isWithInRightCorner(r + 1, puzzleGrid.length)) {
-            isNorthSouthEquals(puzzleGrid, r, c);
-            if (isWithInRightCorner(c + 1, puzzleGrid[0].length)) {
-                if (puzzleGrid[r][c].value == puzzleGrid[r + 1][c + 1].value) {
-                    puzzleGrid[r + 1][c + 1].setNwReelTileGridValue(puzzleGrid[r][c]);
-                    puzzleGrid[r][c].setSeReelTileGridValue(puzzleGrid[r + 1][c + 1]);
-                }
-            }
-            if (isWithinLeftCorner(c)) {
-                if (puzzleGrid[r][c].value == puzzleGrid[r + 1][c - 1].value) {
-                    puzzleGrid[r + 1][c - 1].setNeReelTileGridValue(puzzleGrid[r][c]);
-                    puzzleGrid[r][c].setSwReelTileGridValue(puzzleGrid[r + 1][c - 1]);
-                 }
-            }
-        }
-        if (isWithInRightCorner(c + 1, puzzleGrid[0].length)) {
-            if (puzzleGrid[r][c].value == puzzleGrid[r][c + 1].value) {
-                puzzleGrid[r][c + 1].setWReelTileGridValue(puzzleGrid[r][c]);
-                puzzleGrid[r][c].setEReelTileGridValue(puzzleGrid[r][c + 1]);
-            }
-        }
+    private ReelTileGridValue[][] createGridLink(ReelTileGridValue[][] puzzleGrid, int r, int c) {
+        puzzleGrid = setCompassPoint(puzzleGrid, r    , c    ,r - 1, c       , Compass.NORTH);
+        puzzleGrid = setCompassPoint(puzzleGrid, r    , c    ,r - 1,c + 1, Compass.NORTHEAST);
+        puzzleGrid = setCompassPoint(puzzleGrid, r    , c    , r       ,c + 1, Compass.EAST);
+        puzzleGrid = setCompassPoint(puzzleGrid, r    , c    ,r + 1,c + 1, Compass.SOUTHEAST);
+        puzzleGrid = setCompassPoint(puzzleGrid, r    , c    ,r + 1, c       , Compass.SOUTH);
+        puzzleGrid = setCompassPoint(puzzleGrid, r    , c    ,r + 1,c - 1, Compass.SOUTHWEST);
+        puzzleGrid = setCompassPoint(puzzleGrid, r    , c    , r       ,c - 1, Compass.WEST);
+        puzzleGrid = setCompassPoint(puzzleGrid, r    , c    ,r - 1,c - 1, Compass.NORTHWEST);
+        return puzzleGrid;
     }
 
-    private void isNorthSouthEquals(ReelTileGridValue[][] puzzleGrid, int r, int c) {
-        if (puzzleGrid[r][c].value == puzzleGrid[r + 1][c].value) {
-            puzzleGrid[r + 1][c].setNReelTileGridValue(puzzleGrid[r][c]);
-            puzzleGrid[r][c].setSReelTileGridValue(puzzleGrid[r + 1][c]);
-        }
-    }
-
-    private void withinLeftCorner(ReelTileGridValue[][] puzzleGrid, int r, int c) {
-        if (isWithinLeftCorner(r)) {
-            if (puzzleGrid[r][c].value == puzzleGrid[r - 1][c].value) {
-                puzzleGrid[r - 1][c].setNReelTileGridValue(puzzleGrid[r][c]);
-                puzzleGrid[r][c].setSReelTileGridValue(puzzleGrid[r - 1][c]);
-            }
-            if (isWithinLeftCorner(c)) {
-                if (puzzleGrid[r][c].value == puzzleGrid[r - 1][c - 1].value) {
-                    puzzleGrid[r - 1][c - 1].setSeReelTileGridValue(puzzleGrid[r][c]);
-                    puzzleGrid[r][c].setNwReelTileGridValue(puzzleGrid[r - 1][c - 1]);
-                }
+    private ReelTileGridValue[][] setCompassPoint(ReelTileGridValue[][] puzzleGrid, int r, int c, int r1, int c1, Compass compassPoint) {
+       if (isWithinGrid(puzzleGrid, r1, c1)) {
+            if (puzzleGrid[r][c].value == puzzleGrid[r1][c1].value) {
+                puzzleGrid[r][c].setCompassPoint(compassPoint, puzzleGrid[r1][c1]);
+                puzzleGrid[r1][c1].setCompassPoint(getOppositeCompassPoint(compassPoint), puzzleGrid[r][c]);
             }
         }
-        if (isWithinLeftCorner(c)) {
-            if (puzzleGrid[r][c].value == puzzleGrid[r][c - 1].value) {
-                puzzleGrid[r][c - 1].setEReelTileGridValue(puzzleGrid[r][c]);
-                puzzleGrid[r][c].setWReelTileGridValue(puzzleGrid[r][c - 1]);
-            }
-        }
+        return puzzleGrid;
     }
 
-    private boolean isWithinLeftCorner(int rowOrColumn) {
-        return (rowOrColumn - 1) >= 0;
+    private Compass getOppositeCompassPoint(Compass compassPoint) {
+        return Compass.getCompass((compassPoint.ordinal() + Compass.values().length / 2)
+                                  % Compass.getLenth());
     }
 
-    private boolean isWithInRightCorner(int rowOrColumn, int rightCornerBoundary) {
-        return (rowOrColumn < rightCornerBoundary);
+    private boolean isWithinGrid(ReelTileGridValue[][] puzzleGrid, int r, int c) {
+        return(r >= 0) & (r < puzzleGrid.length) &
+              (c >= 0) & (c < puzzleGrid[0].length);
     }
 
     public static int getRowFromLevel(float y, int levelHeight) {

@@ -16,18 +16,15 @@ package com.ellzone.slotpuzzle2d.testpuzzlegrid;
  limitations under the License.
  */
 
-import com.ellzone.slotpuzzle2d.puzzlegrid.PuzzleGridType;
 import com.ellzone.slotpuzzle2d.puzzlegrid.PuzzleGridTypeReelTile;
 import com.ellzone.slotpuzzle2d.puzzlegrid.ReelTileGridValue;
 
-import org.hamcrest.CoreMatchers;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.Assert.assertEquals;
 
 public class TestPuzzleGridTypeReelTile {
 
@@ -74,17 +71,17 @@ public class TestPuzzleGridTypeReelTile {
     @Test
     public void testCreateGridLinks() {
         resultsGrid = puzzleGridTypeReelTile.createGridLinks(puzzleGrid);
-        assertThat(resultsGrid[0][0].getSeReelTileGridValue(), is(resultsGrid[1][1]));
-        assertThat(resultsGrid[1][1].getNwReelTileGridValue(), is(resultsGrid[0][0]));
-        assertThat(resultsGrid[0][1].getSwReelTileGridValue(), is(resultsGrid[1][0]));
-        assertThat(resultsGrid[1][0].getNeReelTileGridValue(), is(resultsGrid[0][1]));
-        assertThat(resultsGrid[0][1].getSeReelTileGridValue(), is(resultsGrid[1][2]));
-        assertThat(resultsGrid[1][2].getNwReelTileGridValue(), is(resultsGrid[0][1]));
-        assertThat(resultsGrid[1][1].getSeReelTileGridValue(), is(resultsGrid[2][2]));
-        assertThat(resultsGrid[2][2].getNwReelTileGridValue(), is(resultsGrid[1][1]));
-        assertThat(resultsGrid[1][1].getSReelTileGridValue(),  is(resultsGrid[2][1]));
-        assertThat(resultsGrid[2][1].getNReelTileGridValue(),  is(resultsGrid[1][1]));
-        assertThat(resultsGrid[2][0].getNeReelTileGridValue(), is(resultsGrid[1][1]));
-        assertThat(resultsGrid[1][1].getSwReelTileGridValue(), is(resultsGrid[2][0]));
+        assertThat(resultsGrid[0][0].getCompassPoint(ReelTileGridValue.Compass.SOUTHEAST), is(resultsGrid[1][1]));
+        assertThat(resultsGrid[1][1].getCompassPoint(ReelTileGridValue.Compass.NORTHWEST), is(resultsGrid[0][0]));
+        assertThat(resultsGrid[0][1].getCompassPoint(ReelTileGridValue.Compass.SOUTHWEST), is(resultsGrid[1][0]));
+        assertThat(resultsGrid[1][0].getCompassPoint(ReelTileGridValue.Compass.NORTHEAST), is(resultsGrid[0][1]));
+        assertThat(resultsGrid[0][1].getCompassPoint(ReelTileGridValue.Compass.SOUTHEAST), is(resultsGrid[1][2]));
+        assertThat(resultsGrid[1][2].getCompassPoint(ReelTileGridValue.Compass.NORTHWEST), is(resultsGrid[0][1]));
+        assertThat(resultsGrid[1][1].getCompassPoint(ReelTileGridValue.Compass.SOUTHEAST), is(resultsGrid[2][2]));
+        assertThat(resultsGrid[2][2].getCompassPoint(ReelTileGridValue.Compass.NORTHWEST), is(resultsGrid[1][1]));
+        assertThat(resultsGrid[1][1].getCompassPoint(ReelTileGridValue.Compass.SOUTH),     is(resultsGrid[2][1]));
+        assertThat(resultsGrid[2][1].getCompassPoint(ReelTileGridValue.Compass.NORTH),     is(resultsGrid[1][1]));
+        assertThat(resultsGrid[2][0].getCompassPoint(ReelTileGridValue.Compass.NORTHEAST), is(resultsGrid[1][1]));
+        assertThat(resultsGrid[1][1].getCompassPoint(ReelTileGridValue.Compass.SOUTHWEST), is(resultsGrid[2][0]));
     }
 }
