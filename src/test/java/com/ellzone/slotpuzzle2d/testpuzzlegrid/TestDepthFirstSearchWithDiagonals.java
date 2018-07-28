@@ -17,7 +17,8 @@ public class TestDepthFirstSearchWithDiagonals {
     private PuzzleGridTypeReelTile puzzleGridTypeReelTile;
     private ReelTileGridValue[][] puzzleGrid;
     private ReelTileGridValue[][] resultsGrid;
-    private Array<ReelTileGridValue> expectedDepthSearchResults1;
+    private Array<ReelTileGridValue> expectedDepthSearchResults1,
+                                     expectedDepthSearchResults2;
 
     @Before
     public void setUp() {
@@ -31,7 +32,9 @@ public class TestDepthFirstSearchWithDiagonals {
         setUpGrid1Row2();
         setUpgrid1Row3();
         expectedDepthSearchResults1 = new Array<ReelTileGridValue>();
+        expectedDepthSearchResults2 = new Array<ReelTileGridValue>();
         setUpExpectedDepthSearchResults1();
+        setUpExpectedDepthSearchResults2();
     }
 
     private void setUpExpectedDepthSearchResults1() {
@@ -40,6 +43,12 @@ public class TestDepthFirstSearchWithDiagonals {
         expectedDepthSearchResults1.add(puzzleGrid[2][0]);
         expectedDepthSearchResults1.add(puzzleGrid[2][1]);
         expectedDepthSearchResults1.add(puzzleGrid[2][2]);
+    }
+
+    private void setUpExpectedDepthSearchResults2() {
+        expectedDepthSearchResults2.add(puzzleGrid[1][0]);
+        expectedDepthSearchResults2.add(puzzleGrid[0][1]);
+        expectedDepthSearchResults2.add(puzzleGrid[1][2]);
     }
 
     private void setUpGrid1Row1() {
@@ -72,5 +81,7 @@ public class TestDepthFirstSearchWithDiagonals {
         resultsGrid = puzzleGridTypeReelTile.createGridLinks(puzzleGrid);
         Array<ReelTileGridValue> depthSearchResults = puzzleGridTypeReelTile.depthFirstSearchIncludeDiagonals(resultsGrid[0][0]);
         assertThat(depthSearchResults, is(expectedDepthSearchResults1));
+        depthSearchResults = puzzleGridTypeReelTile.depthFirstSearchIncludeDiagonals(resultsGrid[1][0]);
+        assertThat(depthSearchResults, is(expectedDepthSearchResults2));
     }
 }
