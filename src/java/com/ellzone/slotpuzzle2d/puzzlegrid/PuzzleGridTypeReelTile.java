@@ -22,6 +22,8 @@ import com.ellzone.slotpuzzle2d.SlotPuzzleConstants;
 import com.ellzone.slotpuzzle2d.screens.PlayScreen;
 import com.ellzone.slotpuzzle2d.sprites.ReelTile;
 import java.text.MessageFormat;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.Stack;
 
 import static com.ellzone.slotpuzzle2d.puzzlegrid.ReelTileGridValue.*;
@@ -669,5 +671,21 @@ public class PuzzleGridTypeReelTile {
             }
         }
         return localMatchedSlotBatch;
+    }
+
+    public void clearDiscovered(ReelTileGridValue[][] puzzleGrid) {
+        for(int r = 0; r < puzzleGrid.length; r++) {
+            for(int c = 0; c < puzzleGrid[0].length; c++) {
+                puzzleGrid[r][c].setDiscovered(false);
+            }
+        }
+    }
+
+    public boolean isRow(Array<ReelTileGridValue> potentialRow, ReelTileGridValue[][] puzzleGrid) {
+        Set<Integer> columns = new HashSet<>();
+        for (ReelTileGridValue cell : potentialRow) {
+            columns.add(cell.c);
+        }
+        return columns.size() == puzzleGrid[0].length;
     }
 }
