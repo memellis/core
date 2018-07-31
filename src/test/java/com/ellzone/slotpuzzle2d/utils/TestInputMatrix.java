@@ -19,11 +19,21 @@ package com.ellzone.slotpuzzle2d.utils;
 import org.junit.Test;
 
 import java.util.InputMismatchException;
+import java.util.NoSuchElementException;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
 public class TestInputMatrix {
+
+    @Test(expected = NoSuchElementException.class)
+    public void testInputMatrixWithSizeOnlySpecified() {
+        String matrixToInput = "3 x 3\n";
+        InputMatrix inputMatrix = new InputMatrix(matrixToInput);
+        int[][] matrix = inputMatrix.readMatrix();
+        assertMatrixSize(matrix);
+    }
+
     @Test(expected = InputMismatchException.class)
     public void testInputMatrixThrowsInputMismatchException() {
         String matrixToInput = "3x3\n";
@@ -32,39 +42,83 @@ public class TestInputMatrix {
     }
 
     @Test
-    public void testInputMatrix() {
-        String matrixToInput1 = "3 x 3\n"
-                              + "0 1 2\n"
-                              + "1 0 1\n"
-                              + "0 0 0\n";
-        InputMatrix inputMatrix = new InputMatrix(matrixToInput1);
+    public void testInput3x3Matrix() {
+        String matrixToInput = "3 x 3\n"
+                             + "0 1 2\n"
+                             + "1 0 1\n"
+                             + "0 0 0\n";
+        InputMatrix inputMatrix = new InputMatrix(matrixToInput);
         int[][] matrix = inputMatrix.readMatrix();
         assertMatrixSize(matrix);
-        assertMatrixRow0(matrix);
-        assertMatrixRow1(matrix);
-        assertMatrixRow2(matrix);
-    }
-
-    private void assertMatrixRow0(int[][] matrix) {
-        assertThat(matrix[0][0], is(0));
-        assertThat(matrix[0][1], is(1));
-        assertThat(matrix[0][2], is(2));
-    }
-
-    private void assertMatrixRow1(int[][] matrix) {
-        assertThat(matrix[1][0], is(1));
-        assertThat(matrix[1][1], is(0));
-        assertThat(matrix[1][2], is(1));
-    }
-
-    private void assertMatrixRow2(int[][] matrix) {
-        assertThat(matrix[2][0], is(0));
-        assertThat(matrix[2][1], is(0));
-        assertThat(matrix[2][2], is(0));
+        assert3x3MatrixRow0(matrix);
+        assert3x3MatrixRow1(matrix);
+        assert3x3MatrixRow2(matrix);
     }
 
     private void assertMatrixSize(int[][] matrix) {
         assertThat(matrix.length, is(3));
         assertThat(matrix[0].length, is(3));
+    }
+
+    private void assert3x3MatrixRow0(int[][] matrix) {
+        assertThat(matrix[0][0], is(0));
+        assertThat(matrix[0][1], is(1));
+        assertThat(matrix[0][2], is(2));
+    }
+
+    private void assert3x3MatrixRow1(int[][] matrix) {
+        assertThat(matrix[1][0], is(1));
+        assertThat(matrix[1][1], is(0));
+        assertThat(matrix[1][2], is(1));
+    }
+
+    private void assert3x3MatrixRow2(int[][] matrix) {
+        assertThat(matrix[2][0], is(0));
+        assertThat(matrix[2][1], is(0));
+        assertThat(matrix[2][2], is(0));
+    }
+
+    @Test
+    public void testInput4x4Matrix() {
+        String matrixToInput = "4 x 4\n"
+                + "0 2 1 2\n"
+                + "0 1 2 1\n"
+                + "1 0 2 2\n"
+                + "2 2 0 0\n";
+        InputMatrix inputMatrix = new InputMatrix(matrixToInput);
+        int[][] matrix = inputMatrix.readMatrix();
+        assertMatrixSize(matrix);
+        assert4x4MatrixRow0(matrix);
+        assert4x4MatrixRow1(matrix);
+        assert4x4MatrixRow2(matrix);
+        assert4x4MatrixRow3(matrix);
+    }
+
+    private void assert4x4MatrixRow0(int[][] matrix) {
+        assertThat(matrix[0][0], is(0));
+        assertThat(matrix[0][1], is(2));
+        assertThat(matrix[0][2], is(1));
+        assertThat(matrix[0][3], is(2));
+    }
+
+    private void assert4x4MatrixRow1(int[][] matrix) {
+        assertThat(matrix[1][0], is(0));
+        assertThat(matrix[1][1], is(1));
+        assertThat(matrix[1][2], is(2));
+        assertThat(matrix[1][3], is(1));
+    }
+
+    private void assert4x4MatrixRow2(int[][] matrix) {
+        assertThat(matrix[2][0], is(1));
+        assertThat(matrix[2][1], is(0));
+        assertThat(matrix[2][2], is(2));
+        assertThat(matrix[2][3], is(2));
+    }
+
+    private void assert4x4MatrixRow3(int[][] matrix) {
+        assertThat(matrix[3][0], is(2));
+        assertThat(matrix[3][1], is(2));
+        assertThat(matrix[3][2], is(0));
+        assertThat(matrix[3][3], is(0));
     }
 }
