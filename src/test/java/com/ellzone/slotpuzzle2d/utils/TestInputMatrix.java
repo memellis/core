@@ -28,10 +28,12 @@ public class TestInputMatrix {
 
     @Test(expected = NoSuchElementException.class)
     public void testInputMatrixWithSizeOnlySpecified() {
-        String matrixToInput = "3 x 3\n";
+        String matrixToInput = "3 x 3\n"
+                             + "0 1 2\n";
         InputMatrix inputMatrix = new InputMatrix(matrixToInput);
         int[][] matrix = inputMatrix.readMatrix();
         assertMatrixSize(matrix);
+        assert3x3MatrixRow0(matrix);
     }
 
     @Test(expected = InputMismatchException.class)
@@ -39,6 +41,15 @@ public class TestInputMatrix {
         String matrixToInput = "3x3\n";
         InputMatrix inputMatrix = new InputMatrix(matrixToInput);
         int[][] matrix = inputMatrix.readMatrix();
+    }
+
+    @Test
+    public void testInputMatrixWhenNotAllMatrixElementsAreSupplied() {
+        String matrixToInput = "3 x 3\n";
+        InputMatrix inputMatrix = new InputMatrix(matrixToInput);
+        int[][] matrix = inputMatrix.readMatrix();
+        assertMatrixSize(matrix);
+
     }
 
     @Test
