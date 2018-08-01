@@ -688,4 +688,14 @@ public class PuzzleGridTypeReelTile {
         }
         return columns.size() == puzzleGrid[0].length;
     }
+
+    public ReelTileGridValue[][] createGridFromMatrix(int[][] matrix) {
+        ReelTileGridValue[][] grid = new ReelTileGridValue[matrix.length][matrix[0].length];
+        for (int r = 0; r < matrix.length; r++) {
+            for (int c = 0; c < matrix[0].length; c++) {
+                grid[r][c] = new ReelTileGridValue(r, c, r * matrix[0].length + c, matrix[r][c]);
+            }
+        }
+        return grid;
+    }
 }
