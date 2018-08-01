@@ -32,8 +32,7 @@ public class TestInputMatrix {
                              + "0 1 2\n";
         InputMatrix inputMatrix = new InputMatrix(matrixToInput);
         int[][] matrix = inputMatrix.readMatrix();
-        assertMatrixSize(matrix);
-        assert3x3MatrixRow0(matrix);
+        assertMatrixSize(matrix, 3, 3);
     }
 
     @Test(expected = InputMismatchException.class)
@@ -43,13 +42,13 @@ public class TestInputMatrix {
         int[][] matrix = inputMatrix.readMatrix();
     }
 
-    @Test
+    @Test(expected = NoSuchElementException.class)
     public void testInputMatrixWhenNotAllMatrixElementsAreSupplied() {
         String matrixToInput = "3 x 3\n";
         InputMatrix inputMatrix = new InputMatrix(matrixToInput);
         int[][] matrix = inputMatrix.readMatrix();
-        assertMatrixSize(matrix);
-
+        assertMatrixSize(matrix,3,3);
+        assert3x3MatrixRow0(matrix);
     }
 
     @Test
@@ -60,15 +59,15 @@ public class TestInputMatrix {
                              + "0 0 0\n";
         InputMatrix inputMatrix = new InputMatrix(matrixToInput);
         int[][] matrix = inputMatrix.readMatrix();
-        assertMatrixSize(matrix);
+        assertMatrixSize(matrix, 3, 3);
         assert3x3MatrixRow0(matrix);
         assert3x3MatrixRow1(matrix);
         assert3x3MatrixRow2(matrix);
     }
 
-    private void assertMatrixSize(int[][] matrix) {
-        assertThat(matrix.length, is(3));
-        assertThat(matrix[0].length, is(3));
+    private void assertMatrixSize(int[][] matrix, int matrixWidth, int matrixHeight) {
+        assertThat(matrix.length, is(matrixHeight));
+        assertThat(matrix[0].length, is(matrixWidth));
     }
 
     private void assert3x3MatrixRow0(int[][] matrix) {
@@ -98,7 +97,7 @@ public class TestInputMatrix {
                 + "2 2 0 0\n";
         InputMatrix inputMatrix = new InputMatrix(matrixToInput);
         int[][] matrix = inputMatrix.readMatrix();
-        assertMatrixSize(matrix);
+        assertMatrixSize(matrix, 4, 4);
         assert4x4MatrixRow0(matrix);
         assert4x4MatrixRow1(matrix);
         assert4x4MatrixRow2(matrix);
