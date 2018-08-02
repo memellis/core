@@ -3,6 +3,7 @@ package com.ellzone.slotpuzzle2d.testpuzzlegrid;
 import com.badlogic.gdx.utils.Array;
 import com.ellzone.slotpuzzle2d.puzzlegrid.PuzzleGridTypeReelTile;
 import com.ellzone.slotpuzzle2d.puzzlegrid.ReelTileGridValue;
+import com.ellzone.slotpuzzle2d.utils.InputMatrix;
 
 import org.junit.After;
 import org.junit.Before;
@@ -14,11 +15,14 @@ import static org.hamcrest.MatcherAssert.assertThat;
 public class TestDepthFirstSearchWithDiagonals {
 
     private PuzzleGridTypeReelTile puzzleGridTypeReelTile;
-    private ReelTileGridValue[][] puzzleGrid1, puzzleGrid2;
-    private ReelTileGridValue[][] resultsGrid;
+    private ReelTileGridValue[][] puzzleGrid1,
+                                  puzzleGrid2,
+                                  puzzleGrid3,
+                                  resultsGrid;
     private Array<ReelTileGridValue> expectedDepthSearchResults1,
                                      expectedDepthSearchResults2;
     private Array<ReelTileGridValue> depthSearchResults;
+    private int[][] expectedDepthSearchResults3;
 
     @Before
     public void setUp() {
@@ -99,7 +103,6 @@ public class TestDepthFirstSearchWithDiagonals {
         puzzleGrid2[1][3] = new ReelTileGridValue(1 , 3,  7, 1);
     }
 
-
     private void setUpgrid2Row3() {
         puzzleGrid2[2][0] = new ReelTileGridValue(2 , 0,  8, 1);
         puzzleGrid2[2][1] = new ReelTileGridValue(2 , 1,  9, 0);
@@ -119,8 +122,10 @@ public class TestDepthFirstSearchWithDiagonals {
         puzzleGridTypeReelTile = null;
         puzzleGrid1 = null;
         puzzleGrid2 = null;
+        puzzleGrid3 = null;
         expectedDepthSearchResults1 = null;
         expectedDepthSearchResults2 = null;
+        resultsGrid = null;
     }
 
     @Test
@@ -156,5 +161,46 @@ public class TestDepthFirstSearchWithDiagonals {
         assertRow(resultsGrid[1][0], true);
         assertRow(resultsGrid[2][0], true);
         assertRow(resultsGrid[3][0], true);
+    }
+
+    @Test
+    public void testMultipleRowsFromStartCell() {
+        setUpGrid3();
+        resultsGrid = puzzleGridTypeReelTile.createGridLinks(puzzleGrid3);
+        depthSearchResults = puzzleGridTypeReelTile.depthFirstSearchIncludeDiagonals(resultsGrid[0][0]);
+        setExpectedDepthSearchResults3();
+        assertDepthResults(depthSearchResults, expectedDepthSearchResults3);
+    }
+
+    private void setExpectedDepthSearchResults3() {
+        expectedDepthSearchResults3 = new int[][]{{0, 0, 0},
+                                               {1, 0, 0},
+                                               {2, 1, 0},
+                                               {3, 2, 0},
+                                               {3, 3, 0},
+                                               {0, 1, 0},
+                                               {0, 2, 0},
+                                               {0, 3, 0}};
+    }
+
+    private void assertDepthResults(Array<ReelTileGridValue> depthSearchResults, int[][] expectedDepthSearchResults3) {
+        int i = 0;
+        for (ReelTileGridValue gridValue : depthSearchResults) {
+            assertThat(gridValue.r, is(expectedDepthSearchResults3[i][0]));
+            assertThat(gridValue.c, is(expectedDepthSearchResults3[i][1]));
+            assertThat(gridValue.getValue(), is(expectedDepthSearchResults3[i][2]));
+            i++;
+        }
+    }
+
+    private void setUpGrid3() {
+        String matrixToInput = "4 x 4\n"
+                + "0 0 0 0\n"
+                + "0 1 2 1\n"
+                + "1 0 2 2\n"
+                + "2 2 0 0\n";
+        InputMatrix inputMatrix = new InputMatrix(matrixToInput);
+        int[][] matrix = inputMatrix.readMatrix();
+        puzzleGrid3 = puzzleGridTypeReelTile.createGridFromMatrix(matrix);
     }
 }
