@@ -151,7 +151,7 @@ public class MenuScreen implements Screen {
     }
 
     private void createTile() {
-        mapTile = new MapTile(20, 20, 200, 200, w, h, new MapLevel1(), tilesAtlas, null, font, tweenManager, new Sprite());
+        mapTile = new MapTile(20, 20, 200, 200, w, h, new MapLevel1(), tilesAtlas, new OrthographicCamera(), font, tweenManager, new Sprite());
     }
 
     @Override

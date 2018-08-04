@@ -356,6 +356,8 @@ public class PlayScreen implements Screen {
 		ReelTile reel = new ReelTile(slotReelTexture, sprites.length, 0, 0, spriteWidth, spriteHeight, spriteWidth, spriteHeight, endReel, (Sound) game.annotationAssetManager.get(AssetsAnnotation.SOUND_REEL_SPINNING));
 		reel.setX(mapRectangle.getX());
 		reel.setY(mapRectangle.getY());
+		reel.setDestinationX(mapRectangle.getX());
+		reel.setDestinationY(mapRectangle.getY());
 		reel.setSx(0);
 		int startReel = random.nextInt((int) slotReelScrollheight);
 		startReel = (startReel / ((int) spriteHeight)) * (int)spriteHeight;
