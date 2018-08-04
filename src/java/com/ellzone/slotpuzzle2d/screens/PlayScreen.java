@@ -217,29 +217,38 @@ public class PlayScreen implements Screen {
 
 	private void createSprites() {
 		reelsSprites = new Reels(game.annotationAssetManager);
-
 		spriteWidth = reelsSprites.getReelWidth();
 		spriteHeight = reelsSprites.getReelHeight();
 		sprites = reelsSprites.getReels();
 
+		setUpPopSprites();
+		setUpLevelLostSprtes();
+		setUpLevelWonSprites();
+	}
+
+	private void setUpPopSprites() {
 		popUpSprites = new Array<Sprite>();
-        popUpSprites.add(tilesAtlas.createSprite(AssetsAnnotation.GAME_POPUP));
-	    popUpSprites.add(tilesAtlas.createSprite(AssetsAnnotation.LEVEL_SPRITE));
-	    setPopUpSpritePositions();
+		popUpSprites.add(tilesAtlas.createSprite(AssetsAnnotation.GAME_POPUP));
+		popUpSprites.add(tilesAtlas.createSprite(AssetsAnnotation.LEVEL_SPRITE));
+		setPopUpSpritePositions();
+	}
 
-	    levelLostSprites = new Array<Sprite>();
-	    levelLostSprites.add(tilesAtlas.createSprite(AssetsAnnotation.GAME_POPUP));
-	    levelLostSprites.add(tilesAtlas.createSprite(AssetsAnnotation.LEVEL_SPRITE));
-	    levelLostSprites.add(tilesAtlas.createSprite(AssetsAnnotation.LEVEL_SPRITE));
-	    levelLostSprites.add(tilesAtlas.createSprite(AssetsAnnotation.OVER));
-	    setLevelLostSpritePositions();
+	private void setUpLevelLostSprtes() {
+		levelLostSprites = new Array<Sprite>();
+		levelLostSprites.add(tilesAtlas.createSprite(AssetsAnnotation.GAME_POPUP));
+		levelLostSprites.add(tilesAtlas.createSprite(AssetsAnnotation.LEVEL_SPRITE));
+		levelLostSprites.add(tilesAtlas.createSprite(AssetsAnnotation.LEVEL_SPRITE));
+		levelLostSprites.add(tilesAtlas.createSprite(AssetsAnnotation.OVER));
+		setLevelLostSpritePositions();
+	}
 
-	    levelWonSprites = new Array<Sprite>();
-	    levelWonSprites.add(tilesAtlas.createSprite(AssetsAnnotation.GAME_POPUP));
-	    levelWonSprites.add(tilesAtlas.createSprite(AssetsAnnotation.LEVEL_SPRITE));
-	    levelWonSprites.add(tilesAtlas.createSprite(AssetsAnnotation.LEVEL_SPRITE));
-	    levelWonSprites.add(tilesAtlas.createSprite(AssetsAnnotation.COMPLETE));
-	    setLevelWonSpritePositions();
+	private void setUpLevelWonSprites() {
+		levelWonSprites = new Array<Sprite>();
+		levelWonSprites.add(tilesAtlas.createSprite(AssetsAnnotation.GAME_POPUP));
+		levelWonSprites.add(tilesAtlas.createSprite(AssetsAnnotation.LEVEL_SPRITE));
+		levelWonSprites.add(tilesAtlas.createSprite(AssetsAnnotation.LEVEL_SPRITE));
+		levelWonSprites.add(tilesAtlas.createSprite(AssetsAnnotation.COMPLETE));
+		setLevelWonSpritePositions();
 	}
 
 	private void setPopUpSpritePositions() {
@@ -301,9 +310,16 @@ public class PlayScreen implements Screen {
     }
 
     private void createLevels() {
- 		if (levelDoor.getLevelType().equals(PLAYING_CARD_LEVEL_TYPE)) {
+ 		if (levelDoor.getLevelType().equals(PLAYING_CARD_LEVEL_TYPE))
  			initialiseHiddenPlayingCards();
-		}
+		addReelsFromLevel();
+		reelsSpinning = reels.size - 1;
+		reels = checkLevel(reels);
+		reels = adjustForAnyLonelyReels(reels);
+		createDampenedSines(reels);
+	}
+
+	private void addReelsFromLevel() {
 		for (MapObject mapObject : level.getLayers().get(SLOT_REEL_OBJECT_LAYER).getObjects().getByType(RectangleMapObject.class)) {
 			Rectangle mapRectangle = ((RectangleMapObject) mapObject).getRectangle();
 			int c = (int) (mapRectangle.getX() - PlayScreen.PUZZLE_GRID_START_X) / PlayScreen.TILE_WIDTH;
@@ -312,13 +328,9 @@ public class PlayScreen implements Screen {
 			if ((r >= 0) & (r <= PlayScreen.GAME_LEVEL_HEIGHT) & (c >= 0) & (c <= PlayScreen.GAME_LEVEL_WIDTH)) {
 				addReel(mapRectangle);
 			} else {
-				Gdx.app.debug(SlotPuzzleConstants.SLOT_PUZZLE, "I don't respond to grid r="+r+" c="+c+". There it won't be added to the level! Sort it out in a level editor.");				
+				Gdx.app.debug(SlotPuzzleConstants.SLOT_PUZZLE, "I don't respond to grid r="+r+" c="+c+". There it won't be added to the level! Sort it out in a level editor.");
 			}
 		}
-		reelsSpinning = reels.size - 1;
-		reels = checkLevel(reels);
-		reels = adjustForAnyLonelyReels(reels);
-		createDampenedSines(reels);
 	}
 
 	private void initialiseHiddenPlayingCards() {
