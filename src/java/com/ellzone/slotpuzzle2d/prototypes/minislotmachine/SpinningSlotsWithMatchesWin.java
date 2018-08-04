@@ -24,6 +24,7 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
+import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer;
@@ -77,10 +78,14 @@ public class SpinningSlotsWithMatchesWin extends SPPrototypeTemplate {
     private Array<PointLight> levelLights;
     private int[][] reelGrid = new int[3][3];
     private int levelLightX, levelLightY;
+    private Array<Array<Vector2>> rowMacthesToDraw;
+    private ShapeRenderer shapeRenderer;
 
     @Override
     protected void initialiseOverride() {
         touch = new Vector2();
+        shapeRenderer = new ShapeRenderer();
+        rowMacthesToDraw = new Array<Array<Vector2>>();
         createHoldButtons();
     }
 
@@ -182,9 +187,26 @@ public class SpinningSlotsWithMatchesWin extends SPPrototypeTemplate {
     @Override
     protected void renderOverride(float dt) {
         renderReels();
+        if (rowMacthesToDraw.size > 0)
+            renderMacthedRows();
         renderLightButtons();
         renderRayHandler();
         renderWorld();
+    }
+
+    private void renderMacthedRows() {
+        batch.begin();
+        shapeRenderer.begin(ShapeRenderer.ShapeType.Line);
+        shapeRenderer.setColor(Color.RED);
+
+        for (Array<Vector2> matchedRow : rowMacthesToDraw) {
+            if (matchedRow.size >= 2)
+                for (int i = 0; i < matchedRow.size - 1; i++) {
+                    shapeRenderer.line(matchedRow.get(i).x, matchedRow.get(i).y, matchedRow.get(i + 1).x, matchedRow.get(i + 1).y);
+                }
+        }
+        shapeRenderer.end();
+        batch.end();
     }
 
     private void renderWorld() {
@@ -396,6 +418,24 @@ public class SpinningSlotsWithMatchesWin extends SPPrototypeTemplate {
         PuzzleGridTypeReelTile puzzleGrid = new PuzzleGridTypeReelTile();
         ReelTileGridValue[][] matchGrid = puzzleGrid.populateMatchGrid(reelGrid);
         puzzleGrid.printGrid(matchGrid);
+        PuzzleGridTypeReelTile puzzleGridTypeReelTile = new PuzzleGridTypeReelTile();
+        matchGrid = puzzleGridTypeReelTile.createGridLinks(matchGrid);
+        rowMacthesToDraw = new Array<Array<Vector2>>();
+
+        for (int row = 0; row < matchGrid.length; row++) {
+            Array<ReelTileGridValue> depthSearchResults = puzzleGridTypeReelTile.depthFirstSearchIncludeDiagonals(matchGrid[row][0]);
+            if (puzzleGridTypeReelTile.isRow(depthSearchResults, matchGrid)) {
+                rowMacthesToDraw.add(drawMatches(depthSearchResults, 580, 510));
+            };
+        }
+    }
+
+    private Array<Vector2> drawMatches(Array<ReelTileGridValue> depthSearchResults, int startX, int startY) {
+        Array<Vector2> points = new Array<Vector2>();
+        for (ReelTileGridValue cell : depthSearchResults) {
+            points.add(new Vector2(startX + cell.c * 60, startY - cell.r * 60 ));
+        }
+        return points;
     }
 
     private void captureReelPositions() {
