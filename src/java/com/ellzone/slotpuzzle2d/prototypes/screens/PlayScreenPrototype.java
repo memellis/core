@@ -275,7 +275,7 @@ public class PlayScreenPrototype implements Screen {
         reel.setX(mapRectangle.getX());
         reel.setY(mapRectangle.getY());
         reel.setSx(0);
-        int startReel = random.nextInt((int) slotReelScrollheight);
+        int startReel = Random.getInstance().nextInt((int) slotReelScrollheight);
         startReel = (startReel / ((int) this.reels.getReelWidth())) * (int)this.reels.getReelHeight();
         reel.setSy(startReel);
         reel.addListener(new ReelTileListener() {

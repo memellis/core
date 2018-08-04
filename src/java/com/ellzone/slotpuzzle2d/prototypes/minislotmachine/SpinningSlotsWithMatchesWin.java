@@ -196,13 +196,13 @@ public class SpinningSlotsWithMatchesWin extends SPPrototypeTemplate {
 
     private void renderMacthedRows() {
         batch.begin();
-        shapeRenderer.begin(ShapeRenderer.ShapeType.Line);
+        shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
         shapeRenderer.setColor(Color.RED);
 
         for (Array<Vector2> matchedRow : rowMacthesToDraw) {
             if (matchedRow.size >= 2)
                 for (int i = 0; i < matchedRow.size - 1; i++) {
-                    shapeRenderer.line(matchedRow.get(i).x, matchedRow.get(i).y, matchedRow.get(i + 1).x, matchedRow.get(i + 1).y);
+                    shapeRenderer.rectLine(matchedRow.get(i).x, matchedRow.get(i).y, matchedRow.get(i + 1).x, matchedRow.get(i + 1).y, 2);
                 }
         }
         shapeRenderer.end();
@@ -360,6 +360,7 @@ public class SpinningSlotsWithMatchesWin extends SPPrototypeTemplate {
     private void slotHandlePulled() {
         slotHandleSprite.pullSlotHandle();
         pullLeverSound.play();
+        clearRowMatchesToDraw();
         int i = 0;
         for (AnimatedReel animatedReel : reels) {
             if (!lightButtons.get(i).getLight().isActive()) {
@@ -369,6 +370,11 @@ public class SpinningSlotsWithMatchesWin extends SPPrototypeTemplate {
             }
             i++;
         }
+    }
+
+    private void clearRowMatchesToDraw() {
+        if (rowMacthesToDraw.size > 0)
+            rowMacthesToDraw.removeRange(0, rowMacthesToDraw.size - 1);
     }
 
     private boolean isReelsNotSpinning() {
@@ -414,14 +420,15 @@ public class SpinningSlotsWithMatchesWin extends SPPrototypeTemplate {
 
     private void matchReels() {
         captureReelPositions();
-        PuzzleGrid.printGrid(reelGrid);
         PuzzleGridTypeReelTile puzzleGrid = new PuzzleGridTypeReelTile();
         ReelTileGridValue[][] matchGrid = puzzleGrid.populateMatchGrid(reelGrid);
-        puzzleGrid.printGrid(matchGrid);
         PuzzleGridTypeReelTile puzzleGridTypeReelTile = new PuzzleGridTypeReelTile();
         matchGrid = puzzleGridTypeReelTile.createGridLinks(matchGrid);
-        rowMacthesToDraw = new Array<Array<Vector2>>();
+        matchRowsToDraw(matchGrid, puzzleGridTypeReelTile);
+    }
 
+    private void matchRowsToDraw(ReelTileGridValue[][] matchGrid, PuzzleGridTypeReelTile puzzleGridTypeReelTile) {
+        rowMacthesToDraw = new Array<Array<Vector2>>();
         for (int row = 0; row < matchGrid.length; row++) {
             Array<ReelTileGridValue> depthSearchResults = puzzleGridTypeReelTile.depthFirstSearchIncludeDiagonals(matchGrid[row][0]);
             if (puzzleGridTypeReelTile.isRow(depthSearchResults, matchGrid)) {

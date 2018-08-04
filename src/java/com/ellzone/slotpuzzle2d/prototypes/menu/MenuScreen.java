@@ -142,7 +142,6 @@ public class MenuScreen implements Screen {
     }
 
     private void setUpPlayScreenPrototye() {
-
     }
 
     private void setLevel() {
@@ -173,7 +172,7 @@ public class MenuScreen implements Screen {
         }
         if (this.playScreenPrototype) {
             this.playScreenPrototype = false;
-            this.game.setScreen(new PlayScreenPrototype(this.game, levelDoor, null));
+            this.game.setScreen(new PlayScreenPrototype(this.game, levelDoor, mapTile));
         }
 		if (this.typeWriterPrototype) {
 			this.typeWriterPrototype = false;
