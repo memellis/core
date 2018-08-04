@@ -67,6 +67,7 @@ import com.ellzone.slotpuzzle2d.sprites.ReelTileListener;
 import com.ellzone.slotpuzzle2d.sprites.ReelStoppedFlashingEvent;
 import com.ellzone.slotpuzzle2d.sprites.ReelStoppedSpinningEvent;
 import com.ellzone.slotpuzzle2d.sprites.ReelTile;
+import com.ellzone.slotpuzzle2d.sprites.Reels;
 import com.ellzone.slotpuzzle2d.sprites.Score;
 import com.ellzone.slotpuzzle2d.utils.AssetsAnnotation;
 import com.ellzone.slotpuzzle2d.utils.PixmapProcessors;
@@ -114,6 +115,7 @@ public class PlayScreen implements Screen {
 	private Stage stage;
     private Sprite cheesecake, cherry, grapes, jelly, lemon, peach, pear, tomato;
 	private float spriteWidth, spriteHeight;
+	private Reels reelsSprites;
 	private float sW, sH;
  	private final TweenManager tweenManager = new TweenManager();
  	private Timeline introSequence, reelFlashSeq;
@@ -190,33 +192,35 @@ public class PlayScreen implements Screen {
 	}
 
 	private void getAssets(AnnotationAssetManager annotationAssetManager) {
-	    reelAtlas = annotationAssetManager.get(AssetsAnnotation.REELS);
-        tilesAtlas = annotationAssetManager.get(AssetsAnnotation.TILES);
-        carddeckAtlas = annotationAssetManager.get(AssetsAnnotation.CARDDECK);
-        chaChingSound = annotationAssetManager.get(AssetsAnnotation.SOUND_CHA_CHING);
-        pullLeverSound = annotationAssetManager.get(AssetsAnnotation.SOUND_PULL_LEVER);
-        reelSpinningSound = annotationAssetManager.get(AssetsAnnotation.SOUND_REEL_SPINNING);
-        reelStoppedSound = annotationAssetManager.get(AssetsAnnotation.SOUND_REEL_STOPPED);
-        jackpotSound = annotationAssetManager.get(AssetsAnnotation.SOUND_JACKPOINT);
-	    level = annotationAssetManager.get("levels/level " + (this.levelDoor.getId() + 1) + " - 40x40.tmx");
- 	}
+		getAtlasAssets(annotationAssetManager);
+		getSoundAssets(annotationAssetManager);
+		getLevelAssets(annotationAssetManager);
+	}
+
+	private void getLevelAssets(AnnotationAssetManager annotationAssetManager) {
+		level = annotationAssetManager.get("levels/level " + (this.levelDoor.getId() + 1) + " - 40x40.tmx");
+	}
+
+	private void getSoundAssets(AnnotationAssetManager annotationAssetManager) {
+		chaChingSound = annotationAssetManager.get(AssetsAnnotation.SOUND_CHA_CHING);
+		pullLeverSound = annotationAssetManager.get(AssetsAnnotation.SOUND_PULL_LEVER);
+		reelSpinningSound = annotationAssetManager.get(AssetsAnnotation.SOUND_REEL_SPINNING);
+		reelStoppedSound = annotationAssetManager.get(AssetsAnnotation.SOUND_REEL_STOPPED);
+		jackpotSound = annotationAssetManager.get(AssetsAnnotation.SOUND_JACKPOINT);
+	}
+
+	private void getAtlasAssets(AnnotationAssetManager annotationAssetManager) {
+		reelAtlas = annotationAssetManager.get(AssetsAnnotation.REELS);
+		tilesAtlas = annotationAssetManager.get(AssetsAnnotation.TILES);
+		carddeckAtlas = annotationAssetManager.get(AssetsAnnotation.CARDDECK);
+	}
 
 	private void createSprites() {
-		cherry = reelAtlas.createSprite(AssetsAnnotation.CHERRY40x40);
-		cheesecake = reelAtlas.createSprite(AssetsAnnotation.CHEESECAKE40x40);
-		grapes = reelAtlas.createSprite(AssetsAnnotation.GRAPES40x40);
-		jelly = reelAtlas.createSprite(AssetsAnnotation.JELLY40x40);
-		lemon = reelAtlas.createSprite(AssetsAnnotation.LEMON40x40);
-		peach = reelAtlas.createSprite(AssetsAnnotation.PEACH40x40);
-		pear = reelAtlas.createSprite(AssetsAnnotation.PEAR40x40);
-		tomato = reelAtlas.createSprite(AssetsAnnotation.TOMATO40x40);
+		reelsSprites = new Reels(game.annotationAssetManager);
 
-		sprites = new Sprite[] {cherry, cheesecake, grapes, jelly, lemon, peach, pear, tomato};
-		for (Sprite sprite : sprites) {
-			sprite.setOrigin(0, 0);
-		}
-		spriteWidth = sprites[0].getWidth();
-		spriteHeight = sprites[0].getHeight();
+		spriteWidth = reelsSprites.getReelWidth();
+		spriteHeight = reelsSprites.getReelHeight();
+		sprites = reelsSprites.getReels();
 
 		popUpSprites = new Array<Sprite>();
         popUpSprites.add(tilesAtlas.createSprite(AssetsAnnotation.GAME_POPUP));
