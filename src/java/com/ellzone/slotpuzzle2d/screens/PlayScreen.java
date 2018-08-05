@@ -628,23 +628,27 @@ public class PlayScreen implements Screen {
 		public void onEvent(int type, BaseTween<?> source) {
 			switch (type) {
 				case TweenCallback.COMPLETE:
-					ReelTile reel = (ReelTile) source.getUserData();
-					Hud.addScore((reel.getEndReel() + 1) * reel.getScore());
-					reelStoppedSound.play();
-					chaChingSound.play();
-					reel.deleteReelTile();
-					if (levelDoor.getLevelType().equals(PLAYING_CARD_LEVEL_TYPE)) {
-						testPlayingCardLevelWon();
-					} else {
-						if (levelDoor.getLevelType().equals(HIDDEN_PATTERN_LEVEL_TYPE)) {
-							testForHiddenPlatternLevelWon();
-						}
-					}
+                    proceesDeleteReel(source);
 			}
 		}
 	};
 
-	private void reelScoreAnimation(ReelTile source) {
+    private void proceesDeleteReel(BaseTween<?> source) {
+        ReelTile reel = (ReelTile) source.getUserData();
+        Hud.addScore((reel.getEndReel() + 1) * reel.getScore());
+        reelStoppedSound.play();
+        chaChingSound.play();
+        reel.deleteReelTile();
+        if (levelDoor.getLevelType().equals(PLAYING_CARD_LEVEL_TYPE)) {
+            testPlayingCardLevelWon();
+        } else {
+            if (levelDoor.getLevelType().equals(HIDDEN_PATTERN_LEVEL_TYPE)) {
+                testForHiddenPlatternLevelWon();
+            }
+        }
+    }
+
+    private void reelScoreAnimation(ReelTile source) {
 		Score score = new Score(source.getX(), source.getY(), (source.getEndReel() + 1) * source.getScore());
 		scores.add(score);
 		Timeline.createSequence()
@@ -683,28 +687,32 @@ public class PlayScreen implements Screen {
 		userData.add(reel);
 		userData.add(reelFlashSeq);
 
-		reelFlashSeq = reelFlashSeq.push(SlotPuzzleTween.set(reel, ReelAccessor.FLASH_TINT)
-				   .target(fromColor.r, fromColor.g, fromColor.b)
-				   .ease(Sine.IN));
-		reelFlashSeq = reelFlashSeq.push(SlotPuzzleTween.to(reel, ReelAccessor.FLASH_TINT, 0.2f)
-				   .target(toColor.r, toColor.g, toColor.b)
-				   .ease(Sine.OUT)
-				   .repeatYoyo(17, 0));
-
-		reelFlashSeq = reelFlashSeq.push(SlotPuzzleTween.set(reel, ReelAccessor.FLASH_TINT)
-				           .target(fromColor.r, fromColor.g, fromColor.b)
-				           .ease(Sine.IN));
-		reelFlashSeq = reelFlashSeq.push(SlotPuzzleTween.to(reel, ReelAccessor.FLASH_TINT, 0.05f)
-						   .target(toColor.r, toColor.g, toColor.b)
-						   .ease(Sine.OUT)
-				           .repeatYoyo(25, 0))
-						   .setCallback(reelFlashCallback)
-						   .setCallbackTriggers(TweenCallback.COMPLETE)
-						   .setUserData(userData)
-						   .start(tweenManager);
+        setUpFlashSequence(reel, userData, fromColor, toColor);
 	}
 
-	private TweenCallback reelFlashCallback = new TweenCallback() {
+    private void setUpFlashSequence(ReelTile reel, Array<Object> userData, Color fromColor, Color toColor) {
+        reelFlashSeq = reelFlashSeq.push(SlotPuzzleTween.set(reel, ReelAccessor.FLASH_TINT)
+                   .target(fromColor.r, fromColor.g, fromColor.b)
+                   .ease(Sine.IN));
+        reelFlashSeq = reelFlashSeq.push(SlotPuzzleTween.to(reel, ReelAccessor.FLASH_TINT, 0.2f)
+                   .target(toColor.r, toColor.g, toColor.b)
+                   .ease(Sine.OUT)
+                   .repeatYoyo(17, 0));
+
+        reelFlashSeq = reelFlashSeq.push(SlotPuzzleTween.set(reel, ReelAccessor.FLASH_TINT)
+                           .target(fromColor.r, fromColor.g, fromColor.b)
+                           .ease(Sine.IN));
+        reelFlashSeq = reelFlashSeq.push(SlotPuzzleTween.to(reel, ReelAccessor.FLASH_TINT, 0.05f)
+                           .target(toColor.r, toColor.g, toColor.b)
+                           .ease(Sine.OUT)
+                           .repeatYoyo(25, 0))
+                           .setCallback(reelFlashCallback)
+                           .setCallbackTriggers(TweenCallback.COMPLETE)
+                           .setUserData(userData)
+                           .start(tweenManager);
+    }
+
+    private TweenCallback reelFlashCallback = new TweenCallback() {
 		@Override
 		public void onEvent(int type, BaseTween<?> source) {
 			switch (type) {
@@ -845,30 +853,11 @@ public class PlayScreen implements Screen {
 			if (!reel.isReelTileDeleted()) {
 				if (reel.isSpinning()) {
 					if (ds.getDSState() == DampenedSineParticle.DSState.UPDATING_DAMPENED_SINE) {
-						reel.setEndReel(reel.getCurrentReel());
-						displaySpinHelp = true;
-						displaySpinHelpSprite = reel.getCurrentReel();
-						Hud.addScore(-1);
-						pullLeverSound.play();
-						reelSpinningSound.play();
+                        processReelTouchedWhileSpinning(reel);
 					}
 				} else {
 					if (!reel.getFlashTween()) {
-						reelSlowingTargetTime = 3.0f;
-						reel.setEndReel(random.nextInt(sprites.length - 1));
-
-				        reel.startSpinning();
-				        reelsSpinning++;
-				        reel.setSy(0);
-						ds.initialiseDampenedSine();
-						ds.position.y = 0;
-						ds.velocity = new Vector(0, velocityY);
-						accelerator = new Vector(0, acceleratorY);
-						ds.accelerator = accelerator;
-						ds.accelerate(new Vector(0, accelerateY));
-						ds.velocityMin.y = velocityMin.y;
-						Hud.addScore(-1);
-						pullLeverSound.play();
+                        startReelSpinning(reel, ds);
 					}
 				}
 			}
@@ -877,7 +866,34 @@ public class PlayScreen implements Screen {
 		}
 	}
 
-	private boolean hiddenPatternRevealed(TupleValueIndex[][] grid) {
+    private void startReelSpinning(ReelTile reel, DampenedSineParticle ds) {
+        reelSlowingTargetTime = 3.0f;
+        reel.setEndReel(random.nextInt(sprites.length - 1));
+
+        reel.startSpinning();
+        reelsSpinning++;
+        reel.setSy(0);
+        ds.initialiseDampenedSine();
+        ds.position.y = 0;
+        ds.velocity = new Vector(0, velocityY);
+        accelerator = new Vector(0, acceleratorY);
+        ds.accelerator = accelerator;
+        ds.accelerate(new Vector(0, accelerateY));
+        ds.velocityMin.y = velocityMin.y;
+        Hud.addScore(-1);
+        pullLeverSound.play();
+    }
+
+    private void processReelTouchedWhileSpinning(ReelTile reel) {
+        reel.setEndReel(reel.getCurrentReel());
+        displaySpinHelp = true;
+        displaySpinHelpSprite = reel.getCurrentReel();
+        Hud.addScore(-1);
+        pullLeverSound.play();
+        reelSpinningSound.play();
+    }
+
+    private boolean hiddenPatternRevealed(TupleValueIndex[][] grid) {
 		boolean hiddenPattern = true;
 		for (MapObject mapObject : level.getLayers().get(HIDDEN_PATTERN_LAYER).getObjects().getByType(RectangleMapObject.class)) {
 			Rectangle mapRectangle = ((RectangleMapObject) mapObject).getRectangle();
@@ -1054,31 +1070,7 @@ public class PlayScreen implements Screen {
                     sprites[displaySpinHelpSprite].draw(game.batch);
                 }
                 game.batch.end();
-                switch (playState) {
-                    case INTRO_POPUP:
-                        levelPopUp.draw(game.batch);
-                        break;
-                    case LEVEL_LOST:
-                        levelLostPopUp.draw(game.batch);
-                        break;
-                    case WON_LEVEL:
-                        levelWonPopUp.draw(game.batch);
-                        break;
-                    case INITIALISING:
-                        break;
-                    case INTRO_FLASHING:
-                        break;
-                    case INTRO_SEQUENCE:
-                        break;
-                    case INTRO_SPINNING:
-                        break;
-                    case PLAYING:
-                        break;
-                    case RESTARTING_LEVEL:
-                        break;
-                    default:
-                        break;
-                }
+                drawCurrentPlayState();
                 game.batch.setProjectionMatrix(hud.stage.getCamera().combined);
                 hud.stage.draw();
             } else {
@@ -1089,6 +1081,34 @@ public class PlayScreen implements Screen {
                 }
             }
             stage.draw();
+        }
+    }
+
+    private void drawCurrentPlayState() {
+        switch (playState) {
+            case INTRO_POPUP:
+                levelPopUp.draw(game.batch);
+                break;
+            case LEVEL_LOST:
+                levelLostPopUp.draw(game.batch);
+                break;
+            case WON_LEVEL:
+                levelWonPopUp.draw(game.batch);
+                break;
+            case INITIALISING:
+                break;
+            case INTRO_FLASHING:
+                break;
+            case INTRO_SEQUENCE:
+                break;
+            case INTRO_SPINNING:
+                break;
+            case PLAYING:
+                break;
+            case RESTARTING_LEVEL:
+                break;
+            default:
+                break;
         }
     }
 
