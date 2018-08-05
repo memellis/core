@@ -358,46 +358,53 @@ public class PlayScreen implements Screen {
 		reel.addListener(new ReelTileListener() {
 			@Override
 			public void actionPerformed(ReelTileEvent event, ReelTile source) {
-					if (event instanceof ReelStoppedSpinningEvent) {
-						reelStoppedSound.play();
-						reelsSpinning--;
-						if (playState == PlayStates.PLAYING) {
-							if (reelsSpinning <= -1) {
-								if (levelDoor.getLevelType().equals(HIDDEN_PATTERN_LEVEL_TYPE)) {
-							        if (testForHiddenPatternRevealed(reels)) {
-							        	iWonTheLevel();
-							        }
-								} else {
-									if (levelDoor.getLevelType().equals(PLAYING_CARD_LEVEL_TYPE)) {
-										if (testForHiddenPlayingCardsRevealed(reels)) {
-											iWonTheLevel();
-										}
-									}
-								}
-							}
-						}
-					}
-					if ((event instanceof ReelStoppedFlashingEvent)) {
-						if (testForAnyLonelyReels(reels)) {
-							win = false;
-							if (Hud.getLives() > 0) {
-								playState = PlayStates.LEVEL_LOST;
-								setLevelLostSpritePositions();
-								levelLostPopUp.showLevelPopUp(null);
-							} else {
-								gameOver = true;
-							}
-						}
-						reelScoreAnimation(source);
-						deleteReelAnimation(source);
-					}
-				}
+					if (event instanceof ReelStoppedSpinningEvent)
+                        processReelHasStoppedSpinning();
+
+					if (event instanceof ReelStoppedFlashingEvent)
+                        processReelHasStoppedFlashing(source);
+			    }
 			}
 		);
 		reels.add(reel);
 	}
 
-	private void createDampenedSines(Array<ReelTile> reelLevel) {
+    private void processReelHasStoppedFlashing(ReelTile source) {
+        if (testForAnyLonelyReels(reels)) {
+            win = false;
+            if (Hud.getLives() > 0) {
+                playState = PlayStates.LEVEL_LOST;
+                setLevelLostSpritePositions();
+                levelLostPopUp.showLevelPopUp(null);
+            } else {
+                gameOver = true;
+            }
+        }
+        reelScoreAnimation(source);
+        deleteReelAnimation(source);
+    }
+
+    private void processReelHasStoppedSpinning() {
+        reelStoppedSound.play();
+        reelsSpinning--;
+        if (playState == PlayStates.PLAYING) {
+            if (reelsSpinning <= -1) {
+                if (levelDoor.getLevelType().equals(HIDDEN_PATTERN_LEVEL_TYPE)) {
+                    if (testForHiddenPatternRevealed(reels)) {
+                        iWonTheLevel();
+                    }
+                } else {
+                    if (levelDoor.getLevelType().equals(PLAYING_CARD_LEVEL_TYPE)) {
+                        if (testForHiddenPlayingCardsRevealed(reels)) {
+                            iWonTheLevel();
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    private void createDampenedSines(Array<ReelTile> reelLevel) {
 		endReelSeqs = new Array<Timeline>();
 		velocityY = 4.0f;
 		velocityYMin = 2.0f;
