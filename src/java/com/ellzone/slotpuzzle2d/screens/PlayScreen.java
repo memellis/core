@@ -48,6 +48,7 @@ import com.ellzone.slotpuzzle2d.effects.ReelAccessor;
 import com.ellzone.slotpuzzle2d.effects.ScoreAccessor;
 import com.ellzone.slotpuzzle2d.effects.SpriteAccessor;
 import com.ellzone.slotpuzzle2d.level.Card;
+import com.ellzone.slotpuzzle2d.level.HiddenPlayingCard;
 import com.ellzone.slotpuzzle2d.level.LevelDoor;
 import com.ellzone.slotpuzzle2d.level.LevelPopUp;
 import com.ellzone.slotpuzzle2d.level.Pip;
@@ -334,33 +335,36 @@ public class PlayScreen implements Screen {
 	}
 
 	private void initialiseHiddenPlayingCards() {
-		Suit randomSuit = null;
-		Pip randomPip = null;
-		cards = new Array<Card>();
-		int maxNumberOfPlayingCardsForLevel = level.getLayers().get(HIDDEN_PATTERN_LAYER_NAME).getObjects().getByType(RectangleMapObject.class).size;
-		MapProperties levelProperties = level.getProperties();
-		int numberOfCardsToDisplayForLevel = Integer.parseInt(levelProperties.get("Number Of Cards", String.class));
-		hiddenPlayingCards = new Array<Integer>();
-		for (int i=0; i<numberOfCardsToDisplayForLevel; i++) {
-			int nextRandomHiddenPlayCard = random.nextInt(maxNumberOfPlayingCardsForLevel);
-			hiddenPlayingCards.add(nextRandomHiddenPlayCard);
-			if ((i & 1) == 0) {
-				randomSuit = Suit.values()[random.nextInt(NUMBER_OF_SUITS)];
-				randomPip = Pip.values()[random.nextInt(NUMBER_OF_CARDS_IN_A_SUIT)];
-			}
-
-			Card card = new Card(randomSuit,
-					             randomPip,
-					             carddeckAtlas.createSprite("back", 3),
-					             carddeckAtlas.createSprite(randomSuit.name, randomPip.value));
-			RectangleMapObject hiddenLevelPlayingCard = getHiddenPlayingCard(nextRandomHiddenPlayCard);
-			card.setPosition(hiddenLevelPlayingCard.getRectangle().x,
-					         hiddenLevelPlayingCard.getRectangle().y);
-			card.setSize((int)hiddenLevelPlayingCard.getRectangle().width,
-					     (int)hiddenLevelPlayingCard.getRectangle().height);
-
-			cards.add(card);
-		}
+		HiddenPlayingCard hiddenPlayingCard = new HiddenPlayingCard(level, carddeckAtlas);
+		cards = hiddenPlayingCard.getCards();
+		hiddenPlayingCards = hiddenPlayingCard.getHiddenPlayingCards();
+//		Suit randomSuit = null;
+//		Pip randomPip = null;
+//		cards = new Array<Card>();
+//		int maxNumberOfPlayingCardsForLevel = level.getLayers().get(HIDDEN_PATTERN_LAYER_NAME).getObjects().getByType(RectangleMapObject.class).size;
+//		MapProperties levelProperties = level.getProperties();
+//		int numberOfCardsToDisplayForLevel = Integer.parseInt(levelProperties.get("Number Of Cards", String.class));
+//		hiddenPlayingCards = new Array<Integer>();
+//		for (int i=0; i<numberOfCardsToDisplayForLevel; i++) {
+//			int nextRandomHiddenPlayCard = random.nextInt(maxNumberOfPlayingCardsForLevel);
+//			hiddenPlayingCards.add(nextRandomHiddenPlayCard);
+//			if ((i & 1) == 0) {
+//				randomSuit = Suit.values()[random.nextInt(NUMBER_OF_SUITS)];
+//				randomPip = Pip.values()[random.nextInt(NUMBER_OF_CARDS_IN_A_SUIT)];
+//			}
+//
+//			Card card = new Card(randomSuit,
+//					             randomPip,
+//					             carddeckAtlas.createSprite("back", 3),
+//					             carddeckAtlas.createSprite(randomSuit.name, randomPip.value));
+//			RectangleMapObject hiddenLevelPlayingCard = getHiddenPlayingCard(nextRandomHiddenPlayCard);
+//			card.setPosition(hiddenLevelPlayingCard.getRectangle().x,
+//					         hiddenLevelPlayingCard.getRectangle().y);
+//			card.setSize((int)hiddenLevelPlayingCard.getRectangle().width,
+//					     (int)hiddenLevelPlayingCard.getRectangle().height);
+//
+//			cards.add(card);
+//		}
 	}
 
 	private RectangleMapObject getHiddenPlayingCard(int cardIndex) {

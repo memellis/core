@@ -30,20 +30,22 @@ public class HiddenPlayingCard {
     private TextureAtlas carddeckAtlas;
     private TiledMap level;
     private Array<Integer> hiddenPlayingCards;
+    private Array<Card> cards;
 
     public HiddenPlayingCard(TiledMap level, TextureAtlas carddeckAtlas) {
         this.level = level;
         this.carddeckAtlas = carddeckAtlas;
+        initialiseHiddenPlayingCards(level, carddeckAtlas);
     }
 
     private void initialiseHiddenPlayingCards(TiledMap level, TextureAtlas carddeckAtlas) {
         Suit randomSuit = null;
         Pip randomPip = null;
-        Array<Card> cards = new Array<Card>();
+        cards = new Array<Card>();
         int maxNumberOfPlayingCardsForLevel = level.getLayers().get(LevelCreator.HIDDEN_PATTERN_LAYER_NAME).getObjects().getByType(RectangleMapObject.class).size;
         MapProperties levelProperties = level.getProperties();
         int numberOfCardsToDisplayForLevel = Integer.parseInt(levelProperties.get("Number Of Cards", String.class));
-        this.hiddenPlayingCards = new Array<Integer>();
+        hiddenPlayingCards = new Array<Integer>();
 
         for (int i=0; i<numberOfCardsToDisplayForLevel; i++) {
             int nextRandomHiddenPlayCard = Random.getInstance().nextInt(maxNumberOfPlayingCardsForLevel);
@@ -70,5 +72,13 @@ public class HiddenPlayingCard {
 
     private RectangleMapObject getHiddenPlayingCard(TiledMap level, int cardIndex) {
         return level.getLayers().get(LevelCreator.HIDDEN_PATTERN_LAYER_NAME).getObjects().getByType(RectangleMapObject.class).get(cardIndex);
+    }
+
+    public Array<Card> getCards() {
+        return cards;
+    }
+
+    public Array<Integer> getHiddenPlayingCards() {
+        return hiddenPlayingCards;
     }
 }
