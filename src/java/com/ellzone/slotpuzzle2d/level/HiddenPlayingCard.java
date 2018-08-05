@@ -31,6 +31,9 @@ public class HiddenPlayingCard {
     private TiledMap level;
     private Array<Integer> hiddenPlayingCards;
     private Array<Card> cards;
+    private int maxNumberOfPlayingCardsForLevel;
+    private Suit randomSuit;
+    private Pip randomPip;
 
     public HiddenPlayingCard(TiledMap level, TextureAtlas carddeckAtlas) {
         this.level = level;
@@ -39,35 +42,55 @@ public class HiddenPlayingCard {
     }
 
     private void initialiseHiddenPlayingCards(TiledMap level, TextureAtlas carddeckAtlas) {
-        Suit randomSuit = null;
-        Pip randomPip = null;
-        cards = new Array<Card>();
-        int maxNumberOfPlayingCardsForLevel = level.getLayers().get(LevelCreator.HIDDEN_PATTERN_LAYER_NAME).getObjects().getByType(RectangleMapObject.class).size;
+        setUpPlayingCards(level);
         MapProperties levelProperties = level.getProperties();
         int numberOfCardsToDisplayForLevel = Integer.parseInt(levelProperties.get("Number Of Cards", String.class));
         hiddenPlayingCards = new Array<Integer>();
 
-        for (int i=0; i<numberOfCardsToDisplayForLevel; i++) {
-            int nextRandomHiddenPlayCard = Random.getInstance().nextInt(maxNumberOfPlayingCardsForLevel);
-            hiddenPlayingCards.add(nextRandomHiddenPlayCard);
-            if ((i & 1) == 0) {
-                randomSuit = Suit.values()[Random.getInstance().nextInt(Suit.getNumberOfSuits())];
-                randomPip = Pip.values()[Random.getInstance().nextInt(Pip.getNumberOfCards())];
-            }
+        for (int i = 0; i < numberOfCardsToDisplayForLevel; i++) {
+            cards.add(addACard(i));
+       }
+    }
 
-            Card card = new Card(randomSuit,
-                                 randomPip,
-                                 carddeckAtlas.createSprite(CARD_BACK, 3),
-                                 carddeckAtlas.createSprite(randomSuit.name, randomPip.value));
+    private void setUpPlayingCards(TiledMap level) {
+        randomSuit = null;
+        randomPip = null;
+        cards = new Array<Card>();
+        maxNumberOfPlayingCardsForLevel = level.getLayers().get(LevelCreator.HIDDEN_PATTERN_LAYER_NAME).getObjects().getByType(RectangleMapObject.class).size;
+    }
 
-            RectangleMapObject hiddenLevelPlayingCard = getHiddenPlayingCard(level, nextRandomHiddenPlayCard);
-            card.setPosition(hiddenLevelPlayingCard.getRectangle().x,
-                    hiddenLevelPlayingCard.getRectangle().y);
-            card.setSize((int)hiddenLevelPlayingCard.getRectangle().width,
-                    (int)hiddenLevelPlayingCard.getRectangle().height);
-
-            cards.add(card);
+    private Card addACard(int index) {
+        int nextRandomHiddenPlayCard = getNextRandomHiddenPlayCard();
+        if (isEven(index)) {
+            randomSuit = Suit.values()[Random.getInstance().nextInt(Suit.getNumberOfSuits())];
+            randomPip = Pip.values()[Random.getInstance().nextInt(Pip.getNumberOfCards())];
         }
+        Card card = getHiddenPlayingCardFromLevel(randomSuit, randomPip, nextRandomHiddenPlayCard);
+        return card;
+    }
+
+    private int getNextRandomHiddenPlayCard() {
+        int nextRandomHiddenPlayCard = Random.getInstance().nextInt(maxNumberOfPlayingCardsForLevel);
+        hiddenPlayingCards.add(nextRandomHiddenPlayCard);
+        return nextRandomHiddenPlayCard;
+    }
+
+    private Card getHiddenPlayingCardFromLevel(Suit randomSuit, Pip randomPip, int nextRandomHiddenPlayCard) {
+        Card card = new Card(randomSuit,
+                             randomPip,
+                             carddeckAtlas.createSprite(CARD_BACK, 3),
+                             carddeckAtlas.createSprite(randomSuit.name, randomPip.value));
+
+        RectangleMapObject hiddenLevelPlayingCard = getHiddenPlayingCard(level, nextRandomHiddenPlayCard);
+        card.setPosition(hiddenLevelPlayingCard.getRectangle().x,
+                hiddenLevelPlayingCard.getRectangle().y);
+        card.setSize((int)hiddenLevelPlayingCard.getRectangle().width,
+                (int)hiddenLevelPlayingCard.getRectangle().height);
+        return card;
+    }
+
+    private boolean isEven(int index) {
+        return (index & 1) == 0;
     }
 
     private RectangleMapObject getHiddenPlayingCard(TiledMap level, int cardIndex) {
