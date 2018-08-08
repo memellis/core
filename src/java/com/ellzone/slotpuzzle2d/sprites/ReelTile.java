@@ -25,7 +25,7 @@ import com.ellzone.slotpuzzle2d.utils.PixmapProcessors;
 import com.ellzone.slotpuzzle2d.utils.Random;
 
 public class ReelTile extends ReelSprite {
-    private Texture texture;
+    private Texture scrollTexture;
     private int numberOfReelsInTexture = 0;
     private TextureRegion region, flashReel;
     private float tileWidth;
@@ -50,8 +50,8 @@ public class ReelTile extends ReelSprite {
 	private float spinngPitch;
 	private Pixmap flashOnReelPixmap;
 	
-    public ReelTile(Texture texture, float x, float y, float tileWidth, float tileHeight, int endReel, Sound spinningSound) {
-        this.texture = texture;
+    public ReelTile(Texture scrollTexture, float x, float y, float tileWidth, float tileHeight, int endReel, Sound spinningSound) {
+        this.scrollTexture = scrollTexture;
         this.x = x;
         this.y = y;
         this.tileWidth = tileWidth;
@@ -62,7 +62,7 @@ public class ReelTile extends ReelSprite {
     }
 
     public ReelTile(Texture texture, int numberOfReelsInTexture, float x, float y, float tileWidth, float tileHeight, float reelDisplayWidth, float reelDisplayHeight, int endReel, Sound spinningSound) {
-        this.texture = texture;
+        this.scrollTexture = texture;
         this.numberOfReelsInTexture = numberOfReelsInTexture;
         this.x = x;
         this.y = y;
@@ -78,8 +78,8 @@ public class ReelTile extends ReelSprite {
     private void defineReelSlotTileScroll() {
     	setPosition((int)this.x, (int)this.y);
         setOrigin((int)this.x, (int)this.y);
-        texture.setWrap(Texture.TextureWrap.Repeat, Texture.TextureWrap.Repeat);
-        region = new TextureRegion(texture);
+        scrollTexture.setWrap(Texture.TextureWrap.Repeat, Texture.TextureWrap.Repeat);
+        region = new TextureRegion(scrollTexture);
         int randomSy = 0;
         if (numberOfReelsInTexture > 0) {
             randomSy = Random.getInstance().nextInt(numberOfReelsInTexture) * (int)tileHeight;
@@ -113,7 +113,7 @@ public class ReelTile extends ReelSprite {
     }
 	
 	private void processSpinningState() {
-        float syModulus = sy % texture.getHeight();      
+        float syModulus = sy % scrollTexture.getHeight();
         region.setRegion((int) sx, (int) syModulus, (int)reelDisplayWidth, (int)reelDisplayHeight);
         setRegion(region);
         if (this.spinningSound != null) {
@@ -158,14 +158,22 @@ public class ReelTile extends ReelSprite {
         this.sy = sy;
     }
 
+    public float getTileWidth() {
+        return tileWidth;
+    }
+
+    public float getTileHeight() {
+        return tileHeight;
+    }
+
     public void setEndReel() {
-        float syModulus = sy % texture.getHeight();
-        super.setEndReel((int) ((int) ((syModulus + (tileHeight / 2)) % texture.getHeight()) / tileHeight));
+        float syModulus = sy % scrollTexture.getHeight();
+        super.setEndReel((int) ((int) ((syModulus + (tileHeight / 2)) % scrollTexture.getHeight()) / tileHeight));
     }
 
 	public int getCurrentReel() {
-        float syModulus = sy % texture.getHeight();
- 		return (int) ((int) ((syModulus + (tileHeight / 2)) % texture.getHeight()) / tileHeight);
+        float syModulus = sy % scrollTexture.getHeight();
+ 		return (int) ((int) ((syModulus + (tileHeight / 2)) % scrollTexture.getHeight()) / tileHeight);
 	}
 
 	public boolean isReelTileDeleted() {
@@ -289,8 +297,12 @@ public class ReelTile extends ReelSprite {
 
     public void resetReel() {
         flashOnReelPixmap = null;
-        float syModulus = sy % texture.getHeight();
+        float syModulus = sy % scrollTexture.getHeight();
         region.setRegion((int) sx, (int) syModulus, (int)reelDisplayWidth, (int)reelDisplayHeight);
         setRegion(region);
+    }
+
+    public int getScrollTextureHeight() {
+        return scrollTexture.getHeight();
     }
 }

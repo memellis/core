@@ -106,16 +106,16 @@ public class LevelCreatorScenario1 {
         this.levelWidth = levelWidth;
         this.levelHeight = levelHeight;
         this.playState = playState;
-        this.puzzleGridTypeReelTile = new PuzzleGridTypeReelTile();
-        this.reelBoxes = new Array<Body>();
-        this.replacementReelBoxes = new Array<Integer>();
-        this.animatedReelHelper = new AnimatedReelHelper(this.annotationAssetManager, this.tweenManager, level.getLayers().get(REELS_LAYER_NAME).getObjects().getByType(RectangleMapObject.class).size);
-        this.reelTiles = animatedReelHelper.getReelTiles();
-        this.reelTiles = createLevel(this.levelDoor, this.level, this.reelTiles, this.levelWidth, this.levelHeight);
-        this.reelsSpinning = reelBoxes.size - 1;
-        this.reelsFlashing = 0;
-        this.hitSinkBottom = false;
-        this.scores = new Array<Score>();
+        puzzleGridTypeReelTile = new PuzzleGridTypeReelTile();
+        reelBoxes = new Array<Body>();
+        replacementReelBoxes = new Array<Integer>();
+        animatedReelHelper = new AnimatedReelHelper(this.annotationAssetManager, this.tweenManager, level.getLayers().get(REELS_LAYER_NAME).getObjects().getByType(RectangleMapObject.class).size);
+        reelTiles = animatedReelHelper.getReelTiles();
+        reelTiles = createLevel(this.levelDoor, this.level, this.reelTiles, this.levelWidth, this.levelHeight);
+        reelsSpinning = reelBoxes.size - 1;
+        reelsFlashing = 0;
+        hitSinkBottom = false;
+        scores = new Array<Score>();
         reelsToFall = new Array<TupleValueIndex>();
     }
 
