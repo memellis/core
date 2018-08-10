@@ -37,7 +37,6 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.utils.Array;
-import com.badlogic.gdx.utils.GdxRuntimeException;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import com.ellzone.slotpuzzle2d.SlotPuzzle;
@@ -46,8 +45,9 @@ import com.ellzone.slotpuzzle2d.effects.ReelAccessor;
 import com.ellzone.slotpuzzle2d.effects.ScoreAccessor;
 import com.ellzone.slotpuzzle2d.effects.SpriteAccessor;
 import com.ellzone.slotpuzzle2d.level.Card;
-import com.ellzone.slotpuzzle2d.level.HiddenPlayingCard;
+import com.ellzone.slotpuzzle2d.level.LevelCallBack;
 import com.ellzone.slotpuzzle2d.level.LevelDoor;
+import com.ellzone.slotpuzzle2d.level.LevelLoader;
 import com.ellzone.slotpuzzle2d.level.LevelPopUp;
 import com.ellzone.slotpuzzle2d.physics.DampenedSineParticle;
 import com.ellzone.slotpuzzle2d.puzzlegrid.PuzzleGridType;
@@ -58,10 +58,7 @@ import com.ellzone.slotpuzzle2d.scene.Hud;
 import com.ellzone.slotpuzzle2d.scene.MapTile;
 import com.ellzone.slotpuzzle2d.sprites.AnimatedReel;
 import com.ellzone.slotpuzzle2d.sprites.AnimatedReelHelper;
-import com.ellzone.slotpuzzle2d.sprites.ReelTileEvent;
-import com.ellzone.slotpuzzle2d.sprites.ReelTileListener;
 import com.ellzone.slotpuzzle2d.sprites.ReelStoppedFlashingEvent;
-import com.ellzone.slotpuzzle2d.sprites.ReelStoppedSpinningEvent;
 import com.ellzone.slotpuzzle2d.sprites.ReelTile;
 import com.ellzone.slotpuzzle2d.sprites.Reels;
 import com.ellzone.slotpuzzle2d.sprites.Score;
@@ -98,7 +95,7 @@ public class PlayScreen implements Screen {
 	private static final String LEVEL_LOST_DESC =  "Sorry you lost that level. Touch/Press to restart the level.";
 	private static final String LEVEL_WON_DESC =  "Well done you've won that level. Touch/Press to start the nextlevel.";
 
-	public enum PlayStates {INITIALISING,
+    public enum PlayStates {INITIALISING,
                             INTRO_SEQUENCE,
                             INTRO_POPUP,
                             INTRO_SPINNING,
@@ -121,7 +118,6 @@ public class PlayScreen implements Screen {
  	private final TweenManager tweenManager = new TweenManager();
     private Timeline reelFlashSeq;
     private TextureAtlas tilesAtlas;
-    private TextureAtlas carddeckAtlas;
  	private Sound chaChingSound, pullLeverSound, reelSpinningSound, reelStoppedSound;
     private boolean isLoaded = false;
     private Array<ReelTile> reelTiles;
@@ -164,14 +160,64 @@ public class PlayScreen implements Screen {
 		getAssets(game.annotationAssetManager);
 		createSprites();
 		initialisePlayScreen();
-		createLevels();
+        loadLevel();
         getMapProperties(this.level);
         hud = new Hud(game.batch);
 		hud.setLevelName(levelDoor.getLevelName());
+
 		createReelIntroSequence();
    	}
 
-	private void initialiseScreen() {
+    private void loadLevel() {
+        LevelLoader levelLoader = new LevelLoader(game.annotationAssetManager, levelDoor, mapTile, reelTiles);
+        reelTiles = levelLoader.createLevel();
+        reelsSpinning = reelTiles.size - 1;
+        levelLoader.setStoppedSpinningCallback(stoppedSpinningCallback);
+        levelLoader.setStoppedFlashingCallback(stoppedFlashingCallback);
+        cards = levelLoader.getCards();
+        hiddenPlayingCards = levelLoader.getHiddenPlayingCards();
+    }
+
+    private LevelCallBack stoppedSpinningCallback = new LevelCallBack() {
+        @Override
+        public void onEvent (ReelTile source){
+            reelStoppedSound.play();
+            reelsSpinning--;
+            if (playState == PlayScreen.PlayStates.PLAYING) {
+                if (reelsSpinning <= -1) {
+                    if (levelDoor.getLevelType().equals(HIDDEN_PATTERN_LEVEL_TYPE)) {
+                        if (testForHiddenPatternRevealed(reelTiles))
+                            iWonTheLevel();
+                    } else {
+                        if (levelDoor.getLevelType().equals(PLAYING_CARD_LEVEL_TYPE)) {
+                            if (testForHiddenPlayingCardsRevealed(reelTiles))
+                                iWonTheLevel();
+                        }
+                    }
+                }
+            }
+        }
+    };
+
+	private LevelCallBack stoppedFlashingCallback = new LevelCallBack() {
+        @Override
+        public void onEvent(ReelTile source) {
+            if (testForAnyLonelyReels(reelTiles)) {
+              win = false;
+              if (Hud.getLives() > 0) {
+                  playState = PlayScreen.PlayStates.LEVEL_LOST;
+                  setLevelLostSpritePositions();
+                  levelLostPopUp.showLevelPopUp(null);
+              } else {
+                  gameOver = true;
+              }
+          }
+          reelScoreAnimation(source);
+          deleteReelAnimation(source);
+        }
+    };
+
+    private void initialiseScreen() {
 		viewport = new FitViewport(SlotPuzzleConstants.V_WIDTH, SlotPuzzleConstants.V_HEIGHT, camera);
         stage = new Stage(viewport, game.batch);
 	}
@@ -203,7 +249,6 @@ public class PlayScreen implements Screen {
 
 	private void getAtlasAssets(AnnotationAssetManager annotationAssetManager) {
         tilesAtlas = annotationAssetManager.get(AssetsAnnotation.TILES);
-		carddeckAtlas = annotationAssetManager.get(AssetsAnnotation.CARDDECK);
 	}
 
 	private void createSprites() {
@@ -288,94 +333,6 @@ public class PlayScreen implements Screen {
         mapHeight = mapProperties.get("height", Integer.class);
     }
 
-    private void createLevels() {
- 		if (levelDoor.getLevelType().equals(PLAYING_CARD_LEVEL_TYPE))
- 			initialiseHiddenPlayingCards();
-		addReelsFromLevel();
-		reelsSpinning = reelTiles.size - 1;
-		reelTiles = checkLevel(reelTiles);
-		reelTiles = adjustForAnyLonelyReels(reelTiles);
-	}
-
-	private void addReelsFromLevel() {
-        int index = 0;
-        for (MapObject mapObject : level.getLayers().get(SLOT_REEL_OBJECT_LAYER).getObjects().getByType(RectangleMapObject.class)) {
-			Rectangle mapRectangle = ((RectangleMapObject) mapObject).getRectangle();
-			int c = (int) (mapRectangle.getX() - PlayScreen.PUZZLE_GRID_START_X) / PlayScreen.TILE_WIDTH;
-			int r = (int) (mapRectangle.getY() - PlayScreen.PUZZLE_GRID_START_Y) / PlayScreen.TILE_HEIGHT;
-			r = PlayScreen.GAME_LEVEL_HEIGHT - r;
-			if ((r >= 0) & (r <= PlayScreen.GAME_LEVEL_HEIGHT) & (c >= 0) & (c <= PlayScreen.GAME_LEVEL_WIDTH)) {
-				addReel(mapRectangle, index);
-				index++;
-			} else {
-				Gdx.app.debug(SlotPuzzleConstants.SLOT_PUZZLE, "I don't respond to grid r="+r+" c="+c+". There it won't be added to the level! Sort it out in a level editor.");
-			}
-		}
-	}
-
-	private void initialiseHiddenPlayingCards() {
-		HiddenPlayingCard hiddenPlayingCard = new HiddenPlayingCard(level, carddeckAtlas);
-		cards = hiddenPlayingCard.getCards();
-		hiddenPlayingCards = hiddenPlayingCard.getHiddenPlayingCards();
-	}
-
-	private void addReel(Rectangle mapRectangle, int index) {
-        ReelTile reelTile = reelTiles.get(index);
-        reelTile.setX(mapRectangle.getX());
-		reelTile.setY(mapRectangle.getY());
-		reelTile.setDestinationX(mapRectangle.getX());
-		reelTile.setDestinationY(mapRectangle.getY());
-		reelTile.setSx(0);
-
-		int startReel = random.nextInt(reelTile.getScrollTextureHeight());
-		startReel = (startReel / ((int) reelTile.getTileHeight())) * (int)reelTile.getTileHeight();
-		reelTile.setSy(startReel);
-		reelTile.addListener(new ReelTileListener() {
-			@Override
-			public void actionPerformed(ReelTileEvent event, ReelTile source) {
-					if (event instanceof ReelStoppedSpinningEvent)
-                        processReelHasStoppedSpinning();
-
-					if (event instanceof ReelStoppedFlashingEvent)
-                        processReelHasStoppedFlashing(source);
-			    }
-			}
-		);
-	}
-
-    private void processReelHasStoppedFlashing(ReelTile source) {
-        if (testForAnyLonelyReels(reelTiles)) {
-            win = false;
-            if (Hud.getLives() > 0) {
-                playState = PlayStates.LEVEL_LOST;
-                setLevelLostSpritePositions();
-                levelLostPopUp.showLevelPopUp(null);
-            } else {
-                gameOver = true;
-            }
-        }
-        reelScoreAnimation(source);
-        deleteReelAnimation(source);
-    }
-
-    private void processReelHasStoppedSpinning() {
-        reelStoppedSound.play();
-        reelsSpinning--;
-        if (playState == PlayStates.PLAYING) {
-            if (reelsSpinning <= -1) {
-                if (levelDoor.getLevelType().equals(HIDDEN_PATTERN_LEVEL_TYPE)) {
-                    if (testForHiddenPatternRevealed(reelTiles))
-                        iWonTheLevel();
-                } else {
-                    if (levelDoor.getLevelType().equals(PLAYING_CARD_LEVEL_TYPE)) {
-                        if (testForHiddenPlayingCardsRevealed(reelTiles))
-                            iWonTheLevel();
-                    }
-                }
-            }
-        }
-    }
-
 	private void createReelIntroSequence() {
 		playState = PlayStates.INTRO_SEQUENCE;
 		Timeline introSequence = Timeline.createParallel();
@@ -449,21 +406,21 @@ public class PlayScreen implements Screen {
 		}
 	}
 
-    private Array<ReelTile> checkLevel(Array<ReelTile> reelLevel) {
-        TupleValueIndex[][] grid = populateMatchGrid(reelLevel);
-        int arraySizeR = grid.length;
-        int arraySizeC = grid[0].length;
-
-        for(int r = 0; r < arraySizeR; r++) {
-            for(int c = 0; c < arraySizeC; c++) {
-                if(grid[r][c] == null) {
-                    Gdx.app.debug(SlotPuzzleConstants.SLOT_PUZZLE, "Found null grid tile. r=" + r + " c= " + c + ". I will therefore create a deleted entry for the tile.");
-                    throw new GdxRuntimeException("Level incorrect. Found null grid tile. r=" + r + " c= " + c);
-               }
-            }
-        }
-        return reelLevel;
-    }
+//    private Array<ReelTile> checkLevel(Array<ReelTile> reelLevel) {
+//        TupleValueIndex[][] grid = populateMatchGrid(reelLevel);
+//        int arraySizeR = grid.length;
+//        int arraySizeC = grid[0].length;
+//
+//        for(int r = 0; r < arraySizeR; r++) {
+//            for(int c = 0; c < arraySizeC; c++) {
+//                if(grid[r][c] == null) {
+//                    Gdx.app.debug(SlotPuzzleConstants.SLOT_PUZZLE, "Found null grid tile. r=" + r + " c= " + c + ". I will therefore create a deleted entry for the tile.");
+//                    throw new GdxRuntimeException("Level incorrect. Found null grid tile. r=" + r + " c= " + c);
+//               }
+//            }
+//        }
+//        return reelLevel;
+//    }
 
 	private boolean testForHiddenPatternRevealed(Array<ReelTile> levelReel) {
 		TupleValueIndex[][] matchGrid = flashSlots(levelReel);
@@ -479,26 +436,6 @@ public class PlayScreen implements Screen {
 		PuzzleGridType puzzleGrid = new PuzzleGridType();
 		TupleValueIndex[][] grid = populateMatchGrid(levelReel);
 		return puzzleGrid.anyLonelyTiles(grid);
-	}
-
-    private Array<ReelTile> adjustForAnyLonelyReels(Array<ReelTile> levelReel) {
-		PuzzleGridType puzzleGrid = new PuzzleGridType();
-		TupleValueIndex[][] grid = populateMatchGrid(levelReel);
-		Array<TupleValueIndex> lonelyTiles = puzzleGrid.getLonelyTiles(grid);
-		for (TupleValueIndex lonelyTile : lonelyTiles) {
-			if (lonelyTile.r == 0) {
-				levelReel.get(grid[lonelyTile.r][lonelyTile.c].index).setEndReel(levelReel.get(grid[lonelyTile.r+1][lonelyTile.c].index).getEndReel());
-			} else if (lonelyTile.c == 0) {
-				levelReel.get(grid[lonelyTile.r][lonelyTile.c].index).setEndReel(levelReel.get(grid[lonelyTile.r][lonelyTile.c+1].index).getEndReel());
-			} else if (lonelyTile.r == GAME_LEVEL_HEIGHT) {
-				levelReel.get(grid[lonelyTile.r][lonelyTile.c].index).setEndReel(levelReel.get(grid[lonelyTile.r-1][lonelyTile.c].index).getEndReel());
-			} else if (lonelyTile.c == GAME_LEVEL_WIDTH) {
-				levelReel.get(grid[lonelyTile.r][lonelyTile.c].index).setEndReel(levelReel.get(grid[lonelyTile.r][lonelyTile.c-1].index).getEndReel());
-			} else {
-				levelReel.get(grid[lonelyTile.r][lonelyTile.c].index).setEndReel(levelReel.get(grid[lonelyTile.r+1][lonelyTile.c].index).getEndReel());
-			}
-		}
-		return levelReel;
 	}
 
 	private TupleValueIndex[][] populateMatchGrid(Array<ReelTile> reelLevel) {
@@ -911,13 +848,14 @@ public class PlayScreen implements Screen {
 		renderer = new OrthogonalTiledMapRenderer(level);
 		displaySpinHelp = false;
 		inRestartLevel = false;
-		createLevels();
+		loadLevel();
 		createReelIntroSequence();
 	}
 
     private void update(float delta) {
 		tweenManager.update(delta);
 		renderer.setView(camera);
+        animatedReelHelper.update(delta);
 		hud.update(delta);
 		if (hud.getWorldTime() == 0) {
 			if ((Hud.getLives() > 0) & (!inRestartLevel)) {
@@ -933,7 +871,6 @@ public class PlayScreen implements Screen {
 			dispose();
 			game.setScreen(new EndOfGameScreen(game));
 		}
-        animatedReelHelper.update(delta);
     }
 
 	@Override

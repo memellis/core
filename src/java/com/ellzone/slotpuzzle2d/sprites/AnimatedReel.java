@@ -117,8 +117,7 @@ public class AnimatedReel {
 	        		               .setCallbackTriggers(TweenCallback.STEP + TweenCallback.END)
 	        		               .setCallback(slowingSpinningCallback)
 	        		               .setUserData(reel));	        					
-	        endReelSeq = endReelSeq
-	        				.start(tweenManager);
+	        endReelSeq.start(tweenManager);
 		}
 	}
 	
