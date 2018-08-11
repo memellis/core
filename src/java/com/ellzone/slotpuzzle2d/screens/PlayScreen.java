@@ -155,27 +155,43 @@ public class PlayScreen implements Screen {
 
 	private void createPlayScreen() {
 		playState = PlayStates.INITIALISING;
-		initialiseScreen();
-		initialiseTweenEngine();
-		getAssets(game.annotationAssetManager);
-		createSprites();
-		initialisePlayScreen();
-        loadLevel();
-        getMapProperties(this.level);
-        hud = new Hud(game.batch);
-		hud.setLevelName(levelDoor.getLevelName());
-
+        createPlayScreenPart1();
+        createPlayScreenPart2();
 		createReelIntroSequence();
    	}
 
+    private void createPlayScreenPart2() {
+        initialisePlayScreen();
+        loadLevel();
+        getMapProperties(level);
+        initialiseHud();
+    }
+
+    private void createPlayScreenPart1() {
+        initialiseScreen();
+        initialiseTweenEngine();
+        getAssets(game.annotationAssetManager);
+        createSprites();
+    }
+
+    private void initialiseHud() {
+        hud = new Hud(game.batch);
+        hud.setLevelName(levelDoor.getLevelName());
+    }
+
     private void loadLevel() {
-        LevelLoader levelLoader = new LevelLoader(game.annotationAssetManager, levelDoor, mapTile, reelTiles);
+        LevelLoader levelLoader = getLevelLoader();
         reelTiles = levelLoader.createLevel();
         reelsSpinning = reelTiles.size - 1;
-        levelLoader.setStoppedSpinningCallback(stoppedSpinningCallback);
-        levelLoader.setStoppedFlashingCallback(stoppedFlashingCallback);
         cards = levelLoader.getCards();
         hiddenPlayingCards = levelLoader.getHiddenPlayingCards();
+    }
+
+    private LevelLoader getLevelLoader() {
+        LevelLoader levelLoader = new LevelLoader(game.annotationAssetManager, levelDoor, mapTile, reelTiles);
+        levelLoader.setStoppedSpinningCallback(stoppedSpinningCallback);
+        levelLoader.setStoppedFlashingCallback(stoppedFlashingCallback);
+        return levelLoader;
     }
 
     private LevelCallBack stoppedSpinningCallback = new LevelCallBack() {
@@ -254,7 +270,6 @@ public class PlayScreen implements Screen {
 	private void createSprites() {
         Reels reelsSprites = new Reels(game.annotationAssetManager);
 		sprites = reelsSprites.getReels();
-
 		setUpPopSprites();
 		setUpLevelLostSprtes();
 		setUpLevelWonSprites();
@@ -405,22 +420,6 @@ public class PlayScreen implements Screen {
 		        break;
 		}
 	}
-
-//    private Array<ReelTile> checkLevel(Array<ReelTile> reelLevel) {
-//        TupleValueIndex[][] grid = populateMatchGrid(reelLevel);
-//        int arraySizeR = grid.length;
-//        int arraySizeC = grid[0].length;
-//
-//        for(int r = 0; r < arraySizeR; r++) {
-//            for(int c = 0; c < arraySizeC; c++) {
-//                if(grid[r][c] == null) {
-//                    Gdx.app.debug(SlotPuzzleConstants.SLOT_PUZZLE, "Found null grid tile. r=" + r + " c= " + c + ". I will therefore create a deleted entry for the tile.");
-//                    throw new GdxRuntimeException("Level incorrect. Found null grid tile. r=" + r + " c= " + c);
-//               }
-//            }
-//        }
-//        return reelLevel;
-//    }
 
 	private boolean testForHiddenPatternRevealed(Array<ReelTile> levelReel) {
 		TupleValueIndex[][] matchGrid = flashSlots(levelReel);
