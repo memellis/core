@@ -16,16 +16,26 @@
 
 package com.ellzone.slotpuzzle2d.level;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
+import com.badlogic.gdx.maps.MapObject;
 import com.badlogic.gdx.maps.MapProperties;
 import com.badlogic.gdx.maps.objects.RectangleMapObject;
 import com.badlogic.gdx.maps.tiled.TiledMap;
+import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.utils.Array;
+import com.badlogic.gdx.utils.GdxRuntimeException;
+import com.ellzone.slotpuzzle2d.SlotPuzzleConstants;
+import com.ellzone.slotpuzzle2d.puzzlegrid.PuzzleGridTypeReelTile;
+import com.ellzone.slotpuzzle2d.puzzlegrid.TupleValueIndex;
+import com.ellzone.slotpuzzle2d.screens.PlayScreen;
+import com.ellzone.slotpuzzle2d.sprites.ReelTile;
 import com.ellzone.slotpuzzle2d.utils.Random;
 
 public class HiddenPlayingCard {
     public static final String CARD_FRONT = "front";
     public static final String CARD_BACK = "back";
+    private static final String HIDDEN_PATTERN_LAYER_NAME = "Hidden Pattern Object";
 
     private TextureAtlas carddeckAtlas;
     private TiledMap level;
@@ -38,24 +48,24 @@ public class HiddenPlayingCard {
     public HiddenPlayingCard(TiledMap level, TextureAtlas carddeckAtlas) {
         this.level = level;
         this.carddeckAtlas = carddeckAtlas;
-        initialiseHiddenPlayingCards(level, carddeckAtlas);
+        initialiseHiddenPlayingCards(level);
     }
 
-    private void initialiseHiddenPlayingCards(TiledMap level, TextureAtlas carddeckAtlas) {
+    private void initialiseHiddenPlayingCards(TiledMap level) {
         setUpPlayingCards(level);
         MapProperties levelProperties = level.getProperties();
         int numberOfCardsToDisplayForLevel = Integer.parseInt(levelProperties.get("Number Of Cards", String.class));
-        hiddenPlayingCards = new Array<Integer>();
+        hiddenPlayingCards = new Array<>();
 
         for (int i = 0; i < numberOfCardsToDisplayForLevel; i++) {
             cards.add(addACard(i));
-       }
+        }
     }
 
     private void setUpPlayingCards(TiledMap level) {
         randomSuit = null;
         randomPip = null;
-        cards = new Array<Card>();
+        cards = new Array<>();
         maxNumberOfPlayingCardsForLevel = level.getLayers().get(LevelCreator.HIDDEN_PATTERN_LAYER_NAME).getObjects().getByType(RectangleMapObject.class).size;
     }
 
@@ -65,8 +75,7 @@ public class HiddenPlayingCard {
             randomSuit = Suit.values()[Random.getInstance().nextInt(Suit.getNumberOfSuits())];
             randomPip = Pip.values()[Random.getInstance().nextInt(Pip.getNumberOfCards())];
         }
-        Card card = getHiddenPlayingCardFromLevel(randomSuit, randomPip, nextRandomHiddenPlayCard);
-        return card;
+        return getHiddenPlayingCardFromLevel(randomSuit, randomPip, nextRandomHiddenPlayCard);
     }
 
     private int getNextRandomHiddenPlayCard() {
@@ -83,9 +92,9 @@ public class HiddenPlayingCard {
 
         RectangleMapObject hiddenLevelPlayingCard = getHiddenPlayingCard(level, nextRandomHiddenPlayCard);
         card.setPosition(hiddenLevelPlayingCard.getRectangle().x,
-                hiddenLevelPlayingCard.getRectangle().y);
-        card.setSize((int)hiddenLevelPlayingCard.getRectangle().width,
-                (int)hiddenLevelPlayingCard.getRectangle().height);
+                         hiddenLevelPlayingCard.getRectangle().y);
+        card.setSize((int) hiddenLevelPlayingCard.getRectangle().width,
+                (int) hiddenLevelPlayingCard.getRectangle().height);
         return card;
     }
 
@@ -94,7 +103,7 @@ public class HiddenPlayingCard {
     }
 
     private RectangleMapObject getHiddenPlayingCard(TiledMap level, int cardIndex) {
-        return level.getLayers().get(LevelCreator.HIDDEN_PATTERN_LAYER_NAME).getObjects().getByType(RectangleMapObject.class).get(cardIndex);
+        return level.getLayers().get(HIDDEN_PATTERN_LAYER_NAME).getObjects().getByType(RectangleMapObject.class).get(cardIndex);
     }
 
     public Array<Card> getCards() {
@@ -103,5 +112,51 @@ public class HiddenPlayingCard {
 
     public Array<Integer> getHiddenPlayingCards() {
         return hiddenPlayingCards;
+    }
+
+    public boolean hiddenPatternRevealed(TupleValueIndex[][] grid, Array<ReelTile> reelTiles, int levelWidth, int levelHeight) {
+        boolean hiddenPattern = true;
+        for (MapObject mapObject : level.getLayers().get(HIDDEN_PATTERN_LAYER_NAME).getObjects().getByType(RectangleMapObject.class)) {
+            Rectangle mapRectangle = ((RectangleMapObject) mapObject).getRectangle();
+            int c = PuzzleGridTypeReelTile.getColumnFromLevel(mapRectangle.getX());
+            int r = PuzzleGridTypeReelTile.getRowFromLevel(mapRectangle.getY(), levelHeight);
+            if ((r >= 0) & (r <= levelHeight) & (c >= 0) & (c <= levelWidth)) {
+                if (grid[r][c] != null) {
+                    if (!reelTiles.get(grid[r][c].getIndex()).isReelTileDeleted())
+                        hiddenPattern = false;
+                }
+            } else {
+                Gdx.app.debug(SlotPuzzleConstants.SLOT_PUZZLE, "I don't respond to r=" + r + "c=" + c);
+            }
+        }
+        return hiddenPattern;
+    }
+
+    public boolean isHiddenPlayingCardsRevealed(TupleValueIndex[][] grid, Array<ReelTile> reelTiles, int levelWidth, int levelHeight) {
+        boolean hiddenPlayingCardsRevealed = true;
+        for (Integer hiddenPlayingCard : hiddenPlayingCards) {
+            if (isHiddenPlayingCardRevealed(grid, reelTiles, levelWidth, levelHeight, hiddenPlayingCard))
+                return false;
+        }
+        return hiddenPlayingCardsRevealed;
+    }
+
+    private boolean isHiddenPlayingCardRevealed(TupleValueIndex[][] grid, Array<ReelTile> reelTiles, int levelWidth, int levelHeight, Integer hiddenPlayingCard) {
+        MapObject mapObject = level.getLayers().get(HIDDEN_PATTERN_LAYER_NAME).getObjects().getByType(RectangleMapObject.class).get(hiddenPlayingCard);
+        Rectangle mapRectangle = ((RectangleMapObject) mapObject).getRectangle();
+        for (int co = (int) (mapRectangle.getX()); co < (int) (mapRectangle.getX() + mapRectangle.getWidth()); co += PlayScreen.TILE_WIDTH) {
+            for (int ro = (int) (mapRectangle.getY()); ro < (int) (mapRectangle.getY() + mapRectangle.getHeight()); ro += PlayScreen.TILE_HEIGHT) {
+                int c = PuzzleGridTypeReelTile.getColumnFromLevel(co);
+                int r = PuzzleGridTypeReelTile.getRowFromLevel(ro, levelHeight);
+                if ((r >= 0) & (r <= levelHeight) & (c >= 0) & (c <= levelWidth)) {
+                    if (grid[r][c] != null) {
+                        if (!reelTiles.get(grid[r][c].getIndex()).isReelTileDeleted())
+                            return true;
+                    } else
+                        new GdxRuntimeException("I don't respond to r=" + r + "c=" + c);
+                }
+            }
+        }
+        return false;
     }
 }

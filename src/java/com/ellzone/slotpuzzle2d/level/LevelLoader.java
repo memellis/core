@@ -37,6 +37,7 @@ public class LevelLoader {
  	private Array<Card> cards;
     private Array<Integer> hiddenPlayingCards;
     private LevelCallBack stoppedSpinningCallback, stoppedFlashingCallback;
+    private HiddenPlayingCard hiddenPlayingCard;
 
     public LevelLoader(AnnotationAssetManager annotationAssetManager, LevelDoor levelDoor, MapTile mapTile, Array<ReelTile> reelTiles) {
         this.annotationAssetManager = annotationAssetManager;
@@ -85,7 +86,7 @@ public class LevelLoader {
 
     private void initialiseHiddenPlayingCards() {
         TextureAtlas carddeckAtlas = annotationAssetManager.get(AssetsAnnotation.CARDDECK);
-        HiddenPlayingCard hiddenPlayingCard = new HiddenPlayingCard(tiledMapLevel, carddeckAtlas);
+        hiddenPlayingCard = new HiddenPlayingCard(tiledMapLevel, carddeckAtlas);
         cards = hiddenPlayingCard.getCards();
         hiddenPlayingCards = hiddenPlayingCard.getHiddenPlayingCards();
     }
@@ -188,5 +189,9 @@ public class LevelLoader {
 
     public Array<Integer> getHiddenPlayingCards() {
         return hiddenPlayingCards;
+    }
+
+    public HiddenPlayingCard getHiddenPlayingCard() {
+        return hiddenPlayingCard;
     }
 }
