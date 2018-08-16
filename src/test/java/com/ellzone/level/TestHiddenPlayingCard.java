@@ -85,6 +85,24 @@ public class TestHiddenPlayingCard {
         tearDown();
     }
 
+    @Test
+    public void testNumberOfHiddenPlayingCardsCreated() {
+        setUpMocks();
+        setExpectationsLevelMaxRectangleMapObjects();
+        setExpectationsLevelHasTwoCards();
+        expectSpritesInGetHiddenPlayingCardFromLevel();
+        getRectangleMapObject();
+        getCardRectangle(80.0f);
+        getCardRectangle(240.0f);
+        expectSpritesInGetHiddenPlayingCardFromLevel();
+        getRectangleMapObject();
+        replayAll();
+        HiddenPlayingCard hiddenPlayingCard = new HiddenPlayingCard(levelMock, textureAtlasMock);
+        assertThat(hiddenPlayingCard.getCards().size, is(2));
+        verifyAll();
+        tearDown();
+    }
+
     private void setUpMocks() {
         levelMock = createMock(TiledMap.class);
         textureAtlasMock = createMock(TextureAtlas.class);
@@ -147,16 +165,22 @@ public class TestHiddenPlayingCard {
 
 
     private void setExpectations(boolean expectCardRevealed) {
+        setExpectationsLevelMaxRectangleMapObjects();
+        setExpectationsLevelHasTwoCards();
+        setUpExpectationsIsHiddenCardsRevealed(expectCardRevealed);
+    }
+
+    private void setExpectationsLevelHasTwoCards() {
+        expect(levelMock.getProperties()).andReturn(mapPropertiesMock);
+        expect(mapPropertiesMock.get("Number Of Cards", String.class)).andReturn("2");
+    }
+
+    private void setExpectationsLevelMaxRectangleMapObjects() {
         expect(levelMock.getLayers()).andReturn(mapLayersMock);
         expect(mapLayersMock.get(LevelCreator.HIDDEN_PATTERN_LAYER_NAME)).andReturn(mapLayerMock);
         expect(mapLayerMock.getObjects()).andReturn(mapObjectsMock);
         expect(mapObjectsMock.getByType(RectangleMapObject.class)).andReturn(rectangleMapObjectsMock);
         rectangleMapObjectsMock.size = 10;
-
-        expect(levelMock.getProperties()).andReturn(mapPropertiesMock);
-        expect(mapPropertiesMock.get("Number Of Cards", String.class)).andReturn("2");
-
-        setUpExpectationsIsHiddenCardsRevealed(expectCardRevealed);
     }
 
     private void setUpExpectationsCard(float cardY) {
@@ -265,9 +289,10 @@ public class TestHiddenPlayingCard {
                textureAtlasMock,
                rectangleMock);
 
-        for (int loop = 1; loop < 8; loop++)
-            replay(reelTiles.get(loop * testMatrix[0].length + 1),
-                           reelTiles.get(loop * testMatrix[0].length + 2));
+        if(reelTiles != null)
+            for (int loop = 1; loop < 8; loop++)
+                replay(reelTiles.get(loop * testMatrix[0].length + 1),
+                               reelTiles.get(loop * testMatrix[0].length + 2));
     }
 
     private void verifyAll() {
@@ -284,9 +309,10 @@ public class TestHiddenPlayingCard {
                textureAtlasMock,
                rectangleMock);
 
-        for (int loop = 1; loop < 8; loop++)
-            verify(reelTiles.get(loop * testMatrix[0].length + 1),
-                   reelTiles.get(loop * testMatrix[0].length + 2));
+        if (reelTiles != null)
+            for (int loop = 1; loop < 8; loop++)
+                verify(reelTiles.get(loop * testMatrix[0].length + 1),
+                       reelTiles.get(loop * testMatrix[0].length + 2));
     }
 
     private void tearDown() {
