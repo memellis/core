@@ -10,6 +10,7 @@ import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.GdxRuntimeException;
 import com.ellzone.slotpuzzle2d.SlotPuzzleConstants;
 import com.ellzone.slotpuzzle2d.puzzlegrid.PuzzleGridType;
+import com.ellzone.slotpuzzle2d.puzzlegrid.PuzzleGridTypeReelTile;
 import com.ellzone.slotpuzzle2d.puzzlegrid.TupleValueIndex;
 import com.ellzone.slotpuzzle2d.scene.MapTile;
 import com.ellzone.slotpuzzle2d.screens.PlayScreen;
@@ -46,13 +47,13 @@ public class LevelLoader {
         this.reelTiles = reelTiles;
     }
 
-     public Array<ReelTile> createLevel() {
+     public Array<ReelTile> createLevel(int levelWidth, int levelHeight) {
         tiledMapLevel = getLevelAssets(annotationAssetManager);
         if (levelDoor.getLevelType().equals(PLAYING_CARD_LEVEL_TYPE))
             initialiseHiddenPlayingCards();
         addReelsFromLevel();
-        reelTiles = checkLevel(reelTiles);
-        reelTiles = adjustForAnyLonelyReels(reelTiles);
+        reelTiles = checkLevel(reelTiles, levelWidth, levelHeight);
+        reelTiles = adjustForAnyLonelyReels(reelTiles, levelWidth, levelHeight);
         return reelTiles;
     }
 
@@ -123,8 +124,8 @@ public class LevelLoader {
         stoppedFlashingCallback.onEvent(source);
     }
 
-    private Array<ReelTile> checkLevel(Array<ReelTile> reelLevel) {
-        TupleValueIndex[][] grid = populateMatchGrid(reelLevel);
+    private Array<ReelTile> checkLevel(Array<ReelTile> reelLevel, int levelWidth, int levelHeight) {
+        TupleValueIndex[][] grid = populateMatchGrid(reelLevel, levelWidth , levelHeight);
         int arraySizeR = grid.length;
         int arraySizeC = grid[0].length;
 
@@ -139,9 +140,9 @@ public class LevelLoader {
         return reelLevel;
     }
 
-    private Array<ReelTile> adjustForAnyLonelyReels(Array<ReelTile> levelReel) {
+    private Array<ReelTile> adjustForAnyLonelyReels(Array<ReelTile> levelReel, int levelWidth, int levelHeight) {
         PuzzleGridType puzzleGrid = new PuzzleGridType();
-        TupleValueIndex[][] grid = populateMatchGrid(levelReel);
+        TupleValueIndex[][] grid = populateMatchGrid(levelReel, levelWidth, levelHeight);
         Array<TupleValueIndex> lonelyTiles = puzzleGrid.getLonelyTiles(grid);
         for (TupleValueIndex lonelyTile : lonelyTiles) {
             if (lonelyTile.r == 0) {
@@ -159,13 +160,12 @@ public class LevelLoader {
         return levelReel;
     }
 
-    private TupleValueIndex[][] populateMatchGrid(Array<ReelTile> reelLevel) {
-        TupleValueIndex[][] matchGrid = new TupleValueIndex[9][12];
+    public TupleValueIndex[][] populateMatchGrid(Array<ReelTile> reelLevel, int levelWidth, int levelHeight) {
+        TupleValueIndex[][] matchGrid = new TupleValueIndex[levelHeight][levelWidth];
         int r, c;
         for (int i = 0; i < reelLevel.size; i++) {
-            c = (int) (reelLevel.get(i).getX() - PlayScreen.PUZZLE_GRID_START_X) / PlayScreen.TILE_WIDTH;
-            r = (int) (reelLevel.get(i).getY() - PlayScreen.PUZZLE_GRID_START_Y) / PlayScreen.TILE_HEIGHT;
-            r = GAME_LEVEL_HEIGHT - r;
+            r = PuzzleGridTypeReelTile.getRowFromLevel(reelLevel.get(i).getY(), GAME_LEVEL_HEIGHT);
+            c = PuzzleGridTypeReelTile.getColumnFromLevel(reelLevel.get(i).getX());
             if ((r >= 0) & (r <= GAME_LEVEL_HEIGHT) & (c >= 0) & (c <= GAME_LEVEL_WIDTH)) {
                 if (reelLevel.get(i).isReelTileDeleted()) {
                     matchGrid[r][c] = new TupleValueIndex(r, c, i, -1);

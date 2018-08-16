@@ -79,7 +79,7 @@ import static com.ellzone.slotpuzzle2d.scene.Hud.addScore;
 public class PlayScreen implements Screen {
     public static final int TILE_WIDTH = 40;
 	public static final int TILE_HEIGHT = 40;
-	public static final int GAME_LEVEL_WIDTH = 11;
+	public static final int GAME_LEVEL_WIDTH = 12;
 	public static final int GAME_LEVEL_HEIGHT = 9;
 	public static final int SLOT_REEL_OBJECT_LAYER = 2;
 	private static final String HIDDEN_PATTERN_LAYER_NAME = "Hidden Pattern Object";
@@ -90,9 +90,9 @@ public class PlayScreen implements Screen {
     private static final String PLAYING_CARD_LEVEL_TYPE = "PlayingCard";
     private static final String HIDDEN_PATTERN_LEVEL_TYPE = "HiddenPattern";
 	private static final String SLOTPUZZLE_SCREEN = "PlayScreen";
-	private static final String LEVEL_TIP_DESC =  "Reveal the hidden pattern to complete the level.";
-	private static final String LEVEL_LOST_DESC =  "Sorry you lost that level. Touch/Press to restart the level.";
-	private static final String LEVEL_WON_DESC =  "Well done you've won that level. Touch/Press to start the nextlevel.";
+	private static final String LEVEL_TIP_DESC = "Reveal the hidden pattern to complete the level.";
+	private static final String LEVEL_LOST_DESC = "Sorry you lost that level. Touch/Press to restart the level.";
+	private static final String LEVEL_WON_DESC = "Well done you've won that level. Touch/Press to start the nextlevel.";
     private LevelLoader levelLoader;
 
     public enum PlayStates {INITIALISING,
@@ -182,7 +182,7 @@ public class PlayScreen implements Screen {
 
     private void loadLevel() {
         levelLoader = getLevelLoader();
-        reelTiles = levelLoader.createLevel();
+        reelTiles = levelLoader.createLevel(GAME_LEVEL_WIDTH, GAME_LEVEL_HEIGHT);
         reelsSpinning = reelTiles.size - 1;
         cards = levelLoader.getCards();
         hiddenPlayingCards = levelLoader.getHiddenPlayingCards();
@@ -435,28 +435,8 @@ public class PlayScreen implements Screen {
 
     private boolean testForAnyLonelyReels(Array<ReelTile> levelReel) {
 		PuzzleGridType puzzleGrid = new PuzzleGridType();
-		TupleValueIndex[][] grid = populateMatchGrid(levelReel);
+		TupleValueIndex[][] grid = levelLoader.populateMatchGrid(levelReel, GAME_LEVEL_WIDTH , GAME_LEVEL_HEIGHT);
 		return puzzleGrid.anyLonelyTiles(grid);
-	}
-
-	private TupleValueIndex[][] populateMatchGrid(Array<ReelTile> reelLevel) {
-		TupleValueIndex[][] matchGrid = new TupleValueIndex[9][12];
-		int r, c;
-		for (int i = 0; i < reelLevel.size; i++) {
-			c = (int) (reelLevel.get(i).getX() - PlayScreen.PUZZLE_GRID_START_X) / PlayScreen.TILE_WIDTH;
-			r = (int) (reelLevel.get(i).getY() - PlayScreen.PUZZLE_GRID_START_Y) / PlayScreen.TILE_HEIGHT;
-			r = GAME_LEVEL_HEIGHT - r;
-			if ((r >= 0) & (r <= GAME_LEVEL_HEIGHT) & (c >= 0) & (c <= GAME_LEVEL_WIDTH)) {
-				if (reelLevel.get(i).isReelTileDeleted()) {
-					matchGrid[r][c] = new TupleValueIndex(r, c, i, -1);
-				} else {
-					matchGrid[r][c] = new TupleValueIndex(r, c, i, reelLevel.get(i).getEndReel());
-				}
-			} else {
-				Gdx.app.debug(SlotPuzzleConstants.SLOT_PUZZLE, "I don't know how to deal with r="+r+" c="+c);
-			}
-		}
-		return matchGrid;
 	}
 
 	private void deleteReelAnimation(ReelTile source) {
@@ -638,7 +618,7 @@ public class PlayScreen implements Screen {
 
 	private void testPlayingCardLevelWon() {
 		PuzzleGridType puzzleGrid = new PuzzleGridType();
-		TupleValueIndex[][] matchGrid = populateMatchGrid(reelTiles);
+		TupleValueIndex[][] matchGrid = levelLoader.populateMatchGrid(reelTiles, GAME_LEVEL_WIDTH, GAME_LEVEL_HEIGHT);
 		puzzleGrid.matchGridSlots(matchGrid);
 		if (hiddenPlayingCard.isHiddenPlayingCardsRevealed(matchGrid, reelTiles, GAME_LEVEL_WIDTH, GAME_LEVEL_HEIGHT))
 			iWonTheLevel();
@@ -646,7 +626,7 @@ public class PlayScreen implements Screen {
 
 	private void testForHiddenPlatternLevelWon() {
 		PuzzleGridType puzzleGrid = new PuzzleGridType();
-		TupleValueIndex[][] matchGrid = populateMatchGrid(reelTiles);
+		TupleValueIndex[][] matchGrid = levelLoader.populateMatchGrid(reelTiles, GAME_LEVEL_WIDTH, GAME_LEVEL_HEIGHT);
 		puzzleGrid.matchGridSlots(matchGrid);
 		if (hiddenPlayingCard.hiddenPatternRevealed(matchGrid, reelTiles, GAME_LEVEL_WIDTH, GAME_LEVEL_HEIGHT))
 			iWonTheLevel();
@@ -689,11 +669,10 @@ public class PlayScreen implements Screen {
 		touchY = Gdx.input.getY();
 		Vector2 newPoints = new Vector2(touchX, touchY);
 		newPoints = viewport.unproject(newPoints);
-		int c = (int) (newPoints.x - PlayScreen.PUZZLE_GRID_START_X) / PlayScreen.TILE_WIDTH;
-		int r = (int) (newPoints.y - PlayScreen.PUZZLE_GRID_START_Y) / PlayScreen.TILE_HEIGHT;
-		r = GAME_LEVEL_HEIGHT - r;
+		int c = PuzzleGridTypeReelTile.getColumnFromLevel(newPoints.x);
+		int r = PuzzleGridTypeReelTile.getRowFromLevel(newPoints.y, GAME_LEVEL_HEIGHT);
 		if ((r >= 0) & (r <= GAME_LEVEL_HEIGHT) & (c >= 0) & (c <= GAME_LEVEL_WIDTH)) {
-			TupleValueIndex[][] grid = populateMatchGrid(reelTiles);
+			TupleValueIndex[][] grid = levelLoader.populateMatchGrid(reelTiles, GAME_LEVEL_WIDTH, GAME_LEVEL_HEIGHT);
 			ReelTile reelTile = reelTiles.get(grid[r][c].index);
             AnimatedReel animatedReel = animatedReelHelper.getAnimatedReels().get(grid[r][c].index);
 			if (!reelTile.isReelTileDeleted()) {
@@ -730,50 +709,6 @@ public class PlayScreen implements Screen {
         pullLeverSound.play();
         reelSpinningSound.play();
     }
-
-//    private boolean hiddenPatternRevealed(TupleValueIndex[][] grid) {
-//		boolean hiddenPattern = true;
-//		for (MapObject mapObject : level.getLayers().get(HIDDEN_PATTERN_LAYER).getObjects().getByType(RectangleMapObject.class)) {
-//			Rectangle mapRectangle = ((RectangleMapObject) mapObject).getRectangle();
-//			int c = (int) (mapRectangle.getX() - PlayScreen.PUZZLE_GRID_START_X) / PlayScreen.TILE_WIDTH;
-//			int r = (int) (mapRectangle.getY() - PlayScreen.PUZZLE_GRID_START_Y) / PlayScreen.TILE_HEIGHT;
-//			r = GAME_LEVEL_HEIGHT - r;
-//			if ((r >= 0) & (r <= GAME_LEVEL_HEIGHT) & (c >= 0) & (c <= GAME_LEVEL_WIDTH)) {
-//				if (grid[r][c] != null) {
-//					if (!reelTiles.get(grid[r][c].getIndex()).isReelTileDeleted())
-//						hiddenPattern = false;
-//				}
-//			} else {
-//				Gdx.app.debug(SlotPuzzleConstants.SLOT_PUZZLE, "I don't respond to r="+r+"c="+c);
-//			}
-//		}
-//		return hiddenPattern;
-//	}
-
-//	private boolean isHiddenPlayingCardsRevealed(TupleValueIndex[][] grid) {
-//		boolean isHiddenPlayingCardsRevealed = true;
-//		for (Integer hiddenPlayingCard : hiddenPlayingCards) {
-//		    MapObject mapObject = level.getLayers().get(HIDDEN_PATTERN_LAYER_NAME).getObjects().getByType(RectangleMapObject.class).get(hiddenPlayingCard);
-//			Rectangle mapRectangle = ((RectangleMapObject) mapObject).getRectangle();
-//			for (int ro = (int) (mapRectangle.getX()); ro < (int) (mapRectangle.getX() + mapRectangle.getWidth()); ro += PlayScreen.TILE_WIDTH) {
-//			    for (int co = (int) (mapRectangle.getY()) ; co < (int) (mapRectangle.getY() + mapRectangle.getHeight()); co += PlayScreen.TILE_HEIGHT) {
-//					int c = (int) (ro - PlayScreen.PUZZLE_GRID_START_X) / PlayScreen.TILE_WIDTH;
-//					int r = (int) (co - PlayScreen.PUZZLE_GRID_START_Y) / PlayScreen.TILE_HEIGHT;
-//					r = GAME_LEVEL_HEIGHT - r;
-//					if ((r >= 0) & (r <= GAME_LEVEL_HEIGHT) & (c >= 0) & (c <= GAME_LEVEL_WIDTH)) {
-//						if (grid[r][c] != null) {
-//							if (!reelTiles.get(grid[r][c].getIndex()).isReelTileDeleted()) {
-//								isHiddenPlayingCardsRevealed = false;
-//							}
-//						}
-//					} else {
-//						Gdx.app.debug(SlotPuzzleConstants.SLOT_PUZZLE, "I don't respond to r="+r+"c="+c);
-//					}
-//			    }
-//			}
-//		}
-//		return isHiddenPlayingCardsRevealed;
-//	}
 
 	private ReelTileGridValue[][] flashSlots(Array<ReelTile> reelTiles) {
 		PuzzleGridTypeReelTile puzzleGridTypeReelTile = new PuzzleGridTypeReelTile();
