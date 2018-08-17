@@ -10,12 +10,14 @@ import com.badlogic.gdx.maps.objects.RectangleMapObject;
 import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.utils.Array;
+import com.ellzone.slotpuzzle2d.level.Card;
 import com.ellzone.slotpuzzle2d.level.HiddenPlayingCard;
 import com.ellzone.slotpuzzle2d.level.LevelCreator;
 import com.ellzone.slotpuzzle2d.puzzlegrid.TupleValueIndex;
 import com.ellzone.slotpuzzle2d.screens.PlayScreen;
 import com.ellzone.slotpuzzle2d.sprites.ReelTile;
 import com.ellzone.slotpuzzle2d.utils.InputMatrix;
+import com.ellzone.slotpuzzle2d.utils.Random;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -27,16 +29,20 @@ import org.powermock.reflect.Whitebox;
 import static org.easymock.EasyMock.anyInt;
 import static org.easymock.EasyMock.anyString;
 import static org.easymock.EasyMock.expect;
+import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.powermock.api.easymock.PowerMock.createMock;
 import static org.powermock.api.easymock.PowerMock.replay;
 import static org.powermock.api.easymock.PowerMock.verify;
 
 @RunWith(PowerMockRunner.class)
-@PrepareForTest({HiddenPlayingCard.class, ReelTile.class})
+@PrepareForTest({HiddenPlayingCard.class, ReelTile.class, Random.class})
 
 public class TestHiddenPlayingCard {
+    public static final int MAX_NUMBER_OF_HIDDEN_PLAYING_CARDS = 10;
+    public static final int MAX_NUMBER_OF_CARD_VALUES = 13;
     private TiledMap levelMock;
     private TextureAtlas textureAtlasMock;
     private MapLayers mapLayersMock;
@@ -47,9 +53,11 @@ public class TestHiddenPlayingCard {
     private MapProperties mapPropertiesMock;
     private Sprite spriteBackMock, spriteFrontMock;
     private Rectangle rectangleMock;
+    private Random randomMock;
     private int[][] testMatrix;
     private TupleValueIndex[][] testGrid;
     private Array<ReelTile> reelTiles;
+    private int MAX_NUMBER_SUITS;
 
     @Test
     public void testHidddenPlayCardIsNotRevealed() {
@@ -103,6 +111,28 @@ public class TestHiddenPlayingCard {
         tearDown();
     }
 
+    @Test
+    public void testDuplicateCardsCreated() {
+        setUpMocks();
+        setUpRandomMock();
+        setExpectationsLevelMaxRectangleMapObjects();
+        setExpectationsLevelHasTwoCards();
+        expectSpritesInGetHiddenPlayingCardFromLevel();
+        getRectangleMapObject();
+        expectRandomNextInt();
+        getCardRectangle(80.0f);
+        getCardRectangle(240.0f);
+        expectSpritesInGetHiddenPlayingCardFromLevel();
+        getRectangleMapObject();
+        replayAll();
+        HiddenPlayingCard hiddenPlayingCard = new HiddenPlayingCard(levelMock, textureAtlasMock);
+        Array<Integer> hiddenPlayingCards = hiddenPlayingCard.getHiddenPlayingCards();
+        assertThat(hiddenPlayingCards.size, is(2));
+        assertThat(hiddenPlayingCards.get(0), is(not(equalTo(hiddenPlayingCards.get(1)))));
+        verifyAll();
+        tearDown();
+    }
+
     private void setUpMocks() {
         levelMock = createMock(TiledMap.class);
         textureAtlasMock = createMock(TextureAtlas.class);
@@ -115,6 +145,11 @@ public class TestHiddenPlayingCard {
         spriteBackMock = createMock(Sprite.class);
         spriteFrontMock = createMock(Sprite.class);
         rectangleMock = createMock(Rectangle.class);
+        randomMock = createMock(Random.class);
+    }
+
+    private void setUpRandomMock() {
+        PowerMock.mockStatic(Random.class);
     }
 
     private void createGrid(int[][] matrix) {
@@ -276,6 +311,15 @@ public class TestHiddenPlayingCard {
         expect(reelTiles.get((cardRow - 2) * testMatrix[0].length + column).isReelTileDeleted()).andReturn(testGrid[cardRow - 2][column].value < 0);
     }
 
+    private void expectRandomNextInt() {
+        expect(Random.getInstance()).andReturn(randomMock).times(15);
+        expect(randomMock.nextInt(MAX_NUMBER_OF_HIDDEN_PLAYING_CARDS)).andReturn(1).times(12);
+        MAX_NUMBER_SUITS = 4;
+        expect(randomMock.nextInt(MAX_NUMBER_SUITS)).andReturn(1).times(1);
+        expect(randomMock.nextInt(MAX_NUMBER_OF_CARD_VALUES)).andReturn(1).times(1);
+        expect(randomMock.nextInt(MAX_NUMBER_OF_HIDDEN_PLAYING_CARDS - 1)).andReturn(1).times(1);
+    }
+
     private void replayAll() {
         replay(levelMock,
                mapLayersMock,
@@ -287,7 +331,9 @@ public class TestHiddenPlayingCard {
                spriteBackMock,
                spriteFrontMock,
                textureAtlasMock,
-               rectangleMock);
+               rectangleMock,
+               Random.class,
+               randomMock);
 
         if(reelTiles != null)
             for (int loop = 1; loop < 8; loop++)
@@ -307,7 +353,9 @@ public class TestHiddenPlayingCard {
                spriteBackMock,
                spriteFrontMock,
                textureAtlasMock,
-               rectangleMock);
+               rectangleMock,
+               Random.class,
+               randomMock);
 
         if (reelTiles != null)
             for (int loop = 1; loop < 8; loop++)
@@ -332,6 +380,7 @@ public class TestHiddenPlayingCard {
         spriteBackMock = null;
         spriteFrontMock = null;
         rectangleMock = null;
+        randomMock = null;
     }
 
     private void tearDownTestFixtures() {

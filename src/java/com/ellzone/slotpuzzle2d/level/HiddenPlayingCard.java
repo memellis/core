@@ -80,6 +80,18 @@ public class HiddenPlayingCard {
 
     private int getNextRandomHiddenPlayCard() {
         int nextRandomHiddenPlayCard = Random.getInstance().nextInt(maxNumberOfPlayingCardsForLevel);
+        int theSamenextRandomHiddenPlayCardCount = 0;
+        while ((hiddenPlayingCards.indexOf(nextRandomHiddenPlayCard, true) >= 0) &
+               (theSamenextRandomHiddenPlayCardCount < 10)) {
+            nextRandomHiddenPlayCard = Random.getInstance().nextInt(maxNumberOfPlayingCardsForLevel);
+            theSamenextRandomHiddenPlayCardCount++;
+        }
+        if (theSamenextRandomHiddenPlayCardCount >= 10) {
+            hiddenPlayingCards.sort();
+            int lastHiddenPlayinGCard = hiddenPlayingCards.get(hiddenPlayingCards.size - 1);
+            nextRandomHiddenPlayCard = Random.getInstance().nextInt(maxNumberOfPlayingCardsForLevel - lastHiddenPlayinGCard)
+                                     + lastHiddenPlayinGCard;
+        }
         hiddenPlayingCards.add(nextRandomHiddenPlayCard);
         return nextRandomHiddenPlayCard;
     }
