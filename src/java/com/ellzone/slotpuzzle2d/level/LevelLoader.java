@@ -38,7 +38,7 @@ public class LevelLoader {
  	private Array<Card> cards;
     private Array<Integer> hiddenPlayingCards;
     private LevelCallBack stoppedSpinningCallback, stoppedFlashingCallback;
-    private HiddenPlayingCard hiddenPlayingCard;
+    private HiddenPattern hiddenPattern;
 
     public LevelLoader(AnnotationAssetManager annotationAssetManager, LevelDoor levelDoor, MapTile mapTile, Array<ReelTile> reelTiles) {
         this.annotationAssetManager = annotationAssetManager;
@@ -51,6 +51,8 @@ public class LevelLoader {
         tiledMapLevel = getLevelAssets(annotationAssetManager);
         if (levelDoor.getLevelType().equals(PLAYING_CARD_LEVEL_TYPE))
             initialiseHiddenPlayingCards();
+        else
+            initialiseHiddenShape();
         addReelsFromLevel();
         reelTiles = checkLevel(reelTiles, levelWidth, levelHeight);
         reelTiles = adjustForAnyLonelyReels(reelTiles, levelWidth, levelHeight);
@@ -87,9 +89,14 @@ public class LevelLoader {
 
     private void initialiseHiddenPlayingCards() {
         TextureAtlas carddeckAtlas = annotationAssetManager.get(AssetsAnnotation.CARDDECK);
-        hiddenPlayingCard = new HiddenPlayingCard(tiledMapLevel, carddeckAtlas);
+        hiddenPattern = new HiddenPlayingCard(tiledMapLevel, carddeckAtlas);
+        HiddenPlayingCard hiddenPlayingCard = (HiddenPlayingCard) hiddenPattern;
         cards = hiddenPlayingCard.getCards();
         hiddenPlayingCards = hiddenPlayingCard.getHiddenPlayingCards();
+    }
+
+    private void initialiseHiddenShape() {
+        hiddenPattern = new HiddenShape(tiledMapLevel);
     }
 
     private void addReel(Rectangle mapRectangle, int index) {
@@ -191,7 +198,12 @@ public class LevelLoader {
         return hiddenPlayingCards;
     }
 
-    public HiddenPlayingCard getHiddenPlayingCard() {
-        return hiddenPlayingCard;
-    }
+//    public HiddenPlayingCard getHiddenPlayingCard() {
+//        if (hiddenPattern instanceof HiddenPlayingCard)
+//            return (HiddenPlayingCard) hiddenPattern;
+//        else
+//            return null;
+//    }
+
+    public HiddenPattern getHiddenPattern() {return hiddenPattern; }
 }

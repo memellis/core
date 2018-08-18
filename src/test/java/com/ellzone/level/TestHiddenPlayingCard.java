@@ -10,6 +10,7 @@ import com.badlogic.gdx.maps.objects.RectangleMapObject;
 import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.utils.Array;
+import com.ellzone.slotpuzzle2d.level.HiddenPattern;
 import com.ellzone.slotpuzzle2d.level.HiddenPlayingCard;
 import com.ellzone.slotpuzzle2d.level.LevelCreator;
 import com.ellzone.slotpuzzle2d.puzzlegrid.TupleValueIndex;
@@ -79,10 +80,10 @@ public class TestHiddenPlayingCard {
         setExpectations(false);
         replayAll();
         HiddenPlayingCard hiddenPlayingCard = new HiddenPlayingCard(levelMock, textureAtlasMock);
-        assertThat(hiddenPlayingCard.isHiddenPlayingCardsRevealed(testGrid,
-                                                                  reelTiles,
-                                                                  testGrid[0].length,
-                                                                  testGrid.length),
+        assertThat(hiddenPlayingCard.isHiddenPatternRevealed(testGrid,
+                                                             reelTiles,
+                                                              testGrid[0].length,
+                                                               testGrid.length),
                    is(false));
         verifyAll();
     }
@@ -94,10 +95,10 @@ public class TestHiddenPlayingCard {
         setExpectations(true);
         replayAll();
         HiddenPlayingCard hiddenPlayingCard = new HiddenPlayingCard(levelMock, textureAtlasMock);
-        assertThat(hiddenPlayingCard.isHiddenPlayingCardsRevealed(testGrid,
-                                                                  reelTiles,
-                                                                  testGrid[0].length,
-                                                                  testGrid.length),
+        assertThat(hiddenPlayingCard.isHiddenPatternRevealed(testGrid,
+                                                             reelTiles,
+                                                             testGrid[0].length,
+                                                             testGrid.length),
                    is(true));
         verifyAll();
     }
@@ -172,20 +173,20 @@ public class TestHiddenPlayingCard {
         expect(rectangleMapObjectsMock.get(anyInt())).andReturn(rectangleMapObjectMock).times(5);
     }
 
-    @Test(expected = HiddenPlayingCard.HiddenPlayingCardPuzzleGridException.class)
+    @Test(expected = HiddenPattern.HiddenPatternPuzzleGridException.class)
     public void isHiddenPlayingCardRevealeThrowsHiddenPlayingCardPuzzleGridException() {
         setUpMocks();
         testMatrix = createMatrixNoCardsRevealed();
         createGrid(testMatrix);
         testGrid[7][1] = null;
-        setExpectationsAGridCellIsNull(false);
+        setExpectationsAGridCellIsNull();
         replayAll();
         HiddenPlayingCard hiddenPlayingCard = new HiddenPlayingCard(levelMock, textureAtlasMock);
-        assertThat(hiddenPlayingCard.isHiddenPlayingCardsRevealed(testGrid,
-                                                                  reelTiles,
-                                                                  testGrid[0].length,
-                                                                  testGrid.length),
-                                                                  is(false));
+        assertThat(hiddenPlayingCard.isHiddenPatternRevealed(testGrid,
+                                                             reelTiles,
+                                                             testGrid[0].length,
+                                                             testGrid.length),
+                                                             is(false));
         verifyAll();
     }
 
@@ -384,20 +385,20 @@ public class TestHiddenPlayingCard {
             expect(randomMock.nextInt(nextInt)).andReturn(1).times(1);
     }
 
-    private void setExpectationsAGridCellIsNull(boolean expectCardRevealed) {
+    private void setExpectationsAGridCellIsNull() {
         setExpectationsLevelMaxRectangleMapObjects();
         setExpectationsSetNumberOfCardsForTheLevel(2);
-        setUpExpectationsIsHiddenCardsRevealedAGridCellIsNull(expectCardRevealed);
+        setUpExpectationsIsHiddenCardsRevealedAGridCellIsNull();
     }
 
-    private void setUpExpectationsIsHiddenCardsRevealedAGridCellIsNull(boolean expectCardRevealed) {
+    private void setUpExpectationsIsHiddenCardsRevealedAGridCellIsNull() {
         setUpExpectationsCard(80.0f);
         setUpExpectationsGetCardRectangleFromLevel();
         expectForHiddenCardTile(80.0f);
         setUpExpectationsCard(240.0f);
         setUpExpectationsGetCardRectangleFromLevel();
         expectForHiddenCardTile(240.0f);
-        setUpExpectationsCardRevealed(3, expectCardRevealed);
+        setUpExpectationsCardRevealed(3, false);
     }
 
     private void replayAll() {

@@ -43,6 +43,7 @@ import com.ellzone.slotpuzzle2d.effects.ReelAccessor;
 import com.ellzone.slotpuzzle2d.effects.ScoreAccessor;
 import com.ellzone.slotpuzzle2d.effects.SpriteAccessor;
 import com.ellzone.slotpuzzle2d.level.Card;
+import com.ellzone.slotpuzzle2d.level.HiddenPattern;
 import com.ellzone.slotpuzzle2d.level.HiddenPlayingCard;
 import com.ellzone.slotpuzzle2d.level.LevelCallBack;
 import com.ellzone.slotpuzzle2d.level.LevelDoor;
@@ -82,8 +83,6 @@ public class PlayScreen implements Screen {
 	public static final int GAME_LEVEL_WIDTH = 12;
 	public static final int GAME_LEVEL_HEIGHT = 9;
 	public static final int SLOT_REEL_OBJECT_LAYER = 2;
-	private static final String HIDDEN_PATTERN_LAYER_NAME = "Hidden Pattern Object";
-	private static final int HIDDEN_PATTERN_LAYER = 0;
 	public static final float PUZZLE_GRID_START_X = 160.0f;
 	public static final float PUZZLE_GRID_START_Y = 40.0f;
     private static final String REELS_LAYER_NAME = "Reels";
@@ -139,9 +138,10 @@ public class PlayScreen implements Screen {
 	private LevelPopUp levelPopUp, levelLostPopUp, levelWonPopUp;
 	private Array<Sprite> popUpSprites, levelLostSprites, levelWonSprites;
     private LevelDoor levelDoor;
-	private Array<Integer> hiddenPlayingCards;
-	private HiddenPlayingCard hiddenPlayingCard;
-	private Array<Card> cards;
+//	private Array<Integer> hiddenPlayingCards;
+//	private HiddenPlayingCard hiddenPlayingCard;
+	private HiddenPattern hiddenPattern;
+//	private Array<Card> cards;
 	private MapTile mapTile;
 	private int mapWidth;
     private int mapHeight;
@@ -184,9 +184,8 @@ public class PlayScreen implements Screen {
         levelLoader = getLevelLoader();
         reelTiles = levelLoader.createLevel(GAME_LEVEL_WIDTH, GAME_LEVEL_HEIGHT);
         reelsSpinning = reelTiles.size - 1;
-        cards = levelLoader.getCards();
-        hiddenPlayingCards = levelLoader.getHiddenPlayingCards();
-        hiddenPlayingCard = levelLoader.getHiddenPlayingCard();
+//        cards = levelLoader.getCards();
+        hiddenPattern = levelLoader.getHiddenPattern();
     }
 
     private LevelLoader getLevelLoader() {
@@ -425,12 +424,12 @@ public class PlayScreen implements Screen {
 
 	private boolean testForHiddenPatternRevealed(Array<ReelTile> levelReel) {
 		TupleValueIndex[][] matchGrid = flashSlots(levelReel);
-		return hiddenPlayingCard.hiddenPatternRevealed(matchGrid, reelTiles, GAME_LEVEL_WIDTH, GAME_LEVEL_HEIGHT);
+		return hiddenPattern.isHiddenPatternRevealed(matchGrid, reelTiles, GAME_LEVEL_WIDTH, GAME_LEVEL_HEIGHT);
 	}
 
 	private boolean testForHiddenPlayingCardsRevealed(Array<ReelTile> levelReel) {
 		TupleValueIndex[][] matchGrid = flashSlots(levelReel);
-		return hiddenPlayingCard.isHiddenPlayingCardsRevealed(matchGrid, reelTiles, GAME_LEVEL_WIDTH, GAME_LEVEL_HEIGHT);
+		return hiddenPattern.isHiddenPatternRevealed(matchGrid, reelTiles, GAME_LEVEL_WIDTH, GAME_LEVEL_HEIGHT);
 	}
 
     private boolean testForAnyLonelyReels(Array<ReelTile> levelReel) {
@@ -620,7 +619,7 @@ public class PlayScreen implements Screen {
 		PuzzleGridType puzzleGrid = new PuzzleGridType();
 		TupleValueIndex[][] matchGrid = levelLoader.populateMatchGrid(reelTiles, GAME_LEVEL_WIDTH, GAME_LEVEL_HEIGHT);
 		puzzleGrid.matchGridSlots(matchGrid);
-		if (hiddenPlayingCard.isHiddenPlayingCardsRevealed(matchGrid, reelTiles, GAME_LEVEL_WIDTH, GAME_LEVEL_HEIGHT))
+		if (hiddenPattern.isHiddenPatternRevealed(matchGrid, reelTiles, GAME_LEVEL_WIDTH, GAME_LEVEL_HEIGHT))
 			iWonTheLevel();
 	}
 
@@ -628,7 +627,7 @@ public class PlayScreen implements Screen {
 		PuzzleGridType puzzleGrid = new PuzzleGridType();
 		TupleValueIndex[][] matchGrid = levelLoader.populateMatchGrid(reelTiles, GAME_LEVEL_WIDTH, GAME_LEVEL_HEIGHT);
 		puzzleGrid.matchGridSlots(matchGrid);
-		if (hiddenPlayingCard.hiddenPatternRevealed(matchGrid, reelTiles, GAME_LEVEL_WIDTH, GAME_LEVEL_HEIGHT))
+		if (hiddenPattern.isHiddenPatternRevealed(matchGrid, reelTiles, GAME_LEVEL_WIDTH, GAME_LEVEL_HEIGHT))
 			iWonTheLevel();
 	}
 
@@ -910,8 +909,9 @@ public class PlayScreen implements Screen {
 	}
 
 	private void drawPlayingCards(SpriteBatch spriteBatch) {
-		for (Card card : cards) {
-			card.draw(spriteBatch);
-		}
+	    if (hiddenPattern instanceof HiddenPlayingCard)
+		    for (Card card : ((HiddenPlayingCard) hiddenPattern).getCards())
+			    card.draw(spriteBatch);
+
 	}
 }

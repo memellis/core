@@ -16,7 +16,6 @@
 
 package com.ellzone.slotpuzzle2d.level;
 
-import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.maps.MapObject;
 import com.badlogic.gdx.maps.MapProperties;
@@ -24,29 +23,28 @@ import com.badlogic.gdx.maps.objects.RectangleMapObject;
 import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.utils.Array;
-import com.badlogic.gdx.utils.GdxRuntimeException;
-import com.ellzone.slotpuzzle2d.SlotPuzzleConstants;
 import com.ellzone.slotpuzzle2d.puzzlegrid.PuzzleGridTypeReelTile;
 import com.ellzone.slotpuzzle2d.puzzlegrid.TupleValueIndex;
 import com.ellzone.slotpuzzle2d.screens.PlayScreen;
 import com.ellzone.slotpuzzle2d.sprites.ReelTile;
 import com.ellzone.slotpuzzle2d.utils.Random;
 
-public class HiddenPlayingCard {
-    public static final String CARD_FRONT = "front";
+public class HiddenPlayingCard extends HiddenPattern {
     public static final String CARD_BACK = "back";
     private static final String HIDDEN_PATTERN_LAYER_NAME = "Hidden Pattern Object";
 
     private TextureAtlas carddeckAtlas;
-    private TiledMap level;
     private Array<Integer> hiddenPlayingCards;
     private Array<Card> cards;
     private int maxNumberOfPlayingCardsForLevel;
     private Suit randomSuit;
     private Pip randomPip;
 
+    public HiddenPlayingCard(TiledMap level) {
+        super(level);
+    }
     public HiddenPlayingCard(TiledMap level, TextureAtlas carddeckAtlas) {
-        this.level = level;
+        super(level);
         this.carddeckAtlas = carddeckAtlas;
         initialiseHiddenPlayingCards(level);
     }
@@ -126,31 +124,13 @@ public class HiddenPlayingCard {
         return hiddenPlayingCards;
     }
 
-    public boolean hiddenPatternRevealed(TupleValueIndex[][] grid, Array<ReelTile> reelTiles, int levelWidth, int levelHeight) {
-        boolean hiddenPattern = true;
-        for (MapObject mapObject : level.getLayers().get(HIDDEN_PATTERN_LAYER_NAME).getObjects().getByType(RectangleMapObject.class)) {
-            Rectangle mapRectangle = ((RectangleMapObject) mapObject).getRectangle();
-            int c = PuzzleGridTypeReelTile.getColumnFromLevel(mapRectangle.getX());
-            int r = PuzzleGridTypeReelTile.getRowFromLevel(mapRectangle.getY(), levelHeight);
-            if ((r >= 0) & (r <= levelHeight) & (c >= 0) & (c <= levelWidth)) {
-                if (grid[r][c] != null) {
-                    if (!reelTiles.get(grid[r][c].getIndex()).isReelTileDeleted())
-                        hiddenPattern = false;
-                }
-            } else {
-                Gdx.app.debug(SlotPuzzleConstants.SLOT_PUZZLE, "I don't respond to r=" + r + "c=" + c);
-            }
-        }
-        return hiddenPattern;
-    }
-
-    public boolean isHiddenPlayingCardsRevealed(TupleValueIndex[][] grid, Array<ReelTile> reelTiles, int levelWidth, int levelHeight) {
-        boolean hiddenPlayingCardsRevealed = true;
+    @Override
+    public boolean isHiddenPatternRevealed(TupleValueIndex[][] grid, Array<ReelTile> reelTiles, int levelWidth, int levelHeight) {
         for (Integer hiddenPlayingCard : hiddenPlayingCards) {
             if (isHiddenPlayingCardRevealed(grid, reelTiles, levelWidth, levelHeight, hiddenPlayingCard))
                 return false;
         }
-        return hiddenPlayingCardsRevealed;
+        return true;
     }
 
     private boolean isHiddenPlayingCardRevealed(TupleValueIndex[][] grid, Array<ReelTile> reelTiles, int levelWidth, int levelHeight, Integer hiddenPlayingCard) {
@@ -165,16 +145,11 @@ public class HiddenPlayingCard {
                         if (!reelTiles.get(grid[r][c].getIndex()).isReelTileDeleted())
                             return true;
                     } else
-                        throw new HiddenPlayingCardPuzzleGridException("I don't know how to deal with grid cell r=" + r + "c=" + c);
+                        throw new HiddenPattern.HiddenPatternPuzzleGridException("I don't know how to deal with grid cell r=" + r + "c=" + c);
                 }
             }
         }
         return false;
     }
 
-    public class HiddenPlayingCardPuzzleGridException extends GdxRuntimeException {
-        public HiddenPlayingCardPuzzleGridException(String message) {
-            super(message);
-        }
-    }
 }
