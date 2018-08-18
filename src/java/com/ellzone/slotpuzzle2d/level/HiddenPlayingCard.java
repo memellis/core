@@ -40,9 +40,6 @@ public class HiddenPlayingCard extends HiddenPattern {
     private Suit randomSuit;
     private Pip randomPip;
 
-    public HiddenPlayingCard(TiledMap level) {
-        super(level);
-    }
     public HiddenPlayingCard(TiledMap level, TextureAtlas carddeckAtlas) {
         super(level);
         this.carddeckAtlas = carddeckAtlas;
