@@ -10,7 +10,6 @@ import com.badlogic.gdx.maps.objects.RectangleMapObject;
 import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.utils.Array;
-import com.ellzone.slotpuzzle2d.level.Card;
 import com.ellzone.slotpuzzle2d.level.HiddenPlayingCard;
 import com.ellzone.slotpuzzle2d.level.LevelCreator;
 import com.ellzone.slotpuzzle2d.puzzlegrid.TupleValueIndex;
@@ -43,6 +42,8 @@ import static org.powermock.api.easymock.PowerMock.verify;
 public class TestHiddenPlayingCard {
     public static final int MAX_NUMBER_OF_HIDDEN_PLAYING_CARDS = 10;
     public static final int MAX_NUMBER_OF_CARD_VALUES = 13;
+    public static final int MAX_NUMBER_SUITS = 4;
+
     private TiledMap levelMock;
     private TextureAtlas textureAtlasMock;
     private MapLayers mapLayersMock;
@@ -57,7 +58,6 @@ public class TestHiddenPlayingCard {
     private int[][] testMatrix;
     private TupleValueIndex[][] testGrid;
     private Array<ReelTile> reelTiles;
-    private int MAX_NUMBER_SUITS;
 
     @Test
     public void testHidddenPlayCardIsNotRevealed() {
@@ -97,7 +97,7 @@ public class TestHiddenPlayingCard {
     public void testNumberOfHiddenPlayingCardsCreated() {
         setUpMocks();
         setExpectationsLevelMaxRectangleMapObjects();
-        setExpectationsLevelHasTwoCards();
+        setExpectationsSetNumberOfCardsForTheLevel(2);
         expectSpritesInGetHiddenPlayingCardFromLevel();
         getRectangleMapObject();
         getCardRectangle(80.0f);
@@ -116,7 +116,7 @@ public class TestHiddenPlayingCard {
         setUpMocks();
         setUpRandomMock();
         setExpectationsLevelMaxRectangleMapObjects();
-        setExpectationsLevelHasTwoCards();
+        setExpectationsSetNumberOfCardsForTheLevel(2);
         expectSpritesInGetHiddenPlayingCardFromLevel();
         getRectangleMapObject();
         expectRandomNextInt();
@@ -129,6 +129,34 @@ public class TestHiddenPlayingCard {
         Array<Integer> hiddenPlayingCards = hiddenPlayingCard.getHiddenPlayingCards();
         assertThat(hiddenPlayingCards.size, is(2));
         assertThat(hiddenPlayingCards.get(0), is(not(equalTo(hiddenPlayingCards.get(1)))));
+        verifyAll();
+        tearDown();
+    }
+
+    @Test
+    public void testMaximumCardsForLevel() {
+        setUpMocks();
+        setUpRandomMock();
+        setExpectationsSetNumberOfCardsForTheLevel(10);
+        expectRandomNextIntForTenCards();
+        for (int cardLoop = 0; cardLoop < 5; cardLoop++) {
+            setExpectationsLevelMaxRectangleMapObjects();
+            expectSpritesInGetHiddenPlayingCardFromLevel();
+            getRectangleMapObject();
+            getCardRectangle(80.0f);
+            getCardRectangle(240.0f);
+            expectSpritesInGetHiddenPlayingCardFromLevel();
+        }
+        expect(levelMock.getLayers()).andReturn(mapLayersMock).times(1);
+        expect(mapLayersMock.get(LevelCreator.HIDDEN_PATTERN_LAYER_NAME)).andReturn(mapLayerMock).times(1);
+        expect(mapLayerMock.getObjects()).andReturn(mapObjectsMock).times(1);
+        expect(mapObjectsMock.getByType(RectangleMapObject.class)).andReturn(rectangleMapObjectsMock).times(1);
+        expect(rectangleMapObjectsMock.get(anyInt())).andReturn(rectangleMapObjectMock).times(5);
+
+        replayAll();
+        HiddenPlayingCard hiddenPlayingCard = new HiddenPlayingCard(levelMock, textureAtlasMock);
+        Array<Integer> hiddenPlayingCards = hiddenPlayingCard.getHiddenPlayingCards();
+        assertThat(hiddenPlayingCards.size, is(MAX_NUMBER_OF_HIDDEN_PLAYING_CARDS));
         verifyAll();
         tearDown();
     }
@@ -201,13 +229,13 @@ public class TestHiddenPlayingCard {
 
     private void setExpectations(boolean expectCardRevealed) {
         setExpectationsLevelMaxRectangleMapObjects();
-        setExpectationsLevelHasTwoCards();
+        setExpectationsSetNumberOfCardsForTheLevel(2);
         setUpExpectationsIsHiddenCardsRevealed(expectCardRevealed);
     }
 
-    private void setExpectationsLevelHasTwoCards() {
+    private void setExpectationsSetNumberOfCardsForTheLevel(int numberOfCardsForLevel) {
         expect(levelMock.getProperties()).andReturn(mapPropertiesMock);
-        expect(mapPropertiesMock.get("Number Of Cards", String.class)).andReturn("2");
+        expect(mapPropertiesMock.get("Number Of Cards", String.class)).andReturn(String.valueOf(numberOfCardsForLevel));
     }
 
     private void setExpectationsLevelMaxRectangleMapObjects() {
@@ -314,10 +342,18 @@ public class TestHiddenPlayingCard {
     private void expectRandomNextInt() {
         expect(Random.getInstance()).andReturn(randomMock).times(15);
         expect(randomMock.nextInt(MAX_NUMBER_OF_HIDDEN_PLAYING_CARDS)).andReturn(1).times(12);
-        MAX_NUMBER_SUITS = 4;
         expect(randomMock.nextInt(MAX_NUMBER_SUITS)).andReturn(1).times(1);
         expect(randomMock.nextInt(MAX_NUMBER_OF_CARD_VALUES)).andReturn(1).times(1);
         expect(randomMock.nextInt(MAX_NUMBER_OF_HIDDEN_PLAYING_CARDS - 1)).andReturn(1).times(1);
+    }
+
+    private void expectRandomNextIntForTenCards() {
+        expect(Random.getInstance()).andReturn(randomMock).times(119);
+        expect(randomMock.nextInt(MAX_NUMBER_OF_HIDDEN_PLAYING_CARDS)).andReturn(1).times(100);
+        expect(randomMock.nextInt(MAX_NUMBER_SUITS)).andReturn(1).times(5);
+        expect(randomMock.nextInt(MAX_NUMBER_OF_CARD_VALUES)).andReturn(1).times(5);
+        for (int nextInt = MAX_NUMBER_OF_HIDDEN_PLAYING_CARDS - 1; nextInt >= 1; nextInt--)
+            expect(randomMock.nextInt(nextInt)).andReturn(1).times(1);
     }
 
     private void replayAll() {
