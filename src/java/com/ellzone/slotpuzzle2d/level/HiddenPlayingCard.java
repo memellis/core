@@ -165,10 +165,16 @@ public class HiddenPlayingCard {
                         if (!reelTiles.get(grid[r][c].getIndex()).isReelTileDeleted())
                             return true;
                     } else
-                        new GdxRuntimeException("I don't respond to r=" + r + "c=" + c);
+                        throw new HiddenPlayingCardPuzzleGridException("I don't know how to deal with grid cell r=" + r + "c=" + c);
                 }
             }
         }
         return false;
+    }
+
+    public class HiddenPlayingCardPuzzleGridException extends GdxRuntimeException {
+        public HiddenPlayingCardPuzzleGridException(String message) {
+            super(message);
+        }
     }
 }

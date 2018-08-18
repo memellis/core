@@ -18,6 +18,8 @@ import com.ellzone.slotpuzzle2d.sprites.ReelTile;
 import com.ellzone.slotpuzzle2d.utils.InputMatrix;
 import com.ellzone.slotpuzzle2d.utils.Random;
 
+import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.powermock.api.easymock.PowerMock;
@@ -40,9 +42,9 @@ import static org.powermock.api.easymock.PowerMock.verify;
 @PrepareForTest({HiddenPlayingCard.class, ReelTile.class, Random.class})
 
 public class TestHiddenPlayingCard {
-    public static final int MAX_NUMBER_OF_HIDDEN_PLAYING_CARDS = 10;
-    public static final int MAX_NUMBER_OF_CARD_VALUES = 13;
-    public static final int MAX_NUMBER_SUITS = 4;
+    private static final int MAX_NUMBER_OF_HIDDEN_PLAYING_CARDS = 10;
+    private static final int MAX_NUMBER_OF_CARD_VALUES = 13;
+    private static final int MAX_NUMBER_SUITS = 4;
 
     private TiledMap levelMock;
     private TextureAtlas textureAtlasMock;
@@ -59,9 +61,19 @@ public class TestHiddenPlayingCard {
     private TupleValueIndex[][] testGrid;
     private Array<ReelTile> reelTiles;
 
+    @Before
+    public void setUp() {
+        setUpMocks();
+    }
+
+    @After
+    public void tearDown() {
+        tearDownMocks();
+        tearDownTestFixtures();
+    }
+
     @Test
     public void testHidddenPlayCardIsNotRevealed() {
-        setUpMocks();
         testMatrix = createMatrixNoCardsRevealed();
         createGrid(testMatrix);
         setExpectations(false);
@@ -73,12 +85,10 @@ public class TestHiddenPlayingCard {
                                                                   testGrid.length),
                    is(false));
         verifyAll();
-        tearDown();
     }
 
     @Test
     public void testHiddenPlayingCardIsRevealed() {
-        setUpMocks();
         testMatrix = createMatrixCardsRevealed();
         createGrid(testMatrix);
         setExpectations(true);
@@ -90,12 +100,10 @@ public class TestHiddenPlayingCard {
                                                                   testGrid.length),
                    is(true));
         verifyAll();
-        tearDown();
     }
 
     @Test
     public void testNumberOfHiddenPlayingCardsCreated() {
-        setUpMocks();
         setExpectationsLevelMaxRectangleMapObjects();
         setExpectationsSetNumberOfCardsForTheLevel(2);
         expectSpritesInGetHiddenPlayingCardFromLevel();
@@ -108,12 +116,10 @@ public class TestHiddenPlayingCard {
         HiddenPlayingCard hiddenPlayingCard = new HiddenPlayingCard(levelMock, textureAtlasMock);
         assertThat(hiddenPlayingCard.getCards().size, is(2));
         verifyAll();
-        tearDown();
     }
 
     @Test
     public void testDuplicateCardsCreated() {
-        setUpMocks();
         setUpRandomMock();
         setExpectationsLevelMaxRectangleMapObjects();
         setExpectationsSetNumberOfCardsForTheLevel(2);
@@ -130,35 +136,57 @@ public class TestHiddenPlayingCard {
         assertThat(hiddenPlayingCards.size, is(2));
         assertThat(hiddenPlayingCards.get(0), is(not(equalTo(hiddenPlayingCards.get(1)))));
         verifyAll();
-        tearDown();
     }
 
     @Test
     public void testMaximumCardsForLevel() {
-        setUpMocks();
         setUpRandomMock();
         setExpectationsSetNumberOfCardsForTheLevel(10);
         expectRandomNextIntForTenCards();
         for (int cardLoop = 0; cardLoop < 5; cardLoop++) {
-            setExpectationsLevelMaxRectangleMapObjects();
-            expectSpritesInGetHiddenPlayingCardFromLevel();
-            getRectangleMapObject();
-            getCardRectangle(80.0f);
-            getCardRectangle(240.0f);
-            expectSpritesInGetHiddenPlayingCardFromLevel();
+            expectTwoCards();
         }
-        expect(levelMock.getLayers()).andReturn(mapLayersMock).times(1);
-        expect(mapLayersMock.get(LevelCreator.HIDDEN_PATTERN_LAYER_NAME)).andReturn(mapLayerMock).times(1);
-        expect(mapLayerMock.getObjects()).andReturn(mapObjectsMock).times(1);
-        expect(mapObjectsMock.getByType(RectangleMapObject.class)).andReturn(rectangleMapObjectsMock).times(1);
-        expect(rectangleMapObjectsMock.get(anyInt())).andReturn(rectangleMapObjectMock).times(5);
+        finalGetRectangleObjects();
 
         replayAll();
         HiddenPlayingCard hiddenPlayingCard = new HiddenPlayingCard(levelMock, textureAtlasMock);
         Array<Integer> hiddenPlayingCards = hiddenPlayingCard.getHiddenPlayingCards();
         assertThat(hiddenPlayingCards.size, is(MAX_NUMBER_OF_HIDDEN_PLAYING_CARDS));
         verifyAll();
-        tearDown();
+    }
+
+    private void expectTwoCards() {
+        setExpectationsLevelMaxRectangleMapObjects();
+        expectSpritesInGetHiddenPlayingCardFromLevel();
+        getRectangleMapObject();
+        getCardRectangle(80.0f);
+        getCardRectangle(240.0f);
+        expectSpritesInGetHiddenPlayingCardFromLevel();
+    }
+
+    private void finalGetRectangleObjects() {
+        expect(levelMock.getLayers()).andReturn(mapLayersMock).times(1);
+        expect(mapLayersMock.get(LevelCreator.HIDDEN_PATTERN_LAYER_NAME)).andReturn(mapLayerMock).times(1);
+        expect(mapLayerMock.getObjects()).andReturn(mapObjectsMock).times(1);
+        expect(mapObjectsMock.getByType(RectangleMapObject.class)).andReturn(rectangleMapObjectsMock).times(1);
+        expect(rectangleMapObjectsMock.get(anyInt())).andReturn(rectangleMapObjectMock).times(5);
+    }
+
+    @Test(expected = HiddenPlayingCard.HiddenPlayingCardPuzzleGridException.class)
+    public void isHiddenPlayingCardRevealeThrowsHiddenPlayingCardPuzzleGridException() {
+        setUpMocks();
+        testMatrix = createMatrixNoCardsRevealed();
+        createGrid(testMatrix);
+        testGrid[7][1] = null;
+        setExpectationsAGridCellIsNull(false);
+        replayAll();
+        HiddenPlayingCard hiddenPlayingCard = new HiddenPlayingCard(levelMock, textureAtlasMock);
+        assertThat(hiddenPlayingCard.isHiddenPlayingCardsRevealed(testGrid,
+                                                                  reelTiles,
+                                                                  testGrid[0].length,
+                                                                  testGrid.length),
+                                                                  is(false));
+        verifyAll();
     }
 
     private void setUpMocks() {
@@ -356,6 +384,22 @@ public class TestHiddenPlayingCard {
             expect(randomMock.nextInt(nextInt)).andReturn(1).times(1);
     }
 
+    private void setExpectationsAGridCellIsNull(boolean expectCardRevealed) {
+        setExpectationsLevelMaxRectangleMapObjects();
+        setExpectationsSetNumberOfCardsForTheLevel(2);
+        setUpExpectationsIsHiddenCardsRevealedAGridCellIsNull(expectCardRevealed);
+    }
+
+    private void setUpExpectationsIsHiddenCardsRevealedAGridCellIsNull(boolean expectCardRevealed) {
+        setUpExpectationsCard(80.0f);
+        setUpExpectationsGetCardRectangleFromLevel();
+        expectForHiddenCardTile(80.0f);
+        setUpExpectationsCard(240.0f);
+        setUpExpectationsGetCardRectangleFromLevel();
+        expectForHiddenCardTile(240.0f);
+        setUpExpectationsCardRevealed(3, expectCardRevealed);
+    }
+
     private void replayAll() {
         replay(levelMock,
                mapLayersMock,
@@ -397,11 +441,6 @@ public class TestHiddenPlayingCard {
             for (int loop = 1; loop < 8; loop++)
                 verify(reelTiles.get(loop * testMatrix[0].length + 1),
                        reelTiles.get(loop * testMatrix[0].length + 2));
-    }
-
-    private void tearDown() {
-        tearDownMocks();
-        tearDownTestFixtures();
     }
 
     private void tearDownMocks() {
