@@ -25,9 +25,9 @@ public class HiddenShape extends HiddenPattern{
                 if (grid[r][c] != null) {
                     if (!reelTiles.get(grid[r][c].getIndex()).isReelTileDeleted())
                         return false;
-                }
-            } else
-                throw new HiddenPattern.HiddenPatternPuzzleGridException("I don't know how to deal with grid cell r=" + r + "c=" + c);
+                } else
+                    throw new HiddenPattern.HiddenPatternPuzzleGridException("I don't know how to deal with grid cell r=" + r + "c=" + c);
+            }
         }
         return true;
     }
