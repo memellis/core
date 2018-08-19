@@ -31,7 +31,6 @@ import com.ellzone.slotpuzzle2d.utils.Random;
 
 public class HiddenPlayingCard extends HiddenPattern {
     public static final String CARD_BACK = "back";
-    private static final String HIDDEN_PATTERN_LAYER_NAME = "Hidden Pattern Object";
 
     private TextureAtlas carddeckAtlas;
     private Array<Integer> hiddenPlayingCards;

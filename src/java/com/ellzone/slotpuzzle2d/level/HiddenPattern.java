@@ -7,6 +7,8 @@ import com.ellzone.slotpuzzle2d.puzzlegrid.TupleValueIndex;
 import com.ellzone.slotpuzzle2d.sprites.ReelTile;
 
 public abstract class HiddenPattern {
+    public static final String HIDDEN_PATTERN_LAYER_NAME = "Hidden Pattern Object";
+
     protected TiledMap level;
     public HiddenPattern(TiledMap level) {
         this.level = level;

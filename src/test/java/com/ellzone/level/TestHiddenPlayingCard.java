@@ -419,7 +419,7 @@ public class TestHiddenPlayingCard {
         if(reelTiles != null)
             for (int loop = 1; loop < 8; loop++)
                 replay(reelTiles.get(loop * testMatrix[0].length + 1),
-                               reelTiles.get(loop * testMatrix[0].length + 2));
+                       reelTiles.get(loop * testMatrix[0].length + 2));
     }
 
     private void verifyAll() {
