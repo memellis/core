@@ -68,13 +68,13 @@ public class PixmapProcessors {
 	    for (int x = 0; x < width; x++) {
 	        for (int y = 0; y < height; y++) {
 	            final int
-	            centerx = width/2, centery = height / 2,
+	            centerx = width / 2, centery = height / 2,
 	            m = x - centerx,
 	            n = y - centery,
-	            j = ((int) (m * cos + n * sin)) + centerx,
-	            k = ((int) (n * cos - m * sin)) + centery;
-	            if (j >= 0 && j < width && k >= 0 && k < height){
-	                rotated.drawPixel(width - x, y, src.getPixel(k, j));
+	            j = ((int) (m * cos + n * sin)) + centerx - 1,
+	            k = ((int) (n * cos - m * sin)) + centery - 1;
+	            if (j >= 0 && j <= width && k >= 0 && k < height){
+	                rotated.drawPixel(width - x -1, y, src.getPixel(k, j));
 	            }
 	        }
 	    }
@@ -161,18 +161,13 @@ public class PixmapProcessors {
 
 	public static void changePixmapColour(Pixmap src, Pixmap dest, Color srcColor, Color destColor) {
 		for (int x = 0; x < src.getWidth(); x++) {
-			System.out.print("x="+x+" ");
 			for (int y = 0; y < src.getHeight(); y++) {
                 int srcPixel = src.getPixel(x, y);
-
-				System.out.print(String.format(" 0x%08X", srcPixel));
                 Color mySrcColor = new Color(srcPixel);
 				if (!((mySrcColor.r == 0) & (mySrcColor.g == 0) & (mySrcColor.g == 0) & (mySrcColor.a == 0))) {
 					dest.drawPixel(x, y, destColor.rgba8888(destColor));
 				}
 			}
-
-			System.out.println();
 		}
 	}
 
@@ -323,12 +318,28 @@ public class PixmapProcessors {
             pixmap = getPixmapFromSprite(sprites[i]);
             PixmapProcessors.copyPixmapHorizontally(pixmap, pixmapToAnimate, (int) i * pixmap.getHeight());
         }
-
-        Pixmap scrolledPixmap = new Pixmap(pixmapToAnimate.getWidth(), pixmapToAnimate.getHeight(), pixmapToAnimate.getFormat());
-        PixmapProcessors.copyPixmapVertically(pixmapToAnimate, scrolledPixmap, 0);
-
         return pixmapToAnimate;
     }
+
+	public static Pixmap createHorizontalPixmapToAnimate(Sprite[] sprites) {
+		Pixmap pixmap = getPixmapFromSprite(sprites[0]);
+		Pixmap rotatedPixmap = new Pixmap(pixmap.getWidth(), pixmap.getHeight(), Format.RGBA8888);
+		Pixmap pixmapToAnimate = new Pixmap(pixmap.getWidth() * sprites.length, pixmap.getHeight(), pixmap.getFormat());
+
+
+		for (int i = 0; i < sprites.length; i++) {
+			pixmap = getPixmapFromSprite(sprites[i]);
+			rotatedPixmap =  rotatePixmap(pixmap, 180);
+			PixmapProcessors.copyPixmapVertically(rotatedPixmap, pixmapToAnimate, (int) i * rotatedPixmap.getWidth());
+		}
+		System.out.println("pixmap size="+ pixmap.getWidth()+ ","+ pixmap.getHeight());
+        System.out.println("rotoated pixmap size="+rotatedPixmap.getWidth()+ ","+ pixmap.getHeight());
+
+
+        savePixmap(pixmapToAnimate);
+		return pixmapToAnimate;
+	}
+
 
 	public static Pixmap createDynamicScrollAnimatedPixmap(Sprite[] sprites, int scrollStep) {
 		Pixmap pixmap = getPixmapFromSprite(sprites[0]);

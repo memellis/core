@@ -32,6 +32,7 @@ import com.ellzone.slotpuzzle2d.prototypes.box2d.EdgeShapesBigCatchBox;
 import com.ellzone.slotpuzzle2d.prototypes.box2d.Light;
 import com.ellzone.slotpuzzle2d.prototypes.cylinder.Render3DCylinder1;
 import com.ellzone.slotpuzzle2d.prototypes.cylinder.Render3DCylinder2;
+import com.ellzone.slotpuzzle2d.prototypes.cylinder.Render3DCylinder3;
 import com.ellzone.slotpuzzle2d.prototypes.framebuffer.FrameBufferParticleEffectSample;
 import com.ellzone.slotpuzzle2d.prototypes.minislotmachine.MiniSlotMachineLevelPrototype;
 import com.ellzone.slotpuzzle2d.prototypes.minislotmachine.MiniSlotMachineLevelFallingReels;
@@ -134,6 +135,7 @@ public class SPPrototypes {
 		Particle6ExtendingParticleTemplate.class,
         Render3DCylinder1.class,
         Render3DCylinder2.class,
+        Render3DCylinder3.class,
         ScrollingSign.class,
         ScrollSignWithMultipleMessages.class,
         ScrollingSignDynamicSignChange.class,
