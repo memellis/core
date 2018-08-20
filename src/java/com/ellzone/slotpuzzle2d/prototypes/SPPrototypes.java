@@ -33,6 +33,8 @@ import com.ellzone.slotpuzzle2d.prototypes.box2d.Light;
 import com.ellzone.slotpuzzle2d.prototypes.cylinder.Render3DCylinder1;
 import com.ellzone.slotpuzzle2d.prototypes.cylinder.Render3DCylinder2;
 import com.ellzone.slotpuzzle2d.prototypes.cylinder.Render3DCylinder3;
+import com.ellzone.slotpuzzle2d.prototypes.cylinder.Render3DCylinder4;
+import com.ellzone.slotpuzzle2d.prototypes.cylinder.Render3DCylinder5;
 import com.ellzone.slotpuzzle2d.prototypes.framebuffer.FrameBufferParticleEffectSample;
 import com.ellzone.slotpuzzle2d.prototypes.minislotmachine.MiniSlotMachineLevelPrototype;
 import com.ellzone.slotpuzzle2d.prototypes.minislotmachine.MiniSlotMachineLevelFallingReels;
@@ -136,6 +138,8 @@ public class SPPrototypes {
         Render3DCylinder1.class,
         Render3DCylinder2.class,
         Render3DCylinder3.class,
+        Render3DCylinder4.class,
+        Render3DCylinder5.class,
         ScrollingSign.class,
         ScrollSignWithMultipleMessages.class,
         ScrollingSignDynamicSignChange.class,

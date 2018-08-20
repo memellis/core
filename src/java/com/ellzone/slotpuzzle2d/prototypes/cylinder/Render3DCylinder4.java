@@ -49,7 +49,7 @@ import com.ellzone.slotpuzzle2d.utils.PixmapProcessors;
 
 import net.dermetfan.gdx.assets.AnnotationAssetManager;
 
-public class Render3DCylinder3 extends SPPrototype {
+public class Render3DCylinder4 extends SPPrototype {
 
     private ModelBatch modelBatch;
     private Environment environment;
@@ -61,11 +61,15 @@ public class Render3DCylinder3 extends SPPrototype {
     @Override
     public void create() {
 
+        final Texture cylinderSideTexture = createCylinderSideTexture( 64, 64, 32, Pixmap.Format.RGBA8888);
+
         annotationAssetManager =  loadAssets();
         Reels reels = new Reels(annotationAssetManager);
 
         final Texture reelTexture = initialiseReelTexture(reels);
         instances.add(createCylinderWithDifferentColors());
+
+        //instances.add(createReelModelInstance(reelTexture));
 
         modelBatch = new ModelBatch();
         createEnvironment();
@@ -77,12 +81,26 @@ public class Render3DCylinder3 extends SPPrototype {
 
     }
 
+    private ModelInstance createReelModelInstance(Texture reelTexture) {
+        final Material material = new Material(TextureAttribute.createDiffuse(reelTexture),
+                ColorAttribute.createSpecular(1, 1, 1, 1),
+                FloatAttribute.createShininess(8f));
+
+        final long attributes = VertexAttributes.Usage.Position | VertexAttributes.Usage.Normal | VertexAttributes.Usage.TextureCoordinates;
+
+        ModelBuilder modelBuilder = new ModelBuilder();
+        Model cylinder = modelBuilder.createCylinder(2.0f, 1.0f, 2.0f, 32, material, attributes);
+        ModelInstance modelInstance = new ModelInstance(cylinder);
+        modelInstance.transform.rotate(0,0,1, 90);
+        return modelInstance;
+    }
+
     private ModelInstance createCylinderWithDifferentColors() {
         int primitiveType = GL20.GL_TRIANGLES;
         final Material materialRed = new Material(ColorAttribute.createDiffuse(Color.RED));
         final Material materialBlue = new Material(ColorAttribute.createDiffuse(Color.BLUE));
         final long attributes = VertexAttributes.Usage.Position |
-                                VertexAttributes.Usage.Normal;
+                VertexAttributes.Usage.Normal;
 
         ModelBuilder modelBuilder = new ModelBuilder();
         modelBuilder.begin();
@@ -92,9 +110,9 @@ public class Render3DCylinder3 extends SPPrototype {
                 materialRed);
         BoxShapeBuilder.build(meshPartBuilder, 1.0f, 1.0f, 1.0f);
         meshPartBuilder = modelBuilder.part("cylinder",
-                          primitiveType,
-                          MeshBuilder.createAttributes(attributes),
-                          materialBlue);
+                primitiveType,
+                MeshBuilder.createAttributes(attributes),
+                materialBlue);
         CylinderShapeBuilder.build(meshPartBuilder, 1.0f, 1.0f, 2.0f, 16);
         ModelInstance modelInstance = new ModelInstance(modelBuilder.end());
         return modelInstance;
@@ -118,6 +136,14 @@ public class Render3DCylinder3 extends SPPrototype {
     private Texture initialiseReelTexture(Reels reels) {
         Pixmap slotReelScrollPixmap = PixmapProcessors.createHorizontalPixmapToAnimate(reels.getReels());
         return new Texture(slotReelScrollPixmap);
+    }
+
+    private Texture createCylinderSideTexture(int width, int height, int radius, Pixmap.Format pixelFormat) {
+        Pixmap cylinderSidePixmap = new Pixmap(width, height, Pixmap.Format.RGBA8888);
+        cylinderSidePixmap.setColor(Color.BROWN);
+        cylinderSidePixmap.fillCircle(cylinderSidePixmap.getWidth() / 2, cylinderSidePixmap.getHeight() / 2, radius);
+        final Texture cylinderSideTexture = new Texture(cylinderSidePixmap);
+        return cylinderSideTexture;
     }
 
     private AnnotationAssetManager loadAssets()  {
@@ -160,6 +186,6 @@ public class Render3DCylinder3 extends SPPrototype {
     public void dispose () {
         modelBatch.dispose();
         instances.clear();
-
     }
 }
+
