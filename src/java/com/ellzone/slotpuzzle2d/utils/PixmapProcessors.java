@@ -74,7 +74,7 @@ public class PixmapProcessors {
 	            j = ((int) (m * cos + n * sin)) + centerx,
 	            k = ((int) (n * cos - m * sin)) + centery;
 	            if (j >= 0 && j < width && k >= 0 && k < height){
-	                rotated.drawPixel(x, y, src.getPixel(k, j));
+	                rotated.drawPixel(width - x, y, src.getPixel(k, j));
 	            }
 	        }
 	    }
