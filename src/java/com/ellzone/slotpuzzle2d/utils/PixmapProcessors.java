@@ -323,7 +323,7 @@ public class PixmapProcessors {
 
 	public static Pixmap createHorizontalPixmapToAnimate(Sprite[] sprites) {
 		Pixmap pixmap = getPixmapFromSprite(sprites[0]);
-		Pixmap rotatedPixmap = new Pixmap(pixmap.getWidth(), pixmap.getHeight(), Format.RGBA8888);
+		Pixmap rotatedPixmap = null;
 		Pixmap pixmapToAnimate = new Pixmap(pixmap.getWidth() * sprites.length, pixmap.getHeight(), pixmap.getFormat());
 
 
@@ -332,11 +332,6 @@ public class PixmapProcessors {
 			rotatedPixmap =  rotatePixmap(pixmap, 180);
 			PixmapProcessors.copyPixmapVertically(rotatedPixmap, pixmapToAnimate, (int) i * rotatedPixmap.getWidth());
 		}
-		System.out.println("pixmap size="+ pixmap.getWidth()+ ","+ pixmap.getHeight());
-        System.out.println("rotoated pixmap size="+rotatedPixmap.getWidth()+ ","+ pixmap.getHeight());
-
-
-        savePixmap(pixmapToAnimate);
 		return pixmapToAnimate;
 	}
 
