@@ -34,13 +34,12 @@ import com.badlogic.gdx.graphics.g3d.attributes.FloatAttribute;
 import com.badlogic.gdx.graphics.g3d.attributes.TextureAttribute;
 import com.badlogic.gdx.graphics.g3d.environment.DirectionalLight;
 import com.badlogic.gdx.graphics.g3d.utils.CameraInputController;
-import com.badlogic.gdx.graphics.g3d.utils.MeshBuilder;
 import com.badlogic.gdx.graphics.g3d.utils.MeshPartBuilder;
 import com.badlogic.gdx.graphics.g3d.utils.ModelBuilder;
-import com.badlogic.gdx.graphics.g3d.utils.shapebuilders.BoxShapeBuilder;
 import com.badlogic.gdx.graphics.g3d.utils.shapebuilders.CylinderShapeBuilder;
 import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.TmxMapLoader;
+import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.utils.Array;
 import com.ellzone.slotpuzzle2d.prototypes.SPPrototype;
 import com.ellzone.slotpuzzle2d.sprites.Reels;
@@ -60,62 +59,68 @@ public class Render3DCylinder4 extends SPPrototype {
 
     @Override
     public void create() {
-
-        final Texture cylinderSideTexture = createCylinderSideTexture( 64, 64, 32, Pixmap.Format.RGBA8888);
-
         annotationAssetManager =  loadAssets();
         Reels reels = new Reels(annotationAssetManager);
-
         final Texture reelTexture = initialiseReelTexture(reels);
-        instances.add(createCylinderWithDifferentColors());
-
-        //instances.add(createReelModelInstance(reelTexture));
-
+        instances = createReelModelInstance(reelTexture, instances);
         modelBatch = new ModelBatch();
         createEnvironment();
-
         createPerspectiveCamera();
-
         camController = new CameraInputController(cam);
         Gdx.input.setInputProcessor(camController);
-
     }
 
-    private ModelInstance createReelModelInstance(Texture reelTexture) {
-        final Material material = new Material(TextureAttribute.createDiffuse(reelTexture),
+    private Array<ModelInstance> createReelModelInstance(Texture reelTexture, Array<ModelInstance> instances) {
+        final Material reelMaterial = new Material(TextureAttribute.createDiffuse(reelTexture),
                 ColorAttribute.createSpecular(1, 1, 1, 1),
                 FloatAttribute.createShininess(8f));
-
-        final long attributes = VertexAttributes.Usage.Position | VertexAttributes.Usage.Normal | VertexAttributes.Usage.TextureCoordinates;
-
-        ModelBuilder modelBuilder = new ModelBuilder();
-        Model cylinder = modelBuilder.createCylinder(2.0f, 1.0f, 2.0f, 32, material, attributes);
-        ModelInstance modelInstance = new ModelInstance(cylinder);
-        modelInstance.transform.rotate(0,0,1, 90);
-        return modelInstance;
-    }
-
-    private ModelInstance createCylinderWithDifferentColors() {
-        int primitiveType = GL20.GL_TRIANGLES;
-        final Material materialRed = new Material(ColorAttribute.createDiffuse(Color.RED));
-        final Material materialBlue = new Material(ColorAttribute.createDiffuse(Color.BLUE));
-        final long attributes = VertexAttributes.Usage.Position |
-                VertexAttributes.Usage.Normal;
-
+        final Material whiteMaterial = new Material(ColorAttribute.createDiffuse(Color.WHITE));
         ModelBuilder modelBuilder = new ModelBuilder();
         modelBuilder.begin();
-        MeshPartBuilder meshPartBuilder = modelBuilder.part("box",
-                primitiveType,
-                MeshBuilder.createAttributes(attributes),
-                materialRed);
-        BoxShapeBuilder.build(meshPartBuilder, 1.0f, 1.0f, 1.0f);
-        meshPartBuilder = modelBuilder.part("cylinder",
-                primitiveType,
-                MeshBuilder.createAttributes(attributes),
-                materialBlue);
-        CylinderShapeBuilder.build(meshPartBuilder, 1.0f, 1.0f, 2.0f, 16);
-        ModelInstance modelInstance = new ModelInstance(modelBuilder.end());
-        return modelInstance;
+        addNodeCylinder(reelMaterial, modelBuilder);
+        addNodeCylinderSide(whiteMaterial, modelBuilder, "leftSideOfCylinder");
+        addNodeCylinderSide(whiteMaterial, modelBuilder, "rightSideOfCylinder");
+        Model model = modelBuilder.end();
+        instances.add(new ModelInstance(model, new Matrix4().trn(0f, 0f, 0f), "cylinder", true));
+        instances.get(0).transform.rotate(0,0,1, 90);
+        instances.get(0).transform.rotate(1,0,0, 180);
+        instances.add(new ModelInstance(model, new Matrix4().trn(0f, 0f, 0f), "leftSideOfCylinder", true));
+        instances.get(1).transform.rotate(0,0,1, 90);
+        instances.get(1).transform.rotate(1,0,0, 180);
+        instances.get(1).transform.translate(0, 0.51f, 0);
+        instances.add(new ModelInstance(model, new Matrix4().trn(0f, 0f, 0f), "rightSideOfCylinder", true));
+        instances.get(2).transform.rotate(0,0,1, 90);
+        instances.get(2).transform.rotate(1,0,0, 180);
+        instances.get(2).transform.translate(0, -0.51f, 0);
+        return instances;
+    }
+
+    private void addNodeCylinder(Material material, ModelBuilder modelBuilder) {
+        MeshPartBuilder mpb;
+        modelBuilder.node().id = "cylinder";
+        mpb = modelBuilder.part("cylinder",
+                                 GL20.GL_TRIANGLES,
+                                VertexAttributes.Usage.Position |
+                                          VertexAttributes.Usage.Normal |
+                                          VertexAttributes.Usage.TextureCoordinates |
+                                          VertexAttributes.Usage.ColorPacked,
+                                 material);
+        mpb.setUVRange(1f, 1f, 0f, 0f);
+        CylinderShapeBuilder.build(mpb, 2f, 1f, 2f, 15, 0, 360, false);
+   }
+
+    private void addNodeCylinderSide(Material material, ModelBuilder modelBuilder, String id) {
+            MeshPartBuilder mpb;
+            modelBuilder.node().id = id;
+            mpb = modelBuilder.part(id,
+                                    GL20.GL_TRIANGLES,
+                                   VertexAttributes.Usage.Position |
+                                             VertexAttributes.Usage.Normal |
+                                             VertexAttributes.Usage.TextureCoordinates |
+                                             VertexAttributes.Usage.ColorPacked,
+                                    material);
+        mpb.setUVRange(1f, 1f, 0f, 0f);
+        CylinderShapeBuilder.build(mpb, 2.0f, 0.02f, 2.0f, 15, 0, 360, true);
     }
 
     private void createEnvironment() {
@@ -154,13 +159,10 @@ public class Render3DCylinder4 extends SPPrototype {
         return annotationAssetManager;
     }
 
-    public void resume () {
-    }
-
     private void update() {
         camController.update();
         for (ModelInstance modelInstance : instances) {
-            modelInstance.transform.rotate(0, 1, 0, 1);
+            modelInstance.transform.rotate(0, -1, 0, 1);
         }
     }
 
@@ -174,12 +176,6 @@ public class Render3DCylinder4 extends SPPrototype {
         modelBatch.begin(cam);
         modelBatch.render(instances, environment);
         modelBatch.end();
-    }
-
-    public void resize (int width, int height) {
-    }
-
-    public void pause () {
     }
 
     @Override

@@ -60,21 +60,12 @@ public class Render3DCylinder3 extends SPPrototype {
 
     @Override
     public void create() {
-
-        annotationAssetManager =  loadAssets();
-        Reels reels = new Reels(annotationAssetManager);
-
-        final Texture reelTexture = initialiseReelTexture(reels);
         instances.add(createCylinderWithDifferentColors());
-
         modelBatch = new ModelBatch();
         createEnvironment();
-
         createPerspectiveCamera();
-
         camController = new CameraInputController(cam);
         Gdx.input.setInputProcessor(camController);
-
     }
 
     private ModelInstance createCylinderWithDifferentColors() {
