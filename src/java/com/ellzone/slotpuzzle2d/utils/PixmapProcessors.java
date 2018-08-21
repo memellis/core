@@ -196,9 +196,13 @@ public class PixmapProcessors {
 				offSetY = startY + offSetY - glyph.height;
 
  				verticalFontText.drawPixmap(fontPixmap,
-						offSetX,
-						offSetY,
-						glyph.srcX, glyph.srcY, glyph.width, glyph.height);
+						                    offSetX,
+						                    offSetY,
+						                    glyph.srcX,
+                                            glyph.srcY,
+                                            glyph.width,
+                                            glyph.height);
+ 				savePixmap(verticalFontText);
  			}
 		}
 		return verticalFontText;
@@ -254,7 +258,58 @@ public class PixmapProcessors {
 		return horizontalFontText;
 	}
 
-	public static Pixmap createDynamicHorizontalFontTextColor(BitmapFont font, Color fontColor, String text, Pixmap src, int startTextX, int startTextY) {
+    public static Pixmap createDynamicHorizontalFontTextForReel(BitmapFont font, String text, Pixmap src) {
+        final int width = src.getWidth();
+        final int height = src.getHeight();
+        final int halfHeight = height / 2;
+
+        Pixmap horizontalFontText = new Pixmap(width, height, src.getFormat());
+        BitmapFont.BitmapFontData fontData = font.getData();
+
+        if (fontData.imagePaths.length == 0) {
+            System.out.println("Doh! The length of the imagepaths is zero");
+        } else {
+            Gdx.app.debug(SlotPuzzleConstants.SLOT_PUZZLE, fontData.getImagePath(0));
+            Pixmap fontPixmap = new Pixmap(Gdx.files.local(fontData.getImagePath(0)));
+            Pixmap rotatedPixmap = new Pixmap(height, height, src.getFormat());
+            BitmapFont.Glyph glyph;
+            horizontalFontText.setColor(Color.BLACK);
+            horizontalFontText.fillRectangle(0, 0, width, height);
+            horizontalFontText.setColor(Color.WHITE);
+
+
+            for (int i = 0; i < text.length(); i++) {
+                glyph = fontData.getGlyph(text.charAt(i));
+                int startY = halfHeight;
+                int startX = i * horizontalFontText.getWidth() / text.length() + 2;
+
+                rotatedPixmap.setColor(Color.BLACK);
+                rotatedPixmap.fillRectangle(0, 0, width, height);
+                rotatedPixmap.setColor(Color.WHITE);
+                rotatedPixmap.drawPixmap(fontPixmap,
+                                         halfHeight,
+                                         halfHeight,
+                                         glyph.srcX,
+                                         glyph.srcY,
+                                         glyph.width,
+                                         glyph.height);
+
+                Pixmap rotated180Pixmap = PixmapProcessors.rotatePixmap(rotatedPixmap, 180);
+
+                horizontalFontText.drawPixmap(rotated180Pixmap,
+                                              startX,
+                                              startY,
+                                              halfHeight,
+                                             halfHeight - glyph.width,
+                                              glyph.height,
+                                              glyph.width);
+            }
+
+        }
+        return horizontalFontText;
+    }
+
+    public static Pixmap createDynamicHorizontalFontTextColor(BitmapFont font, Color fontColor, String text, Pixmap src, int startTextX, int startTextY) {
 	    BitmapFont.BitmapFontData fontData = font.getData();
 
 		if (fontData.imagePaths.length == 0) {

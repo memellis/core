@@ -17,7 +17,6 @@
 package com.ellzone.slotpuzzle2d.prototypes.cylinder;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.assets.loaders.resolvers.InternalFileHandleResolver;
 import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
@@ -25,7 +24,7 @@ import com.badlogic.gdx.graphics.PerspectiveCamera;
 import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.VertexAttributes;
-import com.badlogic.gdx.graphics.g2d.Sprite;
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g3d.Environment;
 import com.badlogic.gdx.graphics.g3d.Material;
 import com.badlogic.gdx.graphics.g3d.Model;
@@ -39,28 +38,15 @@ import com.badlogic.gdx.graphics.g3d.utils.CameraInputController;
 import com.badlogic.gdx.graphics.g3d.utils.MeshPartBuilder;
 import com.badlogic.gdx.graphics.g3d.utils.ModelBuilder;
 import com.badlogic.gdx.graphics.g3d.utils.shapebuilders.CylinderShapeBuilder;
-import com.badlogic.gdx.maps.tiled.TiledMap;
-import com.badlogic.gdx.maps.tiled.TmxMapLoader;
 import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.utils.Array;
 import com.ellzone.slotpuzzle2d.SlotPuzzleConstants;
-import com.ellzone.slotpuzzle2d.effects.ReelAccessor;
-import com.ellzone.slotpuzzle2d.effects.ReelLetterAccessor;
-import com.ellzone.slotpuzzle2d.effects.SpriteAccessor;
 import com.ellzone.slotpuzzle2d.prototypes.SPPrototype;
 import com.ellzone.slotpuzzle2d.sprites.ReelLetterTile;
-import com.ellzone.slotpuzzle2d.sprites.ReelTile;
-import com.ellzone.slotpuzzle2d.sprites.Reels;
-import com.ellzone.slotpuzzle2d.tweenengine.SlotPuzzleTween;
-import com.ellzone.slotpuzzle2d.utils.AssetsAnnotation;
 import com.ellzone.slotpuzzle2d.utils.FileUtils;
 import com.ellzone.slotpuzzle2d.utils.PixmapProcessors;
-import com.ellzone.slotpuzzle2d.utils.Random;
-
 import net.dermetfan.gdx.assets.AnnotationAssetManager;
-
 import org.jrenner.smartfont.SmartFontGenerator;
-
 import java.io.IOException;
 
 import static com.ellzone.slotpuzzle2d.prototypes.screens.IntroScreenPrototype.FONT_LARGE;
@@ -71,20 +57,24 @@ import static com.ellzone.slotpuzzle2d.prototypes.screens.IntroScreenPrototype.L
 import static com.ellzone.slotpuzzle2d.prototypes.tween.ReelLetterTilePlay.REEL_HEIGHT;
 import static com.ellzone.slotpuzzle2d.prototypes.tween.ReelLetterTilePlay.REEL_WIDTH;
 
-public class Render3DCylinder4 extends SPPrototype {
-
+public class Render3DCylinder6 extends SPPrototype {
+    public static final float REEL_3D_WIDTH = 0.4f;
+    public static final float REEL_3D_SIDE_WITH = 0.01f;
     private ModelBatch modelBatch;
     private Environment environment;
     private PerspectiveCamera cam;
     private CameraInputController camController;
     private Array<ModelInstance> instances = new Array<ModelInstance>();
     private AnnotationAssetManager annotationAssetManager;
+    private BitmapFont fontSmall;
+    private BitmapFont fontMedium;
+    private BitmapFont fontLarge;
+    private Array<ReelLetterTile> reelLetterTiles;
 
     @Override
     public void create() {
-        annotationAssetManager =  loadAssets();
-        Reels reels = new Reels(annotationAssetManager);
-        final Texture reelTexture = initialiseReelTexture(reels);
+        initialiseFonts();
+        final Texture reelTexture = initialiseFontTexture("Hello World! ");
         instances = createReelModelInstance(reelTexture, instances);
         modelBatch = new ModelBatch();
         createEnvironment();
@@ -95,14 +85,14 @@ public class Render3DCylinder4 extends SPPrototype {
 
     private Array<ModelInstance> createReelModelInstance(Texture reelTexture, Array<ModelInstance> instances) {
         final Material reelMaterial = new Material(TextureAttribute.createDiffuse(reelTexture),
-                ColorAttribute.createSpecular(1, 1, 1, 1),
-                FloatAttribute.createShininess(8f));
-        final Material whiteMaterial = new Material(ColorAttribute.createDiffuse(Color.WHITE));
+                                                   ColorAttribute.createSpecular(1, 1, 1, 1),
+                                                   FloatAttribute.createShininess(8f));
+        final Material blackMaterial = new Material(ColorAttribute.createDiffuse(Color.BLACK));
         ModelBuilder modelBuilder = new ModelBuilder();
         modelBuilder.begin();
         addNodeCylinder(reelMaterial, modelBuilder);
-        addNodeCylinderSide(whiteMaterial, modelBuilder, "leftSideOfCylinder");
-        addNodeCylinderSide(whiteMaterial, modelBuilder, "rightSideOfCylinder");
+        addNodeCylinderSide(blackMaterial, modelBuilder, "leftSideOfCylinder");
+        addNodeCylinderSide(blackMaterial, modelBuilder, "rightSideOfCylinder");
         Model model = modelBuilder.end();
         instances.add(new ModelInstance(model, new Matrix4().trn(0f, 0f, 0f), "cylinder", true));
         instances.get(0).transform.rotate(0,0,1, 90);
@@ -110,11 +100,11 @@ public class Render3DCylinder4 extends SPPrototype {
         instances.add(new ModelInstance(model, new Matrix4().trn(0f, 0f, 0f), "leftSideOfCylinder", true));
         instances.get(1).transform.rotate(0,0,1, 90);
         instances.get(1).transform.rotate(1,0,0, 180);
-        instances.get(1).transform.translate(0, 0.51f, 0);
+        instances.get(1).transform.translate(0, (REEL_3D_WIDTH + REEL_3D_SIDE_WITH) / 2, 0);
         instances.add(new ModelInstance(model, new Matrix4().trn(0f, 0f, 0f), "rightSideOfCylinder", true));
         instances.get(2).transform.rotate(0,0,1, 90);
         instances.get(2).transform.rotate(1,0,0, 180);
-        instances.get(2).transform.translate(0, -0.51f, 0);
+        instances.get(2).transform.translate(0, -(REEL_3D_WIDTH + REEL_3D_SIDE_WITH)/ 2, 0);
         return instances;
     }
 
@@ -124,26 +114,26 @@ public class Render3DCylinder4 extends SPPrototype {
         mpb = modelBuilder.part("cylinder",
                                  GL20.GL_TRIANGLES,
                                 VertexAttributes.Usage.Position |
-                                          VertexAttributes.Usage.Normal |
-                                          VertexAttributes.Usage.TextureCoordinates |
-                                          VertexAttributes.Usage.ColorPacked,
+                                 VertexAttributes.Usage.Normal |
+                                 VertexAttributes.Usage.TextureCoordinates |
+                                 VertexAttributes.Usage.ColorPacked,
                                  material);
         mpb.setUVRange(1f, 1f, 0f, 0f);
-        CylinderShapeBuilder.build(mpb, 2f, 1f, 2f, 15, 0, 360, false);
-   }
+        CylinderShapeBuilder.build(mpb, 2f, REEL_3D_WIDTH, 2f, 15, 0, 360, false);
+    }
 
     private void addNodeCylinderSide(Material material, ModelBuilder modelBuilder, String id) {
-            MeshPartBuilder mpb;
-            modelBuilder.node().id = id;
-            mpb = modelBuilder.part(id,
-                                    GL20.GL_TRIANGLES,
-                                   VertexAttributes.Usage.Position |
-                                             VertexAttributes.Usage.Normal |
-                                             VertexAttributes.Usage.TextureCoordinates |
-                                             VertexAttributes.Usage.ColorPacked,
-                                    material);
+        MeshPartBuilder mpb;
+        modelBuilder.node().id = id;
+        mpb = modelBuilder.part(id,
+                GL20.GL_TRIANGLES,
+               VertexAttributes.Usage.Position |
+                         VertexAttributes.Usage.Normal |
+                         VertexAttributes.Usage.TextureCoordinates |
+                         VertexAttributes.Usage.ColorPacked,
+                material);
         mpb.setUVRange(1f, 1f, 0f, 0f);
-        CylinderShapeBuilder.build(mpb, 2.0f, 0.02f, 2.0f, 15, 0, 360, true);
+        CylinderShapeBuilder.build(mpb, 2.0f, REEL_3D_SIDE_WITH, 2.0f, 15, 0, 360, true);
     }
 
     private void createEnvironment() {
@@ -161,17 +151,31 @@ public class Render3DCylinder4 extends SPPrototype {
         cam.update();
     }
 
-    private Texture initialiseReelTexture(Reels reels) {
-        Pixmap slotReelScrollPixmap = PixmapProcessors.createHorizontalPixmapToAnimate(reels.getReels());
-        return new Texture(slotReelScrollPixmap);
+    private void initialiseFonts() {
+        SmartFontGenerator fontGen = new SmartFontGenerator();
+        FileHandle exoFileInternal = Gdx.files.internal(LIBERATION_MONO_REGULAR_FONT_NAME);
+        FileHandle generatedFontDir = Gdx.files.local(GENERATED_FONTS_DIR);
+        generatedFontDir.mkdirs();
+
+        FileHandle exoFile = Gdx.files.local(GENERATED_FONTS_DIR + LIBERATION_MONO_REGULAR_FONT_NAME);
+
+        try {
+            FileUtils.copyFile(exoFileInternal, exoFile);
+        } catch (IOException ex) {
+            Gdx.app.error(SlotPuzzleConstants.SLOT_PUZZLE, "Could not copy " + exoFileInternal.file().getPath() + " to file " + exoFile.file().getAbsolutePath() + " " + ex.getMessage());
+        }
+
+        fontSmall = fontGen.createFont(exoFile, FONT_SMALL, 24);
+        fontMedium = fontGen.createFont(exoFile, FONT_MEDIUM, 48);
+        fontLarge = fontGen.createFont(exoFile, FONT_LARGE, 64);
     }
 
-    private AnnotationAssetManager loadAssets()  {
-        AnnotationAssetManager annotationAssetManager = new AnnotationAssetManager();
-        annotationAssetManager.setLoader(TiledMap.class, new TmxMapLoader(new InternalFileHandleResolver()));
-        annotationAssetManager.load(new AssetsAnnotation());
-        annotationAssetManager.finishLoading();
-        return annotationAssetManager;
+    private Texture initialiseFontTexture(String reelText) {
+        Pixmap textPixmap = new Pixmap(REEL_WIDTH * reelText.length(), REEL_HEIGHT, Pixmap.Format.RGBA8888);
+        textPixmap = PixmapProcessors.createDynamicHorizontalFontTextForReel(fontSmall, reelText, textPixmap);
+        PixmapProcessors.savePixmap(textPixmap);
+        Texture textTexture = new Texture(textPixmap);
+        return textTexture;
     }
 
     private void update() {
@@ -184,13 +188,15 @@ public class Render3DCylinder4 extends SPPrototype {
     @Override
     public void render () {
         update();
-
-        Gdx.gl.glViewport(0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
-        Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT | GL20.GL_DEPTH_BUFFER_BIT);
-
+        glClearFrame();
         modelBatch.begin(cam);
         modelBatch.render(instances, environment);
         modelBatch.end();
+    }
+
+    private void glClearFrame() {
+        Gdx.gl.glViewport(0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
+        Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT | GL20.GL_DEPTH_BUFFER_BIT);
     }
 
     @Override
@@ -199,4 +205,3 @@ public class Render3DCylinder4 extends SPPrototype {
         instances.clear();
     }
 }
-
