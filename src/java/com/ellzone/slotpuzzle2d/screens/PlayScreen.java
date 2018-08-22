@@ -138,10 +138,7 @@ public class PlayScreen implements Screen {
 	private LevelPopUp levelPopUp, levelLostPopUp, levelWonPopUp;
 	private Array<Sprite> popUpSprites, levelLostSprites, levelWonSprites;
     private LevelDoor levelDoor;
-//	private Array<Integer> hiddenPlayingCards;
-//	private HiddenPlayingCard hiddenPlayingCard;
 	private HiddenPattern hiddenPattern;
-//	private Array<Card> cards;
 	private MapTile mapTile;
 	private int mapWidth;
     private int mapHeight;
@@ -184,7 +181,6 @@ public class PlayScreen implements Screen {
         levelLoader = getLevelLoader();
         reelTiles = levelLoader.createLevel(GAME_LEVEL_WIDTH, GAME_LEVEL_HEIGHT);
         reelsSpinning = reelTiles.size - 1;
-//        cards = levelLoader.getCards();
         hiddenPattern = levelLoader.getHiddenPattern();
     }
 

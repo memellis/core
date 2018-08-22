@@ -39,6 +39,7 @@ public class LevelLoader {
     private Array<Integer> hiddenPlayingCards;
     private LevelCallBack stoppedSpinningCallback, stoppedFlashingCallback;
     private HiddenPattern hiddenPattern;
+    PuzzleGridTypeReelTile puzzleGridTypeReelTile;
 
     public LevelLoader(AnnotationAssetManager annotationAssetManager, LevelDoor levelDoor, MapTile mapTile, Array<ReelTile> reelTiles) {
         this.annotationAssetManager = annotationAssetManager;
@@ -48,6 +49,7 @@ public class LevelLoader {
     }
 
      public Array<ReelTile> createLevel(int levelWidth, int levelHeight) {
+        puzzleGridTypeReelTile = new PuzzleGridTypeReelTile();
         tiledMapLevel = getLevelAssets(annotationAssetManager);
         if (levelDoor.getLevelType().equals(PLAYING_CARD_LEVEL_TYPE))
             initialiseHiddenPlayingCards();
@@ -168,22 +170,7 @@ public class LevelLoader {
     }
 
     public TupleValueIndex[][] populateMatchGrid(Array<ReelTile> reelLevel, int levelWidth, int levelHeight) {
-        TupleValueIndex[][] matchGrid = new TupleValueIndex[levelHeight][levelWidth];
-        int r, c;
-        for (int i = 0; i < reelLevel.size; i++) {
-            r = PuzzleGridTypeReelTile.getRowFromLevel(reelLevel.get(i).getY(), GAME_LEVEL_HEIGHT);
-            c = PuzzleGridTypeReelTile.getColumnFromLevel(reelLevel.get(i).getX());
-            if ((r >= 0) & (r <= GAME_LEVEL_HEIGHT) & (c >= 0) & (c <= GAME_LEVEL_WIDTH)) {
-                if (reelLevel.get(i).isReelTileDeleted()) {
-                    matchGrid[r][c] = new TupleValueIndex(r, c, i, -1);
-                } else {
-                    matchGrid[r][c] = new TupleValueIndex(r, c, i, reelLevel.get(i).getEndReel());
-                }
-            } else {
-                Gdx.app.debug(SlotPuzzleConstants.SLOT_PUZZLE, "I don't know how to deal with r="+r+" c="+c);
-            }
-        }
-        return matchGrid;
+        return puzzleGridTypeReelTile.populateMatchGrid(reelLevel, levelWidth, levelHeight);
     }
 
     public Array<ReelTile> getReelTiles() {
@@ -193,17 +180,6 @@ public class LevelLoader {
     public Array<Card> getCards() {
         return cards;
     }
-
-    public Array<Integer> getHiddenPlayingCards() {
-        return hiddenPlayingCards;
-    }
-
-//    public HiddenPlayingCard getHiddenPlayingCard() {
-//        if (hiddenPattern instanceof HiddenPlayingCard)
-//            return (HiddenPlayingCard) hiddenPattern;
-//        else
-//            return null;
-//    }
 
     public HiddenPattern getHiddenPattern() {return hiddenPattern; }
 }
