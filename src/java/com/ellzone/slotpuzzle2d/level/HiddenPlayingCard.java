@@ -141,8 +141,9 @@ public class HiddenPlayingCard extends HiddenPattern {
                         if (!reelTiles.get(grid[r][c].getIndex()).isReelTileDeleted())
                             return true;
                     } else
-                        throw new HiddenPattern.HiddenPatternPuzzleGridException("I don't know how to deal with grid cell r=" + r + "c=" + c);
-                }
+                        throw new HiddenPattern.HiddenPatternPuzzleGridException(String.format("Grid cell r=%d, c=%d is null", r, c));
+                } else
+                    throw new HiddenPattern.HiddenPatternPuzzleGridException(String.format("Grid cell r=%d, c=%d has exceeded the grid limits: width=%d, height=%d", r, c, levelWidth, levelHeight));
             }
         }
         return false;
