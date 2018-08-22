@@ -130,6 +130,44 @@ public class TestHiddenShape {
         verifyAll();
     }
 
+    @Test(expected = HiddenPattern.HiddenPatternPuzzleGridException.class)
+    public void isHiddenPlayingCardRevealeThrowsHiddenPlayingCardPuzzleGridExceptionForGridColumnLessThan0() {
+        testAMapRectangleisOutOfRange(40, 0);
+    }
+
+    @Test(expected = HiddenPattern.HiddenPatternPuzzleGridException.class)
+    public void isHiddenPlayingCardRevealeThrowsHiddenPlayingCardPuzzleGridExceptionForGridColumnGreaterThanGridWidth() {
+        testAMapRectangleisOutOfRange(640, 0);
+    }
+
+    @Test(expected = HiddenPattern.HiddenPatternPuzzleGridException.class)
+    public void isHiddenPlayingCardRevealeThrowsHiddenPlayingCardPuzzleGridExceptionForGridRowGreaterLessThanGridWidth() {
+        testAMapRectangleisOutOfRange(160, -40);
+    }
+
+    @Test(expected = HiddenPattern.HiddenPatternPuzzleGridException.class)
+    public void isHiddenPlayingCardRevealeThrowsHiddenPlayingCardPuzzleGridExceptionForGridRowGreaterThanGridWidth() {
+        testAMapRectangleisOutOfRange(160, 480);
+    }
+
+    private void testAMapRectangleisOutOfRange(int cardX, int cardY) {
+        testMatrix = createMatrixPatternRevealed();
+        createGrid(testMatrix);
+        rectangleMapObjects = createMockLevelHiddenShape();
+        rectangleMapObjects.get(0).getRectangle().x = cardX;
+        rectangleMapObjects.get(0).getRectangle().y = cardY;
+        setExpectations(true);
+        replayAll();
+        HiddenPattern hiddenPattern = new HiddenShape(levelMock);
+        assertThat(hiddenPattern.isHiddenPatternRevealed(testGrid,
+                                                         reelTiles,
+                                                         testGrid[0].length,
+                                                         testGrid.length),
+                                                         is(true));
+        verifyAll();
+    }
+
+
     private int[][] createMatrixPatternRevealed() {
         String matrixToInput = "11 x 9\n"
                 + "0  1  2  3  4  5  6  7  8  9  10\n"
@@ -219,7 +257,6 @@ public class TestHiddenShape {
         else
             expectReelTiles();
     }
-
 
     private void expectGetRectangleMapObject() {
         expect(levelMock.getLayers()).andReturn(mapLayersMock);
