@@ -793,9 +793,8 @@ public class PlayScreen implements Screen {
 				playState = PlayStates.LEVEL_LOST;
 				setLevelLostSpritePositions();
 				levelLostPopUp.showLevelPopUp(null);
-			} else {
+			} else
 				gameOver = true;
-			}
 		}
 		if ((gameOver) & (!win) & (Hud.getLives() == 0)) {
 			dispose();

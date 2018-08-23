@@ -69,7 +69,7 @@ class LevelCreator {
 -TweenCallback reelFlashCallback
 -TweenCallback deleteReelCallback
 -Array<ReelTile> createLevel(LevelDoor levelDoor, TiledMap level, Array<ReelTile> reelTiles, int levelWidth, int levelHeight)
--Array<ReelTile> checkLevel(Array<ReelTile> reelLevel, int levelWidth, int levelHeight)
+-Array<ReelTile> checkGrid(Array<ReelTile> reelLevel, int levelWidth, int levelHeight)
 -Array<ReelTile> adjustForAnyLonelyReels(Array<ReelTile> levelReel, int levelWidth, int levelHeight)
 -Array<ReelTile> populateLevel(TiledMap level, Array<ReelTile> reelTiles, int levelWidth, int levelHeight)
 +ReelTileGridValue[][] populateMatchGrid(Array<ReelTile> reelLevel, int gridWidth, int gridHeight)

@@ -18,6 +18,7 @@ package com.ellzone.slotpuzzle2d.puzzlegrid;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.utils.Array;
+import com.badlogic.gdx.utils.GdxRuntimeException;
 import com.ellzone.slotpuzzle2d.SlotPuzzleConstants;
 import com.ellzone.slotpuzzle2d.screens.PlayScreen;
 import com.ellzone.slotpuzzle2d.sprites.ReelTile;
@@ -27,9 +28,51 @@ import java.util.Set;
 import java.util.Stack;
 
 import static com.ellzone.slotpuzzle2d.puzzlegrid.ReelTileGridValue.*;
+import static com.ellzone.slotpuzzle2d.screens.PlayScreen.GAME_LEVEL_HEIGHT;
+import static com.ellzone.slotpuzzle2d.screens.PlayScreen.GAME_LEVEL_WIDTH;
 
 public class PuzzleGridTypeReelTile {
     public static final float FLOAT_ROUNDING_DELTA_FOR_BOX2D = 1.0f;
+
+    public Array<ReelTile> checkGrid(Array<ReelTile> reelLevel, int levelWidth, int levelHeight) {
+        TupleValueIndex[][] grid = populateMatchGrid(reelLevel, levelWidth , levelHeight);
+        int arraySizeR = grid.length;
+        int arraySizeC = grid[0].length;
+
+        for(int r = 0; r < arraySizeR; r++) {
+            for(int c = 0; c < arraySizeC; c++) {
+                if(grid[r][c] == null) {
+                    Gdx.app.debug(SlotPuzzleConstants.SLOT_PUZZLE, "Found null grid tile. r=" + r + " c= " + c + ". I will therefore create a deleted entry for the tile.");
+                    throw new GdxRuntimeException("Level incorrect. Found null grid tile. r=" + r + " c= " + c);
+                }
+            }
+        }
+        return reelLevel;
+    }
+
+    public ReelTileGridValue[][] initialiseGrid(ReelTileGridValue[][] workingGrid, ReelTileGridValue[][] puzzleGrid) {
+        for (int r = 0; r < workingGrid.length; r++) {
+            for (int c = 0; c < workingGrid[r].length; c++) {
+                if (puzzleGrid[r][c] == null) {
+                    workingGrid[r][c] = new ReelTileGridValue(r, c, -1, -1);
+                } else {
+                    workingGrid[r][c] = new ReelTileGridValue(puzzleGrid[r][c].getReelTile(), r, c, puzzleGrid[r][c].index, -1);
+                }
+            }
+        }
+        return workingGrid;
+    }
+
+    public Array<ReelTileGridValue> matchGridSlots(ReelTileGridValue[][] puzzleGrid) {
+        ReelTileGridValue[][] matchedGridRows = matchRowSlots(puzzleGrid);
+        ReelTileGridValue[][] matchedGridCols = matchColumnSlots(puzzleGrid);
+        Array<ReelTileGridValue> matchedSlots = new Array<ReelTileGridValue>();
+
+        matchedSlots = getMatchedRowSlots(matchedGridRows, matchedSlots);
+        matchedSlots = getMatchedColSlots(matchedGridCols, matchedSlots);
+
+        return matchedSlots;
+    }
 
     public ReelTileGridValue[][] matchRowSlots(ReelTileGridValue[][] puzzleGrid) {
         int arraySizeR = puzzleGrid.length;
@@ -133,30 +176,6 @@ public class PuzzleGridTypeReelTile {
             c++;
         }
         return workingGrid;
-    }
-
-    public ReelTileGridValue[][] initialiseGrid(ReelTileGridValue[][] workingGrid, ReelTileGridValue[][] puzzleGrid) {
-        for (int r = 0; r < workingGrid.length; r++) {
-            for (int c = 0; c < workingGrid[r].length; c++) {
-                if (puzzleGrid[r][c] == null) {
-                    workingGrid[r][c] = new ReelTileGridValue(r, c, -1, -1);
-                } else {
-                    workingGrid[r][c] = new ReelTileGridValue(puzzleGrid[r][c].getReelTile(), r, c, puzzleGrid[r][c].index, -1);
-                }
-            }
-        }
-        return workingGrid;
-    }
-
-    public Array<ReelTileGridValue> matchGridSlots(ReelTileGridValue[][] puzzleGrid) {
-        ReelTileGridValue[][] matchedGridRows = matchRowSlots(puzzleGrid);
-        ReelTileGridValue[][] matchedGridCols = matchColumnSlots(puzzleGrid);
-        Array<ReelTileGridValue> matchedSlots = new Array<ReelTileGridValue>();
-
-        matchedSlots = getMatchedRowSlots(matchedGridRows, matchedSlots);
-        matchedSlots = getMatchedColSlots(matchedGridCols, matchedSlots);
-
-        return matchedSlots;
     }
 
     private Array<ReelTileGridValue> getMatchedRowSlots(ReelTileGridValue[][] puzzleGrid, Array<ReelTileGridValue> matchedSlots) {
@@ -364,6 +383,34 @@ public class PuzzleGridTypeReelTile {
         }
         return workingGrid;
     }
+
+    public Array<ReelTile> adjustForAnyLonelyReels(Array<ReelTile> levelReel, int levelWidth, int levelHeight) {
+        PuzzleGridType puzzleGrid = new PuzzleGridType();
+        TupleValueIndex[][] grid = populateMatchGrid(levelReel, levelWidth, levelHeight);
+        Array<TupleValueIndex> lonelyTiles = puzzleGrid.getLonelyTiles(grid);
+        for (TupleValueIndex lonelyTile : lonelyTiles) {
+            if (lonelyTile.r == 0) {
+                levelReel.get(grid[lonelyTile.r][lonelyTile.c].index)
+                          .setEndReel(levelReel.get(grid[lonelyTile.r + 1][lonelyTile.c].index).getEndReel());
+            } else if (lonelyTile.c == 0) {
+                levelReel.get(grid[lonelyTile.r][lonelyTile.c].index)
+                         .setEndReel(levelReel.get(grid[lonelyTile.r][lonelyTile.c + 1].index).getEndReel());
+            } else if (lonelyTile.r == levelHeight) {
+                levelReel.get(grid[lonelyTile.r][lonelyTile.c].index)
+                         .setEndReel(levelReel.get(grid[lonelyTile.r - 1][lonelyTile.c].index).getEndReel());
+            } else if (lonelyTile.c == levelWidth) {
+                levelReel.get(grid[lonelyTile.r][lonelyTile.c].index)
+                         .setEndReel(levelReel.get(grid[lonelyTile.r][lonelyTile.c - 1].index).getEndReel());
+            } else {
+// Fixme java.lang.ArrayIndexOutOfBoundsException
+// Unit test this bug!
+//                levelReel.get(grid[lonelyTile.r][lonelyTile.c].index)
+//                         .setEndReel(levelReel.get(grid[lonelyTile.r+1][lonelyTile.c].index).getEndReel());
+            }
+        }
+        return levelReel;
+    }
+
 
     public static void printGrid(ReelTileGridValue[][] puzzleGrid){
         for(int r = 0; r < puzzleGrid.length; r++){

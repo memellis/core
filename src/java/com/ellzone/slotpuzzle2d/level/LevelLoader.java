@@ -44,8 +44,6 @@ public class LevelLoader {
     private HiddenPattern hiddenPattern;
     private PuzzleGridTypeReelTile puzzleGridTypeReelTile;
 
-
-
     public LevelLoader(AnnotationAssetManager annotationAssetManager, LevelDoor levelDoor, MapTile mapTile, Array<ReelTile> reelTiles) {
         this.annotationAssetManager = annotationAssetManager;
         this.levelDoor = levelDoor;
@@ -142,39 +140,11 @@ public class LevelLoader {
     }
 
     private Array<ReelTile> checkLevel(Array<ReelTile> reelLevel, int levelWidth, int levelHeight) {
-        TupleValueIndex[][] grid = populateMatchGrid(reelLevel, levelWidth , levelHeight);
-        int arraySizeR = grid.length;
-        int arraySizeC = grid[0].length;
-
-        for(int r = 0; r < arraySizeR; r++) {
-            for(int c = 0; c < arraySizeC; c++) {
-                if(grid[r][c] == null) {
-                    Gdx.app.debug(SlotPuzzleConstants.SLOT_PUZZLE, "Found null grid tile. r=" + r + " c= " + c + ". I will therefore create a deleted entry for the tile.");
-                    throw new GdxRuntimeException("Level incorrect. Found null grid tile. r=" + r + " c= " + c);
-                }
-            }
-        }
-        return reelLevel;
+        return puzzleGridTypeReelTile.checkGrid(reelLevel, levelWidth, levelHeight);
     }
 
     private Array<ReelTile> adjustForAnyLonelyReels(Array<ReelTile> levelReel, int levelWidth, int levelHeight) {
-        PuzzleGridType puzzleGrid = new PuzzleGridType();
-        TupleValueIndex[][] grid = populateMatchGrid(levelReel, levelWidth, levelHeight);
-        Array<TupleValueIndex> lonelyTiles = puzzleGrid.getLonelyTiles(grid);
-        for (TupleValueIndex lonelyTile : lonelyTiles) {
-            if (lonelyTile.r == 0) {
-                levelReel.get(grid[lonelyTile.r][lonelyTile.c].index).setEndReel(levelReel.get(grid[lonelyTile.r+1][lonelyTile.c].index).getEndReel());
-            } else if (lonelyTile.c == 0) {
-                levelReel.get(grid[lonelyTile.r][lonelyTile.c].index).setEndReel(levelReel.get(grid[lonelyTile.r][lonelyTile.c+1].index).getEndReel());
-            } else if (lonelyTile.r == GAME_LEVEL_HEIGHT) {
-                levelReel.get(grid[lonelyTile.r][lonelyTile.c].index).setEndReel(levelReel.get(grid[lonelyTile.r-1][lonelyTile.c].index).getEndReel());
-            } else if (lonelyTile.c == GAME_LEVEL_WIDTH) {
-                levelReel.get(grid[lonelyTile.r][lonelyTile.c].index).setEndReel(levelReel.get(grid[lonelyTile.r][lonelyTile.c-1].index).getEndReel());
-            } else {
-                levelReel.get(grid[lonelyTile.r][lonelyTile.c].index).setEndReel(levelReel.get(grid[lonelyTile.r+1][lonelyTile.c].index).getEndReel());
-            }
-        }
-        return levelReel;
+        return puzzleGridTypeReelTile.adjustForAnyLonelyReels(levelReel, levelWidth, levelHeight);
     }
 
     public TupleValueIndex[][] populateMatchGrid(Array<ReelTile> reelLevel, int levelWidth, int levelHeight) {
