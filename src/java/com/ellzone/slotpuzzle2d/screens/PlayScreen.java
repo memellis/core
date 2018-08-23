@@ -774,6 +774,7 @@ public class PlayScreen implements Screen {
 		Hud.resetScore();
 		Hud.loseLife();
 		hud.resetWorldTime(300);
+		hud.stopWorldTimer();
 		renderer = new OrthogonalTiledMapRenderer(level);
 		displaySpinHelp = false;
 		inRestartLevel = false;

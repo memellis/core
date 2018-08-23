@@ -24,6 +24,8 @@ import com.ellzone.slotpuzzle2d.utils.Random;
 
 import net.dermetfan.gdx.assets.AnnotationAssetManager;
 
+import java.text.MessageFormat;
+
 import static com.ellzone.slotpuzzle2d.level.LevelCreator.PLAYING_CARD_LEVEL_TYPE;
 import static com.ellzone.slotpuzzle2d.screens.PlayScreen.GAME_LEVEL_HEIGHT;
 import static com.ellzone.slotpuzzle2d.screens.PlayScreen.GAME_LEVEL_WIDTH;
@@ -35,11 +37,14 @@ public class LevelLoader {
     private MapTile mapTile;
     private TiledMap tiledMapLevel;
     private Array<ReelTile> reelTiles;
+    private int levelWidth, levelHeight;
  	private Array<Card> cards;
     private Array<Integer> hiddenPlayingCards;
     private LevelCallBack stoppedSpinningCallback, stoppedFlashingCallback;
     private HiddenPattern hiddenPattern;
-    PuzzleGridTypeReelTile puzzleGridTypeReelTile;
+    private PuzzleGridTypeReelTile puzzleGridTypeReelTile;
+
+
 
     public LevelLoader(AnnotationAssetManager annotationAssetManager, LevelDoor levelDoor, MapTile mapTile, Array<ReelTile> reelTiles) {
         this.annotationAssetManager = annotationAssetManager;
@@ -49,6 +54,8 @@ public class LevelLoader {
     }
 
      public Array<ReelTile> createLevel(int levelWidth, int levelHeight) {
+        this.levelWidth = levelWidth;
+        this.levelHeight = levelHeight;
         puzzleGridTypeReelTile = new PuzzleGridTypeReelTile();
         tiledMapLevel = getLevelAssets(annotationAssetManager);
         if (levelDoor.getLevelType().equals(PLAYING_CARD_LEVEL_TYPE))
@@ -123,6 +130,7 @@ public class LevelLoader {
                                  }
                              }
         );
+        reelTile.unDeleteReelTile();
     }
 
     private void processReelHasStoppedSpinning(ReelTile source) {
@@ -182,4 +190,10 @@ public class LevelLoader {
     }
 
     public HiddenPattern getHiddenPattern() {return hiddenPattern; }
+
+    public class LevelLoaderException extends GdxRuntimeException {
+        public LevelLoaderException(String message) {
+            super(message);
+        }
+    }
 }

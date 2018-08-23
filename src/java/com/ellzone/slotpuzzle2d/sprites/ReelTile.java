@@ -76,8 +76,8 @@ public class ReelTile extends ReelSprite {
     }
 
     private void defineReelSlotTileScroll() {
-    	setPosition((int)this.x, (int)this.y);
-        setOrigin((int)this.x, (int)this.y);
+    	setPosition((int) x, (int) y);
+        setOrigin((int) x, (int) y);
         scrollTexture.setWrap(Texture.TextureWrap.Repeat, Texture.TextureWrap.Repeat);
         region = new TextureRegion(scrollTexture);
         int randomSy = 0;
@@ -88,10 +88,10 @@ public class ReelTile extends ReelSprite {
 
         if ((reelDisplayWidth == 0) && (reelDisplayHeight == 0)) {
             region.setRegion((int) 0, randomSy, (int) tileWidth, (int) tileHeight);
-            setBounds((int) this.x, (int) this.y, (int) tileWidth, (int) tileHeight);
+            setBounds((int) x, (int) y, (int) tileWidth, (int) tileHeight);
         } else {
             region.setRegion((int) 0, randomSy, (int) reelDisplayWidth, (int) reelDisplayHeight);
-            setBounds((int) this.x, (int) this.y, (int) reelDisplayWidth, (int) reelDisplayHeight);
+            setBounds((int) x, (int) y, (int) reelDisplayWidth, (int) reelDisplayHeight);
         }
         setRegion(region);
         reelFlash = false;
