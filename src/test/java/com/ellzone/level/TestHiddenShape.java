@@ -170,30 +170,30 @@ public class TestHiddenShape {
 
     private int[][] createMatrixPatternRevealed() {
         String matrixToInput = "11 x 9\n"
-                + "0  1  2  3  4  5  6  7  8  9  10\n"
-                + "0  1 -1 -1  4  5  6  7  8  9  10\n"
-                + "0 -1  2  3 -1  5  6  7  8  9  10\n"
-                + "0 -1  2  3  4  5  6  7  8  9  10\n"
-                + "0  1 -1 -1  4  5  6  7  8  9  10\n"
-                + "0  1  2  3 -1  5  6  7  8  9  10\n"
-                + "0 -1 -1  3 -1  5  6  7  8  9  10\n"
-                + "0  1 -1 -1  4  5  6  7  8  9  10\n"
-                + "0  1  2  3  4  5  6  7  8  9  10\n";
+                             + "0  1  2  3  4  5  6  7  8  9  10\n"
+                             + "0  1 -1 -1  4  5  6  7  8  9  10\n"
+                             + "0 -1  2  3 -1  5  6  7  8  9  10\n"
+                             + "0 -1  2  3  4  5  6  7  8  9  10\n"
+                             + "0  1 -1 -1  4  5  6  7  8  9  10\n"
+                             + "0  1  2  3 -1  5  6  7  8  9  10\n"
+                             + "0 -1 -1  3 -1  5  6  7  8  9  10\n"
+                             + "0  1 -1 -1  4  5  6  7  8  9  10\n"
+                             + "0  1  2  3  4  5  6  7  8  9  10\n";
         InputMatrix inputMatrix = new InputMatrix(matrixToInput);
         return inputMatrix.readMatrix();
     }
 
     private int[][] createMatrixNoPatternRevealed() {
         String matrixToInput = "11 x 9\n"
-                + "0  1  2  3  4  5  6  7  8  9  10\n"
-                + "0  1 -1 -1  4  5  6  7  8  9  10\n"
-                + "0 -1  2  3 -1  5  6  7  8  9  10\n"
-                + "0 -1  2  3  4  5  6  7  8  9  10\n"
-                + "0  1 -1 -1  4  5  6  7  8  9  10\n"
-                + "0  1  2  3 -1  5  6  7  8  9  10\n"
-                + "0 -1  2  3 -1  5  6  7  8  9  10\n"
-                + "0  1  2 -1  4  5  6  7  8  9  10\n"
-                + "0  1  2  3  4  5  6  7  8  9  10\n";
+                             + "0  1  2  3  4  5  6  7  8  9  10\n"
+                             + "0  1 -1 -1  4  5  6  7  8  9  10\n"
+                             + "0 -1  2  3 -1  5  6  7  8  9  10\n"
+                             + "0 -1  2  3  4  5  6  7  8  9  10\n"
+                             + "0  1 -1 -1  4  5  6  7  8  9  10\n"
+                             + "0  1  2  3 -1  5  6  7  8  9  10\n"
+                             + "0 -1  2  3 -1  5  6  7  8  9  10\n"
+                             + "0  1  2 -1  4  5  6  7  8  9  10\n"
+                             + "0  1  2  3  4  5  6  7  8  9  10\n";
         InputMatrix inputMatrix = new InputMatrix(matrixToInput);
         return inputMatrix.readMatrix();
     }
@@ -216,18 +216,18 @@ public class TestHiddenShape {
 
     private int[][] createHiddenShapeMatix() {
         String matrixToInput = "6 x 12\n"
-                + "200 120 40 40 6 1\n"
-                + "240  80 40 40 7 2\n"
-                + "280  80 40 40 7 3\n"
-                + "320 120 40 40 6 4\n"
-                + "320 160 40 40 5 4\n"
-                + "280 200 40 40 4 3\n"
-                + "240 200 40 40 4 2\n"
-                + "200 240 40 40 3 1\n"
-                + "200 280 40 40 2 1\n"
-                + "240 320 40 40 1 2\n"
-                + "280 320 40 40 1 3\n"
-                + "320 280 40 40 2 4\n";
+                             + "200 120 40 40 6 1\n"
+                             + "240  80 40 40 7 2\n"
+                             + "280  80 40 40 7 3\n"
+                             + "320 120 40 40 6 4\n"
+                             + "320 160 40 40 5 4\n"
+                             + "280 200 40 40 4 3\n"
+                             + "240 200 40 40 4 2\n"
+                             + "200 240 40 40 3 1\n"
+                             + "200 280 40 40 2 1\n"
+                             + "240 320 40 40 1 2\n"
+                             + "280 320 40 40 1 3\n"
+                             + "320 280 40 40 2 4\n";
         InputMatrix inputMatrix = new InputMatrix(matrixToInput);
         return inputMatrix.readMatrix();
     }

@@ -48,7 +48,7 @@ public class PuzzleGridType {
                                             match = false;
                                         }
                                     } else {
-                                        Gdx.app.debug(SlotPuzzleConstants.SLOT_PUZZLE, "r=" + r + " c=" + c + " is Null - ignoring this tile.");
+                                        Gdx.app.debug(SlotPuzzleConstants.SLOT_PUZZLE, "r=" + r + " c=" + co+ " is Null - ignoring this tile.");
                                         match = false;
                                     }
                                 } else {

@@ -16,22 +16,50 @@ package com.ellzone.slotpuzzle2d.testpuzzlegrid;
  limitations under the License.
  */
 
+import com.badlogic.gdx.Application;
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.utils.Array;
 import com.ellzone.slotpuzzle2d.puzzlegrid.PuzzleGridTypeReelTile;
 import com.ellzone.slotpuzzle2d.puzzlegrid.ReelTileGridValue;
+import com.ellzone.slotpuzzle2d.puzzlegrid.TupleValueIndex;
+import com.ellzone.slotpuzzle2d.screens.PlayScreen;
+import com.ellzone.slotpuzzle2d.sprites.ReelTile;
 import com.ellzone.slotpuzzle2d.utils.InputMatrix;
 
+import org.easymock.Capture;
+import org.easymock.EasyMock;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.powermock.api.easymock.PowerMock;
+import org.powermock.core.classloader.annotations.PrepareForTest;
+import org.powermock.modules.junit4.PowerMockRunner;
+import org.powermock.reflect.Whitebox;
 
+import java.text.MessageFormat;
+
+import static org.easymock.EasyMock.capture;
+import static org.easymock.EasyMock.expect;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.powermock.api.easymock.PowerMock.createMock;
+import static org.powermock.api.easymock.PowerMock.replay;
+import static org.powermock.api.easymock.PowerMock.verify;
+
+@RunWith(PowerMockRunner.class)
+@PrepareForTest({PuzzleGridTypeReelTile.class, ReelTile.class, Gdx.class})
 
 public class TestPuzzleGridTypeReelTile {
 
     private PuzzleGridTypeReelTile puzzleGridTypeReelTile;
     private ReelTileGridValue[][] puzzleGrid;
     private ReelTileGridValue[][] resultsGrid;
+    private TupleValueIndex[][] lonelyTestGrid;
+    private Array<ReelTile> reelTiles;
+    private Application applicationMock;
+    private Capture<String> logCaptureArgument1, logCaptureArgument2;
+    private Capture<String> debugCaptureArgument1, debugCaptureArgument2;
 
     @Before
     public void setUp() {
@@ -59,31 +87,6 @@ public class TestPuzzleGridTypeReelTile {
         assertThat(resultsGrid[2][1].getCompassPoint(ReelTileGridValue.Compass.NORTH),     is(resultsGrid[1][1]));
         assertThat(resultsGrid[2][0].getCompassPoint(ReelTileGridValue.Compass.NORTHEAST), is(resultsGrid[1][1]));
         assertThat(resultsGrid[1][1].getCompassPoint(ReelTileGridValue.Compass.SOUTHWEST), is(resultsGrid[2][0]));
-    }
-
-    private void setUpGrid1() {
-        puzzleGrid = new ReelTileGridValue[3][3];
-        setUpGrid1Row1();
-        setUpGrid1Row2();
-        setUpgrid1Row3();
-    }
-
-    private void setUpGrid1Row1() {
-        puzzleGrid[0][0] = new ReelTileGridValue(0, 0, 0, 0);
-        puzzleGrid[0][1] = new ReelTileGridValue(0, 1, 1, 1);
-        puzzleGrid[0][2] = new ReelTileGridValue(0, 2, 2, 2);
-    }
-
-    private void setUpGrid1Row2() {
-        puzzleGrid[1][0] = new ReelTileGridValue(1, 0, 3, 1);
-        puzzleGrid[1][1] = new ReelTileGridValue(1, 1, 4, 0);
-        puzzleGrid[1][2] = new ReelTileGridValue(1, 2, 5, 1);
-    }
-
-    private void setUpgrid1Row3() {
-        puzzleGrid[2][0] = new ReelTileGridValue(2, 0, 6, 0);
-        puzzleGrid[2][1] = new ReelTileGridValue(2, 1, 7, 0);
-        puzzleGrid[2][2] = new ReelTileGridValue(2, 2, 8, 0);
     }
 
     @Test
@@ -116,5 +119,188 @@ public class TestPuzzleGridTypeReelTile {
         assertThat(puzzleGrid[2][1].getValue(), is(0));
         assertThat(puzzleGrid[2][2].getIndex(), is(8));
         assertThat(puzzleGrid[2][2].getValue(), is(0));
+    }
+
+    @Test
+    public void testAdjustForAnyLonelyReels() {
+        setUpMocks();
+        mockGdx();
+        int[][] lonelytTilesMatrix = createLonelyTilesMatrix();
+        createLonelyTilesGrid(lonelytTilesMatrix);
+        int[][] expectedLonelyTiles = createExpectedLonelyTilesMatrix();
+        setLonleyReelsExpectations(expectedLonelyTiles);
+        relayAll(expectedLonelyTiles);
+        puzzleGridTypeReelTile.adjustForAnyLonelyReels(reelTiles, PlayScreen.GAME_LEVEL_WIDTH, PlayScreen.GAME_LEVEL_HEIGHT);
+        verifyAll(expectedLonelyTiles);
+    }
+
+    private void setUpMocks() {
+        applicationMock = createMock(Application.class);
+        mockGdx();
+        setUpCaptureArguments();
+    }
+
+    private void mockGdx() {
+        Gdx.app = applicationMock;
+    }
+
+    private void setUpCaptureArguments() {
+        logCaptureArgument1 = EasyMock.newCapture();
+        logCaptureArgument2 = EasyMock.newCapture();
+        debugCaptureArgument1 = EasyMock.newCapture();
+        debugCaptureArgument2 = EasyMock.newCapture();
+    }
+
+
+    private void setLonleyReelsExpectations(int[][] expectedLonelyTileMatrix) {
+        setReelTilesExpectations();
+        setExpectedLonleyTiles(expectedLonelyTileMatrix);
+    }
+
+     private void setReelTilesExpectations() {
+        for(int i=0; i < reelTiles.size ; i++) {
+            ReelTile reelTile = reelTiles.get(i);
+            expect(reelTile.getDestinationX()).andReturn((Float) Whitebox.getInternalState(reelTile, "x")).times(2);
+            expect(reelTile.getDestinationY()).andReturn((Float) Whitebox.getInternalState(reelTile, "y")).times(2);
+            expect(reelTile.isReelTileDeleted()).andReturn((boolean) Whitebox.getInternalState(reelTile, "tileDeleted"));
+            expect(reelTile.getEndReel()).andReturn((int) Whitebox.getInternalState(reelTile, "endReel")).times(2);
+            expect(reelTile.getX()).andReturn((Float) Whitebox.getInternalState(reelTile, "x"));
+            expect(reelTile.getY()).andReturn((Float) Whitebox.getInternalState(reelTile, "y"));
+            applicationMock.log(capture(logCaptureArgument1), capture(logCaptureArgument2));
+
+            if ((float) Whitebox.getInternalState(reelTile, "x") == 560.0f) {
+                applicationMock.debug(capture(debugCaptureArgument1), capture(debugCaptureArgument2));
+                applicationMock.debug(capture(debugCaptureArgument1), capture(debugCaptureArgument2));
+            }
+        }
+    }
+
+    private void setExpectedLonleyTiles(int[][] expectedLonelyTileMatrix) {
+        for (int row = 0; row<expectedLonelyTileMatrix.length; row++) {
+            ReelTile reelTile = reelTiles.get(lonelyTestGrid[lonelyTestGrid.length - 1 - expectedLonelyTileMatrix[row][0]][expectedLonelyTileMatrix[row][1]].index);
+            if (expectedLonelyTileMatrix[row][0] == 0) {
+                ReelTile adjustedReel = reelTiles.get(lonelyTestGrid[lonelyTestGrid.length - 1 - expectedLonelyTileMatrix[row][0] - 1][expectedLonelyTileMatrix[row][1]].index);
+                expect(adjustedReel.getEndReel()).andReturn((Integer) Whitebox.getInternalState(adjustedReel, "endReel"));
+                reelTile.setEndReel((int) Whitebox.getInternalState(adjustedReel, "endReel"));
+//                System.out.println(MessageFormat.format("reelTile index={0} reelTile.setEndReel={1}",lonelyTestGrid[lonelyTestGrid.length - 1 - expectedLonelyTileMatrix[row][0]][expectedLonelyTileMatrix[row][1]].index, Whitebox.getInternalState(adjustedReel, "endReel")));
+            } else if (expectedLonelyTileMatrix[row][1] == 0) {
+                ReelTile adjustedReel = reelTiles.get(lonelyTestGrid[lonelyTestGrid.length - 1 - expectedLonelyTileMatrix[row][0]][expectedLonelyTileMatrix[row][1] + 1].index);
+                expect(adjustedReel.getEndReel()).andReturn((Integer) Whitebox.getInternalState(adjustedReel, "endReel"));
+                reelTile.setEndReel((int) Whitebox.getInternalState(adjustedReel, "endReel"));
+//                System.out.println(MessageFormat.format("reelTile index={0} reelTile.setEndReel={1}",lonelyTestGrid[lonelyTestGrid.length - 1 - expectedLonelyTileMatrix[row][0]][expectedLonelyTileMatrix[row][1]].index, Whitebox.getInternalState(adjustedReel, "endReel")));
+            } else if (expectedLonelyTileMatrix[row][0] == lonelyTestGrid.length - 1) {
+                ReelTile adjustedReel = reelTiles.get(lonelyTestGrid[lonelyTestGrid.length - 1 - expectedLonelyTileMatrix[row][0] + 1][expectedLonelyTileMatrix[row][1]].index);
+                expect(adjustedReel.getEndReel()).andReturn((Integer) Whitebox.getInternalState(adjustedReel, "endReel"));
+                reelTile.setEndReel((int) Whitebox.getInternalState(adjustedReel, "endReel"));
+//                System.out.println(MessageFormat.format("reelTile index={0} reelTile.setEndReel={1}",lonelyTestGrid[lonelyTestGrid.length - 1 - expectedLonelyTileMatrix[row][0]][expectedLonelyTileMatrix[row][1]].index, Whitebox.getInternalState(adjustedReel, "endReel")));
+            } else if (expectedLonelyTileMatrix[row][1] == lonelyTestGrid[0].length - 1) {
+                ReelTile adjustedReel = reelTiles.get(lonelyTestGrid[lonelyTestGrid.length - 1 - expectedLonelyTileMatrix[row][0]][expectedLonelyTileMatrix[row][1] - 1].index);
+                expect(adjustedReel.getEndReel()).andReturn((Integer) Whitebox.getInternalState(adjustedReel, "endReel"));
+                reelTile.setEndReel((int) Whitebox.getInternalState(adjustedReel, "endReel"));
+//                System.out.println(MessageFormat.format("reelTile index={0} reelTile.setEndReel={1}",lonelyTestGrid[lonelyTestGrid.length - 1 - expectedLonelyTileMatrix[row][0]][expectedLonelyTileMatrix[row][1]].index, Whitebox.getInternalState(adjustedReel, "endReel")));
+            } else {
+                ReelTile adjustedReel = reelTiles.get(lonelyTestGrid[lonelyTestGrid.length - 1 - expectedLonelyTileMatrix[row][0]][expectedLonelyTileMatrix[row][1]].index);
+                expect(adjustedReel.getEndReel()).andReturn((Integer) Whitebox.getInternalState(adjustedReel, "endReel"));
+                reelTile.setEndReel((int) Whitebox.getInternalState(adjustedReel, "endReel"));
+//                System.out.println(MessageFormat.format("reelTile index={0} reelTile.setEndReel={1}",lonelyTestGrid[lonelyTestGrid.length - 1 - expectedLonelyTileMatrix[row][0]][expectedLonelyTileMatrix[row][1]].index, Whitebox.getInternalState(adjustedReel, "endReel")));
+            }
+        }
+    }
+
+    private int[][] createLonelyTilesMatrix() {
+        String matrixToInput = "11 x 9\n"
+                             + " 0  1  2  3  4  3  6  7  8  9  10\n"
+                             + " 1  1  2  3  3  3  6  7  8  9   9\n"
+                             + " 0  1  2  3  3  3  6  7  8  9  10\n"
+                             + " 0  1  2  3  4  3  6  7  8  9  10\n"
+                             + " 0  1  2  3  3  3  6  7  8  9  10\n"
+                             + " 0  1  2  3  3  3  6  7  8  9  10\n"
+                             + " 0  1  2  3  3  5  6  7  8  9  10\n"
+                             + " 7  7 -1  3  3  3  6  7  8  9   9\n"
+                             + " 0  7  2  3  4  3  6  7  8  9  10\n";
+        InputMatrix inputMatrix = new InputMatrix(matrixToInput);
+        return inputMatrix.readMatrix();
+    }
+
+    private void createLonelyTilesGrid(int[][] matrix) {
+        lonelyTestGrid = new TupleValueIndex[matrix.length][matrix[0].length];
+        reelTiles = new Array<>();
+        for (int r = 0; r < matrix.length; r++) {
+            for (int c = 0; c < matrix[0].length; c++) {
+                lonelyTestGrid[r][c] = new TupleValueIndex(r, c, r * matrix[0].length + c, matrix[r][c]);
+                ReelTile reelTileMock = PowerMock.createMock(ReelTile.class);
+                Whitebox.setInternalState(reelTileMock,"x", PlayScreen.PUZZLE_GRID_START_X + (c * 40));
+                Whitebox.setInternalState(reelTileMock,"y",(r  * 40) + PlayScreen.PUZZLE_GRID_START_Y);
+                Whitebox.setInternalState(reelTileMock, "tileDeleted", matrix[r][c] < 0);
+                Whitebox.setInternalState(reelTileMock, "index", r * lonelyTestGrid[0].length + c);
+                reelTiles.add(reelTileMock);
+            }
+        }
+    }
+
+    private void setUpGrid1() {
+        puzzleGrid = new ReelTileGridValue[3][3];
+        setUpGrid1Row1();
+        setUpGrid1Row2();
+        setUpgrid1Row3();
+    }
+
+    private void setUpGrid1Row1() {
+        puzzleGrid[0][0] = new ReelTileGridValue(0, 0, 0, 0);
+        puzzleGrid[0][1] = new ReelTileGridValue(0, 1, 1, 1);
+        puzzleGrid[0][2] = new ReelTileGridValue(0, 2, 2, 2);
+    }
+
+    private void setUpGrid1Row2() {
+        puzzleGrid[1][0] = new ReelTileGridValue(1, 0, 3, 1);
+        puzzleGrid[1][1] = new ReelTileGridValue(1, 1, 4, 0);
+        puzzleGrid[1][2] = new ReelTileGridValue(1, 2, 5, 1);
+    }
+
+    private void setUpgrid1Row3() {
+        puzzleGrid[2][0] = new ReelTileGridValue(2, 0, 6, 0);
+        puzzleGrid[2][1] = new ReelTileGridValue(2, 1, 7, 0);
+        puzzleGrid[2][2] = new ReelTileGridValue(2, 2, 8, 0);
+    }
+
+    private int[][] createExpectedLonelyTilesMatrix() {
+        String matrixToInput = "2 x 7\n"
+                             + "0  0\n"
+                             + "0  4\n"
+                             + "0  10\n"
+                             + "4  4\n"
+                             + "8  0\n"
+                             + "8  4\n"
+                             + "8 10\n";
+        InputMatrix inputMatrix = new InputMatrix(matrixToInput);
+        return inputMatrix.readMatrix();
+    }
+
+    private void relayAll(int[][] expectedLonelyTileMatrix) {
+        replay(ReelTile.class,
+               applicationMock);
+//        for (int row = 0; row < expectedLonelyTileMatrix.length; row++) {
+//            ReelTile reelTile = reelTiles.get(lonelyTestGrid[lonelyTestGrid.length - 1 - expectedLonelyTileMatrix[row][0]][expectedLonelyTileMatrix[row][1]].index);
+//            System.out.println(MessageFormat.format("replay reelTile index={0}",lonelyTestGrid[lonelyTestGrid.length - 1 - expectedLonelyTileMatrix[row][0]][expectedLonelyTileMatrix[row][1]].index));
+//            expect(reelTile);
+//        }
+        for (int i = 0 ; i < reelTiles.size; i++) {
+            replay(reelTiles.get(i));
+        }
+    }
+
+    private void verifyAll(int[][] expectedLonelyTileMatrix) {
+        verify(ReelTile.class,
+               applicationMock);
+//        for (int row = 0; row < expectedLonelyTileMatrix.length; row++) {
+//            ReelTile reelTile = reelTiles.get(lonelyTestGrid[lonelyTestGrid.length - 1 - expectedLonelyTileMatrix[row][0]][expectedLonelyTileMatrix[row][1]].index);
+//            System.out.println(MessageFormat.format("verify reelTile index={0}",lonelyTestGrid[lonelyTestGrid.length - 1 - expectedLonelyTileMatrix[row][0]][expectedLonelyTileMatrix[row][1]].index));
+//            expect(reelTile);
+//        }
+//        for (int i = 0 ; i < reelTiles.size; i++) {
+//            System.out.println(MessageFormat.format("verify reeltile {0}", i));
+//            verify(reelTiles.get(i));
+//        }
+
     }
 }
