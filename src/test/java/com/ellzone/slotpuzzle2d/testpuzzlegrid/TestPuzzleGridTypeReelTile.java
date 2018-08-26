@@ -98,19 +98,9 @@ public class TestPuzzleGridTypeReelTile {
         int[][] matrix = inputMatrix.readMatrix();
         PuzzleGridTypeReelTile puzzleGridTypeReelTile = new PuzzleGridTypeReelTile();
         ReelTileGridValue[][] puzzleGrid = puzzleGridTypeReelTile.createGridFromMatrix(matrix);
-        assertThat(puzzleGrid[0][0].getIndex(), is(0));
-        assertThat(puzzleGrid[0][0].getValue(), is(0));
-        assertThat(puzzleGrid[0][1].getIndex(), is(1));
-        assertThat(puzzleGrid[0][1].getValue(), is(1));
-        assertThat(puzzleGrid[0][2].getIndex(), is(2));
-        assertThat(puzzleGrid[0][2].getValue(), is(2));
+        assertPuzzleGridRow1(puzzleGrid[0]);
 
-        assertThat(puzzleGrid[1][0].getIndex(), is(3));
-        assertThat(puzzleGrid[1][0].getValue(), is(1));
-        assertThat(puzzleGrid[1][1].getIndex(), is(4));
-        assertThat(puzzleGrid[1][1].getValue(), is(0));
-        assertThat(puzzleGrid[1][2].getIndex(), is(5));
-        assertThat(puzzleGrid[1][2].getValue(), is(1));
+        assertPuzzleGridRow2(puzzleGrid[1]);
 
         assertThat(puzzleGrid[2][0].getIndex(), is(6));
         assertThat(puzzleGrid[2][0].getValue(), is(0));
@@ -118,6 +108,24 @@ public class TestPuzzleGridTypeReelTile {
         assertThat(puzzleGrid[2][1].getValue(), is(0));
         assertThat(puzzleGrid[2][2].getIndex(), is(8));
         assertThat(puzzleGrid[2][2].getValue(), is(0));
+    }
+
+    private void assertPuzzleGridRow1(ReelTileGridValue[] reelTileGridValues) {
+        assertThat(reelTileGridValues[0].getIndex(), is(0));
+        assertThat(reelTileGridValues[0].getValue(), is(0));
+        assertThat(reelTileGridValues[1].getIndex(), is(1));
+        assertThat(reelTileGridValues[1].getValue(), is(1));
+        assertThat(reelTileGridValues[2].getIndex(), is(2));
+        assertThat(reelTileGridValues[2].getValue(), is(2));
+    }
+
+    private void assertPuzzleGridRow2(ReelTileGridValue[] reelTileGridValues) {
+        assertThat(reelTileGridValues[0].getIndex(), is(3));
+        assertThat(reelTileGridValues[0].getValue(), is(1));
+        assertThat(reelTileGridValues[1].getIndex(), is(4));
+        assertThat(reelTileGridValues[1].getValue(), is(0));
+        assertThat(reelTileGridValues[2].getIndex(), is(5));
+        assertThat(reelTileGridValues[2].getValue(), is(1));
     }
 
     @Test
@@ -183,38 +191,26 @@ public class TestPuzzleGridTypeReelTile {
         for (int row = 0; row < expectedLonelyTileMatrix.length; row++) {
             ReelTile reelTile = reelTiles.get(lonelyTestGrid[lonelyTestGrid.length - 1 - expectedLonelyTileMatrix[row][0]][expectedLonelyTileMatrix[row][1]].index);
             if (expectedLonelyTileMatrix[row][0] == 0) {
-                ReelTile adjustedReel = reelTiles.get(lonelyTestGrid[lonelyTestGrid.length - 1 - expectedLonelyTileMatrix[row][0] - 1][expectedLonelyTileMatrix[row][1]].index);
-                expect(adjustedReel.getEndReel()).andReturn((Integer) Whitebox.getInternalState(adjustedReel, "endReel"));
-                reelTile.setEndReel((int) Whitebox.getInternalState(adjustedReel, "endReel"));
-                expectedlonelyReels[row][0] = lonelyTestGrid[lonelyTestGrid.length - 1 - expectedLonelyTileMatrix[row][0]][expectedLonelyTileMatrix[row][1]].index;
-                expectedlonelyReels[row][1] = lonelyTestGrid[lonelyTestGrid.length - 1 - expectedLonelyTileMatrix[row][0] - 1][expectedLonelyTileMatrix[row][1]].index;
+                adjustExpectedLonelyTile(expectedLonelyTileMatrix[row], expectedlonelyReels, row, reelTile, -1, 0);
             } else if (expectedLonelyTileMatrix[row][1] == 0) {
-                ReelTile adjustedReel = reelTiles.get(lonelyTestGrid[lonelyTestGrid.length - 1 - expectedLonelyTileMatrix[row][0]][expectedLonelyTileMatrix[row][1] + 1].index);
-                expect(adjustedReel.getEndReel()).andReturn((Integer) Whitebox.getInternalState(adjustedReel, "endReel"));
-                reelTile.setEndReel((int) Whitebox.getInternalState(adjustedReel, "endReel"));
-                expectedlonelyReels[row][0] = lonelyTestGrid[lonelyTestGrid.length - 1 - expectedLonelyTileMatrix[row][0]][expectedLonelyTileMatrix[row][1]].index;
-                expectedlonelyReels[row][1] = lonelyTestGrid[lonelyTestGrid.length - 1 - expectedLonelyTileMatrix[row][0]][expectedLonelyTileMatrix[row][1] + 1].index;
+                adjustExpectedLonelyTile(expectedLonelyTileMatrix[row], expectedlonelyReels, row, reelTile, 0, 1);
             } else if (expectedLonelyTileMatrix[row][0] == lonelyTestGrid.length - 1) {
-                ReelTile adjustedReel = reelTiles.get(lonelyTestGrid[lonelyTestGrid.length - 1 - expectedLonelyTileMatrix[row][0] + 1][expectedLonelyTileMatrix[row][1]].index);
-                expect(adjustedReel.getEndReel()).andReturn((Integer) Whitebox.getInternalState(adjustedReel, "endReel"));
-                reelTile.setEndReel((int) Whitebox.getInternalState(adjustedReel, "endReel"));
-                expectedlonelyReels[row][0] = lonelyTestGrid[lonelyTestGrid.length - 1 - expectedLonelyTileMatrix[row][0]][expectedLonelyTileMatrix[row][1]].index;
-                expectedlonelyReels[row][1] = lonelyTestGrid[lonelyTestGrid.length - 1 - expectedLonelyTileMatrix[row][0] + 1][expectedLonelyTileMatrix[row][1]].index;
+                adjustExpectedLonelyTile(expectedLonelyTileMatrix[row], expectedlonelyReels, row, reelTile, 1, 0);
              } else if (expectedLonelyTileMatrix[row][1] == lonelyTestGrid[0].length - 1) {
-                ReelTile adjustedReel = reelTiles.get(lonelyTestGrid[lonelyTestGrid.length - 1 - expectedLonelyTileMatrix[row][0]][expectedLonelyTileMatrix[row][1] - 1].index);
-                expect(adjustedReel.getEndReel()).andReturn((Integer) Whitebox.getInternalState(adjustedReel, "endReel"));
-                reelTile.setEndReel((int) Whitebox.getInternalState(adjustedReel, "endReel"));
-                expectedlonelyReels[row][0] = lonelyTestGrid[lonelyTestGrid.length - 1 - expectedLonelyTileMatrix[row][0]][expectedLonelyTileMatrix[row][1]].index;
-                expectedlonelyReels[row][1] = lonelyTestGrid[lonelyTestGrid.length - 1 - expectedLonelyTileMatrix[row][0]][expectedLonelyTileMatrix[row][1] - 1].index;
+                 adjustExpectedLonelyTile(expectedLonelyTileMatrix[row], expectedlonelyReels, row, reelTile, 0, 1);
              } else {
-                ReelTile adjustedReel = reelTiles.get(lonelyTestGrid[lonelyTestGrid.length - 1 - expectedLonelyTileMatrix[row][0]][expectedLonelyTileMatrix[row][1] - 1].index);
-                expect(adjustedReel.getEndReel()).andReturn((Integer) Whitebox.getInternalState(adjustedReel, "endReel"));
-                reelTile.setEndReel((int) Whitebox.getInternalState(adjustedReel, "endReel"));
-                expectedlonelyReels[row][0] = lonelyTestGrid[lonelyTestGrid.length - 1 - expectedLonelyTileMatrix[row][0]][expectedLonelyTileMatrix[row][1]].index;
-                expectedlonelyReels[row][1] = lonelyTestGrid[lonelyTestGrid.length - 1 - expectedLonelyTileMatrix[row][0]][expectedLonelyTileMatrix[row][1] - 1].index;
+                adjustExpectedLonelyTile(expectedLonelyTileMatrix[row], expectedlonelyReels, row - 1, reelTile, 0, 1);
             }
         }
         return expectedlonelyReels;
+    }
+
+    private void adjustExpectedLonelyTile(int[] expectedLonelyTileMatrix, int[][] expectedlonelyReels, int row, ReelTile reelTile, int adjustRow, int adjustColumn) {
+        ReelTile adjustedReel = reelTiles.get(lonelyTestGrid[lonelyTestGrid.length - 1 - expectedLonelyTileMatrix[0] + adjustRow][expectedLonelyTileMatrix[1] + adjustColumn].index);
+        expect(adjustedReel.getEndReel()).andReturn((Integer) Whitebox.getInternalState(adjustedReel, "endReel"));
+        reelTile.setEndReel((int) Whitebox.getInternalState(adjustedReel, "endReel"));
+        expectedlonelyReels[row][0] = lonelyTestGrid[lonelyTestGrid.length - 1 - expectedLonelyTileMatrix[0]][expectedLonelyTileMatrix[1]].index;
+        expectedlonelyReels[row][1] = lonelyTestGrid[lonelyTestGrid.length - 1 - expectedLonelyTileMatrix[0] + adjustRow][expectedLonelyTileMatrix[1] + adjustColumn].index;
     }
 
     private int[][] createLonelyTilesMatrix() {
