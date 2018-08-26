@@ -30,16 +30,20 @@ import com.badlogic.gdx.graphics.g3d.Material;
 import com.badlogic.gdx.graphics.g3d.Model;
 import com.badlogic.gdx.graphics.g3d.ModelBatch;
 import com.badlogic.gdx.graphics.g3d.ModelInstance;
+import com.badlogic.gdx.graphics.g3d.Renderable;
+import com.badlogic.gdx.graphics.g3d.Shader;
 import com.badlogic.gdx.graphics.g3d.attributes.ColorAttribute;
 import com.badlogic.gdx.graphics.g3d.attributes.FloatAttribute;
 import com.badlogic.gdx.graphics.g3d.attributes.TextureAttribute;
 import com.badlogic.gdx.graphics.g3d.environment.DirectionalLight;
 import com.badlogic.gdx.graphics.g3d.utils.CameraInputController;
+import com.badlogic.gdx.graphics.g3d.utils.DefaultShaderProvider;
 import com.badlogic.gdx.graphics.g3d.utils.MeshPartBuilder;
 import com.badlogic.gdx.graphics.g3d.utils.ModelBuilder;
 import com.badlogic.gdx.graphics.g3d.utils.shapebuilders.CylinderShapeBuilder;
 import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.utils.Array;
+import com.badlogic.gdx.utils.TimeUtils;
 import com.ellzone.slotpuzzle2d.SlotPuzzleConstants;
 import com.ellzone.slotpuzzle2d.prototypes.SPPrototype;
 import com.ellzone.slotpuzzle2d.sprites.ReelLetterTile;
@@ -47,9 +51,7 @@ import com.ellzone.slotpuzzle2d.utils.FileUtils;
 import com.ellzone.slotpuzzle2d.utils.PixmapProcessors;
 
 import net.dermetfan.gdx.assets.AnnotationAssetManager;
-
 import org.jrenner.smartfont.SmartFontGenerator;
-
 import java.io.IOException;
 
 import static com.ellzone.slotpuzzle2d.prototypes.screens.IntroScreenPrototype.FONT_LARGE;
@@ -60,10 +62,10 @@ import static com.ellzone.slotpuzzle2d.prototypes.screens.IntroScreenPrototype.L
 import static com.ellzone.slotpuzzle2d.prototypes.tween.ReelLetterTilePlay.REEL_HEIGHT;
 import static com.ellzone.slotpuzzle2d.prototypes.tween.ReelLetterTilePlay.REEL_WIDTH;
 
-public class Render3DCylinderWithOptionalGrid extends SPPrototype {
+public class Render3DCylinderModelAsWireframe extends SPPrototype {
     public static final float REEL_3D_WIDTH = 0.4f;
     public static final float REEL_3D_SIDE_WITH = 0.01f;
-    private ModelBatch modelBatch;
+    private ModelBatch modelBatch, defaultModelBatch, wireframeModelBatch;
     private Environment environment;
     private PerspectiveCamera cam;
     private CameraInputController camController;
@@ -75,6 +77,8 @@ public class Render3DCylinderWithOptionalGrid extends SPPrototype {
     private BitmapFont fontLarge;
     private Array<ReelLetterTile> reelLetterTiles;
     private boolean showAxes = true;
+    private boolean showModelAsWireFrame = true;
+    private long startTime = 0;
 
     @Override
     public void create() {
@@ -82,18 +86,25 @@ public class Render3DCylinderWithOptionalGrid extends SPPrototype {
         final Texture reelTexture = initialiseFontTexture("Hello World! ");
         instances = createReelModelInstance(reelTexture, instances);
         axesInstance = createAxes();
-        modelBatch = new ModelBatch();
+        defaultModelBatch = new ModelBatch();
+        wireframeModelBatch = new ModelBatch(new DefaultShaderProvider() {
+            @Override
+            protected Shader createShader(Renderable renderable) {
+                return new WireframeShader(renderable, config);
+            }
+        });
         createEnvironment();
         createPerspectiveCamera();
         camController = new CameraInputController(cam);
         Gdx.input.setInputProcessor(camController);
+        startTime = TimeUtils.nanoTime();
     }
 
     final float GRID_MIN = -10f;
     final float GRID_MAX = 10f;
     final float GRID_STEP = 1f;
 
-    private ModelInstance createAxes () {
+    private ModelInstance createAxes() {
         ModelBuilder modelBuilder = new ModelBuilder();
         modelBuilder.begin();
         MeshPartBuilder builder = modelBuilder.part("grid", GL20.GL_LINES, VertexAttributes.Usage.Position | VertexAttributes.Usage.ColorUnpacked, new Material());
@@ -219,6 +230,16 @@ public class Render3DCylinderWithOptionalGrid extends SPPrototype {
     public void render() {
         update();
         glClearFrame();
+
+        if (TimeUtils.timeSinceNanos(startTime) > 1000000000) {
+            showModelAsWireFrame = !showModelAsWireFrame;
+            startTime = TimeUtils.nanoTime();
+        }
+        if (showModelAsWireFrame)
+            modelBatch = wireframeModelBatch;
+        else
+            modelBatch = defaultModelBatch;
+
         modelBatch.begin(cam);
         modelBatch.render(instances, environment);
         if (showAxes)
