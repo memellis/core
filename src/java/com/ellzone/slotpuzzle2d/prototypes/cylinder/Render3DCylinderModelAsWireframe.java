@@ -65,6 +65,7 @@ import static com.ellzone.slotpuzzle2d.prototypes.tween.ReelLetterTilePlay.REEL_
 public class Render3DCylinderModelAsWireframe extends SPPrototype {
     public static final float REEL_3D_WIDTH = 0.4f;
     public static final float REEL_3D_SIDE_WITH = 0.01f;
+    public static final long TIMER_THRESHOLD = 5000000000L;
     private ModelBatch modelBatch, defaultModelBatch, wireframeModelBatch;
     private Environment environment;
     private PerspectiveCamera cam;
@@ -84,13 +85,15 @@ public class Render3DCylinderModelAsWireframe extends SPPrototype {
     public void create() {
         initialiseFonts();
         final Texture reelTexture = initialiseFontTexture("Hello World! ");
-        instances = createReelModelInstance(reelTexture, instances);
+        instances = createReelModelInstance(reelTexture, Color.GREEN, instances);
         axesInstance = createAxes();
         defaultModelBatch = new ModelBatch();
         wireframeModelBatch = new ModelBatch(new DefaultShaderProvider() {
             @Override
             protected Shader createShader(Renderable renderable) {
-                return new WireframeShader(renderable, config);
+                WireframeShader wireframeShader = new WireframeShader(renderable, config);
+                wireframeShader.setRenderPrimitiveType(GL20.GL_LINES);
+                return wireframeShader;
             }
         });
         createEnvironment();
@@ -124,16 +127,16 @@ public class Render3DCylinderModelAsWireframe extends SPPrototype {
         return new ModelInstance(axesModel);
     }
 
-    private Array<ModelInstance> createReelModelInstance(Texture reelTexture, Array<ModelInstance> instances) {
+    private Array<ModelInstance> createReelModelInstance(Texture reelTexture, Color reelMaterialColor, Array<ModelInstance> instances) {
         final Material reelMaterial = new Material(TextureAttribute.createDiffuse(reelTexture),
-                ColorAttribute.createSpecular(1, 1, 1, 1),
+                ColorAttribute.createSpecular(reelMaterialColor),
                 FloatAttribute.createShininess(8f));
-        final Material blackMaterial = new Material(ColorAttribute.createDiffuse(Color.BLACK));
+        final Material colorMaterial = new Material(ColorAttribute.createDiffuse(reelMaterialColor));
         ModelBuilder modelBuilder = new ModelBuilder();
         modelBuilder.begin();
         addNodeCylinder(reelMaterial, modelBuilder);
-        addNodeCylinderSide(blackMaterial, modelBuilder, "leftSideOfCylinder");
-        addNodeCylinderSide(blackMaterial, modelBuilder, "rightSideOfCylinder");
+        addNodeCylinderSide(colorMaterial, modelBuilder, "leftSideOfCylinder");
+        addNodeCylinderSide(colorMaterial, modelBuilder, "rightSideOfCylinder");
         Model model = modelBuilder.end();
         instances.add(new ModelInstance(model, new Matrix4().trn(0f, 0f, 0f), "cylinder", true));
         instances.get(0).transform.rotate(0, 0, 1, 90);
@@ -155,10 +158,10 @@ public class Render3DCylinderModelAsWireframe extends SPPrototype {
         mpb = modelBuilder.part("cylinder",
                 GL20.GL_TRIANGLES,
                 VertexAttributes.Usage.Position |
-                        VertexAttributes.Usage.Normal |
-                        VertexAttributes.Usage.TextureCoordinates |
-                        VertexAttributes.Usage.ColorPacked,
-                material);
+                          VertexAttributes.Usage.Normal |
+                          VertexAttributes.Usage.TextureCoordinates |
+                          VertexAttributes.Usage.ColorPacked,
+                 material);
         mpb.setUVRange(1f, 1f, 0f, 0f);
         CylinderShapeBuilder.build(mpb, 2f, REEL_3D_WIDTH, 2f, 15, 0, 360, false);
     }
@@ -231,7 +234,7 @@ public class Render3DCylinderModelAsWireframe extends SPPrototype {
         update();
         glClearFrame();
 
-        if (TimeUtils.timeSinceNanos(startTime) > 1000000000) {
+        if (TimeUtils.timeSinceNanos(startTime) > TIMER_THRESHOLD) {
             showModelAsWireFrame = !showModelAsWireFrame;
             startTime = TimeUtils.nanoTime();
         }

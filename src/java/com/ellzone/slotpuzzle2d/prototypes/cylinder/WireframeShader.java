@@ -9,7 +9,7 @@ import com.badlogic.gdx.graphics.glutils.ShaderProgram;
 public class WireframeShader extends DefaultShader {
 
     public static final int PRIMITIVE_TYPE = GL20.GL_LINES;
-    private int mSavedPrimitiveType;
+    private int mSavedPrimitiveType, renderPrimitiveType = GL20.GL_LINES;
 
     public WireframeShader(Renderable renderable) {
         super(renderable);
@@ -29,6 +29,10 @@ public class WireframeShader extends DefaultShader {
 
     public WireframeShader(Renderable renderable, Config config, ShaderProgram shaderProgram) {
         super(renderable, config, shaderProgram);
+    }
+
+    public void setRenderPrimitiveType(int renderPrimitiveType) {
+        this.renderPrimitiveType = renderPrimitiveType;
     }
 
     @Override
@@ -51,6 +55,8 @@ public class WireframeShader extends DefaultShader {
 
     private void setPrimitiveType(Renderable renderable) {
         mSavedPrimitiveType = renderable.meshPart.primitiveType;
-        renderable.meshPart.primitiveType = PRIMITIVE_TYPE;
+        renderable.meshPart.primitiveType = renderPrimitiveType;
     }
+
+
 }
