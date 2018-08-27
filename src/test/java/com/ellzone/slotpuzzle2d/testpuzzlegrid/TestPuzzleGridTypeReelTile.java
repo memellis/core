@@ -206,11 +206,17 @@ public class TestPuzzleGridTypeReelTile {
     }
 
     private void adjustExpectedLonelyTile(int[] expectedLonelyTileMatrix, int[][] expectedlonelyReels, int row, ReelTile reelTile, int adjustRow, int adjustColumn) {
-        ReelTile adjustedReel = reelTiles.get(lonelyTestGrid[lonelyTestGrid.length - 1 - expectedLonelyTileMatrix[0] + adjustRow][expectedLonelyTileMatrix[1] + adjustColumn].index);
+        ReelTile adjustedReel = reelTiles.get(getexpectedLonelyReelIndex(expectedLonelyTileMatrix, adjustRow, adjustColumn));
         expect(adjustedReel.getEndReel()).andReturn((Integer) Whitebox.getInternalState(adjustedReel, "endReel"));
         reelTile.setEndReel((int) Whitebox.getInternalState(adjustedReel, "endReel"));
-        expectedlonelyReels[row][0] = lonelyTestGrid[lonelyTestGrid.length - 1 - expectedLonelyTileMatrix[0]][expectedLonelyTileMatrix[1]].index;
-        expectedlonelyReels[row][1] = lonelyTestGrid[lonelyTestGrid.length - 1 - expectedLonelyTileMatrix[0] + adjustRow][expectedLonelyTileMatrix[1] + adjustColumn].index;
+        expectedlonelyReels[row][0] = getexpectedLonelyReelIndex(expectedLonelyTileMatrix, 0, 0);
+        expectedlonelyReels[row][1] = getexpectedLonelyReelIndex(expectedLonelyTileMatrix, adjustRow, adjustColumn);
+    }
+
+    private int getexpectedLonelyReelIndex(int[] expectedLonelyTileMatrix, int adjustedRow, int adjustedColumn ) {
+        int row = lonelyTestGrid.length - 1 - expectedLonelyTileMatrix[0] +adjustedRow;
+        int column = expectedLonelyTileMatrix[1] + adjustedColumn;
+        return lonelyTestGrid[row][column].index;
     }
 
     private int[][] createLonelyTilesMatrix() {
