@@ -9,11 +9,11 @@ import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.GdxRuntimeException;
 import com.ellzone.slotpuzzle2d.SlotPuzzleConstants;
-import com.ellzone.slotpuzzle2d.puzzlegrid.PuzzleGridType;
 import com.ellzone.slotpuzzle2d.puzzlegrid.PuzzleGridTypeReelTile;
 import com.ellzone.slotpuzzle2d.puzzlegrid.TupleValueIndex;
 import com.ellzone.slotpuzzle2d.scene.MapTile;
 import com.ellzone.slotpuzzle2d.screens.PlayScreen;
+import com.ellzone.slotpuzzle2d.sprites.AnimatedReelHelper;
 import com.ellzone.slotpuzzle2d.sprites.ReelStoppedFlashingEvent;
 import com.ellzone.slotpuzzle2d.sprites.ReelStoppedSpinningEvent;
 import com.ellzone.slotpuzzle2d.sprites.ReelTile;
@@ -34,6 +34,7 @@ public class LevelLoader {
     private LevelDoor levelDoor;
     private MapTile mapTile;
     private TiledMap tiledMapLevel;
+    private AnimatedReelHelper animatedReelHelper;
     private Array<ReelTile> reelTiles;
     private int levelWidth, levelHeight;
  	private Array<Card> cards;
@@ -42,11 +43,12 @@ public class LevelLoader {
     private HiddenPattern hiddenPattern;
     private PuzzleGridTypeReelTile puzzleGridTypeReelTile;
 
-    public LevelLoader(AnnotationAssetManager annotationAssetManager, LevelDoor levelDoor, MapTile mapTile, Array<ReelTile> reelTiles) {
+    public LevelLoader(AnnotationAssetManager annotationAssetManager, LevelDoor levelDoor, MapTile mapTile, AnimatedReelHelper animatedReelHelper) {
         this.annotationAssetManager = annotationAssetManager;
         this.levelDoor = levelDoor;
         this.mapTile = mapTile;
-        this.reelTiles = reelTiles;
+        this.animatedReelHelper = animatedReelHelper;
+        this.reelTiles = animatedReelHelper.getReelTiles();
     }
 
      public Array<ReelTile> createLevel(int levelWidth, int levelHeight) {
@@ -106,6 +108,7 @@ public class LevelLoader {
 
     private void addReel(Rectangle mapRectangle, int index) {
         ReelTile reelTile = reelTiles.get(index);
+        reelTile.setIndex(index);
         reelTile.setX(mapRectangle.getX());
         reelTile.setY(mapRectangle.getY());
         reelTile.setDestinationX(mapRectangle.getX());
@@ -127,6 +130,8 @@ public class LevelLoader {
                              }
         );
         reelTile.unDeleteReelTile();
+        reelTile.startSpinning();
+        animatedReelHelper.getAnimatedReels().get(reelTile.getIndex()).reinitialise();
     }
 
     private void processReelHasStoppedSpinning(ReelTile source) {

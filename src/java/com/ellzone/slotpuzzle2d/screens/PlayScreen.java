@@ -51,6 +51,7 @@ import com.ellzone.slotpuzzle2d.level.LevelLoader;
 import com.ellzone.slotpuzzle2d.level.PlayScreenIntroSequence;
 import com.ellzone.slotpuzzle2d.level.PlayScreenPopUps;
 import com.ellzone.slotpuzzle2d.physics.DampenedSineParticle;
+import com.ellzone.slotpuzzle2d.puzzlegrid.PuzzleGrid;
 import com.ellzone.slotpuzzle2d.puzzlegrid.PuzzleGridType;
 import com.ellzone.slotpuzzle2d.puzzlegrid.PuzzleGridTypeReelTile;
 import com.ellzone.slotpuzzle2d.puzzlegrid.ReelTileGridValue;
@@ -196,7 +197,7 @@ public class PlayScreen implements Screen {
     }
 
     private LevelLoader getLevelLoader() {
-        LevelLoader levelLoader = new LevelLoader(game.annotationAssetManager, levelDoor, mapTile, reelTiles);
+        LevelLoader levelLoader = new LevelLoader(game.annotationAssetManager, levelDoor, mapTile, animatedReelHelper);
         levelLoader.setStoppedSpinningCallback(stoppedSpinningCallback);
         levelLoader.setStoppedFlashingCallback(stoppedFlashingCallback);
         return levelLoader;
@@ -207,6 +208,7 @@ public class PlayScreen implements Screen {
         public void onEvent (ReelTile source){
             reelStoppedSound.play();
             reelsSpinning--;
+
             if (playState == PlayScreen.PlayStates.PLAYING) {
                 if (reelsSpinning <= -1) {
                     if (levelDoor.getLevelType().equals(HIDDEN_PATTERN_LEVEL_TYPE)) {
@@ -353,9 +355,9 @@ public class PlayScreen implements Screen {
         reelStoppedSound.play();
         chaChingSound.play();
         reel.deleteReelTile();
-        if (levelDoor.getLevelType().equals(PLAYING_CARD_LEVEL_TYPE)) {
+        if (levelDoor.getLevelType().equals(PLAYING_CARD_LEVEL_TYPE))
             testPlayingCardLevelWon();
-        } else {
+        else {
             if (levelDoor.getLevelType().equals(HIDDEN_PATTERN_LEVEL_TYPE)) {
                 testForHiddenPlatternLevelWon();
             }
@@ -698,26 +700,33 @@ public class PlayScreen implements Screen {
         if (show) {
             Gdx.gl.glClearColor(0, 0, 0, 1);
             Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
-            if (isLoaded) {
-                update(delta);
-                handleInput();
-                renderer.render();
-				renderMainGameElements();
-                drawCurrentPlayState();
-				renderHud();
-            } else {
-                if (game.annotationAssetManager.getProgress() < 1) {
-                    game.annotationAssetManager.update();
-                } else {
-                    isLoaded = true;
-                }
+            if (isLoaded)
+                renderGame(delta);
+            else
+                isLoaded = isAssetsLoaded();
             }
-            stage.draw();
-        }
+    }
+
+    private void renderGame(float delta) {
+        update(delta);
+        handleInput();
+        renderer.render();
+        renderMainGameElements();
+        drawCurrentPlayState();
+        renderHud();
+        stage.draw();
+    }
+
+    private boolean isAssetsLoaded() {
+        if (game.annotationAssetManager.getProgress() < 1) {
+            game.annotationAssetManager.update();
+            return false;
+        } else
+            return true;
     }
 
 
-	private void renderMainGameElements() {
+    private void renderMainGameElements() {
 		game.batch.begin();
 		renderHiddenPattern();
 		renderReelTiles();
