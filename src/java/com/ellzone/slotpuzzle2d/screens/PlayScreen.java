@@ -811,25 +811,9 @@ public class PlayScreen implements Screen {
                 update(delta);
                 handleInput();
                 renderer.render();
-                game.batch.begin();
-                if (levelDoor.getLevelType().equals(PLAYING_CARD_LEVEL_TYPE)) {
-                    drawPlayingCards(game.batch);
-                }
-                for (ReelTile reelTile : reelTiles) {
-                    if (!reelTile.isReelTileDeleted()) {
-                        reelTile.draw(game.batch);
-                    }
-                }
-                for (Score score : scores) {
-                    score.render(game.batch);
-                }
-                if (displaySpinHelp) {
-                    sprites[displaySpinHelpSprite].draw(game.batch);
-                }
-                game.batch.end();
+				renderMainGameElements();
                 drawCurrentPlayState();
-                game.batch.setProjectionMatrix(hud.stage.getCamera().combined);
-                hud.stage.draw();
+				renderHud();
             } else {
                 if (game.annotationAssetManager.getProgress() < 1) {
                     game.annotationAssetManager.update();
@@ -841,7 +825,44 @@ public class PlayScreen implements Screen {
         }
     }
 
-    private void drawCurrentPlayState() {
+
+	private void renderMainGameElements() {
+		game.batch.begin();
+		renderHiddenPattern();
+		renderReelTiles();
+		renderScore();
+		renderSpinHelper();
+		game.batch.end();
+	}
+
+	private void renderHud() {
+		game.batch.setProjectionMatrix(hud.stage.getCamera().combined);
+		hud.stage.draw();
+	}
+
+	private void renderHiddenPattern() {
+		if (levelDoor.getLevelType().equals(PLAYING_CARD_LEVEL_TYPE)) {
+            drawPlayingCards(game.batch);
+        }
+	}
+
+	private void renderReelTiles() {
+		for (ReelTile reelTile : reelTiles)
+			if (!reelTile.isReelTileDeleted())
+				reelTile.draw(game.batch);
+	}
+
+	private void renderSpinHelper() {
+		if (displaySpinHelp)
+            sprites[displaySpinHelpSprite].draw(game.batch);
+	}
+
+	private void renderScore() {
+		for (Score score : scores)
+            score.render(game.batch);
+	}
+
+	private void drawCurrentPlayState() {
         switch (playState) {
             case INTRO_POPUP:
                 levelPopUp.draw(game.batch);
