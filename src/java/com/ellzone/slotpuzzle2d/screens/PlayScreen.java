@@ -48,8 +48,8 @@ import com.ellzone.slotpuzzle2d.level.HiddenPlayingCard;
 import com.ellzone.slotpuzzle2d.level.LevelCallBack;
 import com.ellzone.slotpuzzle2d.level.LevelDoor;
 import com.ellzone.slotpuzzle2d.level.LevelLoader;
-import com.ellzone.slotpuzzle2d.level.LevelPopUp;
 import com.ellzone.slotpuzzle2d.level.PlayScreenIntroSequence;
+import com.ellzone.slotpuzzle2d.level.PlayScreenPopUps;
 import com.ellzone.slotpuzzle2d.physics.DampenedSineParticle;
 import com.ellzone.slotpuzzle2d.puzzlegrid.PuzzleGridType;
 import com.ellzone.slotpuzzle2d.puzzlegrid.PuzzleGridTypeReelTile;
@@ -70,10 +70,7 @@ import com.ellzone.slotpuzzle2d.tweenengine.Timeline;
 import com.ellzone.slotpuzzle2d.tweenengine.TweenCallback;
 import com.ellzone.slotpuzzle2d.tweenengine.TweenManager;
 import net.dermetfan.gdx.assets.AnnotationAssetManager;
-import aurelienribon.tweenengine.equations.Back;
-import aurelienribon.tweenengine.equations.Cubic;
 import aurelienribon.tweenengine.equations.Quad;
-import aurelienribon.tweenengine.equations.Quart;
 import aurelienribon.tweenengine.equations.Sine;
 
 import static com.ellzone.slotpuzzle2d.scene.Hud.addScore;
@@ -90,9 +87,6 @@ public class PlayScreen implements Screen {
     private static final String PLAYING_CARD_LEVEL_TYPE = "PlayingCard";
     private static final String HIDDEN_PATTERN_LEVEL_TYPE = "HiddenPattern";
 	private static final String SLOTPUZZLE_SCREEN = "PlayScreen";
-	private static final String LEVEL_TIP_DESC = "Reveal the hidden pattern to complete the level.";
-	private static final String LEVEL_LOST_DESC = "Sorry you lost that level. Touch/Press to restart the level.";
-	private static final String LEVEL_WON_DESC = "Well done you've won that level. Touch/Press to start the nextlevel.";
     private LevelLoader levelLoader;
 
     public enum PlayStates {INITIALISING,
@@ -136,8 +130,6 @@ public class PlayScreen implements Screen {
     private Hud hud;
     private Array<Score> scores;
     private BitmapFont font;
-	private LevelPopUp levelPopUp, levelLostPopUp, levelWonPopUp;
-	private Array<Sprite> popUpSprites, levelLostSprites, levelWonSprites;
     private LevelDoor levelDoor;
 	private HiddenPattern hiddenPattern;
 	private MapTile mapTile;
@@ -145,6 +137,7 @@ public class PlayScreen implements Screen {
     private int mapHeight;
     private boolean show = false;
     private PlayScreenIntroSequence playScreenIntroSequence;
+    private PlayScreenPopUps playScreenPopUps;
 
 	public PlayScreen(SlotPuzzle game, LevelDoor levelDoor, MapTile mapTile) {
 		this.game = game;
@@ -160,6 +153,13 @@ public class PlayScreen implements Screen {
 		createReelIntroSequence();
    	}
 
+    private void createPlayScreenPart1() {
+        initialiseScreen();
+        initialiseTweenEngine();
+        getAssets(game.annotationAssetManager);
+        createSprites();
+    }
+
     private void createPlayScreenPart2() {
         initialisePlayScreen();
         loadLevel();
@@ -167,11 +167,20 @@ public class PlayScreen implements Screen {
         initialiseHud();
     }
 
-    private void createPlayScreenPart1() {
-        initialiseScreen();
-        initialiseTweenEngine();
-        getAssets(game.annotationAssetManager);
-        createSprites();
+    private void initialisePlayScreen() {
+        random = new Random();
+        renderer = new OrthogonalTiledMapRenderer(level);
+        animatedReelHelper = new AnimatedReelHelper(game.annotationAssetManager,
+                                                    tweenManager,
+                                                    level.getLayers().get(REELS_LAYER_NAME).getObjects().getByType(RectangleMapObject.class).size);
+        reelTiles = animatedReelHelper.getReelTiles();
+        displaySpinHelp = false;
+        scores = new Array<>();
+        font = new BitmapFont();
+        sW = SlotPuzzleConstants.V_WIDTH;
+        sH = SlotPuzzleConstants.V_HEIGHT;
+        playScreenPopUps = new PlayScreenPopUps(tilesAtlas, (int) sW, (int) sH, game.batch, tweenManager, levelDoor);
+        playScreenPopUps.initialise();
     }
 
     private void initialiseHud() {
@@ -221,8 +230,8 @@ public class PlayScreen implements Screen {
               win = false;
               if (Hud.getLives() > 0) {
                   playState = PlayScreen.PlayStates.LEVEL_LOST;
-                  setLevelLostSpritePositions();
-                  levelLostPopUp.showLevelPopUp(null);
+                  playScreenPopUps.setLevelLostSpritePositions();
+                  playScreenPopUps.getLevelLostPopUp().showLevelPopUp(null);
               } else {
                   gameOver = true;
               }
@@ -269,76 +278,6 @@ public class PlayScreen implements Screen {
 	private void createSprites() {
         Reels reelsSprites = new Reels(game.annotationAssetManager);
 		sprites = reelsSprites.getReels();
-		setUpPopSprites();
-		setUpLevelLostSprtes();
-		setUpLevelWonSprites();
-	}
-
-	private void setUpPopSprites() {
-		popUpSprites = new Array<>();
-		popUpSprites.add(tilesAtlas.createSprite(AssetsAnnotation.GAME_POPUP));
-		popUpSprites.add(tilesAtlas.createSprite(AssetsAnnotation.LEVEL_SPRITE));
-		setPopUpSpritePositions();
-	}
-
-	private void setUpLevelLostSprtes() {
-		levelLostSprites = new Array<>();
-		levelLostSprites.add(tilesAtlas.createSprite(AssetsAnnotation.GAME_POPUP));
-		levelLostSprites.add(tilesAtlas.createSprite(AssetsAnnotation.LEVEL_SPRITE));
-		levelLostSprites.add(tilesAtlas.createSprite(AssetsAnnotation.LEVEL_SPRITE));
-		levelLostSprites.add(tilesAtlas.createSprite(AssetsAnnotation.OVER));
-		setLevelLostSpritePositions();
-	}
-
-	private void setUpLevelWonSprites() {
-		levelWonSprites = new Array<>();
-		levelWonSprites.add(tilesAtlas.createSprite(AssetsAnnotation.GAME_POPUP));
-		levelWonSprites.add(tilesAtlas.createSprite(AssetsAnnotation.LEVEL_SPRITE));
-		levelWonSprites.add(tilesAtlas.createSprite(AssetsAnnotation.LEVEL_SPRITE));
-		levelWonSprites.add(tilesAtlas.createSprite(AssetsAnnotation.COMPLETE));
-		setLevelWonSpritePositions();
-	}
-
-	private void setPopUpSpritePositions() {
-	    popUpSprites.get(0).setPosition(sW/ 2 - popUpSprites.get(0).getWidth() / 2, sH / 2 - popUpSprites.get(0).getHeight() /2);
-		popUpSprites.get(1).setPosition(-200, sH / 2 - popUpSprites.get(1).getHeight() /2);
-	}
-
-	private void setLevelLostSpritePositions() {
-	    levelLostSprites.get(0).setPosition(sW / 2 - levelLostSprites.get(0).getWidth() / 2, sH / 2 - levelLostSprites.get(0).getHeight() /2);
-	    levelLostSprites.get(1).setPosition(-200, sH / 2 - levelLostSprites.get(1).getHeight() / 2);
-	    levelLostSprites.get(2).setPosition(-200, sH / 2 - levelLostSprites.get(2).getHeight() / 2 + 40);
-	    levelLostSprites.get(3).setPosition(200 + sW, sH / 2 - levelLostSprites.get(3).getHeight() / 2 + 40);
-	}
-
-	private void setLevelWonSpritePositions() {
-	    levelWonSprites.get(0).setPosition(sW / 2 - levelWonSprites.get(0).getWidth() / 2, sH / 2 - levelWonSprites.get(0).getHeight() /2);
-	    levelWonSprites.get(1).setPosition(-200, sH / 2 - levelWonSprites.get(1).getHeight() / 2);
-	    levelWonSprites.get(2).setPosition(-200, sH / 2 - levelWonSprites.get(2).getHeight() / 2 + 40);
-	    levelWonSprites.get(3).setPosition(200 + sW, sH / 2 - levelWonSprites.get(3).getHeight() / 2 + 40);
-	}
-
-	private void initialisePlayScreen() {
-	    random = new Random();
-	    renderer = new OrthogonalTiledMapRenderer(level);
-	    animatedReelHelper = new AnimatedReelHelper(game.annotationAssetManager,
-                                                    tweenManager,
-                                                    level.getLayers().get(REELS_LAYER_NAME).getObjects().getByType(RectangleMapObject.class).size);
-	    reelTiles = animatedReelHelper.getReelTiles();
-	    displaySpinHelp = false;
-	    scores = new Array<>();
-	    font = new BitmapFont();
-	    sW = SlotPuzzleConstants.V_WIDTH;
-	    sH = SlotPuzzleConstants.V_HEIGHT;
-        createPopUps();
-	}
-
-	private void createPopUps() {
-        BitmapFont currentLevelFont = new BitmapFont();
-	    currentLevelFont.getData().scale(1.5f);
-	    levelPopUp = new LevelPopUp(game.batch, tweenManager, popUpSprites, currentLevelFont, levelDoor.getLevelName(), LEVEL_TIP_DESC);
-	    levelLostPopUp = new LevelPopUp(game.batch, tweenManager, levelLostSprites, currentLevelFont, levelDoor.getLevelName(), LEVEL_LOST_DESC);
-	    levelWonPopUp = new LevelPopUp(game.batch, tweenManager, levelWonSprites, currentLevelFont, levelDoor.getLevelName(), LEVEL_WON_DESC);
 	}
 
     private void getMapProperties(TiledMap level) {
@@ -364,8 +303,8 @@ public class PlayScreen implements Screen {
 		switch (type) {
 		    case TweenCallback.END:
 	        	playState = PlayStates.INTRO_POPUP;
-	        	setPopUpSpritePositions();
-	        	levelPopUp.showLevelPopUp(null);
+	        	playScreenPopUps.setPopUpSpritePositions();
+	        	playScreenPopUps.getLevelPopUp().showLevelPopUp(null);
 		        break;
 		}
 	}
@@ -524,8 +463,8 @@ public class PlayScreen implements Screen {
 					Gdx.app.debug(SLOTPUZZLE_SCREEN, "Intro Sequence");
 					break;
 				case INTRO_POPUP:
-                    if (isOver(popUpSprites.get(0), unprojTouch.x, unprojTouch.y)) {
-						levelPopUp.hideLevelPopUp(hideLevelPopUpCallback);
+                    if (isOver(playScreenPopUps.getLevelPopUpSprites().get(0), unprojTouch.x, unprojTouch.y)) {
+						playScreenPopUps.getLevelPopUp().hideLevelPopUp(hideLevelPopUpCallback);
 					}
 					break;
 				case INTRO_SPINNING:
@@ -540,14 +479,14 @@ public class PlayScreen implements Screen {
 					break;
 				case LEVEL_LOST:
 					Gdx.app.debug(SLOTPUZZLE_SCREEN, "Lost Level");
-					if (isOver(levelLostSprites.get(0), unprojTouch.x, unprojTouch.y)) {
-					    levelLostPopUp.hideLevelPopUp(levelOverCallback);
+					if (isOver(playScreenPopUps.getLevelLostSprites().get(0), unprojTouch.x, unprojTouch.y)) {
+					    playScreenPopUps.getLevelLostPopUp().hideLevelPopUp(levelOverCallback);
 					}
 					break;
 				case WON_LEVEL:
 					Gdx.app.debug(SLOTPUZZLE_SCREEN, "Won Level");
-					if(isOver(levelWonSprites.get(0), unprojTouch.x, unprojTouch.y)) {
-						levelWonPopUp.hideLevelPopUp(levelWonCallback);
+					if(isOver(playScreenPopUps.getLevelWonSprites().get(0), unprojTouch.x, unprojTouch.y)) {
+						playScreenPopUps.getLevelWonPopUp().hideLevelPopUp(levelWonCallback);
 					}
 					break;
 				case RESTARTING_LEVEL:
@@ -585,8 +524,8 @@ public class PlayScreen implements Screen {
 	    playState = PlayStates.WON_LEVEL;
 		mapTile.getLevel().setLevelCompleted();
 		mapTile.getLevel().setScore(Hud.getScore());
-	    setLevelWonSpritePositions();
-	    levelWonPopUp.showLevelPopUp(null);
+	    playScreenPopUps.setLevelWonSpritePositions();
+	    playScreenPopUps.getLevelWonPopUp().showLevelPopUp(null);
 	}
 
 	private TweenCallback hideLevelPopUpCallback = new TweenCallback() {
@@ -743,8 +682,8 @@ public class PlayScreen implements Screen {
 			if ((Hud.getLives() > 0) & (!inRestartLevel)) {
 				inRestartLevel = true;
 				playState = PlayStates.LEVEL_LOST;
-				setLevelLostSpritePositions();
-				levelLostPopUp.showLevelPopUp(null);
+				playScreenPopUps.setLevelLostSpritePositions();
+				playScreenPopUps.getLevelLostPopUp().showLevelPopUp(null);
 			} else
 				gameOver = true;
 		}
@@ -817,13 +756,13 @@ public class PlayScreen implements Screen {
 	private void drawCurrentPlayState() {
         switch (playState) {
             case INTRO_POPUP:
-                levelPopUp.draw(game.batch);
+                playScreenPopUps.getLevelPopUp().draw(game.batch);
                 break;
             case LEVEL_LOST:
-                levelLostPopUp.draw(game.batch);
+                playScreenPopUps.getLevelLostPopUp().draw(game.batch);
                 break;
             case WON_LEVEL:
-                levelWonPopUp.draw(game.batch);
+                playScreenPopUps.getLevelWonPopUp().draw(game.batch);
                 break;
             case INITIALISING:
                 break;
