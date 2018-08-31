@@ -48,6 +48,7 @@ import com.ellzone.slotpuzzle2d.prototypes.minislotmachine.SpinningSlotsRotateHa
 import com.ellzone.slotpuzzle2d.prototypes.minislotmachine.SpinningSlotsRotateHandleSpriteUsingTweenEngine;
 import com.ellzone.slotpuzzle2d.prototypes.minislotmachine.SpinningSlotsUsingSlotHandleSprite;
 import com.ellzone.slotpuzzle2d.prototypes.minislotmachine.SpinningSlotsWithMatchesWin;
+import com.ellzone.slotpuzzle2d.prototypes.minislotmachine.SpinningSlotsWithMatchesWinFlashes;
 import com.ellzone.slotpuzzle2d.prototypes.minislotmachine.SpinningSlotsWithThreeTilesDisplayed;
 import com.ellzone.slotpuzzle2d.prototypes.minislotmachine.SpinningSlotsWithHoldButtons;
 import com.ellzone.slotpuzzle2d.prototypes.menu.SlotPuzzleGame;
@@ -169,6 +170,7 @@ public class SPPrototypes {
 		SpinningSlotsWithThreeTilesDisplayed.class,
         SpinningSlotsWithHoldButtons.class,
         SpinningSlotsWithMatchesWin.class,
+        SpinningSlotsWithMatchesWinFlashes.class,
 		SlotPuzzleGame.class,
         Starfield.class,
         StarfieldUsingStarfieldObject.class

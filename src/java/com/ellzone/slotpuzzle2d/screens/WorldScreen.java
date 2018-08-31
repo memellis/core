@@ -47,6 +47,7 @@ import com.ellzone.slotpuzzle2d.level.MapLevel3;
 import com.ellzone.slotpuzzle2d.level.MapLevel4;
 import com.ellzone.slotpuzzle2d.level.MapLevel5;
 import com.ellzone.slotpuzzle2d.level.MapLevel6;
+import com.ellzone.slotpuzzle2d.level.MapLevel7;
 import com.ellzone.slotpuzzle2d.pixmap.PixmapDrawAction;
 import com.ellzone.slotpuzzle2d.scene.MapTile;
 import com.ellzone.slotpuzzle2d.tweenengine.BaseTween;
@@ -316,6 +317,7 @@ public class WorldScreen implements Screen {
 		mapTiles.add(new MapTile(20, 20, 200, 200, SlotPuzzleConstants.V_WIDTH, SlotPuzzleConstants.V_HEIGHT, new MapLevel4(), tilesAtlas, this.camera, font, tweenManager, new Sprite(levelEntrances.get(3).getLevelEntrance())));
 		mapTiles.add(new MapTile(20, 20, 200, 200, SlotPuzzleConstants.V_WIDTH, SlotPuzzleConstants.V_HEIGHT, new MapLevel5(), tilesAtlas, this.camera, font, tweenManager, new Sprite(levelEntrances.get(4).getLevelEntrance())));
 		mapTiles.add(new MapTile(20, 20, 200, 200, SlotPuzzleConstants.V_WIDTH, SlotPuzzleConstants.V_HEIGHT, new MapLevel6(), tilesAtlas, this.camera, font, tweenManager, new Sprite(levelEntrances.get(5).getLevelEntrance())));
+		mapTiles.add(new MapTile(20, 20, 200, 200, SlotPuzzleConstants.V_WIDTH, SlotPuzzleConstants.V_HEIGHT, new MapLevel7(), tilesAtlas, this.camera, font, tweenManager, new Sprite(levelEntrances.get(6).getLevelEntrance())));
 	}
 
 	private final TweenCallback maximizeCallback = new TweenCallback() {
