@@ -16,22 +16,24 @@
 
 package com.ellzone.slotpuzzle2d;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.utils.GdxRuntimeException;
 
-public class Version {
-	/** the current version of SlotPuzzle as a String in the major.minor.revision format **/
-	public static final String VERSION = "0.0.3";
+import java.util.logging.FileHandler;
 
-	/** the current major version of SlotPuzzle **/
+public class Version {
+	public static final String VERSION_FILE = "version_info/version";
+
+	public static final String VERSION;
+
 	public static final int MAJOR;
 
-	/** the current minor version of SlotPuzzle **/
 	public static final int MINOR;
 
-	/** the current revision version of SlotPuzzle **/
 	public static final int REVISION;
 
 	static {
+		VERSION = readVersion();
 		try {
 			String[] v = VERSION.split("\\.");
 			MAJOR = v.length < 1 ? 0 : Integer.valueOf(v[0]);
@@ -40,8 +42,12 @@ public class Version {
 		}
 		catch (Throwable t) {
 			// Should never happen
-			throw new GdxRuntimeException("Invalid version "+VERSION, t);
+			throw new GdxRuntimeException("Invalid version " + VERSION, t);
 		}
+	}
+
+	private static String readVersion() {
+		return Gdx.files.internal(VERSION_FILE).readString();
 	}
 
 	public static boolean isHigher (int major, int minor, int revision) {
