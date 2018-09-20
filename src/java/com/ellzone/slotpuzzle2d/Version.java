@@ -23,22 +23,22 @@ import java.util.logging.FileHandler;
 
 public class Version {
 	public static final String VERSION_FILE = "version_info/version";
-
 	public static final String VERSION;
-
 	public static final int MAJOR;
-
 	public static final int MINOR;
-
 	public static final int REVISION;
+
+	private static final short MAJOR_PARSE_POSITION = 1;
+	private static final short MINOR_PARSE_POSITION = 2;
+	private static final short REVISION_PARSE_POSITION = 3;
 
 	static {
 		VERSION = readVersion();
 		try {
 			String[] v = VERSION.split("\\.");
-			MAJOR = v.length < 1 ? 0 : Integer.valueOf(v[0]);
-			MINOR = v.length < 2 ? 0 : Integer.valueOf(v[1]);
-			REVISION = v.length < 3 ? 0 : Integer.valueOf(v[2]);
+			MAJOR = v.length < MAJOR_PARSE_POSITION ? 0 : Integer.valueOf(v[0]);
+			MINOR = v.length < MINOR_PARSE_POSITION ? 0 : Integer.valueOf(v[1]);
+			REVISION = v.length < REVISION_PARSE_POSITION ? 0 : Integer.valueOf(v[2]);
 		}
 		catch (Throwable t) {
 			// Should never happen
