@@ -1,7 +1,7 @@
 package com.ellzone.component;
 
-import com.ellzone.slotpuzzle2d.component.NameComponent;
-import com.ellzone.slotpuzzle2d.component.PositionComponent;
+import com.ellzone.slotpuzzle2d.components.NameComponent;
+import com.ellzone.slotpuzzle2d.components.PositionComponent;
 import com.ellzone.slotpuzzle2d.entities.Entities;
 
 import org.hamcrest.CoreMatchers;
@@ -62,8 +62,22 @@ public class TestComponent {
         assertThat(Entities.hasComponents(player.id, Player.class), is(false));
     }
 
-    public class Player extends Entities {
+    @Test(expected=IllegalArgumentException.class)
+    public void testComponentIllegalArgumentException() {
+        player.getComponents(Player.class);
+    }
 
+    @Test(expected=IllegalArgumentException.class)
+    public void testComponentByIdIllegalArgumentExceptionCausedByComponentoesNotExist() {
+        player.getComponents(player.id, Player.class);
+    }
+
+    @Test(expected=IllegalArgumentException.class)
+    public void testComponentByIdIllegalArgumentExceptionCausedByNoIdDoesNotExist() {
+        player.getComponents(null, PositionComponent.class);
+    }
+
+    public class Player extends Entities {
         public Player() {
             super();
         }

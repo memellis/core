@@ -88,7 +88,7 @@ public class IntroScreen extends InputAdapter implements Screen {
     private static final String SLOT_PUZZLE_REEL_TEXT = "Slot Puzzle";
     private static final String BY_TEXT = "by";
     private static final String AUTHOR_TEXT = "Mark Ellis";
-    private static final String COPYRIGHT_YEAR_AUTHOR_TEXT = COPYRIGHT + "2017 Mark Ellis";
+    private static final String COPYRIGHT_YEAR_AUTHOR_TEXT = COPYRIGHT + "2018 Mark Ellis";
     private static final String LAUNCH_BUTTON_LABEL = "LAUNCH!";
     public static final float ONE_SECOND = 1.0f;
     private SlotPuzzle game;
