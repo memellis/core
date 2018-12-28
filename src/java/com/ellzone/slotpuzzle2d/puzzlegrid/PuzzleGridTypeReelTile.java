@@ -473,6 +473,30 @@ public class PuzzleGridTypeReelTile {
         return duplicateMatches;
     }
 
+    public static Array<ReelTileGridValue> removeDuplicateMatches(Array<ReelTileGridValue> duplicateSlots, Array<ReelTileGridValue> matchSlots) {
+        int i = 0;
+        while (i < duplicateSlots.size) {
+            ReelTileGridValue currentDuplicate = duplicateSlots.get(i);
+            matchSlots = removeValue(matchSlots, currentDuplicate);
+            i++;
+            while ((i < duplicateSlots.size) && ((currentDuplicate.r == duplicateSlots.get(i).r) & (currentDuplicate.c == duplicateSlots.get(i).c)))
+                i++;
+        }
+        return matchSlots;
+    }
+
+    private static Array<ReelTileGridValue> removeValue(Array<ReelTileGridValue> matchedSlots, ReelTileGridValue valueToBeRemoved) {
+        int row = valueToBeRemoved.r;
+        int column = valueToBeRemoved.c;
+        for (int i = 0; i < matchedSlots.size; i++) {
+            if ((matchedSlots.get(i).r == row) & (matchedSlots.get(i).c == column)) {
+                matchedSlots.removeIndex(i);
+                break;
+            }
+        }
+        return matchedSlots;
+    }
+
     public static Array<ReelTileGridValue> adjustMatchSlotDuplicates(Array<ReelTileGridValue> matchedSlots, Array<ReelTileGridValue> duplicateMatchedSlots) {
         int i = 0;
         while (i < duplicateMatchedSlots.size) {
@@ -551,12 +575,12 @@ public class PuzzleGridTypeReelTile {
                 } else {
                     matchGrid[r][c] = new ReelTileGridValue(reelLevel.get(i), r, c, i, reelLevel.get(i).getEndReel());
                 }
-                Gdx.app.log(SlotPuzzleConstants.SLOT_PUZZLE, MessageFormat.format("r={0} c={1} x={2} y={3} dx={4} dy={5} i={6} v={7}",
-                            r, c,
-                            reelLevel.get(i).getX(), reelLevel.get(i).getY(),
-                            reelLevel.get(i).getDestinationX(), reelLevel.get(i).getDestinationY(),
-                            i,
-                            reelLevel.get(i).getEndReel()));
+                Gdx.app.debug(SlotPuzzleConstants.SLOT_PUZZLE, MessageFormat.format("r={0} c={1} x={2} y={3} dx={4} dy={5} i={6} v={7}",
+                              r, c,
+                              reelLevel.get(i).getX(), reelLevel.get(i).getY(),
+                              reelLevel.get(i).getDestinationX(), reelLevel.get(i).getDestinationY(),
+                              i,
+                              reelLevel.get(i).getEndReel()));
             } else {
                 Gdx.app.debug(SlotPuzzleConstants.SLOT_PUZZLE, "I don't respond to r="+r+" c="+c);
             }

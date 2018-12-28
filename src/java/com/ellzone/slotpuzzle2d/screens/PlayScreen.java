@@ -42,6 +42,9 @@ import com.ellzone.slotpuzzle2d.SlotPuzzleConstants;
 import com.ellzone.slotpuzzle2d.effects.ReelAccessor;
 import com.ellzone.slotpuzzle2d.effects.ScoreAccessor;
 import com.ellzone.slotpuzzle2d.effects.SpriteAccessor;
+import com.ellzone.slotpuzzle2d.finitestatemachine.PlayInterface;
+import com.ellzone.slotpuzzle2d.finitestatemachine.PlayState;
+import com.ellzone.slotpuzzle2d.finitestatemachine.PlayStateMachine;
 import com.ellzone.slotpuzzle2d.level.Card;
 import com.ellzone.slotpuzzle2d.level.HiddenPattern;
 import com.ellzone.slotpuzzle2d.level.HiddenPlayingCard;
@@ -51,7 +54,6 @@ import com.ellzone.slotpuzzle2d.level.LevelLoader;
 import com.ellzone.slotpuzzle2d.level.PlayScreenIntroSequence;
 import com.ellzone.slotpuzzle2d.level.PlayScreenPopUps;
 import com.ellzone.slotpuzzle2d.physics.DampenedSineParticle;
-import com.ellzone.slotpuzzle2d.puzzlegrid.PuzzleGrid;
 import com.ellzone.slotpuzzle2d.puzzlegrid.PuzzleGridType;
 import com.ellzone.slotpuzzle2d.puzzlegrid.PuzzleGridTypeReelTile;
 import com.ellzone.slotpuzzle2d.puzzlegrid.ReelTileGridValue;
@@ -76,7 +78,7 @@ import aurelienribon.tweenengine.equations.Sine;
 
 import static com.ellzone.slotpuzzle2d.scene.Hud.addScore;
 
-public class PlayScreen implements Screen {
+public class PlayScreen implements Screen, PlayInterface {
     public static final int TILE_WIDTH = 40;
 	public static final int TILE_HEIGHT = 40;
 	public static final int GAME_LEVEL_WIDTH = 12;
@@ -88,9 +90,11 @@ public class PlayScreen implements Screen {
     private static final String PLAYING_CARD_LEVEL_TYPE = "PlayingCard";
     private static final String HIDDEN_PATTERN_LEVEL_TYPE = "HiddenPattern";
 	private static final String SLOTPUZZLE_SCREEN = "PlayScreen";
+    public static final int FLASH_BATCH_POOL_SIZE = 3;
     private LevelLoader levelLoader;
+	private PlayStateMachine playStateMachine;
 
-    public enum PlayStates {INITIALISING,
+	public enum PlayStates {INITIALISING,
                             INTRO_SEQUENCE,
                             INTRO_POPUP,
                             INTRO_SPINNING,
@@ -117,7 +121,9 @@ public class PlayScreen implements Screen {
     private boolean isLoaded = false;
     private Array<ReelTile> reelTiles;
 	private AnimatedReelHelper animatedReelHelper;
-	private int reelsSpinning;
+	private int reelsSpinning, numberOfReelsToDelete;
+	private int numberOfReelsFlashing;
+	private boolean reelsAreFlashing, reelsAreDeleted, startedFlashing;
 	private TiledMap level;
 	private Random random;
 	private OrthogonalTiledMapRenderer renderer;
@@ -145,14 +151,22 @@ public class PlayScreen implements Screen {
 		this.levelDoor = levelDoor;
 		this.mapTile = mapTile;
 		createPlayScreen();
+		playStateMachine.getStateMachine().changeState(PlayState.INTRO_SPINNING_SEQUENCE);
 	}
 
 	private void createPlayScreen() {
+		initialisePlayFiniteStateMachine();
 		playState = PlayStates.INITIALISING;
         createPlayScreenPart1();
         createPlayScreenPart2();
 		createReelIntroSequence();
    	}
+
+    private void initialisePlayFiniteStateMachine() {
+		playStateMachine = new PlayStateMachine();
+		playStateMachine.setConcretePlay(this);
+        playStateMachine.getStateMachine().changeState(PlayState.INITIALISING);
+   }
 
     private void createPlayScreenPart1() {
         initialiseScreen();
@@ -193,6 +207,10 @@ public class PlayScreen implements Screen {
         levelLoader = getLevelLoader();
         reelTiles = levelLoader.createLevel(GAME_LEVEL_WIDTH, GAME_LEVEL_HEIGHT);
         reelsSpinning = reelTiles.size - 1;
+        reelsAreFlashing = false;
+        startedFlashing = false;
+        numberOfReelsFlashing = 0;
+        numberOfReelsToDelete = 0;
         hiddenPattern = levelLoader.getHiddenPattern();
     }
 
@@ -355,6 +373,7 @@ public class PlayScreen implements Screen {
         reelStoppedSound.play();
         chaChingSound.play();
         reel.deleteReelTile();
+        numberOfReelsToDelete--;
         if (levelDoor.getLevelType().equals(PLAYING_CARD_LEVEL_TYPE))
             testPlayingCardLevelWon();
         else {
@@ -449,6 +468,7 @@ public class PlayScreen implements Screen {
 			reel.setFlashTween(false);
 			reel.processEvent(new ReelStoppedFlashingEvent());
 		}
+		numberOfReelsFlashing--;
 	}
 
 	public void handleInput() {
@@ -457,23 +477,11 @@ public class PlayScreen implements Screen {
 			touchY = Gdx.input.getY();
             Vector3 unprojTouch = new Vector3(touchX, touchY, 0);
             viewport.unproject(unprojTouch);
-			switch (playState) {
-				case INITIALISING:
-					Gdx.app.debug(SLOTPUZZLE_SCREEN, "Initialising");
-					break;
-				case INTRO_SEQUENCE:
-					Gdx.app.debug(SLOTPUZZLE_SCREEN, "Intro Sequence");
-					break;
+ 			switch (playState) {
 				case INTRO_POPUP:
                     if (isOver(playScreenPopUps.getLevelPopUpSprites().get(0), unprojTouch.x, unprojTouch.y)) {
 						playScreenPopUps.getLevelPopUp().hideLevelPopUp(hideLevelPopUpCallback);
 					}
-					break;
-				case INTRO_SPINNING:
-					Gdx.app.debug(SLOTPUZZLE_SCREEN, "Intro Spinning");
-					break;
-				case INTRO_FLASHING:
-					Gdx.app.debug(SLOTPUZZLE_SCREEN, "Intro Flashing");
 					break;
 				case PLAYING:
 					Gdx.app.debug(SLOTPUZZLE_SCREEN, "Play");
@@ -490,9 +498,6 @@ public class PlayScreen implements Screen {
 					if(isOver(playScreenPopUps.getLevelWonSprites().get(0), unprojTouch.x, unprojTouch.y)) {
 						playScreenPopUps.getLevelWonPopUp().hideLevelPopUp(levelWonCallback);
 					}
-					break;
-				case RESTARTING_LEVEL:
-					Gdx.app.debug(SLOTPUZZLE_SCREEN, "Restarting Level");
 					break;
 				default: break;
 			}
@@ -603,14 +608,46 @@ public class PlayScreen implements Screen {
 		ReelTileGridValue[][] puzzleGrid = puzzleGridTypeReelTile.populateMatchGrid(reelTiles,  mapWidth, mapHeight);
 
 		Array<ReelTileGridValue> matchedSlots = puzzleGridTypeReelTile.matchGridSlots(puzzleGrid);
+		PuzzleGridTypeReelTile.printGrid(puzzleGrid);
 		Array<ReelTileGridValue> duplicateMatchedSlots = PuzzleGridTypeReelTile.findDuplicateMatches(matchedSlots);
+        PuzzleGridTypeReelTile.printMatchedSlots(duplicateMatchedSlots);
 
 		matchedSlots = PuzzleGridTypeReelTile.adjustMatchSlotDuplicates(matchedSlots, duplicateMatchedSlots);
+		matchedSlots = PuzzleGridTypeReelTile.removeDuplicateMatches(duplicateMatchedSlots, matchedSlots);
 		for (TupleValueIndex matchedSlot : matchedSlots) {
 			reelTiles.get(matchedSlot.index).setScore(matchedSlot.value);
 		}
 		flashMatchedSlots(matchedSlots, puzzleGridTypeReelTile);
 		return puzzleGrid;
+	}
+
+	private void flashMatchedSlots(Array<ReelTileGridValue> matchedSlots, PuzzleGridTypeReelTile puzzleGridTypeReelTile) {
+		int matchSlotIndex, batchIndex, batchPosition;
+		Array<ReelTileGridValue> matchSlotsBatch = new Array<>();
+		float pushPause = 0.0f;
+		matchSlotIndex = 0;
+		numberOfReelsFlashing = matchedSlots.size;
+        numberOfReelsToDelete = numberOfReelsFlashing;
+		PuzzleGridTypeReelTile.printMatchedSlots(matchedSlots);
+		while (matchedSlots.size > 0) {
+		    startedFlashing = true;
+			reelsAreFlashing = true;
+            reelsAreDeleted = false;
+			batchIndex = matchSlotIndex;
+			for (int batchCount = batchIndex; batchCount < batchIndex + FLASH_BATCH_POOL_SIZE; batchCount++) {
+				if (batchCount < matchedSlots.size) {
+					batchPosition = matchSlotsBatch.size;
+					matchSlotsBatch = puzzleGridTypeReelTile.depthFirstSearchAddToMatchSlotBatch(matchedSlots.get(0), matchSlotsBatch);
+
+					for (int deleteIndex = batchPosition; deleteIndex < matchSlotsBatch.size; deleteIndex++) {
+						matchedSlots.removeValue(matchSlotsBatch.get(deleteIndex), true);
+					}
+				}
+			}
+			flashMatchedSlotsBatch(matchSlotsBatch, pushPause);
+			pushPause += 2.0f;
+			matchSlotsBatch.clear();
+		}
 	}
 
 	private void flashMatchedSlotsBatch(Array<ReelTileGridValue> matchedSlots, float pushPause) {
@@ -629,28 +666,6 @@ public class PlayScreen implements Screen {
 		}
 	}
 
-	private void flashMatchedSlots(Array<ReelTileGridValue> matchedSlots, PuzzleGridTypeReelTile puzzleGridTypeReelTile) {
-		int matchSlotIndex, batchIndex, batchPosition;
-		Array<ReelTileGridValue> matchSlotsBatch = new Array<>();
-		float pushPause = 0.0f;
-		matchSlotIndex = 0;
-		while (matchedSlots.size > 0) {
-			batchIndex = matchSlotIndex;
-			for (int batchCount = batchIndex; batchCount < batchIndex+3; batchCount++) {
-				if (batchCount < matchedSlots.size) {
-					batchPosition = matchSlotsBatch.size;
-					matchSlotsBatch = puzzleGridTypeReelTile.depthFirstSearchAddToMatchSlotBatch(matchedSlots.get(0), matchSlotsBatch);
-
-					for (int deleteIndex=batchPosition; deleteIndex<matchSlotsBatch.size; deleteIndex++) {
-						matchedSlots.removeValue(matchSlotsBatch.get(deleteIndex), true);
-					}
-				}
-			}
-			flashMatchedSlotsBatch(matchSlotsBatch, pushPause);
-			pushPause += 2.0f;
-			matchSlotsBatch.clear();
-		}
-	}
 
 	private TweenCallback levelOverCallback = new TweenCallback() {
 		@Override
@@ -675,7 +690,66 @@ public class PlayScreen implements Screen {
 		createReelIntroSequence();
 	}
 
+    @Override
+    public int getNumberOfReelsFalling() {
+        return 0;
+    }
+
+    @Override
+    public int getNumberOfReelsSpinning() {
+        return reelsSpinning;
+    }
+
+    @Override
+    public int getNumberOfReelsMatched() {
+        return 0;
+    }
+
+    @Override
+    public int getNumberOfReelsFlashing() {
+        return numberOfReelsFlashing;
+    }
+
+    @Override
+    public int getNumberOfReelsToDelete() {
+        return numberOfReelsToDelete;
+    }
+
+    @Override
+    public boolean areReelsFalling() {
+        return false;
+    }
+
+    @Override
+    public boolean areReelsSpinning() {
+        return reelsSpinning > 0;
+    }
+
+    @Override
+    public boolean areReelsFlashing() {
+        return numberOfReelsFlashing > 0;
+    }
+
+    @Override
+    public boolean areReelsStartedFlashing() {
+        return startedFlashing;
+    }
+
+    @Override
+    public boolean areReelsDeleted() {
+        return numberOfReelsToDelete == 0;
+    }
+
+	@Override
+	public void setReelsAreFlashing(boolean reelsAreFlashing) {
+		this.reelsAreFlashing = reelsAreFlashing;
+	}
+
+	public void updateState(float delta) {
+    }
+
     private void update(float delta) {
+	    playStateMachine.update();
 		tweenManager.update(delta);
 		renderer.setView(camera);
         animatedReelHelper.update(delta);
@@ -695,7 +769,17 @@ public class PlayScreen implements Screen {
 		}
     }
 
-	@Override
+    @Override
+    public void start() {
+
+    }
+
+    @Override
+    public boolean isStopped() {
+        return false;
+    }
+
+    @Override
 	public void render(float delta) {
         if (show) {
             Gdx.gl.glClearColor(0, 0, 0, 1);
@@ -724,7 +808,6 @@ public class PlayScreen implements Screen {
         } else
             return true;
     }
-
 
     private void renderMainGameElements() {
 		game.batch.begin();
@@ -772,18 +855,6 @@ public class PlayScreen implements Screen {
                 break;
             case WON_LEVEL:
                 playScreenPopUps.getLevelWonPopUp().draw(game.batch);
-                break;
-            case INITIALISING:
-                break;
-            case INTRO_FLASHING:
-                break;
-            case INTRO_SEQUENCE:
-                break;
-            case INTRO_SPINNING:
-                break;
-            case PLAYING:
-                break;
-            case RESTARTING_LEVEL:
                 break;
             default:
                 break;

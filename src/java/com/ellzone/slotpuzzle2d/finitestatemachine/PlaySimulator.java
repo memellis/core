@@ -41,10 +41,10 @@ public class PlaySimulator implements PlayInterface {
     private float
         timeCount = 0.0f;
 
-    private Play play;
+    private PlayStateMachine playStateMachine;
 
-    public PlaySimulator(Play play) {
-        this.play = play;
+    public PlaySimulator(PlayStateMachine playStateMachine) {
+        this.playStateMachine = playStateMachine;
         initialisePlaySimulator();
     }
 
@@ -104,15 +104,25 @@ public class PlaySimulator implements PlayInterface {
     }
 
     @Override
+    public boolean areReelsStartedFlashing() {
+        return false;
+    }
+
+    @Override
     public boolean areReelsDeleted() {
         return numberOfReelsToDelete > 0;
     }
 
-    public void update(float delta) {
+    @Override
+    public void setReelsAreFlashing(boolean reelsFalling) {
+        this.reelsFlashing = reelsFalling;
+    }
+
+    public void updateState(float delta) {
         if (startTimer) {
             timeCount += delta;
             if (timeCount >= 1.0f) {
-                switch (play.getStateMachine().getCurrentState()) {
+                switch (playStateMachine.getStateMachine().getCurrentState()) {
                     case INTRO_FALLING_SEQUENCE:
                         simulateIntroFallingSequence();
                         break;

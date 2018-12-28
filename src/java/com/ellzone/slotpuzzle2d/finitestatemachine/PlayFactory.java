@@ -43,12 +43,12 @@ PlaySimulator --> PlayInterface : implements
 
 public class PlayFactory {
 
-    public PlayInterface getPlay(String playType, Play play) {
+    public PlayInterface getPlay(String playType, PlayStateMachine playStateMachine) {
         if (playType == null) {
             return null;
         }
         if (playType.equalsIgnoreCase(PlaySimulator.class.getSimpleName())) {
-            return new PlaySimulator(play);
+            return new PlaySimulator(playStateMachine);
         }
         if (playType.equalsIgnoreCase(RealPlay.class.getSimpleName())) {
             return new RealPlay();

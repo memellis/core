@@ -47,120 +47,138 @@ State Play {
 @enduml
  */
 
-public enum PlayState implements State<Play> {
+public enum PlayState implements State<PlayStateMachine> {
 
-    INTRO_FALLING_SEQUENCE() {
+    INITIALISING() {
         @Override
-        public void enter(Play play) {
+        public void enter(PlayStateMachine entity) {
         }
 
         @Override
-        public void update(Play play) {
-            if (!play.getConcretePlay().areReelsFalling()) {
-                play.getStateMachine().changeState(INTRO_SPINNING_SEQUENCE);
+        public void update(PlayStateMachine entity) {
+        }
+
+        @Override
+        public void exit(PlayStateMachine entity) {
+        }
+
+        @Override
+        public boolean onMessage(PlayStateMachine entity, Telegram telegram) {
+            return false;
+        }
+    },
+
+    INTRO_FALLING_SEQUENCE() {
+        @Override
+        public void enter(PlayStateMachine playStateMachine) {
+        }
+
+        @Override
+        public void update(PlayStateMachine playStateMachine) {
+            if (!playStateMachine.getConcretePlay().areReelsFalling()) {
+                playStateMachine.getStateMachine().changeState(INTRO_SPINNING_SEQUENCE);
             }
         }
 
         @Override
-        public void exit(Play play) {
+        public void exit(PlayStateMachine playStateMachine) {
 
         }
 
         @Override
-        public boolean onMessage(Play play, Telegram telegram) {
+        public boolean onMessage(PlayStateMachine playStateMachine, Telegram telegram) {
             return false;
         }
     },
 
     INTRO_SPINNING_SEQUENCE() {
         @Override
-        public void enter(Play play) {
+        public void enter(PlayStateMachine playStateMachine) {
         }
 
         @Override
-        public void update(Play play) {
-            if (!play.getConcretePlay().areReelsSpinning()) {
-                play.getStateMachine().changeState(INTRO_FLASHING_SEQUENCE);
+        public void update(PlayStateMachine playStateMachine) {
+            if (!playStateMachine.getConcretePlay().areReelsSpinning()) {
+                playStateMachine.getConcretePlay().setReelsAreFlashing(true);
+                playStateMachine.getStateMachine().changeState(INTRO_FLASHING_SEQUENCE);
             }
         }
 
         @Override
-        public void exit(Play play) {
-
+        public void exit(PlayStateMachine playStateMachine) {
         }
 
         @Override
-        public boolean onMessage(Play play, Telegram telegram) {
+        public boolean onMessage(PlayStateMachine playStateMachine, Telegram telegram) {
             return false;
         }
     },
 
     INTRO_FLASHING_SEQUENCE() {
         @Override
-        public void enter(Play play) {
+        public void enter(PlayStateMachine playStateMachine) {
         }
 
         @Override
-        public void update(Play play) {
-            if (!play.getConcretePlay().areReelsFlashing()) {
-                play.getStateMachine().changeState(INTRO_ENDING_SEQUENCE);
+        public void update(PlayStateMachine playStateMachine) {
+            if (playStateMachine.getConcretePlay().areReelsStartedFlashing()) {
+                if (!playStateMachine.getConcretePlay().areReelsFlashing()) {
+                    playStateMachine.getStateMachine().changeState(INTRO_ENDING_SEQUENCE);
+                }
             }
         }
 
         @Override
-        public void exit(Play play) {
-
+        public void exit(PlayStateMachine playStateMachine) {
         }
 
         @Override
-        public boolean onMessage(Play play, Telegram telegram) {
+        public boolean onMessage(PlayStateMachine playStateMachine, Telegram telegram) {
             return false;
         }
     },
 
     INTRO_ENDING_SEQUENCE() {
         @Override
-        public void enter(Play play) {
+        public void enter(PlayStateMachine playStateMachine) {
         }
 
         @Override
-        public void update(Play play) {
-            if (!play.getConcretePlay().areReelsDeleted()) {
-                play.getStateMachine().changeState(DROP);
+        public void update(PlayStateMachine playStateMachine) {
+            if (!playStateMachine.getConcretePlay().areReelsDeleted()) {
+                playStateMachine.getStateMachine().changeState(PLAY);
             }
         }
 
         @Override
-        public void exit(Play play) {
+        public void exit(PlayStateMachine playStateMachine) {
 
         }
 
         @Override
-        public boolean onMessage(Play play, Telegram telegram) {
+        public boolean onMessage(PlayStateMachine playStateMachine, Telegram telegram) {
             return false;
         }
     },
 
     DROP() {
         @Override
-        public void enter(Play play) {
-
+        public void enter(PlayStateMachine playStateMachine) {
         }
 
         @Override
-        public void update(Play play) {
-            if (!play.getConcretePlay().areReelsFalling()) {
-                play.getStateMachine().changeState(SPIN);
+        public void update(PlayStateMachine playStateMachine) {
+            if (!playStateMachine.getConcretePlay().areReelsFalling()) {
+                playStateMachine.getStateMachine().changeState(SPIN);
             }
         }
 
         @Override
-        public void exit(Play play) {
-
+        public void exit(PlayStateMachine playStateMachine) {
         }
 
         @Override
-        public boolean onMessage(Play play, Telegram telegram) {
+        public boolean onMessage(PlayStateMachine playStateMachine, Telegram telegram) {
             return false;
         }
 
@@ -168,74 +186,67 @@ public enum PlayState implements State<Play> {
 
     SPIN() {
         @Override
-        public void enter(Play play) {
-
+        public void enter(PlayStateMachine playStateMachine) {
         }
 
         @Override
-        public void update(Play play) {
-            if (!play.getConcretePlay().areReelsSpinning()) {
-                play.getStateMachine().changeState(FLASH);
+        public void update(PlayStateMachine playStateMachine) {
+            if (!playStateMachine.getConcretePlay().areReelsSpinning()) {
+                playStateMachine.getStateMachine().changeState(FLASH);
             }
         }
 
         @Override
-        public void exit(Play play) {
-
+        public void exit(PlayStateMachine playStateMachine) {
         }
 
         @Override
-        public boolean onMessage(Play play, Telegram telegram) {
+        public boolean onMessage(PlayStateMachine playStateMachine, Telegram telegram) {
             return false;
         }
     },
 
     FLASH() {
         @Override
-        public void enter(Play play) {
-
+        public void enter(PlayStateMachine playStateMachine) {
         }
 
         @Override
-        public void update(Play play) {
-            if (!play.getConcretePlay().areReelsFlashing() & play.getConcretePlay().getNumberOfReelsMatched() == 0) {
-                play.getStateMachine().changeState(PLAY);
+        public void update(PlayStateMachine playStateMachine) {
+            if (!playStateMachine.getConcretePlay().areReelsFlashing() & playStateMachine.getConcretePlay().getNumberOfReelsMatched() == 0) {
+                playStateMachine.getStateMachine().changeState(PLAY);
             } else {
-                if (!play.getConcretePlay().areReelsFlashing() & play.getConcretePlay().getNumberOfReelsMatched() > 0) {
-                    play.getStateMachine().changeState(DROP);
+                if (!playStateMachine.getConcretePlay().areReelsFlashing() & playStateMachine.getConcretePlay().getNumberOfReelsMatched() > 0) {
+                    playStateMachine.getStateMachine().changeState(DROP);
                 }
             }
         }
 
         @Override
-        public void exit(Play play) {
-
+        public void exit(PlayStateMachine playStateMachine) {
         }
 
         @Override
-        public boolean onMessage(Play play, Telegram telegram) {
+        public boolean onMessage(PlayStateMachine playStateMachine, Telegram telegram) {
             return false;
         }
     },
 
     PLAY() {
         @Override
-        public void enter(Play play) {
-
+        public void enter(PlayStateMachine playStateMachine) {
         }
 
         @Override
-        public void update(Play play) {
-
+        public void update(PlayStateMachine playStateMachine) {
         }
 
         @Override
-        public void exit(Play play) {
-
+        public void exit(PlayStateMachine playStateMachine) {
         }
 
         @Override
-        public boolean onMessage(Play play, Telegram telegram) {
+        public boolean onMessage(PlayStateMachine playStateMachine, Telegram telegram) {
             return false;
         }
     }

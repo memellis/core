@@ -19,22 +19,22 @@ package com.ellzone.slotpuzzle2d.finitestatemachine;
 import com.badlogic.gdx.ai.fsm.DefaultStateMachine;
 import com.badlogic.gdx.ai.fsm.StateMachine;
 
-public class Play {
-    private StateMachine<Play, PlayState> stateMachine;
+public class PlayStateMachine {
+    private StateMachine<PlayStateMachine, PlayState> stateMachine;
     private PlayInterface concretePlay;
 
-    public Play() {
+    public PlayStateMachine() {
         this(RealPlay.class.getSimpleName());
     }
 
-    public Play(String playType) {
-        stateMachine = new DefaultStateMachine<Play, PlayState>(this, PlayState.INTRO_FALLING_SEQUENCE);
+    public PlayStateMachine(String playType) {
+        stateMachine = new DefaultStateMachine<PlayStateMachine, PlayState>(this, PlayState.INTRO_FALLING_SEQUENCE);
 
         PlayFactory playFactory = new PlayFactory();
         concretePlay = playFactory.getPlay(playType, this);
     }
 
-    public StateMachine<Play, PlayState> getStateMachine() {
+    public StateMachine<PlayStateMachine, PlayState> getStateMachine() {
         return stateMachine;
     }
 
@@ -42,8 +42,12 @@ public class Play {
         return concretePlay;
     }
 
+    public void setConcretePlay(PlayInterface concretePlay) {
+        this.concretePlay = concretePlay;
+    }
+
     public void update() {
         stateMachine.update();
-        concretePlay.update(System.currentTimeMillis());
+        concretePlay.updateState(System.currentTimeMillis());
     }
 }

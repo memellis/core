@@ -667,15 +667,15 @@ public class LevelCreator {
     public void update(float dt) {
         if (dropReplacementReelBoxes) {
             for (Integer replacementReelBox : replacementReelBoxes) {
-                Gdx.app.log(SlotPuzzleConstants.SLOT_PUZZLE, MessageFormat.format("r={0} c={1} x={2} y={3} dx={4} dy={5} i={6} v={7}",
-                        PuzzleGridTypeReelTile.getRowFromLevel(reelTiles.get(replacementReelBox).getDestinationY(), levelHeight),
-                        PuzzleGridTypeReelTile.getColumnFromLevel(reelTiles.get(replacementReelBox).getDestinationX()),
-                        reelTiles.get(replacementReelBox).getX(),
-                        reelTiles.get(replacementReelBox).getY(),
-                        reelTiles.get(replacementReelBox).getDestinationX(),
-                        reelTiles.get(replacementReelBox).getDestinationY(),
-                        replacementReelBox.intValue(),
-                        reelTiles.get(replacementReelBox).getEndReel()));
+                Gdx.app.debug(SlotPuzzleConstants.SLOT_PUZZLE, MessageFormat.format("r={0} c={1} x={2} y={3} dx={4} dy={5} i={6} v={7}",
+                              PuzzleGridTypeReelTile.getRowFromLevel(reelTiles.get(replacementReelBox).getDestinationY(), levelHeight),
+                              PuzzleGridTypeReelTile.getColumnFromLevel(reelTiles.get(replacementReelBox).getDestinationX()),
+                              reelTiles.get(replacementReelBox).getX(),
+                              reelTiles.get(replacementReelBox).getY(),
+                              reelTiles.get(replacementReelBox).getDestinationX(),
+                              reelTiles.get(replacementReelBox).getDestinationY(),
+                              replacementReelBox.intValue(),
+                              reelTiles.get(replacementReelBox).getEndReel()));
             }
         }
         this.animatedReelHelper.update(dt);

@@ -26,20 +26,20 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.IsEqual.equalTo;
 
 @RunWith(PowerMockRunner.class)
-@PrepareForTest( {Play.class} )
-public class PlayTest {
+@PrepareForTest( {PlayStateMachine.class} )
+public class PlayStateMachineTest {
 
     @Test
     public void testPlayDefaultConstructor() throws Exception {
-        Play play = new Play();
-        PlayInterface concretePlay = Whitebox.getInternalState(play, "concretePlay");
+        PlayStateMachine playStateMachine = new PlayStateMachine();
+        PlayInterface concretePlay = Whitebox.getInternalState(playStateMachine, "concretePlay");
         assertThat(concretePlay.getClass().getSimpleName(), equalTo(RealPlay.class.getSimpleName()));
     }
 
     @Test
     public void testPlayWithOneConstructor() throws Exception {
-        Play play = new Play(PlaySimulator.class.getSimpleName());
-        PlayInterface concretePlay = Whitebox.getInternalState(play, "concretePlay");
+        PlayStateMachine playStateMachine = new PlayStateMachine(PlaySimulator.class.getSimpleName());
+        PlayInterface concretePlay = Whitebox.getInternalState(playStateMachine, "concretePlay");
         assertThat(concretePlay.getClass().getSimpleName(), equalTo(PlaySimulator.class.getSimpleName()));
     }
 }

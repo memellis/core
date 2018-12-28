@@ -17,6 +17,8 @@
 package com.ellzone.slotpuzzle2d.finitestatemachine;
 
 public class RealPlay implements PlayInterface {
+    private int numberOfReelsSpinning = 0;
+
     @Override
     public int getNumberOfReelsFalling() {
         return 0;
@@ -58,12 +60,20 @@ public class RealPlay implements PlayInterface {
     }
 
     @Override
+    public boolean areReelsStartedFlashing() {
+        return false;
+    }
+
+    @Override
     public boolean areReelsDeleted() {
         return false;
     }
 
     @Override
-    public void update(float delta) {
+    public void setReelsAreFlashing(boolean reelsAreFlashing) {}
+
+    @Override
+    public void updateState(float delta) {
     }
 
     @Override
@@ -73,5 +83,9 @@ public class RealPlay implements PlayInterface {
     @Override
     public boolean isStopped() {
         return false;
+    }
+
+    public void setNumberOfReelsSpinning(int numberOfReelsSpinning) {
+        this.numberOfReelsSpinning = numberOfReelsSpinning;
     }
 }

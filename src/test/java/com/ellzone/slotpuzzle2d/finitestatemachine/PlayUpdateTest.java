@@ -31,7 +31,7 @@ import static org.powermock.api.easymock.PowerMock.createMock;
 import static org.powermock.api.easymock.PowerMock.replay;
 
 @RunWith(PowerMockRunner.class)
-@PrepareForTest( {Play.class} )
+@PrepareForTest( {PlayStateMachine.class} )
 
 public class PlayUpdateTest {
     @Test
@@ -40,16 +40,16 @@ public class PlayUpdateTest {
         PlaySimulator playSimulatorMock = createMock(PlaySimulator.class);
         StateMachine stateMachineMock = createMock(StateMachine.class);
 
-        Play play = new Play();
+        PlayStateMachine playStateMachine = new PlayStateMachine();
 
-        expect(playFactoryMock.getPlay(PlaySimulator.class.getSimpleName(), play)).andReturn(playSimulatorMock);
-        play.update();
+        expect(playFactoryMock.getPlay(PlaySimulator.class.getSimpleName(), playStateMachine)).andReturn(playSimulatorMock);
+        playStateMachine.update();
         stateMachineMock.update();
-        play.getConcretePlay().update(0.0f);
+        playStateMachine.getConcretePlay().updateState(0.0f);
         expectLastCall().atLeastOnce();
-        replay(Play.class, playFactoryMock, PlayFactory.class);
+        replay(PlayStateMachine.class, playFactoryMock, PlayFactory.class);
 
-        assertThat(playFactoryMock.getPlay(PlaySimulator.class.getSimpleName(), play), CoreMatchers.<PlayInterface>equalTo(playSimulatorMock));
+        assertThat(playFactoryMock.getPlay(PlaySimulator.class.getSimpleName(), playStateMachine), CoreMatchers.<PlayInterface>equalTo(playSimulatorMock));
 
         verify(playFactoryMock);
     }
