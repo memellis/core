@@ -177,7 +177,7 @@ public class TestPuzzleGridTypeReelTile {
             expect(reelTile.getEndReel()).andReturn((int) Whitebox.getInternalState(reelTile, "endReel")).times(2);
             expect(reelTile.getX()).andReturn((Float) Whitebox.getInternalState(reelTile, "x"));
             expect(reelTile.getY()).andReturn((Float) Whitebox.getInternalState(reelTile, "y"));
-            applicationMock.log(capture(logCaptureArgument1), capture(logCaptureArgument2));
+            applicationMock.debug(capture(debugCaptureArgument1), capture(debugCaptureArgument2));
 
             if ((float) Whitebox.getInternalState(reelTile, "x") == 560.0f) {
                 applicationMock.debug(capture(debugCaptureArgument1), capture(debugCaptureArgument2));

@@ -22,6 +22,7 @@ import com.badlogic.gdx.Input;
 
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import static junit.framework.TestCase.assertEquals;
@@ -63,6 +64,7 @@ public class TestPlayStateMachine {
         mockApplication = null;
     }
 
+    @Ignore
     @Test
     public void testIntroDropPlay() {
         PlayStateMachine playStateMachine = new PlayStateMachine(PlaySimulator.class.getSimpleName());
@@ -90,6 +92,7 @@ public class TestPlayStateMachine {
         assertEquals(playStateMachine.getStateMachine().getCurrentState(), PlayState.PLAY);
     }
 
+    @Ignore
     @Test
     public void testIntroDropDropPlay() {
         PlayStateMachine playStateMachine = new PlayStateMachine(PlaySimulator.class.getSimpleName());
