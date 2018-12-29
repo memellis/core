@@ -35,6 +35,7 @@ public class PlaySimulator implements PlayInterface {
         reelsSpinning,
         reelsFlashing,
         reelsDeleted,
+        startedFlashing,
         startTimer,
         simulateIntroDropDropPlay;
 
@@ -59,6 +60,7 @@ public class PlaySimulator implements PlayInterface {
         reelsFalling = true;
         reelsSpinning = true;
         reelsFlashing = false;
+        startedFlashing = false;
         startTimer = false;
         simulateIntroDropDropPlay = false;
     }
@@ -105,7 +107,7 @@ public class PlaySimulator implements PlayInterface {
 
     @Override
     public boolean areReelsStartedFlashing() {
-        return false;
+        return startedFlashing;
     }
 
     @Override
@@ -114,8 +116,8 @@ public class PlaySimulator implements PlayInterface {
     }
 
     @Override
-    public void setReelsAreFlashing(boolean reelsFalling) {
-        this.reelsFlashing = reelsFalling;
+    public void setReelsAreFlashing(boolean startedFlashing) {
+        this.startedFlashing = startedFlashing;
     }
 
     public void updateState(float delta) {
@@ -170,6 +172,7 @@ public class PlaySimulator implements PlayInterface {
         } else {
             startTimer = false;
             numberOfReelsFlashing = 10;
+            setReelsAreFlashing(true);
         }
     }
 
