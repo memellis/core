@@ -473,24 +473,24 @@ public class PuzzleGridTypeReelTile {
         return duplicateMatches;
     }
 
-    public static Array<ReelTileGridValue> removeDuplicateMatches(Array<ReelTileGridValue> duplicateSlots, Array<ReelTileGridValue> matchSlots) {
+    public static Array<ReelTileGridValue> removeDuplicateMatches(Array<ReelTileGridValue> duplicateSlots, Array<ReelTileGridValue> matchedSlots) {
         int i = 0;
         while (i < duplicateSlots.size) {
             ReelTileGridValue currentDuplicate = duplicateSlots.get(i);
-            matchSlots = removeValue(matchSlots, currentDuplicate);
+            matchedSlots = removeValue(matchedSlots, currentDuplicate);
             i++;
             while ((i < duplicateSlots.size) && ((currentDuplicate.r == duplicateSlots.get(i).r) & (currentDuplicate.c == duplicateSlots.get(i).c)))
                 i++;
         }
-        return matchSlots;
+        return matchedSlots;
     }
 
     private static Array<ReelTileGridValue> removeValue(Array<ReelTileGridValue> matchedSlots, ReelTileGridValue valueToBeRemoved) {
         int row = valueToBeRemoved.r;
         int column = valueToBeRemoved.c;
-        for (int i = 0; i < matchedSlots.size; i++) {
-            if ((matchedSlots.get(i).r == row) & (matchedSlots.get(i).c == column)) {
-                matchedSlots.removeIndex(i);
+        for (int index = 0; index < matchedSlots.size; index++) {
+            if ((matchedSlots.get(index).r == row) & (matchedSlots.get(index).c == column)) {
+                matchedSlots.removeIndex(index);
                 break;
             }
         }
