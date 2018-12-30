@@ -138,11 +138,11 @@ public class TestPuzzleGridTypeReelTile {
         int[][] expectedLonelyReels =  setLonleyReelsExpectations(expectedLonelyTiles);
         relayAll(expectedLonelyTiles);
         Array<ReelTile> levelAdjustedForLonelyReels = puzzleGridTypeReelTile.adjustForAnyLonelyReels(reelTiles, PlayScreen.GAME_LEVEL_WIDTH, PlayScreen.GAME_LEVEL_HEIGHT);
-        for (int index = 0; index < expectedLonelyReels.length; index++)
-            assertThat(Whitebox.getInternalState(levelAdjustedForLonelyReels.get(expectedLonelyReels[index][0]),
-                                                "endReel"),
-                       is(equalTo(Whitebox.getInternalState(levelAdjustedForLonelyReels.get(expectedLonelyReels[index][1]),
-                                                "endReel"))));
+        for (int[] expectedLonelyReel : expectedLonelyReels)
+            assertThat(Whitebox.getInternalState(levelAdjustedForLonelyReels.get(expectedLonelyReel[0]),
+                      "endReel"),
+                    is(equalTo(Whitebox.getInternalState(levelAdjustedForLonelyReels.get(expectedLonelyReel[1]),
+                              "endReel"))));
         verifyAll(expectedLonelyTiles);
     }
 
