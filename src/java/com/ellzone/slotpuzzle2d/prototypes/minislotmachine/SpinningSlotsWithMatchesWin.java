@@ -410,7 +410,6 @@ public class SpinningSlotsWithMatchesWin extends SPPrototypeTemplate {
                 @Override
                 public void actionPerformed(ReelTileEvent event, ReelTile source) {
                     if (event instanceof ReelStoppedSpinningEvent) {
-                        System.out.println("Reel Stopped Spinning");
                         matchReels();
                     }
                 }

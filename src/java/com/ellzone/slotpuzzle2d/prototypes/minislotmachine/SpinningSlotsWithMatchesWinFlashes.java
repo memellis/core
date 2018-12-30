@@ -136,9 +136,6 @@ public class SpinningSlotsWithMatchesWinFlashes extends SPPrototypeTemplate {
         }
 
         levelLights = new Array<>();
-        System.out.println("slotHandleSpriteCenterY="+slotHandleSpriteCenterY);
-        //levelLights.add(createLevelLight((int) slotHandleSpriteCenterX, (int) slotHandleSpriteCenterY));
-        //levelLights.add(createLevelLight((int) slotHandleSpriteCenterX, (int) slotHandleSpriteCenterY + 120));
         levelLights.add(createLevelLight((int) slotHandleSpriteCenterX, 300));
         levelLightX = (int) slotHandleSpriteCenterX;
         levelLightY = (int) 300;
@@ -409,7 +406,6 @@ public class SpinningSlotsWithMatchesWinFlashes extends SPPrototypeTemplate {
                 @Override
                 public void actionPerformed(ReelTileEvent event, ReelTile source) {
                     if (event instanceof ReelStoppedSpinningEvent) {
-                        System.out.println("Reel Stopped Spinning");
                         matchReels();
                     }
                 }
