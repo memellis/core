@@ -20,7 +20,6 @@ import java.util.Random;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.audio.Sound;
-import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
@@ -46,6 +45,7 @@ import com.ellzone.slotpuzzle2d.finitestatemachine.PlayInterface;
 import com.ellzone.slotpuzzle2d.finitestatemachine.PlayState;
 import com.ellzone.slotpuzzle2d.finitestatemachine.PlayStateMachine;
 import com.ellzone.slotpuzzle2d.level.Card;
+import com.ellzone.slotpuzzle2d.level.FlashSlots;
 import com.ellzone.slotpuzzle2d.level.HiddenPattern;
 import com.ellzone.slotpuzzle2d.level.HiddenPlayingCard;
 import com.ellzone.slotpuzzle2d.level.LevelCallBack;
@@ -56,13 +56,11 @@ import com.ellzone.slotpuzzle2d.level.PlayScreenPopUps;
 import com.ellzone.slotpuzzle2d.physics.DampenedSineParticle;
 import com.ellzone.slotpuzzle2d.puzzlegrid.PuzzleGridType;
 import com.ellzone.slotpuzzle2d.puzzlegrid.PuzzleGridTypeReelTile;
-import com.ellzone.slotpuzzle2d.puzzlegrid.ReelTileGridValue;
 import com.ellzone.slotpuzzle2d.puzzlegrid.TupleValueIndex;
 import com.ellzone.slotpuzzle2d.scene.Hud;
 import com.ellzone.slotpuzzle2d.scene.MapTile;
 import com.ellzone.slotpuzzle2d.sprites.AnimatedReel;
 import com.ellzone.slotpuzzle2d.sprites.AnimatedReelHelper;
-import com.ellzone.slotpuzzle2d.sprites.ReelStoppedFlashingEvent;
 import com.ellzone.slotpuzzle2d.sprites.ReelTile;
 import com.ellzone.slotpuzzle2d.sprites.Reels;
 import com.ellzone.slotpuzzle2d.sprites.Score;
@@ -74,7 +72,6 @@ import com.ellzone.slotpuzzle2d.tweenengine.TweenCallback;
 import com.ellzone.slotpuzzle2d.tweenengine.TweenManager;
 import net.dermetfan.gdx.assets.AnnotationAssetManager;
 import aurelienribon.tweenengine.equations.Quad;
-import aurelienribon.tweenengine.equations.Sine;
 
 import static com.ellzone.slotpuzzle2d.scene.Hud.addScore;
 
@@ -90,7 +87,6 @@ public class PlayScreen implements Screen, PlayInterface {
     private static final String PLAYING_CARD_LEVEL_TYPE = "PlayingCard";
     private static final String HIDDEN_PATTERN_LEVEL_TYPE = "HiddenPattern";
 	private static final String SLOTPUZZLE_SCREEN = "PlayScreen";
-    public static final int FLASH_BATCH_POOL_SIZE = 3;
     private LevelLoader levelLoader;
 	private PlayStateMachine playStateMachine;
 
@@ -115,15 +111,13 @@ public class PlayScreen implements Screen, PlayInterface {
 	private Stage stage;
     private float sW, sH;
  	private final TweenManager tweenManager = new TweenManager();
-    private Timeline reelFlashSeq;
+ 	private FlashSlots flashSlots;
     private TextureAtlas tilesAtlas;
  	private Sound chaChingSound, pullLeverSound, reelSpinningSound, reelStoppedSound;
     private boolean isLoaded = false;
     private Array<ReelTile> reelTiles;
 	private AnimatedReelHelper animatedReelHelper;
-	private int reelsSpinning, numberOfReelsToDelete;
-	private int numberOfReelsFlashing;
-	private boolean reelsAreFlashing, reelsAreDeleted, startedFlashing;
+	private int reelsSpinning;
 	private TiledMap level;
 	private Random random;
 	private OrthogonalTiledMapRenderer renderer;
@@ -178,7 +172,6 @@ public class PlayScreen implements Screen, PlayInterface {
     private void createPlayScreenPart2() {
         initialisePlayScreen();
         loadLevel();
-        getMapProperties(level);
         initialiseHud();
     }
 
@@ -207,11 +200,9 @@ public class PlayScreen implements Screen, PlayInterface {
         levelLoader = getLevelLoader();
         reelTiles = levelLoader.createLevel(GAME_LEVEL_WIDTH, GAME_LEVEL_HEIGHT);
         reelsSpinning = reelTiles.size - 1;
-        reelsAreFlashing = false;
-        startedFlashing = false;
-        numberOfReelsFlashing = 0;
-        numberOfReelsToDelete = 0;
         hiddenPattern = levelLoader.getHiddenPattern();
+        getMapProperties(level);
+        flashSlots = new FlashSlots(tweenManager, mapWidth, mapHeight, reelTiles);
     }
 
     private LevelLoader getLevelLoader() {
@@ -330,12 +321,12 @@ public class PlayScreen implements Screen, PlayInterface {
 	}
 
 	private boolean testForHiddenPatternRevealed(Array<ReelTile> levelReel) {
-		TupleValueIndex[][] matchGrid = flashSlots(levelReel);
+		TupleValueIndex[][] matchGrid = flashSlots.flashSlots(levelReel);
 		return hiddenPattern.isHiddenPatternRevealed(matchGrid, reelTiles, GAME_LEVEL_WIDTH, GAME_LEVEL_HEIGHT);
 	}
 
 	private boolean testForHiddenPlayingCardsRevealed(Array<ReelTile> levelReel) {
-		TupleValueIndex[][] matchGrid = flashSlots(levelReel);
+		TupleValueIndex[][] matchGrid = flashSlots.flashSlots(levelReel);
 		return hiddenPattern.isHiddenPatternRevealed(matchGrid, reelTiles, GAME_LEVEL_WIDTH, GAME_LEVEL_HEIGHT);
 	}
 
@@ -373,7 +364,7 @@ public class PlayScreen implements Screen, PlayInterface {
         reelStoppedSound.play();
         chaChingSound.play();
         reel.deleteReelTile();
-        numberOfReelsToDelete--;
+        flashSlots.deleteAReel();
         if (levelDoor.getLevelType().equals(PLAYING_CARD_LEVEL_TYPE))
             testPlayingCardLevelWon();
         else {
@@ -408,69 +399,6 @@ public class PlayScreen implements Screen, PlayInterface {
 		}
 	};
 
-	private void initialiseReelFlash(ReelTile reel, float pushPause) {
-		Array<Object> userData = new Array<>();
-		reel.setFlashTween(true);
-		reelFlashSeq = Timeline.createSequence();
-        reelFlashSeq = reelFlashSeq.pushPause(pushPause);
-
-		Color fromColor = new Color(Color.WHITE);
-		fromColor.a = 1;
-		Color toColor = new Color(Color.RED);
-		toColor.a = 1;
-
-		userData.add(reel);
-		userData.add(reelFlashSeq);
-
-        setUpFlashSequence(reel, userData, fromColor, toColor);
-	}
-
-    private void setUpFlashSequence(ReelTile reel, Array<Object> userData, Color fromColor, Color toColor) {
-        reelFlashSeq = reelFlashSeq.push(SlotPuzzleTween.set(reel, ReelAccessor.FLASH_TINT)
-                   .target(fromColor.r, fromColor.g, fromColor.b)
-                   .ease(Sine.IN));
-        reelFlashSeq = reelFlashSeq.push(SlotPuzzleTween.to(reel, ReelAccessor.FLASH_TINT, 0.2f)
-                   .target(toColor.r, toColor.g, toColor.b)
-                   .ease(Sine.OUT)
-                   .repeatYoyo(17, 0));
-
-        reelFlashSeq = reelFlashSeq.push(SlotPuzzleTween.set(reel, ReelAccessor.FLASH_TINT)
-                           .target(fromColor.r, fromColor.g, fromColor.b)
-                           .ease(Sine.IN));
-        reelFlashSeq = reelFlashSeq.push(SlotPuzzleTween.to(reel, ReelAccessor.FLASH_TINT, 0.05f)
-                           .target(toColor.r, toColor.g, toColor.b)
-                           .ease(Sine.OUT)
-                           .repeatYoyo(25, 0))
-                           .setCallback(reelFlashCallback)
-                           .setCallbackTriggers(TweenCallback.COMPLETE)
-                           .setUserData(userData)
-                           .start(tweenManager);
-    }
-
-    private TweenCallback reelFlashCallback = new TweenCallback() {
-		@Override
-		public void onEvent(int type, BaseTween<?> source) {
-			switch (type) {
-				case TweenCallback.COMPLETE:
-					delegateReelFlashCallback(source);
-			}
-		}
-	};
-
-	private void delegateReelFlashCallback(BaseTween<?> source) {
-		@SuppressWarnings("unchecked")
-		Array<Object> userData = (Array<Object>) source.getUserData();
-		ReelTile reel = (ReelTile) userData.get(0);
-		Timeline reelFlashSeq = (Timeline) userData.get(1);
-		reelFlashSeq.kill();
-		if (reel.getFlashTween()) {
-			reel.setFlashOff();
-			reel.setFlashTween(false);
-			reel.processEvent(new ReelStoppedFlashingEvent());
-		}
-		numberOfReelsFlashing--;
-	}
-
 	public void handleInput() {
 		if (Gdx.input.justTouched()) {
 			touchX = Gdx.input.getX();
@@ -483,10 +411,6 @@ public class PlayScreen implements Screen, PlayInterface {
 						playScreenPopUps.getLevelPopUp().hideLevelPopUp(hideLevelPopUpCallback);
 					}
 					break;
-//				case PLAYING:
-//					Gdx.app.debug(SLOTPUZZLE_SCREEN, "Play");
-//					processIsTileClicked();
-//					break;
 				case LEVEL_LOST:
 					Gdx.app.debug(SLOTPUZZLE_SCREEN, "Lost Level");
 					if (isOver(playScreenPopUps.getLevelLostSprites().get(0), unprojTouch.x, unprojTouch.y)) {
@@ -607,67 +531,6 @@ public class PlayScreen implements Screen, PlayInterface {
         reelSpinningSound.play();
     }
 
-	private ReelTileGridValue[][] flashSlots(Array<ReelTile> reelTiles) {
-		PuzzleGridTypeReelTile puzzleGridTypeReelTile = new PuzzleGridTypeReelTile();
-		ReelTileGridValue[][] puzzleGrid = puzzleGridTypeReelTile.populateMatchGrid(reelTiles,  mapWidth, mapHeight);
-
-		Array<ReelTileGridValue> matchedSlots = puzzleGridTypeReelTile.matchGridSlots(puzzleGrid);
-		Array<ReelTileGridValue> duplicateMatchedSlots = PuzzleGridTypeReelTile.findDuplicateMatches(matchedSlots);
-
-		matchedSlots = PuzzleGridTypeReelTile.adjustMatchSlotDuplicates(matchedSlots, duplicateMatchedSlots);
-		matchedSlots = PuzzleGridTypeReelTile.removeDuplicateMatches(duplicateMatchedSlots, matchedSlots);
-		for (TupleValueIndex matchedSlot : matchedSlots) {
-			reelTiles.get(matchedSlot.index).setScore(matchedSlot.value);
-		}
-		flashMatchedSlots(matchedSlots, puzzleGridTypeReelTile);
-		return puzzleGrid;
-	}
-
-	private void flashMatchedSlots(Array<ReelTileGridValue> matchedSlots, PuzzleGridTypeReelTile puzzleGridTypeReelTile) {
-		int matchSlotIndex, batchIndex, batchPosition;
-		Array<ReelTileGridValue> matchSlotsBatch = new Array<>();
-		float pushPause = 0.0f;
-		matchSlotIndex = 0;
-		numberOfReelsFlashing = matchedSlots.size;
-        numberOfReelsToDelete = numberOfReelsFlashing;
-		while (matchedSlots.size > 0) {
-		    startedFlashing = true;
-			reelsAreFlashing = true;
-            reelsAreDeleted = false;
-			batchIndex = matchSlotIndex;
-			for (int batchCount = batchIndex; batchCount < batchIndex + FLASH_BATCH_POOL_SIZE; batchCount++) {
-				if (batchCount < matchedSlots.size) {
-					batchPosition = matchSlotsBatch.size;
-					matchSlotsBatch = puzzleGridTypeReelTile.depthFirstSearchAddToMatchSlotBatch(matchedSlots.get(0), matchSlotsBatch);
-
-					for (int deleteIndex = batchPosition; deleteIndex < matchSlotsBatch.size; deleteIndex++) {
-						matchedSlots.removeValue(matchSlotsBatch.get(deleteIndex), true);
-					}
-				}
-			}
-			flashMatchedSlotsBatch(matchSlotsBatch, pushPause);
-			pushPause += 2.0f;
-			matchSlotsBatch.clear();
-		}
-	}
-
-	private void flashMatchedSlotsBatch(Array<ReelTileGridValue> matchedSlots, float pushPause) {
-		int index;
-		for (int i = 0; i < matchedSlots.size; i++) {
-			index = matchedSlots.get(i).getIndex();
-			if (index  >= 0) {
-				ReelTile reel = reelTiles.get(index);
-				if (!reel.getFlashTween()) {
-					reel.setFlashMode(true);
-					Color flashColor = new Color(Color.WHITE);
-					reel.setFlashColor(flashColor);
-					initialiseReelFlash(reel, pushPause);
-				}
-			}
-		}
-	}
-
-
 	private TweenCallback levelOverCallback = new TweenCallback() {
 		@Override
 		public void onEvent(int type, BaseTween<?> source) {
@@ -708,12 +571,12 @@ public class PlayScreen implements Screen, PlayInterface {
 
     @Override
     public int getNumberOfReelsFlashing() {
-        return numberOfReelsFlashing;
+        return flashSlots.getNumberOfReelsFlashing();
     }
 
     @Override
     public int getNumberOfReelsToDelete() {
-        return numberOfReelsToDelete;
+        return flashSlots.getNumberOfReelsToDelete();
     }
 
     @Override
@@ -728,22 +591,22 @@ public class PlayScreen implements Screen, PlayInterface {
 
     @Override
     public boolean areReelsFlashing() {
-        return numberOfReelsFlashing > 0;
+        return flashSlots.areReelsFlashing();
     }
 
     @Override
     public boolean areReelsStartedFlashing() {
-        return startedFlashing;
+        return flashSlots.areReelsStartedFlashing();
     }
 
     @Override
     public boolean areReelsDeleted() {
-        return numberOfReelsToDelete == 0;
+        return flashSlots.areReelsDeleted();
     }
 
 	@Override
 	public void setReelsAreFlashing(boolean reelsAreFlashing) {
-		this.reelsAreFlashing = reelsAreFlashing;
+		flashSlots.setReelsAreFlashing(reelsAreFlashing);
 	}
 
 	public void updateState(float delta) {
@@ -772,7 +635,6 @@ public class PlayScreen implements Screen, PlayInterface {
 
     @Override
     public void start() {
-
     }
 
     @Override
