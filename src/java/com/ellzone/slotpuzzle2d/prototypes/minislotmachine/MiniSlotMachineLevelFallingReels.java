@@ -560,24 +560,20 @@ public class MiniSlotMachineLevelFallingReels extends SPPrototypeTemplate {
         Array<ReelTileGridValue> matchSlotsBatch = new Array<ReelTileGridValue>();
         float pushPause = 0.0f;
         matchSlotIndex = 0;
-        PuzzleGridTypeReelTile.printMatchedSlots(matchedSlots);
         while (matchedSlots.size > 0) {
             batchIndex = matchSlotIndex;
             for (int batchCount = batchIndex; batchCount < batchIndex+3; batchCount++) {
                 if (batchCount < matchedSlots.size) {
                     batchPosition = matchSlotsBatch.size;
                     matchSlotsBatch = puzzleGridTypeReelTile.depthFirstSearchAddToMatchSlotBatch(matchedSlots.get(0), matchSlotsBatch);
-                    PuzzleGridTypeReelTile.printMatchedSlots(matchSlotsBatch);
 
                     for (int deleteIndex=batchPosition; deleteIndex<matchSlotsBatch.size; deleteIndex++) {
                         matchedSlots.removeValue(matchSlotsBatch.get(deleteIndex), true);
                     }
                 }
             }
-            PuzzleGridTypeReelTile.printMatchedSlots(matchSlotsBatch);
-            if (matchSlotsBatch.size == 0) {
+            if (matchSlotsBatch.size == 0)
                 break;
-            }
             flashMatchedSlotsBatch(matchSlotsBatch, pushPause);
             pushPause += 2.0f;
             matchSlotsBatch.clear();

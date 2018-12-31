@@ -483,10 +483,10 @@ public class PlayScreen implements Screen, PlayInterface {
 						playScreenPopUps.getLevelPopUp().hideLevelPopUp(hideLevelPopUpCallback);
 					}
 					break;
-				case PLAYING:
-					Gdx.app.debug(SLOTPUZZLE_SCREEN, "Play");
-					processIsTileClicked();
-					break;
+//				case PLAYING:
+//					Gdx.app.debug(SLOTPUZZLE_SCREEN, "Play");
+//					processIsTileClicked();
+//					break;
 				case LEVEL_LOST:
 					Gdx.app.debug(SLOTPUZZLE_SCREEN, "Lost Level");
 					if (isOver(playScreenPopUps.getLevelLostSprites().get(0), unprojTouch.x, unprojTouch.y)) {
@@ -501,6 +501,10 @@ public class PlayScreen implements Screen, PlayInterface {
 					break;
 				default: break;
 			}
+			if (playStateMachine.getStateMachine().getCurrentState() == PlayState.PLAY) {
+                Gdx.app.debug(SLOTPUZZLE_SCREEN, "Play");
+                processIsTileClicked();
+            }
 		}
 	}
 
@@ -608,9 +612,7 @@ public class PlayScreen implements Screen, PlayInterface {
 		ReelTileGridValue[][] puzzleGrid = puzzleGridTypeReelTile.populateMatchGrid(reelTiles,  mapWidth, mapHeight);
 
 		Array<ReelTileGridValue> matchedSlots = puzzleGridTypeReelTile.matchGridSlots(puzzleGrid);
-		PuzzleGridTypeReelTile.printGrid(puzzleGrid);
 		Array<ReelTileGridValue> duplicateMatchedSlots = PuzzleGridTypeReelTile.findDuplicateMatches(matchedSlots);
-        PuzzleGridTypeReelTile.printMatchedSlots(duplicateMatchedSlots);
 
 		matchedSlots = PuzzleGridTypeReelTile.adjustMatchSlotDuplicates(matchedSlots, duplicateMatchedSlots);
 		matchedSlots = PuzzleGridTypeReelTile.removeDuplicateMatches(duplicateMatchedSlots, matchedSlots);
@@ -628,7 +630,6 @@ public class PlayScreen implements Screen, PlayInterface {
 		matchSlotIndex = 0;
 		numberOfReelsFlashing = matchedSlots.size;
         numberOfReelsToDelete = numberOfReelsFlashing;
-		PuzzleGridTypeReelTile.printMatchedSlots(matchedSlots);
 		while (matchedSlots.size > 0) {
 		    startedFlashing = true;
 			reelsAreFlashing = true;
