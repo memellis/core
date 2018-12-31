@@ -202,7 +202,6 @@ public class PixmapProcessors {
                                             glyph.srcY,
                                             glyph.width,
                                             glyph.height);
- 				savePixmap(verticalFontText);
  			}
 		}
 		return verticalFontText;
