@@ -43,7 +43,7 @@ public class PuzzleGridTypeReelTile {
             for(int c = 0; c < arraySizeC; c++) {
                 if(grid[r][c] == null) {
                     Gdx.app.debug(SlotPuzzleConstants.SLOT_PUZZLE, "Found null grid tile. r=" + r + " c= " + c + ". I will therefore create a deleted entry for the tile.");
-                    throw new GdxRuntimeException("Level incorrect. Found null grid tile. r=" + r + " c= " + c);
+//                    throw new GdxRuntimeException("Level incorrect. Found null grid tile. r=" + r + " c= " + c);
                 }
             }
         }

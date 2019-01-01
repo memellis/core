@@ -88,6 +88,7 @@ public class WorldScreen implements Screen {
     public static final char SPACE = ' ';
     public static final int ORTHO_VIEWPORT_WIDTH = 10;
     public static final int ORTHO_VIEWPORT_HEIGHT = 10;
+    public static final String LEVEL_DELIMETER = "-";
 
     private SlotPuzzle game;
 	private Viewport viewport;
@@ -291,17 +292,26 @@ public class WorldScreen implements Screen {
 
 	private void loadWorld() {
 		getMapProperties();
-		levelDoors = new Array<LevelDoor>();
+		levelDoors = new Array();
+        levelDoors.setSize(worldMap.getLayers().get(WORLD_MAP_LEVEL_DOORS).getObjects().getByType(RectangleMapObject.class).size);
 		for (MapObject mapObject : worldMap.getLayers().get(WORLD_MAP_LEVEL_DOORS).getObjects().getByType(RectangleMapObject.class)) {
 			LevelDoor levelDoor = new LevelDoor();
 			levelDoor.setLevelName(((RectangleMapObject) mapObject).getName());
 			levelDoor.setLevelType((String) ((RectangleMapObject) mapObject).getProperties().get("type"));
 			levelDoor.setDoorPosition(((RectangleMapObject) mapObject).getRectangle());
-			levelDoors.add(levelDoor);
+			int levelDoorIndex = getLevelIndex(levelDoor);
+			if (levelDoorIndex > levelDoors.size)
+			    levelDoors.setSize(levelDoorIndex);
+			levelDoors.set(getLevelIndex(levelDoor), levelDoor);
 		}
 	}
 
-	private void getMapProperties() {
+    private int getLevelIndex(LevelDoor levelDoor) {
+        String[] levelNumber = levelDoor.getLevelName().split(LEVEL_DELIMETER);
+        return Integer.parseInt(levelNumber[1]) - 1;
+    }
+
+    private void getMapProperties() {
 		MapProperties worldProps = worldMap.getProperties();
 		mapWidth = worldProps.get("width", Integer.class);
 		mapHeight = worldProps.get("height", Integer.class);
