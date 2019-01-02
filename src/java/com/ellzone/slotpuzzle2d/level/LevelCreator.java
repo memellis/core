@@ -119,9 +119,10 @@ class LevelCreator {
 public class LevelCreator {
 
     public static final String HIDDEN_PATTERN_LEVEL_TYPE = "HiddenPattern";
-    public static final String HIDDEN_PATTERN_LAYER_NAME = "Hidden Pattern Object";
     public static final String PLAYING_CARD_LEVEL_TYPE = "PlayingCard";
-    public static final String BONUS_LEVEL_TYPE = "BonusLevelType";
+    public static final String BONUS_LEVEL_TYPE = "Bonus";
+    public static final String MINI_SLOT_MACHINE_TYPE = "MiniSlotMachine";
+    public static final String HIDDEN_PATTERN_LAYER_NAME = "Hidden Pattern Object";
     public static final String REELS_LAYER_NAME = "Reels";
 
     private LevelDoor levelDoor;

@@ -218,7 +218,7 @@ public class PlayScreen implements Screen, PlayInterface {
             reelStoppedSound.play();
             reelsSpinning--;
 
-            if (playState == PlayScreen.PlayStates.PLAYING) {
+            if (playStateMachine.getStateMachine().getCurrentState() == PlayState.PLAY) {
                 if (reelsSpinning <= -1) {
                     if (levelDoor.getLevelType().equals(HIDDEN_PATTERN_LEVEL_TYPE)) {
                         if (testForHiddenPatternRevealed(reelTiles))
@@ -675,22 +675,25 @@ public class PlayScreen implements Screen, PlayInterface {
     private void renderMainGameElements() {
 		game.batch.begin();
 		renderHiddenPattern();
+		renderMiniSlotMachine();
 		renderReelTiles();
 		renderScore();
 		renderSpinHelper();
 		game.batch.end();
 	}
 
-	private void renderHud() {
+    private void renderHud() {
 		game.batch.setProjectionMatrix(hud.stage.getCamera().combined);
 		hud.stage.draw();
 	}
 
 	private void renderHiddenPattern() {
-		if (levelDoor.getLevelType().equals(PLAYING_CARD_LEVEL_TYPE)) {
+		if (levelDoor.getLevelType().equals(PLAYING_CARD_LEVEL_TYPE))
             drawPlayingCards(game.batch);
-        }
 	}
+
+    private void renderMiniSlotMachine() {
+    }
 
 	private void renderReelTiles() {
 		for (ReelTile reelTile : reelTiles)

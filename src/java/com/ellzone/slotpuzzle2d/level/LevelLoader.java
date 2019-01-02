@@ -25,6 +25,8 @@ import com.ellzone.slotpuzzle2d.utils.Random;
 import net.dermetfan.gdx.assets.AnnotationAssetManager;
 
 import static com.ellzone.slotpuzzle2d.level.LevelCreator.PLAYING_CARD_LEVEL_TYPE;
+import static com.ellzone.slotpuzzle2d.level.LevelCreator.MINI_SLOT_MACHINE_TYPE;
+
 import static com.ellzone.slotpuzzle2d.screens.PlayScreen.GAME_LEVEL_HEIGHT;
 import static com.ellzone.slotpuzzle2d.screens.PlayScreen.GAME_LEVEL_WIDTH;
 import static com.ellzone.slotpuzzle2d.screens.PlayScreen.SLOT_REEL_OBJECT_LAYER;
@@ -61,8 +63,10 @@ public class LevelLoader {
         else
             initialiseHiddenShape();
         addReelsFromLevel();
-        reelTiles = checkLevel(reelTiles, levelWidth, levelHeight);
-        reelTiles = adjustForAnyLonelyReels(reelTiles, levelWidth, levelHeight);
+        if (!levelDoor.getLevelType().equals(MINI_SLOT_MACHINE_TYPE)) {
+            reelTiles = checkLevel(reelTiles, levelWidth, levelHeight);
+            reelTiles = adjustForAnyLonelyReels(reelTiles, levelWidth, levelHeight);
+        }
         return reelTiles;
     }
 
