@@ -49,6 +49,7 @@ import com.ellzone.slotpuzzle2d.level.FlashSlots;
 import com.ellzone.slotpuzzle2d.level.HiddenPattern;
 import com.ellzone.slotpuzzle2d.level.HiddenPlayingCard;
 import com.ellzone.slotpuzzle2d.level.LevelCallBack;
+import com.ellzone.slotpuzzle2d.level.LevelCreator;
 import com.ellzone.slotpuzzle2d.level.LevelDoor;
 import com.ellzone.slotpuzzle2d.level.LevelLoader;
 import com.ellzone.slotpuzzle2d.level.PlayScreenIntroSequence;
@@ -73,6 +74,7 @@ import com.ellzone.slotpuzzle2d.tweenengine.TweenManager;
 import net.dermetfan.gdx.assets.AnnotationAssetManager;
 import aurelienribon.tweenengine.equations.Quad;
 
+import static com.ellzone.slotpuzzle2d.level.LevelCreator.PLAYING_CARD_LEVEL_TYPE;
 import static com.ellzone.slotpuzzle2d.scene.Hud.addScore;
 
 public class PlayScreen implements Screen, PlayInterface {
@@ -84,8 +86,6 @@ public class PlayScreen implements Screen, PlayInterface {
 	public static final float PUZZLE_GRID_START_X = 160.0f;
 	public static final float PUZZLE_GRID_START_Y = 40.0f;
     private static final String REELS_LAYER_NAME = "Reels";
-    private static final String PLAYING_CARD_LEVEL_TYPE = "PlayingCard";
-    private static final String HIDDEN_PATTERN_LEVEL_TYPE = "HiddenPattern";
 	private static final String SLOTPUZZLE_SCREEN = "PlayScreen";
     private LevelLoader levelLoader;
 	private PlayStateMachine playStateMachine;
@@ -178,9 +178,16 @@ public class PlayScreen implements Screen, PlayInterface {
     private void initialisePlayScreen() {
         random = new Random();
         renderer = new OrthogonalTiledMapRenderer(level);
-        animatedReelHelper = new AnimatedReelHelper(game.annotationAssetManager,
-                                                    tweenManager,
-                                                    level.getLayers().get(REELS_LAYER_NAME).getObjects().getByType(RectangleMapObject.class).size);
+        int numberOfReels = level.getLayers().get(REELS_LAYER_NAME).getObjects().getByType(RectangleMapObject.class).size;
+        if (levelDoor.getLevelType().equals(LevelCreator.MINI_SLOT_MACHINE_TYPE))
+            animatedReelHelper = new AnimatedReelHelper(game.annotationAssetManager,
+                                                        tweenManager,
+                                                        numberOfReels,
+                                         TILE_HEIGHT * 3);
+        else
+            animatedReelHelper = new AnimatedReelHelper(game.annotationAssetManager,
+                    tweenManager,
+                    numberOfReels);
         reelTiles = animatedReelHelper.getReelTiles();
         displaySpinHelp = false;
         scores = new Array<>();
@@ -220,11 +227,11 @@ public class PlayScreen implements Screen, PlayInterface {
 
             if (playStateMachine.getStateMachine().getCurrentState() == PlayState.PLAY) {
                 if (reelsSpinning <= -1) {
-                    if (levelDoor.getLevelType().equals(HIDDEN_PATTERN_LEVEL_TYPE)) {
+                    if (levelDoor.getLevelType().equals(LevelCreator.HIDDEN_PATTERN_LEVEL_TYPE)) {
                         if (testForHiddenPatternRevealed(reelTiles))
                             iWonTheLevel();
                     } else {
-                        if (levelDoor.getLevelType().equals(PLAYING_CARD_LEVEL_TYPE)) {
+                        if (levelDoor.getLevelType().equals(LevelCreator.PLAYING_CARD_LEVEL_TYPE)) {
                             if (testForHiddenPlayingCardsRevealed(reelTiles))
                                 iWonTheLevel();
                         }
@@ -365,10 +372,10 @@ public class PlayScreen implements Screen, PlayInterface {
         chaChingSound.play();
         reel.deleteReelTile();
         flashSlots.deleteAReel();
-        if (levelDoor.getLevelType().equals(PLAYING_CARD_LEVEL_TYPE))
+        if (levelDoor.getLevelType().equals(LevelCreator.PLAYING_CARD_LEVEL_TYPE))
             testPlayingCardLevelWon();
         else {
-            if (levelDoor.getLevelType().equals(HIDDEN_PATTERN_LEVEL_TYPE)) {
+            if (levelDoor.getLevelType().equals(LevelCreator.HIDDEN_PATTERN_LEVEL_TYPE)) {
                 testForHiddenPlatternLevelWon();
             }
         }

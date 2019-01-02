@@ -84,7 +84,7 @@ public class LevelLoader {
 
     private void addReelsFromLevel() {
         int index = 0;
-        for (MapObject mapObject : tiledMapLevel.getLayers().get(SLOT_REEL_OBJECT_LAYER).getObjects().getByType(RectangleMapObject.class)) {
+        for (MapObject mapObject : getReelsFromLevel()) {
             Rectangle mapRectangle = ((RectangleMapObject) mapObject).getRectangle();
             int c = (int) (mapRectangle.getX() - PlayScreen.PUZZLE_GRID_START_X) / PlayScreen.TILE_WIDTH;
             int r = (int) (mapRectangle.getY() - PlayScreen.PUZZLE_GRID_START_Y) / PlayScreen.TILE_HEIGHT;
@@ -96,6 +96,14 @@ public class LevelLoader {
                 Gdx.app.debug(SlotPuzzleConstants.SLOT_PUZZLE, "I don't respond to grid r="+r+" c="+c+". There it won't be added to the level! Sort it out in a level editor.");
             }
         }
+    }
+
+    private Array<MapObject> getReelsFromLevel() {
+        Array<MapObject> reelsFromLevel = new Array<>();
+        for (MapObject mapObject : tiledMapLevel.getLayers().get(SLOT_REEL_OBJECT_LAYER).getObjects().getByType(RectangleMapObject.class))
+            if (mapObject.getName().equalsIgnoreCase(LevelCreator.REELS_OBJECT_NAME))
+                reelsFromLevel.add(mapObject);
+        return reelsFromLevel;
     }
 
     private void initialiseHiddenPlayingCards() {

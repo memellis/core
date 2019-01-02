@@ -124,6 +124,9 @@ public class LevelCreator {
     public static final String MINI_SLOT_MACHINE_TYPE = "MiniSlotMachine";
     public static final String HIDDEN_PATTERN_LAYER_NAME = "Hidden Pattern Object";
     public static final String REELS_LAYER_NAME = "Reels";
+    public static final String REELS_OBJECT_NAME = "Reel";
+    public static final String LIGHT_BUTTON_OBJECT_NME = "Button";
+    public static final String SLOT_HANDLER_OBJECT_NAME = "Handle";
 
     private LevelDoor levelDoor;
     private TiledMap level;

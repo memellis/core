@@ -43,11 +43,20 @@ public class AnimatedReelHelper {
     private Texture slotReelScrollTexture;
     private Reels reels;
     private int spriteWidth, spriteHeight;
+    private int reelDisplayHeight = 0;
 
     public AnimatedReelHelper(AnnotationAssetManager annotationAssetManager, TweenManager tweenManager, int numberOfAnimatedReels) {
         this.annotationAssetManager = annotationAssetManager;
         this.tweenManager = tweenManager;
         this.numberOfAnimatedReels = numberOfAnimatedReels;
+        create(annotationAssetManager);
+    }
+
+    public AnimatedReelHelper(AnnotationAssetManager annotationAssetManager, TweenManager tweenManager, int numberOfAnimatedReels, int reelDisplayHeight) {
+        this.annotationAssetManager = annotationAssetManager;
+        this.tweenManager = tweenManager;
+        this.numberOfAnimatedReels = numberOfAnimatedReels;
+        this.reelDisplayHeight = reelDisplayHeight;
         create(annotationAssetManager);
     }
 
@@ -67,6 +76,8 @@ public class AnimatedReelHelper {
         reels = new Reels(annotationAssetManager);
         spriteWidth = reels.getReelWidth();
         spriteHeight = reels.getReelHeight();
+        if (reelDisplayHeight == 0)
+            reelDisplayHeight = spriteHeight;
     }
 
     private void initialiseReelSlots() {
@@ -75,7 +86,7 @@ public class AnimatedReelHelper {
         slotReelScrollPixmap = PixmapProcessors.createPixmapToAnimate(reels.getReels());
         slotReelScrollTexture = new Texture(slotReelScrollPixmap);
         for (int i = 0; i < numberOfAnimatedReels; i++) {
-            AnimatedReel animatedReel = new AnimatedReel(slotReelScrollTexture, 0, 0, spriteWidth, spriteHeight, spriteWidth, spriteHeight, 0, null, reelStoppingSound, tweenManager);
+            AnimatedReel animatedReel = new AnimatedReel(slotReelScrollTexture, 0, 0, spriteWidth, spriteHeight, spriteWidth, reelDisplayHeight, 0, null, reelStoppingSound, tweenManager);
             animatedReel.setSx(0);
             animatedReel.setEndReel(Random.getInstance().nextInt(reels.getReels().length - 1));
             animatedReel.getReel().startSpinning();
