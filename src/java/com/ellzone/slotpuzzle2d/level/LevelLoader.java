@@ -44,6 +44,7 @@ public class LevelLoader {
     private LevelCallBack stoppedSpinningCallback, stoppedFlashingCallback;
     private HiddenPattern hiddenPattern;
     private PuzzleGridTypeReelTile puzzleGridTypeReelTile;
+    private int reelsFromLevel;
 
     public LevelLoader(AnnotationAssetManager annotationAssetManager, LevelDoor levelDoor, MapTile mapTile, AnimatedReelHelper animatedReelHelper) {
         this.annotationAssetManager = annotationAssetManager;

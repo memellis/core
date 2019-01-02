@@ -26,6 +26,7 @@ import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
+import com.badlogic.gdx.maps.MapObject;
 import com.badlogic.gdx.maps.MapProperties;
 import com.badlogic.gdx.maps.objects.RectangleMapObject;
 import com.badlogic.gdx.maps.tiled.TiledMap;
@@ -116,6 +117,7 @@ public class PlayScreen implements Screen, PlayInterface {
  	private Sound chaChingSound, pullLeverSound, reelSpinningSound, reelStoppedSound;
     private boolean isLoaded = false;
     private Array<ReelTile> reelTiles;
+    private Array<MapObject> reelsFromLevel;
 	private AnimatedReelHelper animatedReelHelper;
 	private int reelsSpinning;
 	private TiledMap level;
@@ -178,16 +180,16 @@ public class PlayScreen implements Screen, PlayInterface {
     private void initialisePlayScreen() {
         random = new Random();
         renderer = new OrthogonalTiledMapRenderer(level);
-        int numberOfReels = level.getLayers().get(REELS_LAYER_NAME).getObjects().getByType(RectangleMapObject.class).size;
+        reelsFromLevel = getReelsFromLevel();
         if (levelDoor.getLevelType().equals(LevelCreator.MINI_SLOT_MACHINE_TYPE))
             animatedReelHelper = new AnimatedReelHelper(game.annotationAssetManager,
                                                         tweenManager,
-                                                        numberOfReels,
+                                                        reelsFromLevel.size,
                                          TILE_HEIGHT * 3);
         else
             animatedReelHelper = new AnimatedReelHelper(game.annotationAssetManager,
-                    tweenManager,
-                    numberOfReels);
+                                                        tweenManager,
+                                                        reelsFromLevel.size);
         reelTiles = animatedReelHelper.getReelTiles();
         displaySpinHelp = false;
         scores = new Array<>();
@@ -198,7 +200,17 @@ public class PlayScreen implements Screen, PlayInterface {
         playScreenPopUps.initialise();
     }
 
-    private void initialiseHud() {
+    // This is duplicated in LevelLoader need a way to remove the duplicate code
+	private Array<MapObject> getReelsFromLevel() {
+		Array<MapObject> reelsFromLevel = new Array<>();
+		for (MapObject mapObject : level.getLayers().get(SLOT_REEL_OBJECT_LAYER).getObjects().getByType(RectangleMapObject.class))
+			if (mapObject.getName().equalsIgnoreCase(LevelCreator.REELS_OBJECT_NAME))
+				reelsFromLevel.add(mapObject);
+		return reelsFromLevel;
+	}
+
+
+	private void initialiseHud() {
         hud = new Hud(game.batch);
         hud.setLevelName(levelDoor.getLevelName());
     }
