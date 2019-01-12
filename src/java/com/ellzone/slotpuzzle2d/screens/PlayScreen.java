@@ -200,7 +200,7 @@ public class PlayScreen implements Screen, PlayInterface {
         playScreenPopUps.initialise();
     }
 
-    // This is duplicated in LevelLoader need a way to remove the duplicate code
+    // This is duplicated in LevelLoader need a way to remove the duplicate code - maybe put in a utility class
 	private Array<MapObject> getReelsFromLevel() {
 		Array<MapObject> reelsFromLevel = new Array<>();
 		for (MapObject mapObject : level.getLayers().get(SLOT_REEL_OBJECT_LAYER).getObjects().getByType(RectangleMapObject.class))

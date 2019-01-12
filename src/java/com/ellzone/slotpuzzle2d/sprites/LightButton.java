@@ -27,6 +27,8 @@ import com.ellzone.slotpuzzle2d.utils.PixmapProcessors;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 
 public class LightButton {
+	private static final float PIXELS_PER_METER = 100;
+
 	private Sprite lightButtonSprite;
  	private World world;
 	private RayHandler rayHandler;
@@ -39,7 +41,6 @@ public class LightButton {
     private String buttonTextUsingFrameBuffer;
 	private Color buttonColorBorder, buttonColorTop, buttonLightColor;
 
-	
 	public LightButton(World world, RayHandler rayHandler, float positionX, float positionY, int buttonWidth, int buttonHeight) {
 		this.world = world;
 		this.rayHandler = rayHandler;
@@ -48,6 +49,16 @@ public class LightButton {
 		this.buttonWidth = buttonWidth;
 		this.buttonHeight = buttonHeight;
 		initialiseLightButton();
+	}
+
+	public LightButton(World world, RayHandler rayHandler, float positionX, float positionY, int buttonWidth, int buttonHeight, boolean pixelsPerMeter) {
+		this.world = world;
+		this.rayHandler = rayHandler;
+		this.positionX = positionX;
+		this.positionY = positionY;
+		this.buttonWidth = buttonWidth;
+		this.buttonHeight = buttonHeight;
+		initialiseLightButton(pixelsPerMeter);
 	}
 	
 	public LightButton(World world, RayHandler rayHandler, float positionX, float positionY, int buttonWidth, int buttonHeight, BitmapFont buttonFont, String buttonText) {
@@ -75,6 +86,21 @@ public class LightButton {
         initialiseLightButton();
     }
 
+	public LightButton(World world, RayHandler rayHandler, float positionX, float positionY,
+					   int buttonWidth, int buttonHeight, BitmapFont buttonFont, String buttonText,
+					   String buttonTextUsingFrameBuffer, boolean pixelsPerMeter) {
+		this.world = world;
+		this.rayHandler = rayHandler;
+		this.positionX = positionX;
+		this.positionY = positionY;
+		this.buttonWidth = buttonWidth;
+		this.buttonHeight = buttonHeight;
+		this.buttonFont = buttonFont;
+		this.buttonText = buttonText;
+		this.buttonTextUsingFrameBuffer = buttonTextUsingFrameBuffer;
+		initialiseLightButton(pixelsPerMeter);
+	}
+
 	public LightButton(World world, RayHandler rayHandler, float positionX, float positionY, int buttonWidth, int buttonHeight, BitmapFont buttonFont, String buttonText, String buttonTextUsingFrameBuffer, int buttonTextX, int buttonTextY) {
 		this.world = world;
 		this.rayHandler = rayHandler;
@@ -101,6 +127,25 @@ public class LightButton {
 		lightButtonSprite = new Sprite(createButton());
 		lightButtonSprite.setPosition(positionX, positionY);
 		lightButtonSprite.setSize(buttonWidth, buttonHeight);
+	}
+
+	private void initialiseLightButton(boolean pixelPerMeter) {
+		if (pixelPerMeter)
+			initialiseLightButton();
+		else {
+			light = new PointLight(rayHandler, 32);
+			light.setActive(false);
+			light.setColor(Color.RED);
+			light.setDistance(0.4f);
+			positionX = positionX / PIXELS_PER_METER;
+			positionY = positionY / PIXELS_PER_METER;
+			float lightButtonCentreX = positionX + (float) buttonWidth / (2 * PIXELS_PER_METER);
+			float lightButtonCentreY = positionY + (float) buttonHeight / (2 * PIXELS_PER_METER);
+			light.setPosition(lightButtonCentreX, lightButtonCentreY);
+			lightButtonSprite = new Sprite(createButton());
+			lightButtonSprite.setPosition(positionX, positionY);
+			lightButtonSprite.setSize(buttonWidth / PIXELS_PER_METER, buttonHeight / PIXELS_PER_METER);
+		}
 	}
 	
 	private Texture createButton() {
