@@ -27,46 +27,66 @@ public class LevelObjectCreator {
         HoldLightButton holdLightButton = null;
         for (RectangleMapObject rectangleMapObject : levelRectangleMapObjects) {
             MapProperties rectangleMapObjectProperties = rectangleMapObject.getProperties();
-            String className = (String) rectangleMapObjectProperties.get("Class");
-            System.out.println(String.format("creating className: %s", className));
-            Class<?> clazz = null;
-            try {
-                clazz = Class.forName(className);
-            } catch (ClassNotFoundException cnfe) {
-                System.out.println(String.format("Class not found %s.", clazz));
-            }
+            Class<?> clazz = getClass(rectangleMapObjectProperties);
             Array<String> constructorParameters = getClassConstructorParameters(rectangleMapObjectProperties, "Parameter");
             Class<?>[] classParameters = getParamTypes(constructorParameters);
 
-            Constructor<?> constructor = null;
-            try {
-                constructor = clazz.getConstructor(classParameters);
-            } catch (NoSuchMethodException nsme) {
-                System.out.println(String.format("No such constructor exception %s",
-                        nsme.getMessage()));
-
-            }
+            Constructor<?> constructor = getConstructor(clazz, classParameters);
             Array<String> constructorParameterValues = getClassConstructorParameters(rectangleMapObjectProperties, "ParameterValue");
-            Object[] constructorParanetersValues = null;
-            holdLightButton = null;
-            try {
-                constructorParanetersValues =  parseConstructorParameterValues(constructorParameterValues, classParameters, rectangleMapObjectProperties);
-                holdLightButton =  (HoldLightButton) constructor.newInstance(constructorParanetersValues);
-            } catch (Exception ex) {
-                System.out.println(ex.getMessage());
-            }
+            holdLightButton = getHoldLightButton(rectangleMapObjectProperties, classParameters, constructor, constructorParameterValues);
 
-            if (holdLightButton != null) {
-                Field field = null;
-                try {
-                    field = this.getClass().getDeclaredField("lightButtons");
-                } catch (NoSuchFieldException e) {
-                    e.printStackTrace();
-                }
-                field.setAccessible(true);
-                holdLightButton.addTo(field.get(this));
-            }
+            addToLightButtons(holdLightButton);
         }
+    }
+
+    private void addToLightButtons(HoldLightButton holdLightButton) throws IllegalAccessException {
+        if (holdLightButton != null) {
+            Field field = null;
+            try {
+                field = this.getClass().getDeclaredField("lightButtons");
+            } catch (NoSuchFieldException e) {
+                e.printStackTrace();
+            }
+            field.setAccessible(true);
+            holdLightButton.addTo(field.get(this));
+        }
+    }
+
+    private HoldLightButton getHoldLightButton(MapProperties rectangleMapObjectProperties, Class<?>[] classParameters, Constructor<?> constructor, Array<String> constructorParameterValues) {
+        HoldLightButton holdLightButton;
+        Object[] constructorParanetersValues = null;
+        holdLightButton = null;
+        try {
+            constructorParanetersValues =  parseConstructorParameterValues(constructorParameterValues, classParameters, rectangleMapObjectProperties);
+            holdLightButton =  (HoldLightButton) constructor.newInstance(constructorParanetersValues);
+        } catch (Exception ex) {
+            System.out.println(ex.getMessage());
+        }
+        return holdLightButton;
+    }
+
+    private Constructor<?> getConstructor(Class<?> clazz, Class<?>[] classParameters) {
+        Constructor<?> constructor = null;
+        try {
+            constructor = clazz.getConstructor(classParameters);
+        } catch (NoSuchMethodException nsme) {
+            System.out.println(String.format("No such constructor exception %s",
+                    nsme.getMessage()));
+
+        }
+        return constructor;
+    }
+
+    private Class<?> getClass(MapProperties rectangleMapObjectProperties) {
+        String className = (String) rectangleMapObjectProperties.get("Class");
+        System.out.println(String.format("creating className: %s", className));
+        Class<?> clazz = null;
+        try {
+            clazz = Class.forName(className);
+        } catch (ClassNotFoundException cnfe) {
+            System.out.println(String.format("Class not found %s.", clazz));
+        }
+        return clazz;
     }
 
     private Object[] parseConstructorParameterValues(Array<String> constructorParameterValues, Class<?>[] classParameters, MapProperties rectangleMapProperties) throws NoSuchFieldException, IllegalAccessException {
