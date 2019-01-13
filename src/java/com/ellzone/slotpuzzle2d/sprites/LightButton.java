@@ -35,7 +35,7 @@ public class LightButton {
 	private PointLight light;
 	private float positionX, positionY;
 	private int buttonWidth, buttonHeight;
-	private int buttonTextX = 1, buttonTextY = 20;
+	private int buttonTextX, buttonTextY;
 	private BitmapFont buttonFont;
 	private String buttonText;
     private String buttonTextUsingFrameBuffer;
@@ -48,7 +48,13 @@ public class LightButton {
 		this.positionY = positionY;
 		this.buttonWidth = buttonWidth;
 		this.buttonHeight = buttonHeight;
+		initialiseButtonTextPosition();
 		initialiseLightButton();
+	}
+
+	private void initialiseButtonTextPosition() {
+		buttonTextX = 5;
+		buttonTextY = buttonHeight / 2 + 7;
 	}
 
 	public LightButton(World world, RayHandler rayHandler, float positionX, float positionY, int buttonWidth, int buttonHeight, boolean pixelsPerMeter) {
@@ -58,6 +64,7 @@ public class LightButton {
 		this.positionY = positionY;
 		this.buttonWidth = buttonWidth;
 		this.buttonHeight = buttonHeight;
+		initialiseButtonTextPosition();
 		initialiseLightButton(pixelsPerMeter);
 	}
 	
@@ -70,6 +77,7 @@ public class LightButton {
 		this.buttonHeight = buttonHeight;
 		this.buttonFont = buttonFont;
 		this.buttonText = buttonText;
+		initialiseButtonTextPosition();
 		initialiseLightButton();
 	}
 
@@ -83,6 +91,7 @@ public class LightButton {
         this.buttonFont = buttonFont;
         this.buttonText = buttonText;
         this.buttonTextUsingFrameBuffer = buttonTextUsingFrameBuffer;
+		initialiseButtonTextPosition();
         initialiseLightButton();
     }
 
@@ -98,6 +107,7 @@ public class LightButton {
 		this.buttonFont = buttonFont;
 		this.buttonText = buttonText;
 		this.buttonTextUsingFrameBuffer = buttonTextUsingFrameBuffer;
+		initialiseButtonTextPosition();
 		initialiseLightButton(pixelsPerMeter);
 	}
 
@@ -113,6 +123,7 @@ public class LightButton {
 		this.buttonTextUsingFrameBuffer = buttonTextUsingFrameBuffer;
 		this.buttonTextX = buttonTextX;
 		this.buttonTextY = buttonTextY;
+		initialiseButtonTextPosition();
 		initialiseLightButton();
 	}
 
