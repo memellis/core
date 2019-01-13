@@ -23,6 +23,7 @@ import com.badlogic.gdx.utils.viewport.Viewport;
 import com.ellzone.slotpuzzle2d.SlotPuzzleConstants;
 import com.ellzone.slotpuzzle2d.effects.ReelAccessor;
 import com.ellzone.slotpuzzle2d.effects.SpriteAccessor;
+import com.ellzone.slotpuzzle2d.level.LevelObjectCreator;
 import com.ellzone.slotpuzzle2d.physics.DampenedSineParticle;
 import com.ellzone.slotpuzzle2d.prototypes.SPPrototypeTemplate;
 import com.ellzone.slotpuzzle2d.puzzlegrid.PuzzleGridTypeReelTile;
@@ -106,10 +107,12 @@ public class SpinningSlotsWithMatchesWinFlashesLoadedLevel extends SPPrototypeTe
     }
 
     private void loadlevel() {
+        LevelObjectCreator levelObjectCreator = new LevelObjectCreator(world, rayHandler);
         TiledMap level = getLevelAssets(annotationAssetManager);
         Array<RectangleMapObject> extractedLevelRectangleMapObjects = extractLevelAssets(level);
         try {
-            createLevel(extractedLevelRectangleMapObjects);
+            levelObjectCreator.createLevel(extractedLevelRectangleMapObjects);
+            lightButtons = levelObjectCreator.lightButtons;
         } catch (IllegalAccessException e) {
             e.printStackTrace();
         }
@@ -126,8 +129,6 @@ public class SpinningSlotsWithMatchesWinFlashesLoadedLevel extends SPPrototypeTe
                 0);
         lightViewport.getCamera().update();
         hudViewport = new FitViewport(SlotPuzzleConstants.V_WIDTH, SlotPuzzleConstants.V_HEIGHT, new OrthographicCamera());
-
-
 
         PointLight reelLight = new PointLight(rayHandler, 32);
         reelLight.setActive(true);
@@ -149,13 +150,6 @@ public class SpinningSlotsWithMatchesWinFlashesLoadedLevel extends SPPrototypeTe
         reelHelperLight.setColor(Color.RED);
         reelHelperLight.setDistance(1.0f);
         reelHelperLight.setPosition(48 / PIXELS_PER_METER,  (sprites[0].getY() + 16) / PIXELS_PER_METER);
-
-//        for (int i = 0; i < 3; i++) {
-//            LightButton lightButton = new LightButton(world, rayHandler, i * 32 / PIXELS_PER_METER + SlotPuzzleConstants.V_WIDTH / (PIXELS_PER_METER * 2) - (3 * 32 / PIXELS_PER_METER) / 2, SlotPuzzleConstants.V_HEIGHT / (PIXELS_PER_METER * 4), 32, 32, new BitmapFont(), "", "Hold");
-//            lightButton.getSprite().setSize(32 / PIXELS_PER_METER, 32 / PIXELS_PER_METER);
-//            lightButtons.add(lightButton);
-//        }
-//        lightButtons.add(myLightButton);
 
         levelLights = new Array<>();
         levelLights.add(createLevelLight((int) slotHandleSpriteCenterX, 300));
