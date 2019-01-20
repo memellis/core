@@ -8,12 +8,15 @@ import com.ellzone.slotpuzzle2d.sprites.HoldLightButton;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.Map;
 
 import box2dLight.RayHandler;
 
 public class LevelObjectCreator {
+    public static final String ADD_TO = "addTo";
     public Array<HoldLightButton> lightButtons = new Array<>();
     private World world;
     private RayHandler rayHandler;
@@ -24,7 +27,7 @@ public class LevelObjectCreator {
     };
 
     public void createLevel(Array<RectangleMapObject> levelRectangleMapObjects) throws IllegalAccessException {
-        HoldLightButton holdLightButton = null;
+        Object createdObject = null;
         for (RectangleMapObject rectangleMapObject : levelRectangleMapObjects) {
             MapProperties rectangleMapObjectProperties = rectangleMapObject.getProperties();
             Class<?> clazz = getClass(rectangleMapObjectProperties);
@@ -33,36 +36,62 @@ public class LevelObjectCreator {
 
             Constructor<?> constructor = getConstructor(clazz, classParameters);
             Array<String> constructorParameterValues = getClassConstructorParameters(rectangleMapObjectProperties, "ParameterValue");
-            holdLightButton = getHoldLightButton(rectangleMapObjectProperties, classParameters, constructor, constructorParameterValues);
-
-            addToLightButtons(holdLightButton);
+            try {
+                createdObject = getCreatedObject(rectangleMapObjectProperties, classParameters, constructor, constructorParameterValues);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            addToField(createdObject, rectangleMapObjectProperties);
         }
     }
 
-    private void addToLightButtons(HoldLightButton holdLightButton) throws IllegalAccessException {
-        if (holdLightButton != null) {
+    public void addTo(HoldLightButton holdLightButton) {
+        lightButtons.add(holdLightButton);
+    }
+
+    private void addToField(Object createdObject, MapProperties rectangleMapProperties) throws IllegalAccessException {
+        if (createdObject != null) {
             Field field = null;
             try {
-                field = this.getClass().getDeclaredField("lightButtons");
+                String addToFieldMethodName = (String) rectangleMapProperties.get("addToField");
+                if (addToFieldMethodName != null)
+                    field = this.getClass().getDeclaredField(addToFieldMethodName);
             } catch (NoSuchFieldException e) {
                 e.printStackTrace();
             }
-            field.setAccessible(true);
-            holdLightButton.addTo(field.get(this));
+            if (field != null) {
+                field.setAccessible(true);
+                invokeAddToMethod(createdObject);
+            }
         }
     }
 
-    private HoldLightButton getHoldLightButton(MapProperties rectangleMapObjectProperties, Class<?>[] classParameters, Constructor<?> constructor, Array<String> constructorParameterValues) {
-        HoldLightButton holdLightButton;
-        Object[] constructorParanetersValues = null;
-        holdLightButton = null;
+    private void invokeAddToMethod(Object createdObject) {
         try {
-            constructorParanetersValues =  parseConstructorParameterValues(constructorParameterValues, classParameters, rectangleMapObjectProperties);
-            holdLightButton =  (HoldLightButton) constructor.newInstance(constructorParanetersValues);
-        } catch (Exception ex) {
-            System.out.println(ex.getMessage());
+            Method method = this.getClass().getDeclaredMethod(ADD_TO, HoldLightButton.class);
+            method.invoke(this, (HoldLightButton) createdObject);
+        } catch (NoSuchMethodException e) {
+            e.printStackTrace();
+        } catch (IllegalAccessException e) {
+            e.printStackTrace();
+        } catch (InvocationTargetException e) {
+            e.printStackTrace();
         }
-        return holdLightButton;
+    }
+
+    private Object getCreatedObject(MapProperties rectangleMapproperties,
+                                    Class<?>[] classParameters,
+                                    Constructor<?> constructor,
+                                    Array<String> constructorParameterValues)
+                                    throws
+                                    NoSuchFieldException,
+                                    IllegalAccessException,
+                                    InvocationTargetException,
+                                    InstantiationException,
+                                    NoSuchMethodException {
+        Object[] constructorParametersValues = parseConstructorParameterValues(
+                constructorParameterValues, classParameters, rectangleMapproperties);
+        return  constructor == null ? null : constructor.newInstance(constructorParametersValues);
     }
 
     private Constructor<?> getConstructor(Class<?> clazz, Class<?>[] classParameters) {
@@ -72,7 +101,6 @@ public class LevelObjectCreator {
         } catch (NoSuchMethodException nsme) {
             System.out.println(String.format("No such constructor exception %s",
                     nsme.getMessage()));
-
         }
         return constructor;
     }
@@ -89,7 +117,7 @@ public class LevelObjectCreator {
         return clazz;
     }
 
-    private Object[] parseConstructorParameterValues(Array<String> constructorParameterValues, Class<?>[] classParameters, MapProperties rectangleMapProperties) throws NoSuchFieldException, IllegalAccessException {
+    private Object[] parseConstructorParameterValues(Array<String> constructorParameterValues, Class<?>[] classParameters, MapProperties rectangleMapProperties) throws NoSuchFieldException, IllegalAccessException, NoSuchMethodException, InvocationTargetException {
         Object[] parameterValues = new Object[constructorParameterValues.size];
         int index = 0;
         for (String parameter : constructorParameterValues) {
@@ -99,9 +127,13 @@ public class LevelObjectCreator {
         return parameterValues;
     }
 
-    private Object parseParameterValue(String parameter, Class<?> classParam, MapProperties rectangleMapProperties) throws NoSuchFieldException, IllegalAccessException {
+    private Object parseParameterValue(String parameter, Class<?> classParam, MapProperties rectangleMapProperties) throws NoSuchFieldException, IllegalAccessException, NoSuchMethodException, InvocationTargetException {
         if (parameter.toLowerCase().startsWith("field"))
             return parseField(parameter, classParam);
+        if (parameter.toLowerCase().startsWith("classfield"))
+            return parseClassField(parameter, classParam);
+        if (parameter.toLowerCase().startsWith("method"))
+            return parseMethod(parameter, classParam);
         if (parameter.toLowerCase().startsWith("property"))
             return parseProperty(parameter, classParam, rectangleMapProperties);
         return null;
@@ -112,6 +144,20 @@ public class LevelObjectCreator {
         String fieldPart = parts.length == 2 ? parts[1] : null;
         Field field = this.getClass().getDeclaredField(fieldPart);
         return field.get(this);
+    }
+
+    private Object parseClassField(String parameter, Class<?> classParam) {
+        String[] parts = parameter.split("\\.");
+        return null;
+    }
+
+    private Object parseMethod(String parameter, Class<?> classParam)
+        throws
+            NoSuchMethodException, InvocationTargetException, IllegalAccessException {
+        String[] parts = parameter.split("\\.");
+        String methodPart = parts.length == 2 ? parts[1] : null;
+        Method method = this.getClass().getDeclaredMethod(methodPart);
+        return method.invoke(this);
     }
 
     private Object parseProperty(String parameter, Class<?> classParam, MapProperties rectangleMapProperties) {
@@ -168,5 +214,4 @@ public class LevelObjectCreator {
         }
         return classParameters;
     }
-
 }
