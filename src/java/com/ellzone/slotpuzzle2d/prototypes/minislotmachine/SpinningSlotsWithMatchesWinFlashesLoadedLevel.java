@@ -6,11 +6,9 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
-import com.badlogic.gdx.maps.MapProperties;
 import com.badlogic.gdx.maps.objects.RectangleMapObject;
 import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.math.Rectangle;
@@ -23,6 +21,7 @@ import com.badlogic.gdx.utils.viewport.Viewport;
 import com.ellzone.slotpuzzle2d.SlotPuzzleConstants;
 import com.ellzone.slotpuzzle2d.effects.ReelAccessor;
 import com.ellzone.slotpuzzle2d.effects.SpriteAccessor;
+import com.ellzone.slotpuzzle2d.level.LevelCreatorInjectionInterface;
 import com.ellzone.slotpuzzle2d.level.LevelObjectCreator;
 import com.ellzone.slotpuzzle2d.physics.DampenedSineParticle;
 import com.ellzone.slotpuzzle2d.prototypes.SPPrototypeTemplate;
@@ -35,19 +34,17 @@ import com.ellzone.slotpuzzle2d.sprites.ReelStoppedSpinningEvent;
 import com.ellzone.slotpuzzle2d.sprites.ReelTile;
 import com.ellzone.slotpuzzle2d.sprites.ReelTileEvent;
 import com.ellzone.slotpuzzle2d.sprites.ReelTileListener;
+import com.ellzone.slotpuzzle2d.sprites.Reels;
 import com.ellzone.slotpuzzle2d.sprites.SlotHandleSprite;
 import com.ellzone.slotpuzzle2d.tweenengine.SlotPuzzleTween;
 import com.ellzone.slotpuzzle2d.tweenengine.Timeline;
+import com.ellzone.slotpuzzle2d.tweenengine.TweenManager;
 import com.ellzone.slotpuzzle2d.utils.AssetsAnnotation;
 import com.ellzone.slotpuzzle2d.utils.PixmapProcessors;
 
 import net.dermetfan.gdx.assets.AnnotationAssetManager;
 
-import java.lang.reflect.Constructor;
-import java.lang.reflect.Field;
 import java.util.Comparator;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Random;
 
 import aurelienribon.tweenengine.equations.Back;
@@ -59,7 +56,9 @@ import box2dLight.RayHandler;
 
 import static com.ellzone.slotpuzzle2d.prototypes.screens.PlayScreenPrototype.SLOT_REEL_OBJECT_LAYER;
 
-public class SpinningSlotsWithMatchesWinFlashesLoadedLevel extends SPPrototypeTemplate {
+public class SpinningSlotsWithMatchesWinFlashesLoadedLevel
+       extends SPPrototypeTemplate
+       implements LevelCreatorInjectionInterface {
     private Random random;
     private Array<AnimatedReel> reels;
     private Sound pullLeverSound, reelSpinningSound, reelStoppingSound;
@@ -79,6 +78,27 @@ public class SpinningSlotsWithMatchesWinFlashesLoadedLevel extends SPPrototypeTe
     private int levelLightX, levelLightY;
     private Array<Array<Vector2>> rowMacthesToDraw;
     private ShapeRenderer shapeRenderer;
+    private Texture slotReelScrollTexture;
+
+    @Override
+    public AnnotationAssetManager getAnnotationAssetManager() {
+        return annotationAssetManager;
+    }
+
+    @Override
+    public Reels getReels() {
+        return super.reels;
+    }
+
+    @Override
+    public Texture getSlotReelScrollTexture() {
+        return slotReelScrollTexture;
+    }
+
+    @Override
+    public TweenManager getTweenManager() {
+        return tweenManager;
+    }
 
     public class MapLevelNameComparator implements Comparator<RectangleMapObject> {
         @Override
@@ -87,35 +107,45 @@ public class SpinningSlotsWithMatchesWinFlashesLoadedLevel extends SPPrototypeTe
         }
     }
 
+    public Texture getlotReelScrollTexture() {
+        return slotReelScrollTexture;
+    }
+
     @Override
     protected void initialiseOverride() {
         touch = new Vector2();
         shapeRenderer = new ShapeRenderer();
         rowMacthesToDraw = new Array<Array<Vector2>>();
         initialiseWorld();
+        random = new Random();
+        Pixmap slotReelScrollPixmap = PixmapProcessors.createPixmapToAnimate(sprites);
+        slotReelScrollTexture = new Texture(slotReelScrollPixmap);
+        slotHandleSprite = new SlotHandleSprite(slotHandleAtlas, tweenManager);
         loadlevel();
         createHoldButtons();
-    }
+        createIntroSequence();
+   }
 
     private void initialiseWorld() {
         world = new World(new Vector2(0, -9.8f), true);
         debugRenderer = new Box2DDebugRenderer();
-
         rayHandler = new RayHandler(world);
         rayHandler.useDiffuseLight(true);
         rayHandler.setAmbientLight(0.2f, 0.2f, 0.2f, 0.25f);
     }
 
     private void loadlevel() {
-        LevelObjectCreator levelObjectCreator = new LevelObjectCreator(world, rayHandler);
+        LevelObjectCreator levelObjectCreator = new LevelObjectCreator(this, world, rayHandler);
         TiledMap level = getLevelAssets(annotationAssetManager);
         Array<RectangleMapObject> extractedLevelRectangleMapObjects = extractLevelAssets(level);
         try {
             levelObjectCreator.createLevel(extractedLevelRectangleMapObjects);
-            lightButtons = levelObjectCreator.lightButtons;
+            lightButtons = levelObjectCreator.getHoldLightButtons();
+            reels = levelObjectCreator.getAnimatedReels();
         } catch (IllegalAccessException e) {
             e.printStackTrace();
         }
+        initialiseReels();
     }
 
     @Override
@@ -186,18 +216,6 @@ public class SpinningSlotsWithMatchesWinFlashesLoadedLevel extends SPPrototypeTe
 
     private Array<RectangleMapObject> getRectangleMapObjectsFromLevel(TiledMap level) {
         return level.getLayers().get(SLOT_REEL_OBJECT_LAYER).getObjects().getByType(RectangleMapObject.class);
-    }
-
-    Map<String,Class> builtInMap = new HashMap<String,Class>();{
-        builtInMap.put("int", Integer.TYPE );
-        builtInMap.put("long", Long.TYPE );
-        builtInMap.put("double", Double.TYPE );
-        builtInMap.put("float", Float.TYPE );
-        builtInMap.put("bool", Boolean.TYPE );
-        builtInMap.put("char", Character.TYPE );
-        builtInMap.put("byte", Byte.TYPE );
-        builtInMap.put("void", Void.TYPE );
-        builtInMap.put("short", Short.TYPE );
     }
 
     @Override
@@ -281,31 +299,17 @@ public class SpinningSlotsWithMatchesWinFlashesLoadedLevel extends SPPrototypeTe
     protected void initialiseUniversalTweenEngineOverride() {
         SlotPuzzleTween.registerAccessor(ReelTile.class, new ReelAccessor());
         SlotPuzzleTween.registerAccessor(Sprite.class, new SpriteAccessor());
-        initialiseReelSlots();
-        createIntroSequence();
-        slotHandleSprite = new SlotHandleSprite(slotHandleAtlas, tweenManager);
     }
 
-    private void initialiseReelSlots() {
-        random = new Random();
-        reels = new Array<>();
-        Pixmap slotReelScrollPixmap = PixmapProcessors.createPixmapToAnimate(sprites);
-        Texture slotReelScrollTexture = new Texture(slotReelScrollPixmap);
-        for (int i = 0; i < 3; i++) {
-            addReel(slotReelScrollTexture, i);
-        }
+    private void initialiseReels() {
+        for (AnimatedReel reel : reels)
+            addReelStoppedListener(reel);
     }
 
-    private void addReel(Texture slotReelScrollTexture, int i) {
-        AnimatedReel animatedReel = new AnimatedReel(slotReelScrollTexture, 0, 0, spriteWidth, spriteHeight, spriteWidth, spriteHeight * 3, 0, reelSpinningSound, reelStoppingSound, tweenManager);
-        animatedReel.setX(i * spriteWidth + displayWindowWidth / 2);
-        animatedReel.setY((displayWindowHeight + 3 * spriteHeight) / 2);
-        animatedReel.setSx(0);
-        animatedReel.setEndReel(random.nextInt(sprites.length - 1));
-        animatedReel.getReel().addListener(new ReelStoppedListener().invoke());
-        reels.add(animatedReel);
+    private void addReelStoppedListener(AnimatedReel reel) {
+        reel.getReel().addListener(new ReelStoppedListener().invoke());
     }
-
+    
     private void createIntroSequence() {
         Timeline introSequence = Timeline.createParallel();
         for(int i=0; i < reels.size; i++) {
