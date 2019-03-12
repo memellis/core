@@ -1,6 +1,7 @@
 package com.ellzone.slotpuzzle2d.level;
 
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.ellzone.slotpuzzle2d.sprites.Reels;
 import com.ellzone.slotpuzzle2d.tweenengine.TweenManager;
 
@@ -11,4 +12,5 @@ public interface LevelCreatorInjectionInterface {
     public Reels getReels();
     public Texture getSlotReelScrollTexture();
     public TweenManager getTweenManager();
+    public TextureAtlas getSlothandleAtlas();
 }

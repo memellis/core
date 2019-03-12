@@ -2,13 +2,16 @@ package com.ellzone.slotpuzzle2d.level;
 
 import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.maps.MapProperties;
 import com.badlogic.gdx.maps.objects.RectangleMapObject;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.utils.Array;
+import com.ellzone.slotpuzzle2d.sprites.AnimatedHandle;
 import com.ellzone.slotpuzzle2d.sprites.AnimatedReel;
 import com.ellzone.slotpuzzle2d.sprites.HoldLightButton;
 import com.ellzone.slotpuzzle2d.sprites.Reels;
+import com.ellzone.slotpuzzle2d.sprites.SlotHandleSprite;
 import com.ellzone.slotpuzzle2d.tweenengine.TweenManager;
 import com.ellzone.slotpuzzle2d.utils.AssetsAnnotation;
 
@@ -27,6 +30,7 @@ public class LevelObjectCreator {
     public static final String ADD_TO = "addTo";
     private Array<HoldLightButton> lightButtons = new Array<>();
     private Array<AnimatedReel> reels = new Array<>();
+    private SlotHandleSprite handle;
     private LevelCreatorInjectionInterface levelCreatorInjectionInterface;
     private World world;
     private RayHandler rayHandler;
@@ -69,6 +73,8 @@ public class LevelObjectCreator {
         return levelCreatorInjectionInterface.getReels();
     }
 
+    public SlotHandleSprite getHandle() { return handle; }
+
     public AnnotationAssetManager annotationAssetManager() {
         return levelCreatorInjectionInterface.getAnnotationAssetManager();
     }
@@ -91,6 +97,10 @@ public class LevelObjectCreator {
         return levelCreatorInjectionInterface.getTweenManager();
     }
 
+    public TextureAtlas getSlotHandleAtlas() {
+        return levelCreatorInjectionInterface.getSlothandleAtlas();
+    }
+
     public void addTo(HoldLightButton objectToBeAdded) {
         lightButtons.add(objectToBeAdded);
     }
@@ -98,6 +108,8 @@ public class LevelObjectCreator {
     public void addTo(AnimatedReel reel) {
         reels.add(reel);
     }
+
+    public void addTo(SlotHandleSprite handle) { this.handle = handle; }
 
     private void invokeAddToMethod(Object createdObject) {
         try {

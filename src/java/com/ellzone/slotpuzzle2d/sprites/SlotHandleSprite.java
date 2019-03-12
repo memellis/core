@@ -42,6 +42,12 @@ public class SlotHandleSprite {
         this.tweenManager = tweenManager;
 		defineSlotHandleSprite();
 	}
+
+	public SlotHandleSprite(TextureAtlas slotHandleAtlas, TweenManager tweenManager, float xPosition, float yPosition) {
+	    this(slotHandleAtlas, tweenManager);
+	    slotHandle.setPosition(xPosition, yPosition);
+	    slotHandleBase.setPosition(xPosition, yPosition - 20);
+    }
 	
 	private void defineSlotHandleSprite() {
 		slotHandle = slotHandleAtlas.createSprite("slot_handle");

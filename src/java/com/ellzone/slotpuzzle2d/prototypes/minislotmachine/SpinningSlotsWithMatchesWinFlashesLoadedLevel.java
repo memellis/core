@@ -100,6 +100,11 @@ public class SpinningSlotsWithMatchesWinFlashesLoadedLevel
         return tweenManager;
     }
 
+    @Override
+    public TextureAtlas getSlothandleAtlas() {
+        return slotHandleAtlas;
+    }
+
     public class MapLevelNameComparator implements Comparator<RectangleMapObject> {
         @Override
         public int compare(RectangleMapObject first, RectangleMapObject second) {
@@ -120,7 +125,7 @@ public class SpinningSlotsWithMatchesWinFlashesLoadedLevel
         random = new Random();
         Pixmap slotReelScrollPixmap = PixmapProcessors.createPixmapToAnimate(sprites);
         slotReelScrollTexture = new Texture(slotReelScrollPixmap);
-        slotHandleSprite = new SlotHandleSprite(slotHandleAtlas, tweenManager);
+//        slotHandleSprite = new SlotHandleSprite(slotHandleAtlas, tweenManager);
         loadlevel();
         createHoldButtons();
         createIntroSequence();
@@ -142,6 +147,7 @@ public class SpinningSlotsWithMatchesWinFlashesLoadedLevel
             levelObjectCreator.createLevel(extractedLevelRectangleMapObjects);
             lightButtons = levelObjectCreator.getHoldLightButtons();
             reels = levelObjectCreator.getAnimatedReels();
+            slotHandleSprite = levelObjectCreator.getHandle();
         } catch (IllegalAccessException e) {
             e.printStackTrace();
         }
@@ -309,7 +315,7 @@ public class SpinningSlotsWithMatchesWinFlashesLoadedLevel
     private void addReelStoppedListener(AnimatedReel reel) {
         reel.getReel().addListener(new ReelStoppedListener().invoke());
     }
-    
+
     private void createIntroSequence() {
         Timeline introSequence = Timeline.createParallel();
         for(int i=0; i < reels.size; i++) {
