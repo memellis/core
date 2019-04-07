@@ -26,6 +26,8 @@ import com.badlogic.gdx.graphics.Texture;
 import com.ellzone.slotpuzzle2d.utils.PixmapProcessors;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 
+import java.text.MessageFormat;
+
 public class LightButton {
 	private static final float PIXELS_PER_METER = 100;
 
@@ -148,6 +150,7 @@ public class LightButton {
 			light.setActive(false);
 			light.setColor(Color.RED);
 			light.setDistance(0.4f);
+			System.out.println(MessageFormat.format("LightButton ({0},{1})", positionX, positionY));
 			positionX = positionX / PIXELS_PER_METER;
 			positionY = positionY / PIXELS_PER_METER;
 			float lightButtonCentreX = positionX + (float) buttonWidth / (2 * PIXELS_PER_METER);

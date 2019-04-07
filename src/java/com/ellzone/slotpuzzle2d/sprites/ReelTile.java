@@ -77,7 +77,7 @@ public class ReelTile extends ReelSprite {
 
     private void defineReelSlotTileScroll() {
     	setPosition((int) x, (int) y);
-        setOrigin((int) x, (int) y);
+        //setOrigin((int) x, (int) y);
         scrollTexture.setWrap(Texture.TextureWrap.Repeat, Texture.TextureWrap.Repeat);
         region = new TextureRegion(scrollTexture);
         int randomSy = 0;

@@ -125,7 +125,6 @@ public class SpinningSlotsWithMatchesWinFlashesLoadedLevel
         random = new Random();
         Pixmap slotReelScrollPixmap = PixmapProcessors.createPixmapToAnimate(sprites);
         slotReelScrollTexture = new Texture(slotReelScrollPixmap);
-//        slotHandleSprite = new SlotHandleSprite(slotHandleAtlas, tweenManager);
         loadlevel();
         createHoldButtons();
         createIntroSequence();
@@ -294,7 +293,7 @@ public class SpinningSlotsWithMatchesWinFlashesLoadedLevel
         batch.begin();
         for (AnimatedReel reel : reels) {
             reel.draw(batch);
-            sprites[reelSpriteHelp].setX(32);
+            sprites[reelSpriteHelp].setX(0);
             sprites[reelSpriteHelp].draw(batch);
         }
         slotHandleSprite.draw(batch);
@@ -330,7 +329,6 @@ public class SpinningSlotsWithMatchesWinFlashesLoadedLevel
 
     private Timeline buildSequence(Sprite target, int id, float delay1, float delay2, int numberOfSprites) {
         Vector2 targetXY = getRandomCorner();
-        int targetPositionX = (id * spriteWidth) + (displayWindowWidth - (((spriteWidth * numberOfSprites) +  displayWindowWidth) / 2));
         return Timeline.createSequence()
                 .push(SlotPuzzleTween.set(target, SpriteAccessor.POS_XY).target(targetXY.x, targetXY.y))
                 .push(SlotPuzzleTween.set(target, SpriteAccessor.SCALE_XY).target(30, 30))
@@ -342,7 +340,7 @@ public class SpinningSlotsWithMatchesWinFlashesLoadedLevel
                 .push(SlotPuzzleTween.to(target, SpriteAccessor.SCALE_XY, 1.0f).target(1, 1).ease(Quart.INOUT))
                 .end()
                 .pushPause(-0.5f)
-                .push(SlotPuzzleTween.to(target, SpriteAccessor.POS_XY, 1.0f).target(targetPositionX, displayWindowHeight / 2                                                                                         ).ease(Back.OUT))
+                .push(SlotPuzzleTween.to(target, SpriteAccessor.POS_XY, 1.0f).target(target.getX(), displayWindowHeight / 2                                                                                         ).ease(Back.OUT))
                 .push(SlotPuzzleTween.to(target, SpriteAccessor.ROTATION, 0.8f).target(360).ease(Cubic.INOUT))
                 .pushPause(delay2)
                 .beginParallel()
@@ -480,7 +478,7 @@ public class SpinningSlotsWithMatchesWinFlashesLoadedLevel
         for (int row = 0; row < matchGrid.length; row++) {
             Array<ReelTileGridValue> depthSearchResults = puzzleGridTypeReelTile.depthFirstSearchIncludeDiagonals(matchGrid[row][0]);
             if (puzzleGridTypeReelTile.isRow(depthSearchResults, matchGrid)) {
-                rowMacthesToDraw.add(drawMatches(depthSearchResults, 580, 510));
+                rowMacthesToDraw.add(drawMatches(depthSearchResults, 540, 510));
             };
         }
     }

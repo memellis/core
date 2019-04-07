@@ -7,7 +7,6 @@ import com.badlogic.gdx.maps.MapProperties;
 import com.badlogic.gdx.maps.objects.RectangleMapObject;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.utils.Array;
-import com.ellzone.slotpuzzle2d.sprites.AnimatedHandle;
 import com.ellzone.slotpuzzle2d.sprites.AnimatedReel;
 import com.ellzone.slotpuzzle2d.sprites.HoldLightButton;
 import com.ellzone.slotpuzzle2d.sprites.Reels;
