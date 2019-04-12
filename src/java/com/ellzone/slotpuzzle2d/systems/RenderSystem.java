@@ -17,8 +17,8 @@ public class RenderSystem extends EntitySystem {
     private SpriteBatch batch;
     private OrthographicCamera camera;
 
-    private ComponentMapper<PositionComponent> pm = ComponentMapper.getFor(PositionComponent.class);
-    private ComponentMapper<VisualComponent> vm = ComponentMapper.getFor(VisualComponent.class);
+    private ComponentMapper<PositionComponent> positionMapper = ComponentMapper.getFor(PositionComponent.class);
+    private ComponentMapper<VisualComponent> visualMapper = ComponentMapper.getFor(VisualComponent.class);
 
     public RenderSystem(OrthographicCamera camera) {
         batch = new SpriteBatch();
@@ -38,23 +38,27 @@ public class RenderSystem extends EntitySystem {
 
     @Override
     public void update(float deltaTime) {
-        PositionComponent position;
-        VisualComponent visual;
-
         camera.update();
-
         batch.begin();
         batch.setProjectionMatrix(camera.combined);
-
-        for (int i = 0; i < entities.size(); ++i) {
-            Entity e = entities.get(i);
-
-            position = pm.get(e);
-            visual = vm.get(e);
-
-            batch.draw(visual.region, position.x, position.y);
-        }
-
+        drawEntities();
         batch.end();
+    }
+
+    private void drawEntities() {
+        for (int i = 0; i < entities.size(); ++i) {
+            drawEntity(i);
+        }
+    }
+
+    private void drawEntity(int i) {
+        PositionComponent position;
+        VisualComponent visual;
+        Entity e = entities.get(i);
+
+        position = positionMapper.get(e);
+        visual = visualMapper.get(e);
+
+        batch.draw(visual.region, position.x, position.y);
     }
 }
