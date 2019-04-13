@@ -11,6 +11,8 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.ellzone.slotpuzzle2d.components.PositionComponent;
 import com.ellzone.slotpuzzle2d.components.VisualComponent;
 
+import java.text.MessageFormat;
+
 public class RenderSystem extends EntitySystem {
     private ImmutableArray<Entity> entities;
 
@@ -58,7 +60,6 @@ public class RenderSystem extends EntitySystem {
 
         position = positionMapper.get(e);
         visual = visualMapper.get(e);
-
         batch.draw(visual.region, position.x, position.y);
     }
 }
