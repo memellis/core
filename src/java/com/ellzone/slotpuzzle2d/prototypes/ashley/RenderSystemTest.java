@@ -20,33 +20,37 @@ import com.ellzone.slotpuzzle2d.sprites.Reels;
 import com.ellzone.slotpuzzle2d.systems.MovementSystem;
 import com.ellzone.slotpuzzle2d.systems.RenderSystem;
 import com.ellzone.slotpuzzle2d.utils.AssetsAnnotation;
+import com.ellzone.slotpuzzle2d.utils.Random;
 
 import net.dermetfan.gdx.assets.AnnotationAssetManager;
 
-import java.text.MessageFormat;
-
 public class RenderSystemTest extends SPPrototype {
+    public static final String ANDROID_JPG = "android.jpg";
+    public static final int NUMBER_OF_COINS = 100;
     PooledEngine engine;
     Reels reels;
+    Random random = Random.getInstance();
 
     public void create() {
         OrthographicCamera camera = setupCamera();
 
+        AnnotationAssetManager annotationAssetManager = getAnnotationAssetManager();
+
+        reels = new Reels(annotationAssetManager);
+        Texture androidTexture = new Texture(ANDROID_JPG);
+        setupEngine(camera);
+        setupCrate(androidTexture);
+
+        for (int i = 0; i < NUMBER_OF_COINS; i++)
+            addACoin();
+    }
+
+    private AnnotationAssetManager getAnnotationAssetManager() {
         AnnotationAssetManager annotationAssetManager = new AnnotationAssetManager();
         annotationAssetManager.setLoader(TiledMap.class, new TmxMapLoader(new InternalFileHandleResolver()));
         annotationAssetManager.load(new AssetsAnnotation());
         annotationAssetManager.finishLoading();
-
-        reels = new Reels(annotationAssetManager);
-        Texture crateTexture = new Texture("android.jpg");
-
-        setupEngine(camera);
-
-        setupCrate(crateTexture);
-
-        for (int i = 0; i < 100; i++)
-            addACoin();
-
+        return annotationAssetManager;
     }
 
     private void addACoin() {
@@ -68,9 +72,13 @@ public class RenderSystemTest extends SPPrototype {
 
     private SpriteComponent addSpriteComponent(Entity reelEntity) {
         SpriteComponent spriteComponent = new SpriteComponent();
-        spriteComponent.sprite = reels.getReels()[0];
+        spriteComponent.sprite = reels.getReels()[getNextRandomReel()];
         reelEntity.add(spriteComponent);
         return spriteComponent;
+    }
+
+    private int getNextRandomReel() {
+        return random.nextInt(reels.getReels().length);
     }
 
     private void addPositionComponent(Entity reelEntity) {
