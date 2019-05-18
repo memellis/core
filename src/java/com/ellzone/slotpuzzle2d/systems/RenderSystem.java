@@ -11,8 +11,6 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.ellzone.slotpuzzle2d.components.PositionComponent;
 import com.ellzone.slotpuzzle2d.components.VisualComponent;
 
-import java.text.MessageFormat;
-
 public class RenderSystem extends EntitySystem {
     private ImmutableArray<Entity> entities;
 
@@ -24,7 +22,6 @@ public class RenderSystem extends EntitySystem {
 
     public RenderSystem(OrthographicCamera camera) {
         batch = new SpriteBatch();
-
         this.camera = camera;
     }
 
@@ -35,7 +32,6 @@ public class RenderSystem extends EntitySystem {
 
     @Override
     public void removedFromEngine(Engine engine) {
-
     }
 
     @Override

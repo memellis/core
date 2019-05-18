@@ -18,6 +18,9 @@ package com.ellzone.slotpuzzle2d.effects;
 
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.Sprite;
+
+import java.text.MessageFormat;
+
 import aurelienribon.tweenengine.TweenAccessor;
 
 public class SpriteAccessor implements TweenAccessor<Sprite> {
@@ -63,7 +66,8 @@ public class SpriteAccessor implements TweenAccessor<Sprite> {
 	@Override
 	public void setValues(Sprite target, int tweenType, float[] newValues) {
 		switch (tweenType) {
-			case POS_XY: target.setPosition(newValues[0], newValues[1]); break;
+			case POS_XY: target.setPosition(newValues[0], newValues[1]);
+			             break;
 			case CPOS_XY: target.setPosition(newValues[0] - target.getWidth()/2, newValues[1] - target.getHeight()/2); break;
 			case SCALE_XY: target.setScale(newValues[0], newValues[1]); break;
 			case ROTATION: target.setRotation(newValues[0]); break;

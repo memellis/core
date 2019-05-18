@@ -113,12 +113,12 @@ public abstract class SPPrototypeTemplate extends SPPrototype {
     }
 	
     protected void initialiseCamera() {
-        this.cam = new PerspectiveCamera();
-        this.cam.position.set(0, 0, 10);
-        this.cam.lookAt(0, 0, 0);
-        this.cam.update();
-		this.displayWindowWidth = SlotPuzzleConstants.V_WIDTH;
-        this.displayWindowHeight = SlotPuzzleConstants.V_HEIGHT;
+        cam = new PerspectiveCamera();
+        cam.position.set(0, 0, 10);
+        cam.lookAt(0, 0, 0);
+        cam.update();
+		displayWindowWidth = SlotPuzzleConstants.V_WIDTH;
+        displayWindowHeight = SlotPuzzleConstants.V_HEIGHT;
     }
 
     protected void initialiseLibGdx() {

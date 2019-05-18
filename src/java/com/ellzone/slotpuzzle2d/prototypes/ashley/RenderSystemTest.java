@@ -42,7 +42,7 @@ public class RenderSystemTest extends SPPrototype {
         setupCrate(androidTexture);
 
         for (int i = 0; i < NUMBER_OF_COINS; i++)
-            addACoin();
+            addAReel();
     }
 
     private AnnotationAssetManager getAnnotationAssetManager() {
@@ -53,36 +53,33 @@ public class RenderSystemTest extends SPPrototype {
         return annotationAssetManager;
     }
 
-    private void addACoin() {
+    private void addAReel() {
         Entity reelEntity = engine.createEntity();
         addPositionComponent(reelEntity);
-        SpriteComponent spriteComponent = addSpriteComponent(reelEntity);
-        addMovementComponent(reelEntity);
-        addVisualComponent(reelEntity, spriteComponent);
+        SpriteComponent spriteComponent = new SpriteComponent(reels.getReels()[getNextRandomReel()]);
+        reelEntity.add(spriteComponent);
+        reelEntity = addMovementComponent(reelEntity);
+        reelEntity = addVisualComponent(reelEntity, spriteComponent);
         engine.addEntity(reelEntity);
     }
 
-    private void addVisualComponent(Entity reelEntity, SpriteComponent spriteComponent) {
+
+    private Entity addVisualComponent(Entity reelEntity, SpriteComponent spriteComponent) {
         reelEntity.add(new VisualComponent(spriteComponent.sprite));
+        return reelEntity;
     }
-
-    private void addMovementComponent(Entity reelEntity) {
+    private Entity addMovementComponent(Entity reelEntity) {
         reelEntity.add(new MovementComponent(10.0f, 10.0f));
-    }
-
-    private SpriteComponent addSpriteComponent(Entity reelEntity) {
-        SpriteComponent spriteComponent = new SpriteComponent();
-        spriteComponent.sprite = reels.getReels()[getNextRandomReel()];
-        reelEntity.add(spriteComponent);
-        return spriteComponent;
+        return reelEntity;
     }
 
     private int getNextRandomReel() {
         return random.nextInt(reels.getReels().length);
     }
 
-    private void addPositionComponent(Entity reelEntity) {
+    private Entity addPositionComponent(Entity reelEntity) {
         reelEntity.add(new PositionComponent(MathUtils.random(640), MathUtils.random(480)));
+        return reelEntity;
     }
 
     private void setupCrate(Texture crateTexture) {
@@ -110,5 +107,5 @@ public class RenderSystemTest extends SPPrototype {
         Gdx.gl.glClearColor(0, 0, 0, 1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
         engine.update(Gdx.graphics.getDeltaTime());
-    }
+     }
 }
