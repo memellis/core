@@ -18,6 +18,7 @@ package com.ellzone.slotpuzzle2d.prototypes;
 
 import com.badlogic.gdx.utils.reflect.ClassReflection;
 import com.badlogic.gdx.utils.reflect.ReflectionException;
+import com.ellzone.slotpuzzle2d.prototypes.ashley.RenderLightButtons;
 import com.ellzone.slotpuzzle2d.prototypes.ashley.RenderReels;
 import com.ellzone.slotpuzzle2d.prototypes.ashley.RenderSystemTest;
 import com.ellzone.slotpuzzle2d.prototypes.box2d.Box2DFallingReels;
@@ -150,6 +151,7 @@ public class SPPrototypes {
         Render3DCylinder6.class,
         Render3DCylinderModelAsWireframe.class,
         Render3DCylinderWithOptionalGrid.class,
+        RenderLightButtons.class,
         RenderReels.class,
         RenderSystemTest.class,
         ScrollingSign.class,

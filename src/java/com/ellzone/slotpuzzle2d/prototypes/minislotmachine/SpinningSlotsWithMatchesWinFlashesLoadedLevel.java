@@ -126,7 +126,7 @@ public class SpinningSlotsWithMatchesWinFlashesLoadedLevel
         Pixmap slotReelScrollPixmap = PixmapProcessors.createPixmapToAnimate(sprites);
         slotReelScrollTexture = new Texture(slotReelScrollPixmap);
         loadlevel();
-        createHoldButtons();
+        createPointLights();
         createIntroSequence();
    }
 
@@ -157,7 +157,7 @@ public class SpinningSlotsWithMatchesWinFlashesLoadedLevel
     protected void initialiseScreenOverride() {
     }
 
-    private void createHoldButtons() {
+    private void createPointLights() {
         lightViewport = new FitViewport(SlotPuzzleConstants.V_WIDTH / PIXELS_PER_METER, SlotPuzzleConstants.V_HEIGHT / PIXELS_PER_METER);
         lightViewport.getCamera().position.set(lightViewport.getCamera().position.x + SlotPuzzleConstants.V_WIDTH / PIXELS_PER_METER * 0.5f,
                 lightViewport.getCamera().position.y + SlotPuzzleConstants.V_HEIGHT / PIXELS_PER_METER * 0.5f,

@@ -83,7 +83,6 @@ public class SpinningSlotsWithHoldButtons extends SPPrototypeTemplate {
 
     @Override
     protected void initialiseScreenOverride() {
-
     }
 
     private void createHoldButtons() {
@@ -124,8 +123,8 @@ public class SpinningSlotsWithHoldButtons extends SPPrototypeTemplate {
 
         lightButtons = new Array<LightButton>();
         for (int i = 0; i < 3; i++) {
-            LightButton lightButton = new LightButton(world, rayHandler, i * 32 / PIXELS_PER_METER + SlotPuzzleConstants.V_WIDTH / (PIXELS_PER_METER * 2) - (3 * 32 / PIXELS_PER_METER) / 2, SlotPuzzleConstants.V_HEIGHT / (PIXELS_PER_METER * 4), 32, 32, new BitmapFont(), "", "Hold");
-            lightButton.getSprite().setSize(32 / PIXELS_PER_METER, 32 / PIXELS_PER_METER);
+            LightButton lightButton = new LightButton(world, rayHandler, i * 40 / PIXELS_PER_METER + SlotPuzzleConstants.V_WIDTH / (PIXELS_PER_METER * 2) - (3 * 40 / PIXELS_PER_METER) / 2, SlotPuzzleConstants.V_HEIGHT / (PIXELS_PER_METER * 4), 40, 40, new BitmapFont(), "", "Hold");
+            lightButton.getSprite().setSize(40 / PIXELS_PER_METER, 40 / PIXELS_PER_METER);
             lightButtons.add(lightButton);
         }
     }
@@ -181,9 +180,8 @@ public class SpinningSlotsWithHoldButtons extends SPPrototypeTemplate {
         batch.end();
         batch.setProjectionMatrix(lightViewport.getCamera().combined);
         batch.begin();
-        for (LightButton lightButton : lightButtons) {
+        for (LightButton lightButton : lightButtons)
             lightButton.getSprite().draw(batch);
-        }
         batch.end();
         rayHandler.setCombinedMatrix(lightViewport.getCamera().combined);
         rayHandler.updateAndRender();

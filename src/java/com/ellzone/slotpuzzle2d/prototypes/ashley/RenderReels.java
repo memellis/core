@@ -9,7 +9,6 @@ import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Sprite;
-import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.TmxMapLoader;
@@ -43,12 +42,12 @@ import aurelienribon.tweenengine.equations.Quart;
 
 public class RenderReels extends SPPrototype {
     public static final int NUMBER_OF_REEL_TILES = 15;
-    Sprite[] sprites;
-    int spriteWidth, spriteHeight;
-    int displayWindowWidth, displayWindowHeight;
-    Array<ReelTile> reelTiles;
-    PooledEngine engine;
-    Random random = Random.getInstance();
+    private Sprite[] sprites;
+    private int spriteWidth, spriteHeight;
+    private int displayWindowWidth, displayWindowHeight;
+    private Array<ReelTile> reelTiles;
+    private PooledEngine engine;
+    private Random random = Random.getInstance();
     private Timeline introSequence;
     private TweenManager tweenManager = new TweenManager();
 
@@ -74,7 +73,7 @@ public class RenderReels extends SPPrototype {
     }
 
     private OrthographicCamera setupCamera() {
-        OrthographicCamera camera = new OrthographicCamera(640, 480);
+        OrthographicCamera camera = new OrthographicCamera(SlotPuzzleConstants.V_WIDTH, SlotPuzzleConstants.V_HEIGHT);
         camera.position.set(displayWindowWidth / 2, displayWindowHeight / 2, 0);
         camera.update();
         return camera;
