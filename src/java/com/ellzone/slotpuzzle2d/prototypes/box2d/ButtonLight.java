@@ -61,7 +61,6 @@ public class ButtonLight extends SPPrototype {
 	    super.create();
 		font = new BitmapFont();
 	    viewport = new FitViewport(SCENE_WIDTH, SCENE_HEIGHT);
-	    // Center camera
 	    viewport.getCamera().position.set(viewport.getCamera().position.x + SCENE_WIDTH*0.5f,
 	                                      viewport.getCamera().position.y + SCENE_HEIGHT*0.5f,
 										  0);
@@ -69,9 +68,7 @@ public class ButtonLight extends SPPrototype {
 		hudViewport = new FitViewport(SCENE_WIDTH * PIXELS_PER_METER, SCENE_HEIGHT * PIXELS_PER_METER, new OrthographicCamera());    
 		batch = new SpriteBatch();
 	    Gdx.input.setInputProcessor(this);
-	    // Create Physics World
 	    world = new World(new Vector2(0,-9.8f), true);
-	    // Instantiate the class in charge of drawing physics shapes
 	    debugRenderer = new Box2DDebugRenderer();
 		
 		rayHandler = new RayHandler(world);
@@ -135,7 +132,7 @@ public class ButtonLight extends SPPrototype {
 		Gdx.gl.glClearColor(0, 0, 0, 1);
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
  		world.step(1/60f, 6, 2);
- 		rayHandler.setCombinedMatrix(viewport.getCamera().combined);
+ 		rayHandler.setCombinedMatrix((OrthographicCamera) viewport.getCamera());
 		rayHandler.updateAndRender();
 		debugRenderer.render(world, viewport.getCamera().combined);	
 		String message = "lightButton.getBoundingRectangle()=" + lightButton.getBoundingRectangle();

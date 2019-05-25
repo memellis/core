@@ -8,12 +8,16 @@ import com.badlogic.ashley.core.Family;
 import com.badlogic.ashley.utils.ImmutableArray;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer;
+import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import com.ellzone.slotpuzzle2d.SlotPuzzleConstants;
 import com.ellzone.slotpuzzle2d.components.LightVisualComponent;
 import com.ellzone.slotpuzzle2d.components.PositionComponent;
 import com.ellzone.slotpuzzle2d.components.VisualComponent;
+
+import box2dLight.RayHandler;
 
 import static com.ellzone.slotpuzzle2d.SlotPuzzleConstants.PIXELS_PER_METER;
 
@@ -22,16 +26,28 @@ public class RenderSystem extends EntitySystem {
     private ImmutableArray<Entity> lightVisualEntities;
 
     private SpriteBatch batch;
+    private World world;
+    private RayHandler rayHandler;
     private OrthographicCamera camera;
     private Viewport lightViewport;
 
     private ComponentMapper<PositionComponent> positionMapper = ComponentMapper.getFor(PositionComponent.class);
     private ComponentMapper<VisualComponent> visualMapper = ComponentMapper.getFor(VisualComponent.class);
     private ComponentMapper<LightVisualComponent> lightVisualMapper = ComponentMapper.getFor(LightVisualComponent.class);
+    private Box2DDebugRenderer debugRenderer;
 
     public RenderSystem(OrthographicCamera camera) {
         batch = new SpriteBatch();
         this.camera = camera;
+        lightViewport = createLightViewPort();
+    }
+
+    public RenderSystem(World world, RayHandler rayHander, OrthographicCamera camera) {
+        batch = new SpriteBatch();
+        this.world = world;
+        this.rayHandler = rayHander;
+        this.camera = camera;
+        debugRenderer = new Box2DDebugRenderer();
         lightViewport = createLightViewPort();
     }
 
@@ -53,6 +69,10 @@ public class RenderSystem extends EntitySystem {
         lightViewport.getCamera().update();
         lightViewport.update(SlotPuzzleConstants.V_WIDTH, SlotPuzzleConstants.V_HEIGHT);
 
+        return lightViewport;
+    }
+
+    public Viewport getLightViewport() {
         return lightViewport;
     }
 
@@ -93,7 +113,7 @@ public class RenderSystem extends EntitySystem {
         batch.draw(lightVisual.region,
                    position.x,
                    position.y,
-                (float) lightVisual.region.getRegionWidth() / PIXELS_PER_METER,
-                (float) lightVisual.region.getRegionHeight() / PIXELS_PER_METER);
+                  (float) lightVisual.region.getRegionWidth() / PIXELS_PER_METER,
+                  (float) lightVisual.region.getRegionHeight() / PIXELS_PER_METER);
     }
 }

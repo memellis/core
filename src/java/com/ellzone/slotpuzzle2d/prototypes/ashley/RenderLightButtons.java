@@ -31,6 +31,8 @@ import com.ellzone.slotpuzzle2d.components.LightVisualComponent;
 import com.ellzone.slotpuzzle2d.components.PositionComponent;
 import com.ellzone.slotpuzzle2d.prototypes.SPPrototype;
 import com.ellzone.slotpuzzle2d.sprites.HoldLightButton;
+import com.ellzone.slotpuzzle2d.systems.LightSystem;
+import com.ellzone.slotpuzzle2d.systems.PhysicsDebugSystem;
 import com.ellzone.slotpuzzle2d.systems.RenderSystem;
 import box2dLight.RayHandler;
 
@@ -43,12 +45,13 @@ public class RenderLightButtons extends SPPrototype {
     private RayHandler rayHandler;
     private Array<HoldLightButton> holdLightButtons;
 
+
     public void create() {
         intialiseDisplayWidthHeight();
         OrthographicCamera camera = setupCamera();
-        setupEngine(camera);
         world = createWorld();
         rayHandler = createRayHandler(world);
+        setupEngine(rayHandler, camera);
         createLightButtons();
     }
 
@@ -64,10 +67,13 @@ public class RenderLightButtons extends SPPrototype {
         return camera;
     }
 
-    private void setupEngine(OrthographicCamera camera) {
+    private void setupEngine(RayHandler rayHandler, OrthographicCamera camera) {
         engine = new PooledEngine();
-        engine.addSystem(new RenderSystem(camera));
-    }
+        RenderSystem renderSystem = new RenderSystem(world, rayHandler, camera);
+        engine.addSystem(renderSystem);
+        engine.addSystem(new LightSystem());
+        engine.addSystem(new PhysicsDebugSystem(world, rayHandler, (OrthographicCamera) renderSystem.getLightViewport().getCamera()));
+     }
 
     private World createWorld() {
         return new World(new Vector2(0, EARTH_GRAVITY), true);
@@ -95,6 +101,7 @@ public class RenderLightButtons extends SPPrototype {
                         i * 40 / PIXELS_PER_METER + SlotPuzzleConstants.V_WIDTH / (PIXELS_PER_METER * 2) - (3 * 40 / PIXELS_PER_METER) / 2,
                         SlotPuzzleConstants.V_HEIGHT / (PIXELS_PER_METER * 4), 40, 40));
         lightButtonComponent.lightButton.getSprite().setSize(40 / PIXELS_PER_METER, 40 / PIXELS_PER_METER);
+        lightButtonComponent.lightButton.getLight().setActive(true);
         entity = addVisualComponent(entity, lightButtonComponent.lightButton.getSprite());
         entity.add(lightButtonComponent);
         entity.add(positionComponent);
@@ -109,6 +116,7 @@ public class RenderLightButtons extends SPPrototype {
     public void render () {
         Gdx.gl.glClearColor(0, 0, 0, 1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
-        engine.update(Gdx.graphics.getDeltaTime());
+        float deltaTime = Gdx.graphics.getDeltaTime();
+        engine.update(deltaTime);
     }
 }

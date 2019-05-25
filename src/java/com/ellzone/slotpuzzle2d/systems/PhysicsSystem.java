@@ -25,7 +25,7 @@ public class PhysicsSystem extends IteratingSystem {
         super(Family.all(BodyComponent.class, TransformComponent.class).get());
 
         this.world = world;
-        this.bodiesQueue = new Array<>();
+        bodiesQueue = new Array<>();
     }
 
     @Override

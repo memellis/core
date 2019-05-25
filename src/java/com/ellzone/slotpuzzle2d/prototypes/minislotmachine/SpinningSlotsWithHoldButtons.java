@@ -183,7 +183,7 @@ public class SpinningSlotsWithHoldButtons extends SPPrototypeTemplate {
         for (LightButton lightButton : lightButtons)
             lightButton.getSprite().draw(batch);
         batch.end();
-        rayHandler.setCombinedMatrix(lightViewport.getCamera().combined);
+        rayHandler.setCombinedMatrix((OrthographicCamera) lightViewport.getCamera());
         rayHandler.updateAndRender();
         debugRenderer.render(world, lightViewport.getCamera().combined);
     }
