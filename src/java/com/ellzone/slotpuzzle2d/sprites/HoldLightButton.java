@@ -8,7 +8,7 @@ import box2dLight.RayHandler;
 
 public class HoldLightButton extends LightButton {
     public HoldLightButton(World world, RayHandler rayHandler, float positionX, float positionY, int buttonWidth, int buttonHeight) {
-        super(world, rayHandler, positionX, positionY, buttonWidth, buttonHeight, new BitmapFont(), "", "Hold", true);
+        super(world, rayHandler, positionX, positionY, buttonWidth, buttonHeight, new BitmapFont(), "", "Hold", false);
     }
 
     public void addTo(Object holdLightButtons) {

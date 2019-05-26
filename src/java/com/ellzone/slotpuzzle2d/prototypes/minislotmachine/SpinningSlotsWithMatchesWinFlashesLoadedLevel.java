@@ -41,12 +41,9 @@ import com.ellzone.slotpuzzle2d.tweenengine.Timeline;
 import com.ellzone.slotpuzzle2d.tweenengine.TweenManager;
 import com.ellzone.slotpuzzle2d.utils.AssetsAnnotation;
 import com.ellzone.slotpuzzle2d.utils.PixmapProcessors;
-
 import net.dermetfan.gdx.assets.AnnotationAssetManager;
-
 import java.util.Comparator;
 import java.util.Random;
-
 import aurelienribon.tweenengine.equations.Back;
 import aurelienribon.tweenengine.equations.Cubic;
 import aurelienribon.tweenengine.equations.Quad;
@@ -55,6 +52,7 @@ import box2dLight.PointLight;
 import box2dLight.RayHandler;
 
 import static com.ellzone.slotpuzzle2d.prototypes.screens.PlayScreenPrototype.SLOT_REEL_OBJECT_LAYER;
+import static com.ellzone.slotpuzzle2d.SlotPuzzleConstants.PIXELS_PER_METER;
 
 public class SpinningSlotsWithMatchesWinFlashesLoadedLevel
        extends SPPrototypeTemplate
@@ -66,7 +64,6 @@ public class SpinningSlotsWithMatchesWinFlashesLoadedLevel
     private TextureAtlas slotHandleAtlas;
     private int reelSpriteHelp;
     private SlotHandleSprite slotHandleSprite;
-    private static final float PIXELS_PER_METER = 100;
     private Viewport lightViewport, hudViewport;
     private World world;
     private Box2DDebugRenderer debugRenderer;
@@ -163,6 +160,9 @@ public class SpinningSlotsWithMatchesWinFlashesLoadedLevel
                 lightViewport.getCamera().position.y + SlotPuzzleConstants.V_HEIGHT / PIXELS_PER_METER * 0.5f,
                 0);
         lightViewport.getCamera().update();
+        lightViewport.update(SlotPuzzleConstants.V_WIDTH / PIXELS_PER_METER,
+                             SlotPuzzleConstants.V_HEIGHT / PIXELS_PER_METER);
+
         hudViewport = new FitViewport(SlotPuzzleConstants.V_WIDTH, SlotPuzzleConstants.V_HEIGHT, new OrthographicCamera());
 
         PointLight reelLight = new PointLight(rayHandler, 32);
@@ -185,11 +185,6 @@ public class SpinningSlotsWithMatchesWinFlashesLoadedLevel
         reelHelperLight.setColor(Color.RED);
         reelHelperLight.setDistance(1.0f);
         reelHelperLight.setPosition(48 / PIXELS_PER_METER,  (sprites[0].getY() + 16) / PIXELS_PER_METER);
-
-        levelLights = new Array<>();
-        levelLights.add(createLevelLight((int) slotHandleSpriteCenterX, 300));
-        levelLightX = (int) slotHandleSpriteCenterX;
-        levelLightY = (int) 300;
     }
 
     private PointLight createLevelLight(int x, int y) {
@@ -276,16 +271,15 @@ public class SpinningSlotsWithMatchesWinFlashesLoadedLevel
     }
 
     private void renderRayHandler() {
-        rayHandler.setCombinedMatrix(lightViewport.getCamera().combined);
+        rayHandler.setCombinedMatrix((OrthographicCamera) lightViewport.getCamera());
         rayHandler.updateAndRender();
     }
 
     private void renderLightButtons() {
         batch.setProjectionMatrix(lightViewport.getCamera().combined);
         batch.begin();
-        for (LightButton lightButton : lightButtons) {
+        for (LightButton lightButton : lightButtons)
             lightButton.getSprite().draw(batch);
-        }
         batch.end();
     }
 

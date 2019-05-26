@@ -28,9 +28,9 @@ import com.badlogic.gdx.graphics.g2d.BitmapFont;
 
 import java.text.MessageFormat;
 
-public class LightButton {
-    private static final float PIXELS_PER_METER = 100;
+import static com.ellzone.slotpuzzle2d.SlotPuzzleConstants.PIXELS_PER_METER;
 
+public class LightButton {
     private Sprite lightButtonSprite;
     private World world;
     private RayHandler rayHandler;
@@ -157,8 +157,8 @@ public class LightButton {
             light.setPosition(lightButtonCentreX, lightButtonCentreY);
             lightButtonSprite = new Sprite(createButton());
             lightButtonSprite.setPosition(positionX, positionY);
-            lightButtonSprite.setSize(buttonWidth / PIXELS_PER_METER, buttonHeight / PIXELS_PER_METER);
-        }
+            lightButtonSprite.setSize((float) buttonWidth / PIXELS_PER_METER, (float) buttonHeight / PIXELS_PER_METER);
+         }
     }
 
     private Texture createButton() {

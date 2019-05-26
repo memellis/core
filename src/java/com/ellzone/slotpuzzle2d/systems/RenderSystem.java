@@ -16,9 +16,7 @@ import com.ellzone.slotpuzzle2d.SlotPuzzleConstants;
 import com.ellzone.slotpuzzle2d.components.LightVisualComponent;
 import com.ellzone.slotpuzzle2d.components.PositionComponent;
 import com.ellzone.slotpuzzle2d.components.VisualComponent;
-
 import box2dLight.RayHandler;
-
 import static com.ellzone.slotpuzzle2d.SlotPuzzleConstants.PIXELS_PER_METER;
 
 public class RenderSystem extends EntitySystem {
@@ -62,13 +60,15 @@ public class RenderSystem extends EntitySystem {
     }
 
     private Viewport createLightViewPort() {
-        Viewport lightViewport = new FitViewport(SlotPuzzleConstants.V_WIDTH / PIXELS_PER_METER, SlotPuzzleConstants.V_HEIGHT / PIXELS_PER_METER);
-        lightViewport.getCamera().position.set(lightViewport.getCamera().position.x + SlotPuzzleConstants.V_WIDTH / PIXELS_PER_METER * 0.5f,
-                                               lightViewport.getCamera().position.y + SlotPuzzleConstants.V_HEIGHT / PIXELS_PER_METER * 0.5f,
-                                               0);
+        lightViewport = new FitViewport(SlotPuzzleConstants.V_WIDTH / PIXELS_PER_METER,
+                                        SlotPuzzleConstants.V_HEIGHT / PIXELS_PER_METER);
+        lightViewport.getCamera().position.set(
+                lightViewport.getCamera().position.x + SlotPuzzleConstants.V_WIDTH / PIXELS_PER_METER * 0.5f,
+                lightViewport.getCamera().position.y + SlotPuzzleConstants.V_HEIGHT / PIXELS_PER_METER * 0.5f,
+                0);
         lightViewport.getCamera().update();
-        lightViewport.update(SlotPuzzleConstants.V_WIDTH, SlotPuzzleConstants.V_HEIGHT);
-
+        lightViewport.update(SlotPuzzleConstants.V_WIDTH / PIXELS_PER_METER,
+                             SlotPuzzleConstants.V_HEIGHT / PIXELS_PER_METER);
         return lightViewport;
     }
 
@@ -111,9 +111,9 @@ public class RenderSystem extends EntitySystem {
         PositionComponent position = positionMapper.get(lightVisualEntity);
         LightVisualComponent lightVisual = lightVisualMapper.get(lightVisualEntity);
         batch.draw(lightVisual.region,
-                   position.x,
-                   position.y,
-                  (float) lightVisual.region.getRegionWidth() / PIXELS_PER_METER,
-                  (float) lightVisual.region.getRegionHeight() / PIXELS_PER_METER);
+                (float) position.x / PIXELS_PER_METER,
+                (float) position.y / PIXELS_PER_METER,
+                (float) lightVisual.region.getRegionWidth() / PIXELS_PER_METER,
+                (float) lightVisual.region.getRegionHeight() / PIXELS_PER_METER);
     }
 }

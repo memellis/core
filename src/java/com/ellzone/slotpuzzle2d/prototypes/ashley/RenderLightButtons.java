@@ -24,7 +24,6 @@ import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.World;
-import com.badlogic.gdx.utils.Array;
 import com.ellzone.slotpuzzle2d.SlotPuzzleConstants;
 import com.ellzone.slotpuzzle2d.components.LightButtonComponent;
 import com.ellzone.slotpuzzle2d.components.LightVisualComponent;
@@ -32,19 +31,15 @@ import com.ellzone.slotpuzzle2d.components.PositionComponent;
 import com.ellzone.slotpuzzle2d.prototypes.SPPrototype;
 import com.ellzone.slotpuzzle2d.sprites.HoldLightButton;
 import com.ellzone.slotpuzzle2d.systems.LightSystem;
-import com.ellzone.slotpuzzle2d.systems.PhysicsDebugSystem;
 import com.ellzone.slotpuzzle2d.systems.RenderSystem;
 import box2dLight.RayHandler;
 
 public class RenderLightButtons extends SPPrototype {
-    private static final float PIXELS_PER_METER = 100;
     public static final float EARTH_GRAVITY = -9.8f;
     private int displayWindowWidth, displayWindowHeight;
     private PooledEngine engine;
     private World world;
     private RayHandler rayHandler;
-    private Array<HoldLightButton> holdLightButtons;
-
 
     public void create() {
         intialiseDisplayWidthHeight();
@@ -71,8 +66,7 @@ public class RenderLightButtons extends SPPrototype {
         engine = new PooledEngine();
         RenderSystem renderSystem = new RenderSystem(world, rayHandler, camera);
         engine.addSystem(renderSystem);
-        engine.addSystem(new LightSystem());
-        engine.addSystem(new PhysicsDebugSystem(world, rayHandler, (OrthographicCamera) renderSystem.getLightViewport().getCamera()));
+        engine.addSystem(new LightSystem(world, rayHandler, (OrthographicCamera) renderSystem.getLightViewport().getCamera()));
      }
 
     private World createWorld() {
@@ -92,15 +86,15 @@ public class RenderLightButtons extends SPPrototype {
     private void createLightButton(int i) {
         Entity entity = engine.createEntity();
         PositionComponent positionComponent =
-                new PositionComponent(i * 40 / PIXELS_PER_METER + SlotPuzzleConstants.V_WIDTH / (PIXELS_PER_METER * 2) - (3 * 40 / PIXELS_PER_METER) / 2,
-                                      SlotPuzzleConstants.V_HEIGHT / (PIXELS_PER_METER * 4));
+                new PositionComponent(i * 40 + SlotPuzzleConstants.V_WIDTH / 2 - (3 * 40 ) / 2,
+                                      SlotPuzzleConstants.V_HEIGHT / 4);
         LightButtonComponent lightButtonComponent =
                 new LightButtonComponent(new HoldLightButton(
                         world,
                         rayHandler,
-                        i * 40 / PIXELS_PER_METER + SlotPuzzleConstants.V_WIDTH / (PIXELS_PER_METER * 2) - (3 * 40 / PIXELS_PER_METER) / 2,
-                        SlotPuzzleConstants.V_HEIGHT / (PIXELS_PER_METER * 4), 40, 40));
-        lightButtonComponent.lightButton.getSprite().setSize(40 / PIXELS_PER_METER, 40 / PIXELS_PER_METER);
+                        i * 40 + SlotPuzzleConstants.V_WIDTH / 2 - (3 * 40) / 2,
+                        SlotPuzzleConstants.V_HEIGHT / 4, 40, 40));
+        lightButtonComponent.lightButton.getSprite().setSize(40, 40);
         lightButtonComponent.lightButton.getLight().setActive(true);
         entity = addVisualComponent(entity, lightButtonComponent.lightButton.getSprite());
         entity.add(lightButtonComponent);
