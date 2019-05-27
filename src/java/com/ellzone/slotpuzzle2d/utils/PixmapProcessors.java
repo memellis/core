@@ -32,6 +32,7 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.glutils.FrameBuffer;
 import com.ellzone.slotpuzzle2d.SlotPuzzleConstants;
 import java.io.File;
+import java.text.MessageFormat;
 
 import static com.badlogic.gdx.Application.ApplicationType.Android;
 
@@ -183,28 +184,31 @@ public class PixmapProcessors {
 		} else {
 			Gdx.app.debug(SlotPuzzleConstants.SLOT_PUZZLE, fontData.getImagePath(0));
 			Pixmap fontPixmap = new Pixmap(Gdx.files.local(fontData.getImagePath(0)));
-			BitmapFont.Glyph glyph;
 			verticalFontText.setColor(Color.BLACK);
 			verticalFontText.fillRectangle(0, 0, width, height);
 			verticalFontText.setColor(Color.WHITE);
 
 			for (int i = 0; i < text.length(); i++) {
-				glyph = fontData.getGlyph(text.charAt(i));				
-				int offSetX = (verticalFontText.getWidth() - glyph.width) / 2;
-				int startY = i * verticalFontText.getHeight() / text.length() + 2;
-				int offSetY = -glyph.yoffset;
-				offSetY = startY + offSetY - glyph.height;
-
- 				verticalFontText.drawPixmap(fontPixmap,
-						                    offSetX,
-						                    offSetY,
-						                    glyph.srcX,
-                                            glyph.srcY,
-                                            glyph.width,
-                                            glyph.height);
- 			}
+				drawVerticalCharacterGlyph(text, verticalFontText, fontData, fontPixmap, i);
+			}
 		}
 		return verticalFontText;
+	}
+
+	private static void drawVerticalCharacterGlyph(String text, Pixmap verticalFontText, BitmapFont.BitmapFontData fontData, Pixmap fontPixmap, int i) {
+		BitmapFont.Glyph glyph = fontData.getGlyph(text.charAt(i));
+		int offSetX = (verticalFontText.getWidth() - glyph.width) / 2;
+		int startY = i * verticalFontText.getHeight() / text.length() + 2;
+		int offSetY = -glyph.yoffset;
+		offSetY = startY + offSetY - glyph.height;
+
+		verticalFontText.drawPixmap(fontPixmap,
+								   offSetX,
+								   offSetY,
+								   glyph.srcX,
+                                   glyph.srcY,
+                                   glyph.width,
+                                   glyph.height);
 	}
 
 	public static Pixmap createDynamicScrollAnimatedVerticalText(Pixmap textToAnimate, int textHeight, String text, int fontSize, int scrollStep) {
@@ -234,30 +238,49 @@ public class PixmapProcessors {
 		} else {
 			Gdx.app.debug(SlotPuzzleConstants.SLOT_PUZZLE, fontData.getImagePath(0));
 			Pixmap fontPixmap = new Pixmap(Gdx.files.local(fontData.getImagePath(0)));
-			BitmapFont.Glyph glyph;
 			horizontalFontText.setColor(Color.BLACK);
 			horizontalFontText.fillRectangle(0, 0, width, height);
 			horizontalFontText.setColor(Color.WHITE);
 
-			for (int i = 0; i < text.length(); i++) {
-				glyph = fontData.getGlyph(text.charAt(i));				
-				int startY = 20;
-				int startX = i * horizontalFontText.getWidth() / text.length() + 2;
-				int offSetY = -glyph.xoffset;
-				offSetY = startY + offSetY - glyph.height;
-				int offSetX = startX;
-
- 				horizontalFontText.drawPixmap(fontPixmap,
-											  offSetX,
-											  offSetY,
-											  glyph.srcX, glyph.srcY, glyph.width, glyph.height);
- 			}
-
+			for (int i = 0; i < text.length(); i++)
+				drawHorizontalCharacterGlyph(text, horizontalFontText, fontData, fontPixmap, i);
 		}
 		return horizontalFontText;
 	}
 
-    public static Pixmap createDynamicHorizontalFontTextForReel(BitmapFont font, String text, Pixmap src) {
+	private static void drawHorizontalCharacterGlyph(String text, Pixmap horizontalFontText, BitmapFont.BitmapFontData fontData, Pixmap fontPixmap, int i) {
+		BitmapFont.Glyph glyph = fontData.getGlyph(text.charAt(i));
+		int startY = 20;
+		int startX = i * horizontalFontText.getWidth() / text.length() + 2;
+		int offSetY = -glyph.xoffset;
+		offSetY = startY + offSetY - glyph.height;
+		int offSetX = startX;
+
+		horizontalFontText.drawPixmap(fontPixmap,
+				 					  offSetX,
+									  offSetY,
+									  glyph.srcX,
+				                      glyph.srcY,
+				                      glyph.width,
+				                      glyph.height);
+	}
+
+	public static int getFonTTextWidth(BitmapFont font, String text) {
+        BitmapFont.BitmapFontData fontData = font.getData();
+        int fontTextWidth = 0;
+        for (int i = 0; i < text.length(); i++) {
+            BitmapFont.Glyph glyph = fontData.getGlyph(text.charAt(i));
+			fontTextWidth += glyph.xadvance;
+        }
+	    return fontTextWidth;
+    }
+
+    public static float getFontTextLineheight(BitmapFont font) {
+        BitmapFont.BitmapFontData fontData = font.getData();
+        return fontData.lineHeight;
+    }
+
+	public static Pixmap createDynamicHorizontalFontTextForReel(BitmapFont font, String text, Pixmap src) {
         final int width = src.getWidth();
         final int height = src.getHeight();
         final int halfHeight = height / 2;
@@ -358,7 +381,7 @@ public class PixmapProcessors {
         spriteBatch.draw(new Texture(src), 0, 0);
         font.draw(spriteBatch, text, startTextX, startTextY);
         spriteBatch.end();
-        Pixmap destPixmap= ScreenshotFactory.getScreenshot(0, 0, src.getWidth(), src.getHeight(), true);
+        Pixmap destPixmap = ScreenshotFactory.getScreenshot(0, 0, src.getWidth(), src.getHeight(), true);
 		frameBuffer.end();
 		
 		return destPixmap;

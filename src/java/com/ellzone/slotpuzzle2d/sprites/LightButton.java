@@ -43,33 +43,6 @@ public class LightButton {
     private String buttonTextUsingFrameBuffer;
     private Color buttonColorBorder, buttonColorTop, buttonLightColor;
 
-    public LightButton(World world, RayHandler rayHandler, float positionX, float positionY, int buttonWidth, int buttonHeight) {
-        this.world = world;
-        this.rayHandler = rayHandler;
-        this.positionX = positionX;
-        this.positionY = positionY;
-        this.buttonWidth = buttonWidth;
-        this.buttonHeight = buttonHeight;
-        initialiseButtonTextPosition();
-        initialiseLightButton();
-    }
-
-    private void initialiseButtonTextPosition() {
-        buttonTextX = 5;
-        buttonTextY = buttonHeight / 2 + 7;
-    }
-
-    public LightButton(World world, RayHandler rayHandler, float positionX, float positionY, int buttonWidth, int buttonHeight, boolean pixelsPerMeter) {
-        this.world = world;
-        this.rayHandler = rayHandler;
-        this.positionX = positionX;
-        this.positionY = positionY;
-        this.buttonWidth = buttonWidth;
-        this.buttonHeight = buttonHeight;
-        initialiseButtonTextPosition();
-        initialiseLightButton(pixelsPerMeter);
-    }
-
     public LightButton(World world, RayHandler rayHandler, float positionX, float positionY, int buttonWidth, int buttonHeight, BitmapFont buttonFont, String buttonText) {
         this.world = world;
         this.rayHandler = rayHandler;
@@ -113,20 +86,10 @@ public class LightButton {
         initialiseLightButton(pixelsPerMeter);
     }
 
-    public LightButton(World world, RayHandler rayHandler, float positionX, float positionY, int buttonWidth, int buttonHeight, BitmapFont buttonFont, String buttonText, String buttonTextUsingFrameBuffer, int buttonTextX, int buttonTextY) {
-        this.world = world;
-        this.rayHandler = rayHandler;
-        this.positionX = positionX;
-        this.positionY = positionY;
-        this.buttonWidth = buttonWidth;
-        this.buttonHeight = buttonHeight;
-        this.buttonFont = buttonFont;
-        this.buttonText = buttonText;
-        this.buttonTextUsingFrameBuffer = buttonTextUsingFrameBuffer;
-        this.buttonTextX = buttonTextX;
-        this.buttonTextY = buttonTextY;
-        initialiseButtonTextPosition();
-        initialiseLightButton();
+    private void initialiseButtonTextPosition() {
+        buttonTextX = (buttonWidth - PixmapProcessors.getFonTTextWidth(buttonFont, buttonTextUsingFrameBuffer)) / 2;
+        int fontLineHeight = (int) PixmapProcessors.getFontTextLineheight(buttonFont);
+        buttonTextY = ((buttonHeight - fontLineHeight) / 2) + fontLineHeight - 2;
     }
 
     private void initialiseLightButton() {
@@ -145,20 +108,23 @@ public class LightButton {
     private void initialiseLightButton(boolean pixelPerMeter) {
         if (pixelPerMeter)
             initialiseLightButton();
-        else {
-            light = new PointLight(rayHandler, 32);
-            light.setActive(false);
-            light.setColor(Color.RED);
-            light.setDistance(0.4f);
-            positionX = positionX / PIXELS_PER_METER;
-            positionY = positionY / PIXELS_PER_METER;
-            float lightButtonCentreX = positionX + (float) buttonWidth / (2 * PIXELS_PER_METER);
-            float lightButtonCentreY = positionY + (float) buttonHeight / (2 * PIXELS_PER_METER);
-            light.setPosition(lightButtonCentreX, lightButtonCentreY);
-            lightButtonSprite = new Sprite(createButton());
-            lightButtonSprite.setPosition(positionX, positionY);
-            lightButtonSprite.setSize((float) buttonWidth / PIXELS_PER_METER, (float) buttonHeight / PIXELS_PER_METER);
-         }
+        else
+            initialiseLightButtonbyPixelsPerMeter();
+    }
+
+    private void initialiseLightButtonbyPixelsPerMeter() {
+        light = new PointLight(rayHandler, 32);
+        light.setActive(false);
+        light.setColor(Color.RED);
+        light.setDistance(0.4f);
+        positionX = positionX / PIXELS_PER_METER;
+        positionY = positionY / PIXELS_PER_METER;
+        float lightButtonCentreX = positionX + (float) buttonWidth / (2 * PIXELS_PER_METER);
+        float lightButtonCentreY = positionY + (float) buttonHeight / (2 * PIXELS_PER_METER);
+        light.setPosition(lightButtonCentreX, lightButtonCentreY);
+        lightButtonSprite = new Sprite(createButton());
+        lightButtonSprite.setPosition(positionX, positionY);
+        lightButtonSprite.setSize((float) buttonWidth / PIXELS_PER_METER, (float) buttonHeight / PIXELS_PER_METER);
     }
 
     private Texture createButton() {
