@@ -1,4 +1,4 @@
-package com.ellzone.level;
+package com.ellzone.slotpuzzle2d.level;
 
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.maps.MapLayer;
