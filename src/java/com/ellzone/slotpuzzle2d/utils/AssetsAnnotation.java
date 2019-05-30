@@ -36,6 +36,7 @@ public class AssetsAnnotation {
             LEVEL4 = "levels/level 4 - 40x40.tmx",
             LEVEL5 = "levels/level 5 - 40x40.tmx",
             LEVEL6 = "levels/level 6 - 40x40.tmx",
+            LEVEL6_COMPONENT_BASED = "levels/level 6 component based - 40x40.tmx",
             LEVEL7 = "levels/level 7 - 40x40.tmx",
 
     WORLD_MAP = "levels/WorldMap.tmx";

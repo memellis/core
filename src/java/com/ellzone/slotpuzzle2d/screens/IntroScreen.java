@@ -128,8 +128,8 @@ public class IntroScreen extends InputAdapter implements Screen {
     private int nextScreenTimer = 3;
     private ShapeRenderer shapeRenderer;
     private StarField starField;
-    private float sceneWidth = SlotPuzzleConstants.V_WIDTH / SlotPuzzleConstants.PIXELS_PER_METER;
-    private float sceneHeight = SlotPuzzleConstants.V_HEIGHT / SlotPuzzleConstants.PIXELS_PER_METER;
+    private float sceneWidth = SlotPuzzleConstants.VIRTUAL_WIDTH / SlotPuzzleConstants.PIXELS_PER_METER;
+    private float sceneHeight = SlotPuzzleConstants.VIRTUAL_HEIGHT / SlotPuzzleConstants.PIXELS_PER_METER;
     private boolean show = false;
 
     public IntroScreen(SlotPuzzle game) {
@@ -150,14 +150,14 @@ public class IntroScreen extends InputAdapter implements Screen {
     }
 
     private void initialiseIntroScreen() {
-        viewport = new FitViewport(SlotPuzzleConstants.V_WIDTH, SlotPuzzleConstants.V_HEIGHT, camera);
+        viewport = new FitViewport(SlotPuzzleConstants.VIRTUAL_WIDTH, SlotPuzzleConstants.VIRTUAL_HEIGHT, camera);
         stage = new Stage(viewport, game.batch);
         lightViewport = new FitViewport(sceneWidth, sceneHeight);
         lightViewport.getCamera().position.set(lightViewport.getCamera().position.x + sceneWidth * 0.5f,
                                                lightViewport.getCamera().position.y + sceneHeight * 0.5f,
                                                0);
         lightViewport.getCamera().update();
-        lightViewport.update(SlotPuzzleConstants.V_WIDTH, SlotPuzzleConstants.V_HEIGHT);
+        lightViewport.update(SlotPuzzleConstants.VIRTUAL_WIDTH, SlotPuzzleConstants.VIRTUAL_HEIGHT);
 
 
         ReelLetter.instanceCount = 0;
@@ -441,8 +441,8 @@ public class IntroScreen extends InputAdapter implements Screen {
         starField = new StarField(shapeRenderer,
                 NUM_STARS,
                 SCALE,
-                SlotPuzzleConstants.V_WIDTH,
-                SlotPuzzleConstants.V_HEIGHT,
+                SlotPuzzleConstants.VIRTUAL_WIDTH,
+                SlotPuzzleConstants.VIRTUAL_HEIGHT,
                 random,
                 viewport);
     }

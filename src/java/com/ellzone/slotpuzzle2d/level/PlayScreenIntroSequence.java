@@ -89,11 +89,11 @@ public class PlayScreenIntroSequence {
             case 0:
                 return new Vector2(-1 * random.nextFloat(), -1 * random.nextFloat());
             case 1:
-                return new Vector2(-1 * random.nextFloat(), SlotPuzzleConstants.V_WIDTH + random.nextFloat());
+                return new Vector2(-1 * random.nextFloat(), SlotPuzzleConstants.VIRTUAL_WIDTH + random.nextFloat());
             case 2:
-                return new Vector2(SlotPuzzleConstants.V_HEIGHT / 2 + random.nextFloat(), -1 * random.nextFloat());
+                return new Vector2(SlotPuzzleConstants.VIRTUAL_HEIGHT / 2 + random.nextFloat(), -1 * random.nextFloat());
             case 3:
-                return new Vector2(SlotPuzzleConstants.V_HEIGHT + random.nextFloat(), SlotPuzzleConstants.V_WIDTH + random.nextFloat());
+                return new Vector2(SlotPuzzleConstants.VIRTUAL_HEIGHT + random.nextFloat(), SlotPuzzleConstants.VIRTUAL_WIDTH + random.nextFloat());
             default:
                 return new Vector2(-0.5f, -0.5f);
         }

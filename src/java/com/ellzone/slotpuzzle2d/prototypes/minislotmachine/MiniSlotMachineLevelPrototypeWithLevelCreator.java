@@ -161,12 +161,12 @@ public class MiniSlotMachineLevelPrototypeWithLevelCreator extends SPPrototypeTe
     private BoxBodyBuilder bodyFactory;
     private Array<Body> reelBoxes;
     private Body reelSinkLhs, reelSinkRhs, reelSinkBottom;
-    private float centreX = SlotPuzzleConstants.V_WIDTH / 2;
-    private float centreY = SlotPuzzleConstants.V_HEIGHT / 2;
+    private float centreX = SlotPuzzleConstants.VIRTUAL_WIDTH / 2;
+    private float centreY = SlotPuzzleConstants.VIRTUAL_HEIGHT / 2;
 
     @Override
     protected void initialiseOverride() {
-        camera = CameraHelper.GetCamera(SlotPuzzleConstants.V_WIDTH, SlotPuzzleConstants.V_HEIGHT);
+        camera = CameraHelper.GetCamera(SlotPuzzleConstants.VIRTUAL_WIDTH, SlotPuzzleConstants.VIRTUAL_HEIGHT);
         initialiseReels(this.annotationAssetManager);
         createSlotReelTexture();
         getAssets(annotationAssetManager);
@@ -258,8 +258,8 @@ public class MiniSlotMachineLevelPrototypeWithLevelCreator extends SPPrototypeTe
     private void initialisePlayScreen() {
         this.tileMapRenderer = new OrthogonalTiledMapRenderer(miniSlotMachineLevel);
         this.font = new BitmapFont();
-        this.sW = SlotPuzzleConstants.V_WIDTH;
-        this.sH = SlotPuzzleConstants.V_HEIGHT;
+        this.sW = SlotPuzzleConstants.VIRTUAL_WIDTH;
+        this.sH = SlotPuzzleConstants.VIRTUAL_HEIGHT;
         reelTiles = new Array<ReelTile>();
     }
 

@@ -39,8 +39,8 @@ public class Light extends SPPrototypeTemplate {
     RayHandler rayHandler;
     PointLight light;
     Vector3 point = new Vector3();
-    float sceneWidth = SlotPuzzleConstants.V_WIDTH / SlotPuzzleConstants.PIXELS_PER_METER;
-    float sceneHeight = SlotPuzzleConstants.V_HEIGHT / SlotPuzzleConstants.PIXELS_PER_METER;
+    float sceneWidth = SlotPuzzleConstants.VIRTUAL_WIDTH / SlotPuzzleConstants.PIXELS_PER_METER;
+    float sceneHeight = SlotPuzzleConstants.VIRTUAL_HEIGHT / SlotPuzzleConstants.PIXELS_PER_METER;
 
     @Override
     protected void initialiseOverride() {

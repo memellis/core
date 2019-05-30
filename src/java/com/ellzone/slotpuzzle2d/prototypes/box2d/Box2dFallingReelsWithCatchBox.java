@@ -42,12 +42,12 @@ public class Box2dFallingReelsWithCatchBox extends SPPrototype {
     PhysicsManagerCustomBodies physics;
     BoxBodyBuilder bodyFactory;
     Array<Body> reelBoxes;
-    float centreX = SlotPuzzleConstants.V_WIDTH / 2;
-    float centreY = SlotPuzzleConstants.V_HEIGHT / 2;
+    float centreX = SlotPuzzleConstants.VIRTUAL_WIDTH / 2;
+    float centreY = SlotPuzzleConstants.VIRTUAL_HEIGHT / 2;
 
     @Override
     public void create() {
-        camera = CameraHelper.GetCamera(SlotPuzzleConstants.V_WIDTH, SlotPuzzleConstants.V_HEIGHT);
+        camera = CameraHelper.GetCamera(SlotPuzzleConstants.VIRTUAL_WIDTH, SlotPuzzleConstants.VIRTUAL_HEIGHT);
         batch = new SpriteBatch();
         annotationAssetManager = loadAssets();
 
@@ -88,7 +88,7 @@ public class Box2dFallingReelsWithCatchBox extends SPPrototype {
             for (int column = 0; column < 7; column++) {
                 reelBoxes.add(physics.createBoxBody(BodyDef.BodyType.DynamicBody,
                                                    centreX - 7 * 40 / 2 + 20 + (column * 40),
-                                                   SlotPuzzleConstants.V_HEIGHT + (row * 40) / 2,
+                                                   SlotPuzzleConstants.VIRTUAL_HEIGHT + (row * 40) / 2,
                                                    20,
                                                    20,
                                                    false));

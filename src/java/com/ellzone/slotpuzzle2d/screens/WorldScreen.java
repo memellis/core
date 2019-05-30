@@ -144,15 +144,15 @@ public class WorldScreen implements Screen {
 
 	private void initialiseCamera() {
 		this.camera = new OrthographicCamera();
-		this.viewport = new FitViewport(SlotPuzzleConstants.V_WIDTH, SlotPuzzleConstants.V_HEIGHT, this.camera);
-		this.aspectRatio = SlotPuzzleConstants.V_WIDTH / SlotPuzzleConstants.V_HEIGHT;
+		this.viewport = new FitViewport(SlotPuzzleConstants.VIRTUAL_WIDTH, SlotPuzzleConstants.VIRTUAL_HEIGHT, this.camera);
+		this.aspectRatio = SlotPuzzleConstants.VIRTUAL_WIDTH / SlotPuzzleConstants.VIRTUAL_HEIGHT;
 		this.camera.setToOrtho(false, aspectRatio * ORTHO_VIEWPORT_WIDTH, ORTHO_VIEWPORT_HEIGHT);
 		this.camera.zoom = 2;
 		this.camera.update();
 		this.cww = camera.viewportWidth * camera.zoom * tilePixelWidth;
 		this.cwh = camera.viewportHeight * camera.zoom * tilePixelHeight;
-		this.screenOverCWWRatio = SlotPuzzleConstants.V_WIDTH / cww;
-		this.screenOverCWHRatio = SlotPuzzleConstants.V_HEIGHT / cwh;
+		this.screenOverCWWRatio = SlotPuzzleConstants.VIRTUAL_WIDTH / cww;
+		this.screenOverCWHRatio = SlotPuzzleConstants.VIRTUAL_HEIGHT / cwh;
 	}
 
 	private void initialiseLibGdx() {
@@ -321,13 +321,13 @@ public class WorldScreen implements Screen {
 
 	private void createPopUps() {
 		mapTiles = new Array<MapTile>();
-		mapTiles.add(new MapTile(20, 20, 200, 200, SlotPuzzleConstants.V_WIDTH, SlotPuzzleConstants.V_HEIGHT, new MapLevel1(), tilesAtlas, this.camera, font, tweenManager, new Sprite(levelEntrances.get(0).getLevelEntrance())));
-		mapTiles.add(new MapTile(20, 20, 200, 200, SlotPuzzleConstants.V_WIDTH, SlotPuzzleConstants.V_HEIGHT, new MapLevel2(), tilesAtlas, this.camera, font, tweenManager, new Sprite(levelEntrances.get(1).getLevelEntrance())));
-		mapTiles.add(new MapTile(20, 20, 200, 200, SlotPuzzleConstants.V_WIDTH, SlotPuzzleConstants.V_HEIGHT, new MapLevel3(), tilesAtlas, this.camera, font, tweenManager, new Sprite(levelEntrances.get(2).getLevelEntrance())));
-		mapTiles.add(new MapTile(20, 20, 200, 200, SlotPuzzleConstants.V_WIDTH, SlotPuzzleConstants.V_HEIGHT, new MapLevel4(), tilesAtlas, this.camera, font, tweenManager, new Sprite(levelEntrances.get(3).getLevelEntrance())));
-		mapTiles.add(new MapTile(20, 20, 200, 200, SlotPuzzleConstants.V_WIDTH, SlotPuzzleConstants.V_HEIGHT, new MapLevel5(), tilesAtlas, this.camera, font, tweenManager, new Sprite(levelEntrances.get(4).getLevelEntrance())));
-		mapTiles.add(new MapTile(20, 20, 200, 200, SlotPuzzleConstants.V_WIDTH, SlotPuzzleConstants.V_HEIGHT, new MapLevel6(), tilesAtlas, this.camera, font, tweenManager, new Sprite(levelEntrances.get(5).getLevelEntrance())));
-		mapTiles.add(new MapTile(20, 20, 200, 200, SlotPuzzleConstants.V_WIDTH, SlotPuzzleConstants.V_HEIGHT, new MapLevel7(), tilesAtlas, this.camera, font, tweenManager, new Sprite(levelEntrances.get(6).getLevelEntrance())));
+		mapTiles.add(new MapTile(20, 20, 200, 200, SlotPuzzleConstants.VIRTUAL_WIDTH, SlotPuzzleConstants.VIRTUAL_HEIGHT, new MapLevel1(), tilesAtlas, this.camera, font, tweenManager, new Sprite(levelEntrances.get(0).getLevelEntrance())));
+		mapTiles.add(new MapTile(20, 20, 200, 200, SlotPuzzleConstants.VIRTUAL_WIDTH, SlotPuzzleConstants.VIRTUAL_HEIGHT, new MapLevel2(), tilesAtlas, this.camera, font, tweenManager, new Sprite(levelEntrances.get(1).getLevelEntrance())));
+		mapTiles.add(new MapTile(20, 20, 200, 200, SlotPuzzleConstants.VIRTUAL_WIDTH, SlotPuzzleConstants.VIRTUAL_HEIGHT, new MapLevel3(), tilesAtlas, this.camera, font, tweenManager, new Sprite(levelEntrances.get(2).getLevelEntrance())));
+		mapTiles.add(new MapTile(20, 20, 200, 200, SlotPuzzleConstants.VIRTUAL_WIDTH, SlotPuzzleConstants.VIRTUAL_HEIGHT, new MapLevel4(), tilesAtlas, this.camera, font, tweenManager, new Sprite(levelEntrances.get(3).getLevelEntrance())));
+		mapTiles.add(new MapTile(20, 20, 200, 200, SlotPuzzleConstants.VIRTUAL_WIDTH, SlotPuzzleConstants.VIRTUAL_HEIGHT, new MapLevel5(), tilesAtlas, this.camera, font, tweenManager, new Sprite(levelEntrances.get(4).getLevelEntrance())));
+		mapTiles.add(new MapTile(20, 20, 200, 200, SlotPuzzleConstants.VIRTUAL_WIDTH, SlotPuzzleConstants.VIRTUAL_HEIGHT, new MapLevel6(), tilesAtlas, this.camera, font, tweenManager, new Sprite(levelEntrances.get(5).getLevelEntrance())));
+		mapTiles.add(new MapTile(20, 20, 200, 200, SlotPuzzleConstants.VIRTUAL_WIDTH, SlotPuzzleConstants.VIRTUAL_HEIGHT, new MapLevel7(), tilesAtlas, this.camera, font, tweenManager, new Sprite(levelEntrances.get(6).getLevelEntrance())));
 	}
 
 	private final TweenCallback maximizeCallback = new TweenCallback() {
@@ -570,11 +570,11 @@ public class WorldScreen implements Screen {
 		}
 
 		private float screenXToWorldX(float x) {
-			return ((camera.position.x - aspectRatio * ORTHO_VIEWPORT_WIDTH) * tilePixelWidth) + ((x / screenOverCWWRatio) * (float)SlotPuzzleConstants.V_WIDTH / Gdx.graphics.getWidth());
+			return ((camera.position.x - aspectRatio * ORTHO_VIEWPORT_WIDTH) * tilePixelWidth) + ((x / screenOverCWWRatio) * (float)SlotPuzzleConstants.VIRTUAL_WIDTH / Gdx.graphics.getWidth());
 		}
 
 		private float screenYToWorldY(float y) {
-            return ((camera.position.y - ORTHO_VIEWPORT_HEIGHT) * tilePixelHeight) + (( Gdx.graphics.getHeight() - y) / screenOverCWHRatio) * (float) SlotPuzzleConstants.V_HEIGHT / Gdx.graphics.getHeight();
+            return ((camera.position.y - ORTHO_VIEWPORT_HEIGHT) * tilePixelHeight) + (( Gdx.graphics.getHeight() - y) / screenOverCWHRatio) * (float) SlotPuzzleConstants.VIRTUAL_HEIGHT / Gdx.graphics.getHeight();
 		}
 
 		private float worldXToScreenX(float wx) {

@@ -220,8 +220,8 @@ public class MiniSlotMachineLevelFallingReels extends SPPrototypeTemplate {
         this.tileMapRenderer = new OrthogonalTiledMapRenderer(miniSlotmachineLevel);
         this.dampenedSines = new Array<DampenedSineParticle>();
         this.font = new BitmapFont();
-        this.sW = SlotPuzzleConstants.V_WIDTH;
-        this.sH = SlotPuzzleConstants.V_HEIGHT;
+        this.sW = SlotPuzzleConstants.VIRTUAL_WIDTH;
+        this.sH = SlotPuzzleConstants.VIRTUAL_HEIGHT;
         reelTiles = new Array<ReelTile>();
         scores = new Array<Score>();
     }

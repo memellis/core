@@ -86,12 +86,12 @@ public class SpinningSlotsWithHoldButtons extends SPPrototypeTemplate {
     }
 
     private void createHoldButtons() {
-        lightViewport = new FitViewport(SlotPuzzleConstants.V_WIDTH / PIXELS_PER_METER, SlotPuzzleConstants.V_HEIGHT / PIXELS_PER_METER);
-        lightViewport.getCamera().position.set(lightViewport.getCamera().position.x + SlotPuzzleConstants.V_WIDTH / PIXELS_PER_METER * 0.5f,
-                lightViewport.getCamera().position.y + SlotPuzzleConstants.V_HEIGHT / PIXELS_PER_METER * 0.5f,
+        lightViewport = new FitViewport(SlotPuzzleConstants.VIRTUAL_WIDTH / PIXELS_PER_METER, SlotPuzzleConstants.VIRTUAL_HEIGHT / PIXELS_PER_METER);
+        lightViewport.getCamera().position.set(lightViewport.getCamera().position.x + SlotPuzzleConstants.VIRTUAL_WIDTH / PIXELS_PER_METER * 0.5f,
+                lightViewport.getCamera().position.y + SlotPuzzleConstants.VIRTUAL_HEIGHT / PIXELS_PER_METER * 0.5f,
                 0);
         lightViewport.getCamera().update();
-        hudViewport = new FitViewport(SlotPuzzleConstants.V_WIDTH, SlotPuzzleConstants.V_HEIGHT, new OrthographicCamera());
+        hudViewport = new FitViewport(SlotPuzzleConstants.VIRTUAL_WIDTH, SlotPuzzleConstants.VIRTUAL_HEIGHT, new OrthographicCamera());
 
         world = new World(new Vector2(0, -9.8f), true);
         debugRenderer = new Box2DDebugRenderer();
@@ -104,7 +104,7 @@ public class SpinningSlotsWithHoldButtons extends SPPrototypeTemplate {
         reelLight.setActive(true);
         reelLight.setColor(Color.WHITE);
         reelLight.setDistance(2.0f);
-        reelLight.setPosition(SlotPuzzleConstants.V_WIDTH / ( PIXELS_PER_METER * 2), (SlotPuzzleConstants.V_HEIGHT + 96) / (PIXELS_PER_METER * 2));
+        reelLight.setPosition(SlotPuzzleConstants.VIRTUAL_WIDTH / ( PIXELS_PER_METER * 2), (SlotPuzzleConstants.VIRTUAL_HEIGHT + 96) / (PIXELS_PER_METER * 2));
 
         handleLight = new PointLight(rayHandler, 32);
         handleLight.setActive(true);
@@ -123,7 +123,7 @@ public class SpinningSlotsWithHoldButtons extends SPPrototypeTemplate {
 
         lightButtons = new Array<LightButton>();
         for (int i = 0; i < 3; i++) {
-            LightButton lightButton = new LightButton(world, rayHandler, i * 40 / PIXELS_PER_METER + SlotPuzzleConstants.V_WIDTH / (PIXELS_PER_METER * 2) - (3 * 40 / PIXELS_PER_METER) / 2, SlotPuzzleConstants.V_HEIGHT / (PIXELS_PER_METER * 4), 40, 40, new BitmapFont(), "", "Hold");
+            LightButton lightButton = new LightButton(world, rayHandler, i * 40 / PIXELS_PER_METER + SlotPuzzleConstants.VIRTUAL_WIDTH / (PIXELS_PER_METER * 2) - (3 * 40 / PIXELS_PER_METER) / 2, SlotPuzzleConstants.VIRTUAL_HEIGHT / (PIXELS_PER_METER * 4), 40, 40, new BitmapFont(), "", "Hold");
             lightButton.getSprite().setSize(40 / PIXELS_PER_METER, 40 / PIXELS_PER_METER);
             lightButtons.add(lightButton);
         }

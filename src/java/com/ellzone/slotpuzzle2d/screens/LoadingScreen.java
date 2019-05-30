@@ -53,7 +53,7 @@ public class LoadingScreen implements Screen{
     
     private void initialiseLoadingScreen() {
     	camera = new OrthographicCamera();
-		viewport = new FitViewport(SlotPuzzleConstants.V_WIDTH, SlotPuzzleConstants.V_HEIGHT, camera);
+		viewport = new FitViewport(SlotPuzzleConstants.VIRTUAL_WIDTH, SlotPuzzleConstants.VIRTUAL_HEIGHT, camera);
         stage = new Stage(viewport, game.batch);
     }
 
@@ -64,7 +64,7 @@ public class LoadingScreen implements Screen{
     
     private void initialiseScreenPositions() {
 		pbPos = new Vector2();
-		pbPos.set((SlotPuzzleConstants.V_WIDTH - progressBarBaseImg.getWidth()) >> 1, SlotPuzzleConstants.V_HEIGHT >> 1);
+		pbPos.set((SlotPuzzleConstants.VIRTUAL_WIDTH - progressBarBaseImg.getWidth()) >> 1, SlotPuzzleConstants.VIRTUAL_HEIGHT >> 1);
     }
 
 	@Override

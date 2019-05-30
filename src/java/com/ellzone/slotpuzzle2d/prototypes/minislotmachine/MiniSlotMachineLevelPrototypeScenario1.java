@@ -107,7 +107,7 @@ public class MiniSlotMachineLevelPrototypeScenario1 extends SPPrototypeTemplate 
     }
 
     private void getCamera() {
-        camera = CameraHelper.GetCamera(SlotPuzzleConstants.V_WIDTH, SlotPuzzleConstants.V_HEIGHT);
+        camera = CameraHelper.GetCamera(SlotPuzzleConstants.VIRTUAL_WIDTH, SlotPuzzleConstants.VIRTUAL_HEIGHT);
     }
 
     private void initialiseReelCounts() {
@@ -158,8 +158,8 @@ public class MiniSlotMachineLevelPrototypeScenario1 extends SPPrototypeTemplate 
     private void initialisePhysics() {
         physics = new PhysicsManagerCustomBodies(camera);
 
-        float centreX = SlotPuzzleConstants.V_WIDTH / 2;
-        float centreY = SlotPuzzleConstants.V_HEIGHT / 2;
+        float centreX = SlotPuzzleConstants.VIRTUAL_WIDTH / 2;
+        float centreY = SlotPuzzleConstants.VIRTUAL_HEIGHT / 2;
         Body reelSinkBottom = physics.createEdgeBody(BodyDef.BodyType.StaticBody,
                 centreX - 8 * 40 / 2 - 4,
                 centreY - 4 * 40 / 2 - 40,

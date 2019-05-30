@@ -161,7 +161,7 @@ public class PlayScreenPrototype implements Screen {
 
     private void initialiseScreen() {
         this.camera = new OrthographicCamera();
-        this.viewport = new FitViewport(SlotPuzzleConstants.V_WIDTH, SlotPuzzleConstants.V_HEIGHT, camera);
+        this.viewport = new FitViewport(SlotPuzzleConstants.VIRTUAL_WIDTH, SlotPuzzleConstants.VIRTUAL_HEIGHT, camera);
         this.stage = new Stage(this.viewport, this.game.batch);
     }
 
@@ -194,8 +194,8 @@ public class PlayScreenPrototype implements Screen {
         this.tileMapRenderer = new OrthogonalTiledMapRenderer(level);
         this.dampenedSines = new Array<DampenedSineParticle>();
         this.font = new BitmapFont();
-        this.sW = SlotPuzzleConstants.V_WIDTH;
-        this.sH = SlotPuzzleConstants.V_HEIGHT;
+        this.sW = SlotPuzzleConstants.VIRTUAL_WIDTH;
+        this.sH = SlotPuzzleConstants.VIRTUAL_HEIGHT;
         reelTiles = new Array<ReelTile>();
         scores = new Array<Score>();
     }

@@ -11,7 +11,7 @@ public class HoldLightButton extends LightButton {
         super(world, rayHandler, positionX, positionY, buttonWidth, buttonHeight, new BitmapFont(), "", "Hold", false);
     }
 
-    public void addTo(Object holdLightButtons) {
-        ((Array<HoldLightButton>) holdLightButtons).add(this);
-    }
+//    public void addTo(Object holdLightButtons) {
+//        ((Array<HoldLightButton>) holdLightButtons).add(this);
+//    }
 }

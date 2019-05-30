@@ -41,7 +41,7 @@ public class LevelLoader {
     private int levelWidth, levelHeight;
  	private Array<Card> cards;
     private Array<Integer> hiddenPlayingCards;
-    private LevelCallBack stoppedSpinningCallback, stoppedFlashingCallback;
+    private LevelCallback stoppedSpinningCallback, stoppedFlashingCallback;
     private HiddenPattern hiddenPattern;
     private PuzzleGridTypeReelTile puzzleGridTypeReelTile;
     private int reelsFromLevel;
@@ -71,11 +71,11 @@ public class LevelLoader {
         return reelTiles;
     }
 
-    public void setStoppedSpinningCallback(LevelCallBack callback) {
+    public void setStoppedSpinningCallback(LevelCallback callback) {
         this.stoppedSpinningCallback = callback;
     }
 
-    public void setStoppedFlashingCallback(LevelCallBack callback) {
+    public void setStoppedFlashingCallback(LevelCallback callback) {
         this.stoppedFlashingCallback = callback;
     }
 

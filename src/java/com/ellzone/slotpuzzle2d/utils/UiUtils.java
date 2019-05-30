@@ -31,7 +31,7 @@ public class UiUtils {
 	skin.add("default", font);
 
 	//Create a texture
-	Pixmap pixmap = new Pixmap((int)SlotPuzzleConstants.V_WIDTH/4,(int)SlotPuzzleConstants.V_HEIGHT/10, Pixmap.Format.RGB888);
+	Pixmap pixmap = new Pixmap((int)SlotPuzzleConstants.VIRTUAL_WIDTH /4,(int)SlotPuzzleConstants.VIRTUAL_HEIGHT /10, Pixmap.Format.RGB888);
 	pixmap.setColor(Color.WHITE);
 	pixmap.fill();
 	skin.add("background",new Texture(pixmap));

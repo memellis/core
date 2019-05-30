@@ -49,7 +49,7 @@ import com.ellzone.slotpuzzle2d.level.Card;
 import com.ellzone.slotpuzzle2d.level.FlashSlots;
 import com.ellzone.slotpuzzle2d.level.HiddenPattern;
 import com.ellzone.slotpuzzle2d.level.HiddenPlayingCard;
-import com.ellzone.slotpuzzle2d.level.LevelCallBack;
+import com.ellzone.slotpuzzle2d.level.LevelCallback;
 import com.ellzone.slotpuzzle2d.level.LevelCreator;
 import com.ellzone.slotpuzzle2d.level.LevelDoor;
 import com.ellzone.slotpuzzle2d.level.LevelLoader;
@@ -194,8 +194,8 @@ public class PlayScreen implements Screen, PlayInterface {
         displaySpinHelp = false;
         scores = new Array<>();
         font = new BitmapFont();
-        sW = SlotPuzzleConstants.V_WIDTH;
-        sH = SlotPuzzleConstants.V_HEIGHT;
+        sW = SlotPuzzleConstants.VIRTUAL_WIDTH;
+        sH = SlotPuzzleConstants.VIRTUAL_HEIGHT;
         playScreenPopUps = new PlayScreenPopUps(tilesAtlas, (int) sW, (int) sH, game.batch, tweenManager, levelDoor);
         playScreenPopUps.initialise();
     }
@@ -231,7 +231,7 @@ public class PlayScreen implements Screen, PlayInterface {
         return levelLoader;
     }
 
-    private LevelCallBack stoppedSpinningCallback = new LevelCallBack() {
+    private LevelCallback stoppedSpinningCallback = new LevelCallback() {
         @Override
         public void onEvent (ReelTile source){
             reelStoppedSound.play();
@@ -253,7 +253,7 @@ public class PlayScreen implements Screen, PlayInterface {
         }
     };
 
-	private LevelCallBack stoppedFlashingCallback = new LevelCallBack() {
+	private LevelCallback stoppedFlashingCallback = new LevelCallback() {
         @Override
         public void onEvent(ReelTile source) {
             if (testForAnyLonelyReels(reelTiles)) {
@@ -272,7 +272,7 @@ public class PlayScreen implements Screen, PlayInterface {
     };
 
     private void initialiseScreen() {
-		viewport = new FitViewport(SlotPuzzleConstants.V_WIDTH, SlotPuzzleConstants.V_HEIGHT, camera);
+		viewport = new FitViewport(SlotPuzzleConstants.VIRTUAL_WIDTH, SlotPuzzleConstants.VIRTUAL_HEIGHT, camera);
         stage = new Stage(viewport, game.batch);
 	}
 

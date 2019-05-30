@@ -101,8 +101,8 @@ public class Box2DFallingReels extends SPPrototype implements InputProcessor {
         reels = new Reels(annotationAssetManager);
         spriteWidth = reels.getReelWidth();
         spriteHeight = reels.getReelHeight();
-        this.displayWindowWidth = SlotPuzzleConstants.V_WIDTH;
-        this.displayWindowHeight = SlotPuzzleConstants.V_HEIGHT;
+        this.displayWindowWidth = SlotPuzzleConstants.VIRTUAL_WIDTH;
+        this.displayWindowHeight = SlotPuzzleConstants.VIRTUAL_HEIGHT;
         initialiseUniversalTweenEngine();
         createPhysicsWorld();
         Gdx.input.setInputProcessor(this);

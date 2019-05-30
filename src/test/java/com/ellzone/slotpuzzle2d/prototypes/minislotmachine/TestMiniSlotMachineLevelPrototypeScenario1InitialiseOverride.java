@@ -153,7 +153,7 @@ public class TestMiniSlotMachineLevelPrototypeScenario1InitialiseOverride {
     }
 
     private void expectations() throws Exception {
-        expect(CameraHelper.GetCamera(SlotPuzzleConstants.V_WIDTH, SlotPuzzleConstants.V_HEIGHT)).andReturn(orthographicCameraMock);
+        expect(CameraHelper.GetCamera(SlotPuzzleConstants.VIRTUAL_WIDTH, SlotPuzzleConstants.VIRTUAL_HEIGHT)).andReturn(orthographicCameraMock);
         expect(annotationAssetManagerMock.get(AssetsAnnotation.MINI_SLOT_MACHINE_LEVEL1)).andReturn(tiledMapMock);
         levelCreatorExpectations();
         hudExpectations();

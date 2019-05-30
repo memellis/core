@@ -69,7 +69,7 @@ public abstract class ParticleTemplate extends SPPrototype {
     }
 	
 	protected void initialiseScreen() {
-		viewport = new FitViewport(SlotPuzzleConstants.V_WIDTH, SlotPuzzleConstants.V_HEIGHT);
+		viewport = new FitViewport(SlotPuzzleConstants.VIRTUAL_WIDTH, SlotPuzzleConstants.VIRTUAL_HEIGHT);
 		stage = new Stage(viewport, batch); 
 	}
 	
@@ -77,8 +77,8 @@ public abstract class ParticleTemplate extends SPPrototype {
         cam = new PerspectiveCamera();
         cam.position.set(0, 0, 10);
         cam.lookAt(0, 0, 0);
-		displayWindowWidth = SlotPuzzleConstants.V_WIDTH;
-        displayWindowHeight = SlotPuzzleConstants.V_HEIGHT;
+		displayWindowWidth = SlotPuzzleConstants.VIRTUAL_WIDTH;
+        displayWindowHeight = SlotPuzzleConstants.VIRTUAL_HEIGHT;
     }
 
     protected void initialiseLibGdx() {

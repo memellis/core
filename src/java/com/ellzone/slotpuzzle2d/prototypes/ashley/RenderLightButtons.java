@@ -33,16 +33,16 @@ import com.ellzone.slotpuzzle2d.sprites.HoldLightButton;
 import com.ellzone.slotpuzzle2d.systems.LightSystem;
 import com.ellzone.slotpuzzle2d.systems.RenderSystem;
 import box2dLight.RayHandler;
+import static com.ellzone.slotpuzzle2d.SlotPuzzleConstants.EARTH_GRAVITY;
+import static com.ellzone.slotpuzzle2d.SlotPuzzleConstants.VIRTUAL_WIDTH;
+import static com.ellzone.slotpuzzle2d.SlotPuzzleConstants.VIRTUAL_HEIGHT;
 
 public class RenderLightButtons extends SPPrototype {
-    public static final float EARTH_GRAVITY = -9.8f;
-    private int displayWindowWidth, displayWindowHeight;
     private PooledEngine engine;
     private World world;
     private RayHandler rayHandler;
 
     public void create() {
-        intialiseDisplayWidthHeight();
         OrthographicCamera camera = setupCamera();
         world = createWorld();
         rayHandler = createRayHandler(world);
@@ -50,24 +50,13 @@ public class RenderLightButtons extends SPPrototype {
         createLightButtons();
     }
 
-    private void intialiseDisplayWidthHeight() {
-        displayWindowWidth = SlotPuzzleConstants.V_WIDTH;
-        displayWindowHeight = SlotPuzzleConstants.V_HEIGHT;
-    }
 
     private OrthographicCamera setupCamera() {
-        OrthographicCamera camera = new OrthographicCamera(SlotPuzzleConstants.V_WIDTH, SlotPuzzleConstants.V_HEIGHT);
-        camera.position.set(displayWindowWidth / 2, displayWindowHeight / 2, 0);
+        OrthographicCamera camera = new OrthographicCamera(VIRTUAL_WIDTH, VIRTUAL_HEIGHT);
+        camera.position.set(VIRTUAL_WIDTH / 2, VIRTUAL_HEIGHT / 2, 0);
         camera.update();
         return camera;
     }
-
-    private void setupEngine(RayHandler rayHandler, OrthographicCamera camera) {
-        engine = new PooledEngine();
-        RenderSystem renderSystem = new RenderSystem(world, rayHandler, camera);
-        engine.addSystem(renderSystem);
-        engine.addSystem(new LightSystem(world, rayHandler, (OrthographicCamera) renderSystem.getLightViewport().getCamera()));
-     }
 
     private World createWorld() {
         return new World(new Vector2(0, EARTH_GRAVITY), true);
@@ -75,6 +64,13 @@ public class RenderLightButtons extends SPPrototype {
 
     private RayHandler createRayHandler(World world) {
         return new RayHandler(world);
+    }
+
+    private void setupEngine(RayHandler rayHandler, OrthographicCamera camera) {
+        engine = new PooledEngine();
+        RenderSystem renderSystem = new RenderSystem(world, rayHandler, camera);
+        engine.addSystem(renderSystem);
+        engine.addSystem(new LightSystem(world, rayHandler, (OrthographicCamera) renderSystem.getLightViewport().getCamera()));
     }
 
     private void createLightButtons() {
@@ -86,14 +82,14 @@ public class RenderLightButtons extends SPPrototype {
     private void createLightButton(int i) {
         Entity entity = engine.createEntity();
         PositionComponent positionComponent =
-                new PositionComponent(i * 40 + SlotPuzzleConstants.V_WIDTH / 2 - (3 * 40 ) / 2,
-                                      SlotPuzzleConstants.V_HEIGHT / 4);
+                new PositionComponent(i * 40 + SlotPuzzleConstants.VIRTUAL_WIDTH / 2 - (3 * 40 ) / 2,
+                                      SlotPuzzleConstants.VIRTUAL_HEIGHT / 4);
         LightButtonComponent lightButtonComponent =
                 new LightButtonComponent(new HoldLightButton(
                         world,
                         rayHandler,
-                        i * 40 + SlotPuzzleConstants.V_WIDTH / 2 - (3 * 40) / 2,
-                        SlotPuzzleConstants.V_HEIGHT / 4, 40, 40));
+                        i * 40 + SlotPuzzleConstants.VIRTUAL_WIDTH / 2 - (3 * 40) / 2,
+                        SlotPuzzleConstants.VIRTUAL_HEIGHT / 4, 40, 40));
         lightButtonComponent.lightButton.getSprite().setSize(40, 40);
         lightButtonComponent.lightButton.getLight().setActive(true);
         entity = addVisualComponent(entity, lightButtonComponent.lightButton.getSprite());

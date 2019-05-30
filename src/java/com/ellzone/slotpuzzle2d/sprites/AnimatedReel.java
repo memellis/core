@@ -64,7 +64,6 @@ public class AnimatedReel {
 
 	public AnimatedReel(Texture texture, float x, float y, float tileWidth, float tileHeight, float reelDisplayWidth, float reelDisplayHeight, int endReel, Sound spinningSound, Sound stoppingSound, TweenManager tweenManager) {
 		this.texture = texture;
-		System.out.println(MessageFormat.format("Animated Reel ({0},{1})", x, y));
 		this.x = x;
 		this.y = y;
 		this.tileWidth = tileWidth;

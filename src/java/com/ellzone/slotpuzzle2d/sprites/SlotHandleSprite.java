@@ -32,6 +32,8 @@ import com.ellzone.slotpuzzle2d.effects.SpriteAccessor;
 import com.badlogic.gdx.math.*;
 
 public class SlotHandleSprite {
+	public static final String SLOT_HANDLE = "slot_handle";
+	public static final String SLOT_HANDLE_BASE = "slot_handle_base";
 	private TextureAtlas slotHandleAtlas;
 	private Sprite slotHandle, slotHandleBase;
 	private TweenManager tweenManager;
@@ -48,10 +50,18 @@ public class SlotHandleSprite {
 	    slotHandle.setPosition(xPosition, yPosition);
 	    slotHandleBase.setPosition(xPosition, yPosition - 20);
     }
+
+    public Sprite getSlotHandleSprite() {
+		return slotHandle;
+	}
+
+	public Sprite getSlotHandleBaseSprite() {
+		return slotHandleBase;
+	}
 	
 	private void defineSlotHandleSprite() {
-		slotHandle = slotHandleAtlas.createSprite("slot_handle");
-		slotHandleBase = slotHandleAtlas.createSprite("slot_handle_base");
+		slotHandle = slotHandleAtlas.createSprite(SLOT_HANDLE);
+		slotHandleBase = slotHandleAtlas.createSprite(SLOT_HANDLE_BASE);
 		Pixmap slotHandlePixmap = PixmapProcessors.getPixmapFromTextureRegion(slotHandle);
 		slotHandlePixmap.drawCircle(22, slotHandlePixmap.getHeight() - 10, 5);
 		slotHandle = new Sprite(new Texture(slotHandlePixmap));

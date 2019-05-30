@@ -68,12 +68,12 @@ public class RenderReels extends SPPrototype {
     }
 
     private void intialiseDisplayWidthHeight() {
-        displayWindowWidth = SlotPuzzleConstants.V_WIDTH;
-        displayWindowHeight = SlotPuzzleConstants.V_HEIGHT;
+        displayWindowWidth = SlotPuzzleConstants.VIRTUAL_WIDTH;
+        displayWindowHeight = SlotPuzzleConstants.VIRTUAL_HEIGHT;
     }
 
     private OrthographicCamera setupCamera() {
-        OrthographicCamera camera = new OrthographicCamera(SlotPuzzleConstants.V_WIDTH, SlotPuzzleConstants.V_HEIGHT);
+        OrthographicCamera camera = new OrthographicCamera(SlotPuzzleConstants.VIRTUAL_WIDTH, SlotPuzzleConstants.VIRTUAL_HEIGHT);
         camera.position.set(displayWindowWidth / 2, displayWindowHeight / 2, 0);
         camera.update();
         return camera;

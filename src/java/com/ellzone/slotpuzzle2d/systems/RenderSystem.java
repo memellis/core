@@ -13,9 +13,16 @@ import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import com.ellzone.slotpuzzle2d.SlotPuzzleConstants;
+import com.ellzone.slotpuzzle2d.components.AnimatedReelComponent;
 import com.ellzone.slotpuzzle2d.components.LightVisualComponent;
 import com.ellzone.slotpuzzle2d.components.PositionComponent;
 import com.ellzone.slotpuzzle2d.components.VisualComponent;
+import com.ellzone.slotpuzzle2d.sprites.Reels;
+
+import net.dermetfan.gdx.assets.AnnotationAssetManager;
+
+import java.text.MessageFormat;
+
 import box2dLight.RayHandler;
 import static com.ellzone.slotpuzzle2d.SlotPuzzleConstants.PIXELS_PER_METER;
 
@@ -60,15 +67,15 @@ public class RenderSystem extends EntitySystem {
     }
 
     private Viewport createLightViewPort() {
-        lightViewport = new FitViewport(SlotPuzzleConstants.V_WIDTH / PIXELS_PER_METER,
-                                        SlotPuzzleConstants.V_HEIGHT / PIXELS_PER_METER);
+        lightViewport = new FitViewport(SlotPuzzleConstants.VIRTUAL_WIDTH / PIXELS_PER_METER,
+                                        SlotPuzzleConstants.VIRTUAL_HEIGHT / PIXELS_PER_METER);
         lightViewport.getCamera().position.set(
-                lightViewport.getCamera().position.x + SlotPuzzleConstants.V_WIDTH / PIXELS_PER_METER * 0.5f,
-                lightViewport.getCamera().position.y + SlotPuzzleConstants.V_HEIGHT / PIXELS_PER_METER * 0.5f,
+                lightViewport.getCamera().position.x + SlotPuzzleConstants.VIRTUAL_WIDTH / PIXELS_PER_METER * 0.5f,
+                lightViewport.getCamera().position.y + SlotPuzzleConstants.VIRTUAL_HEIGHT / PIXELS_PER_METER * 0.5f,
                 0);
         lightViewport.getCamera().update();
-        lightViewport.update(SlotPuzzleConstants.V_WIDTH / PIXELS_PER_METER,
-                             SlotPuzzleConstants.V_HEIGHT / PIXELS_PER_METER);
+        lightViewport.update(SlotPuzzleConstants.VIRTUAL_WIDTH / PIXELS_PER_METER,
+                             SlotPuzzleConstants.VIRTUAL_HEIGHT / PIXELS_PER_METER);
         return lightViewport;
     }
 

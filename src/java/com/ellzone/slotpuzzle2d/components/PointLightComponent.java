@@ -14,10 +14,14 @@
  limitations under the License.
  */
 
-package com.ellzone.slotpuzzle2d.level;
+package com.ellzone.slotpuzzle2d.components;
 
-import com.ellzone.slotpuzzle2d.sprites.ReelTile;
+import com.badlogic.ashley.core.Component;
+import box2dLight.PointLight;
 
-public interface LevelCallback {
-    public void onEvent(ReelTile source);
+public class PointLightComponent implements Component {
+    public PointLight pointLight;
+    public PointLightComponent(PointLight pointLight) {
+        this.pointLight = pointLight;
+    }
 }

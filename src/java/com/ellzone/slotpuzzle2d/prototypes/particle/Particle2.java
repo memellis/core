@@ -144,7 +144,7 @@ public class Particle2 extends SPPrototype {
     }
 
 	private void initialiseScreen() {
-		viewport = new FitViewport(SlotPuzzleConstants.V_WIDTH, SlotPuzzleConstants.V_HEIGHT);
+		viewport = new FitViewport(SlotPuzzleConstants.VIRTUAL_WIDTH, SlotPuzzleConstants.VIRTUAL_HEIGHT);
 		stage = new Stage(viewport, batch);
 	}
 	

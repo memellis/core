@@ -127,8 +127,8 @@ public class IntroScreenPrototype extends InputAdapter implements Screen {
     private Array<PointLight> signLights;
     private float timerCount = 0;
     private int nextScreenTimer = 3;
-    private float sceneWidth = SlotPuzzleConstants.V_WIDTH / SlotPuzzleConstants.PIXELS_PER_METER;
-    private float sceneHeight = SlotPuzzleConstants.V_HEIGHT / SlotPuzzleConstants.PIXELS_PER_METER;
+    private float sceneWidth = SlotPuzzleConstants.VIRTUAL_WIDTH / SlotPuzzleConstants.PIXELS_PER_METER;
+    private float sceneHeight = SlotPuzzleConstants.VIRTUAL_HEIGHT / SlotPuzzleConstants.PIXELS_PER_METER;
 
     public IntroScreenPrototype(SlotPuzzle game) {
         this.game = game;
@@ -256,21 +256,21 @@ public class IntroScreenPrototype extends InputAdapter implements Screen {
         signLight1.setActive(true);
         signLight1.setColor(Color.RED);
         signLight1.setDistance(1.0f);
-        signLight1.setPosition(SlotPuzzleConstants.V_WIDTH * (PIXELS_PER_METER / 2), SlotPuzzleConstants.V_HEIGHT / (PIXELS_PER_METER / 2));
+        signLight1.setPosition(SlotPuzzleConstants.VIRTUAL_WIDTH * (PIXELS_PER_METER / 2), SlotPuzzleConstants.VIRTUAL_HEIGHT / (PIXELS_PER_METER / 2));
         signLights.add(signLight1);
 
         PointLight signLight2 = new PointLight(rayHandler, 32);
         signLight2.setActive(true);
         signLight2.setColor(Color.RED);
         signLight2.setDistance(1.0f);
-        signLight2.setPosition(SlotPuzzleConstants.V_WIDTH / (PIXELS_PER_METER / 4), SlotPuzzleConstants.V_HEIGHT / (PIXELS_PER_METER / 2));
+        signLight2.setPosition(SlotPuzzleConstants.VIRTUAL_WIDTH / (PIXELS_PER_METER / 4), SlotPuzzleConstants.VIRTUAL_HEIGHT / (PIXELS_PER_METER / 2));
         signLights.add(signLight1);
 
         PointLight signLight3 = new PointLight(rayHandler, 32);
         signLight3.setActive(true);
         signLight3.setColor(Color.RED);
         signLight3.setDistance(1.0f);
-        signLight3.setPosition(SlotPuzzleConstants.V_WIDTH / (PIXELS_PER_METER / 2) + SlotPuzzleConstants.V_HEIGHT / (PIXELS_PER_METER / 4), SlotPuzzleConstants.V_HEIGHT / (PIXELS_PER_METER / 2));
+        signLight3.setPosition(SlotPuzzleConstants.VIRTUAL_WIDTH / (PIXELS_PER_METER / 2) + SlotPuzzleConstants.VIRTUAL_HEIGHT / (PIXELS_PER_METER / 4), SlotPuzzleConstants.VIRTUAL_HEIGHT / (PIXELS_PER_METER / 2));
         signLights.add(signLight3);
 
         PointLight reelHelperLight = new PointLight(rayHandler, 32);

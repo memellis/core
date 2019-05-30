@@ -16,8 +16,10 @@
 
 package com.ellzone.slotpuzzle2d.level;
 
-import com.ellzone.slotpuzzle2d.sprites.ReelTile;
+import com.badlogic.ashley.core.Component;
+import com.ellzone.slotpuzzle2d.sprites.HoldLightButton;
 
-public interface LevelCallback {
-    public void onEvent(ReelTile source);
+public interface LevelHoldLightButtonCallback {
+    public void onEvent(HoldLightButton source);
+    public void addComponent(Component component);
 }

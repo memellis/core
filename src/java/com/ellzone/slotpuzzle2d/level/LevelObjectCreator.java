@@ -1,12 +1,15 @@
 package com.ellzone.slotpuzzle2d.level;
 
+import com.badlogic.ashley.core.Component;
 import com.badlogic.gdx.audio.Sound;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.maps.MapProperties;
 import com.badlogic.gdx.maps.objects.RectangleMapObject;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.utils.Array;
+import com.badlogic.gdx.utils.GdxRuntimeException;
 import com.ellzone.slotpuzzle2d.sprites.AnimatedReel;
 import com.ellzone.slotpuzzle2d.sprites.HoldLightButton;
 import com.ellzone.slotpuzzle2d.sprites.Reels;
@@ -20,19 +23,55 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.text.MessageFormat;
 import java.util.HashMap;
 import java.util.Map;
 
+import box2dLight.PointLight;
 import box2dLight.RayHandler;
 
 public class LevelObjectCreator {
     public static final String ADD_TO = "addTo";
+    public static final String DELEGATE_TO_CALLBACK = "delegateToCallback";
+    public static final String FIELD = "field";
+    public static final String METHOD = "method";
+    public static final String PROPERTY = "property";
+    public static final String VALUE = "value";
+    public static final String PARAMETER = "Parameter";
+    public static final String PARAMETER_VALUE = "ParameterValue";
+    public static final String COMPONENT = "Component";
+    public static final String PROPERTY_NAME = "Property";
+    public static final String PROPERTY_VALUE = "PropertyValue";
+    public static final String DOT_REGULAR_EXPRESSION = "\\.";
+    public static final String COLON = ":";
+    public static final int LENGTH_TWO = 2;
+    public static final int SECOND_PART = 1;
+
+    public static final String INT = "int";
+    public static final String LONG = "long";
+    public static final String DOUBLE = "double";
+    public static final String FLOAT = "float";
+    public static final String BOOL = "bool";
+    public static final String CHAR = "char";
+    public static final String BYTE = "byte";
+    public static final String VOID = "void";
+    public static final String SHORT = "short";
+    public static final String CLASS = "Class";
+    public static final String ADD_COMPONENT_TO_ENTITY = "addComponentToEntity";
+
     private Array<HoldLightButton> lightButtons = new Array<>();
     private Array<AnimatedReel> reels = new Array<>();
+    private Array<PointLight> pointLights = new Array<>();
     private SlotHandleSprite handle;
     private LevelCreatorInjectionInterface levelCreatorInjectionInterface;
     private World world;
     private RayHandler rayHandler;
+    private Color reelPointLightColor = new Color(0.2f, 0.2f, 0.2f, 0.2f);
+    private LevelHoldLightButtonCallback levelHoldLightButtonCallback;
+    private LevelAnimatedReelCallback levelAnimatedReelCallback;
+    private LevelSlotHandleSpriteCallback levelSlotHandleSpriteCallback;
+    private LevelPointLightCallback levelPointLightCallback;
+    private LevelPointLightAction levelPointLightAction;
 
     public LevelObjectCreator(LevelCreatorInjectionInterface injection, World world, RayHandler rayHandler) {
         this.levelCreatorInjectionInterface = injection;
@@ -40,22 +79,54 @@ public class LevelObjectCreator {
         this.rayHandler = rayHandler;
     };
 
-    public void createLevel(Array<RectangleMapObject> levelRectangleMapObjects) throws IllegalAccessException {
+    public void createLevel(Array<RectangleMapObject> levelRectangleMapObjects) throws GdxRuntimeException {
         Object createdObject = null;
+        Object createdComponent = null;
+        boolean huntingForComponents = true;
+        int componentCount = 1;
+        Array<String> components = new Array<>();
         for (RectangleMapObject rectangleMapObject : levelRectangleMapObjects) {
             MapProperties rectangleMapObjectProperties = rectangleMapObject.getProperties();
             Class<?> clazz = getClass(rectangleMapObjectProperties);
-            Array<String> constructorParameters = getClassConstructorParameters(rectangleMapObjectProperties, "Parameter");
+            Array<String> constructorParameters = getParameters(rectangleMapObjectProperties, PARAMETER);
             Class<?>[] classParameters = getParamTypes(constructorParameters);
-
             Constructor<?> constructor = getConstructor(clazz, classParameters);
-            Array<String> constructorParameterValues = getClassConstructorParameters(rectangleMapObjectProperties, "ParameterValue");
+            Array<String> constructorParameterValues = getParameters(rectangleMapObjectProperties, PARAMETER_VALUE);
             try {
                 createdObject = getCreatedObject(rectangleMapObjectProperties, classParameters, constructor, constructorParameterValues);
-                if (createdObject != null)
-                    invokeAddToMethod(createdObject);
+                if (createdObject != null) {
+                    invokeObjectmethod(createdObject, ADD_TO);
+                    invokeObjectmethod(createdObject, DELEGATE_TO_CALLBACK);
+                    componentCount = 1;
+                    huntingForComponents = true;
+                }
             } catch (Exception e) {
-                e.printStackTrace();
+                throw new GdxRuntimeException(e);
+            }
+            if (huntingForComponents) {
+                String component = parseComponent(COMPONENT + componentCount, rectangleMapObjectProperties);
+                if (component != null) {
+                    System.out.println(MessageFormat.format("{0}", component));
+                    components.add(component);
+                    Array<String> componentParameters = getParameters(rectangleMapObjectProperties, COMPONENT + componentCount + PROPERTY_NAME);
+                    if (componentParameters != null) {
+                        Class<?>[] componentParameterTypes = getParamTypes(componentParameters);
+                        Array<String> componentParameterValues = getParameters(rectangleMapObjectProperties, COMPONENT + componentCount + "Value");
+                        Class<?> componentClass = getClass(component);
+                        Constructor<?> componentConstructor = getConstructor(componentClass, componentParameterTypes);
+                        try {
+                            createdComponent = getCreatedObject(rectangleMapObjectProperties, componentParameterTypes, componentConstructor, componentParameterValues);
+                            if (createdObject != null) {
+                                invokeComponentObjectmethod(createdObject, createdComponent, ADD_COMPONENT_TO_ENTITY);
+                                System.out.println(MessageFormat.format("About to create component {0}", component));
+                            }
+                        } catch (Exception e) {
+                            throw new GdxRuntimeException(e);
+                        }
+                        componentCount++;
+                    } else
+                        huntingForComponents = false;
+                }
             }
         }
     }
@@ -100,8 +171,8 @@ public class LevelObjectCreator {
         return levelCreatorInjectionInterface.getSlothandleAtlas();
     }
 
-    public void addTo(HoldLightButton objectToBeAdded) {
-        lightButtons.add(objectToBeAdded);
+    public void addTo(HoldLightButton holdLightButton) {
+        lightButtons.add(holdLightButton);
     }
 
     public void addTo(AnimatedReel reel) {
@@ -110,16 +181,76 @@ public class LevelObjectCreator {
 
     public void addTo(SlotHandleSprite handle) { this.handle = handle; }
 
-    private void invokeAddToMethod(Object createdObject) {
+    public void addTo(PointLight pointLight) { pointLights.add(pointLight);}
+
+    public void addHoldLightButtonCallback(LevelHoldLightButtonCallback callback) {
+        this.levelHoldLightButtonCallback = callback;
+    }
+
+    public void addAnimatedReelCallback(LevelAnimatedReelCallback callback) {
+        this.levelAnimatedReelCallback = callback;
+    }
+
+    public void addSlotHandleCallback(LevelSlotHandleSpriteCallback callback) {
+        this.levelSlotHandleSpriteCallback = callback;
+    }
+
+    public void addPointLightCallback(LevelPointLightCallback callback) {
+        this.levelPointLightCallback = callback;
+    }
+
+    private void delegateToCallback(HoldLightButton holdLightButton) {
+        if (levelHoldLightButtonCallback != null)
+            levelHoldLightButtonCallback.onEvent(holdLightButton);
+    }
+
+    public void addComponentToEntity(PointLight pointLight, Component component) {
+        if (levelPointLightCallback != null)
+            levelPointLightCallback.addComponent(component);
+    }
+
+    private void delegateToCallback(AnimatedReel animatedReel) {
+        if (levelPointLightCallback != null)
+            levelAnimatedReelCallback.onEvent(animatedReel);
+    }
+
+    private void delegateToCallback(SlotHandleSprite slotHandleSprite) {
+        if (levelPointLightCallback != null)
+            levelSlotHandleSpriteCallback.onEvent(slotHandleSprite);
+    }
+
+
+    private void delegateToCallback(PointLight pointLight) {
+        if (levelPointLightCallback != null)
+            levelPointLightCallback.onEvent(pointLight);
+    }
+
+    private void invokeObjectmethod(Object createdObject, String methodName) {
         try {
-            Method method = this.getClass().getDeclaredMethod(ADD_TO, createdObject.getClass());
+            Method method = this.getClass().getDeclaredMethod(methodName, createdObject.getClass());
             method.invoke(this, createdObject);
         } catch (NoSuchMethodException e) {
-            e.printStackTrace();
+            throw new GdxRuntimeException(e);
         } catch (IllegalAccessException e) {
-            e.printStackTrace();
+            throw new GdxRuntimeException(e);
         } catch (InvocationTargetException e) {
-            e.printStackTrace();
+            throw new GdxRuntimeException(e);
+        }
+    }
+
+    private void invokeComponentObjectmethod(Object createdObject, Object createdComponent, String methodName) {
+        Class[] methodParameters = new Class[2];
+        methodParameters[0] = createdObject.getClass();
+        methodParameters[1] = Component.class;
+        try {
+            Method method = this.getClass().getDeclaredMethod(methodName, methodParameters);
+            method.invoke(this, createdObject, createdComponent);
+        } catch (NoSuchMethodException e) {
+            throw new GdxRuntimeException(e);
+        } catch (IllegalAccessException e) {
+            throw new GdxRuntimeException(e);
+        } catch (InvocationTargetException e) {
+            throw new GdxRuntimeException(e);
         }
     }
 
@@ -132,7 +263,7 @@ public class LevelObjectCreator {
             IllegalAccessException,
             InvocationTargetException,
             InstantiationException,
-            NoSuchMethodException, ClassNotFoundException {
+            NoSuchMethodException {
         Object[] constructorParametersValues = parseConstructorParameterValues(
                 constructorParameterValues, classParameters, rectangleMapproperties);
         return  constructor == null ? null : constructor.newInstance(constructorParametersValues);
@@ -149,9 +280,17 @@ public class LevelObjectCreator {
         return constructor;
     }
 
+    private String parseComponent(String component, MapProperties rectangleMapObjectProperties) {
+        return (String) rectangleMapObjectProperties.get(component);
+    }
+
     private Class<?> getClass(MapProperties rectangleMapObjectProperties) {
-        String className = (String) rectangleMapObjectProperties.get("Class");
+        String className = (String) rectangleMapObjectProperties.get(CLASS);
         System.out.println(String.format("creating className: %s", className));
+        return getClass(className);
+    }
+
+    private Class<?> getClass(String className) {
         Class<?> clazz = null;
         try {
             clazz = Class.forName(className);
@@ -161,7 +300,13 @@ public class LevelObjectCreator {
         return clazz;
     }
 
-    private Object[] parseConstructorParameterValues(Array<String> constructorParameterValues, Class<?>[] classParameters, MapProperties rectangleMapProperties) throws NoSuchFieldException, IllegalAccessException, NoSuchMethodException, InvocationTargetException, ClassNotFoundException {
+    private Object[] parseConstructorParameterValues(Array<String> constructorParameterValues,
+                                                     Class<?>[] classParameters,
+                                                     MapProperties rectangleMapProperties)
+            throws NoSuchFieldException,
+                   IllegalAccessException,
+                   NoSuchMethodException,
+                   InvocationTargetException {
         Object[] parameterValues = new Object[constructorParameterValues.size];
         int index = 0;
         for (String parameter : constructorParameterValues) {
@@ -171,21 +316,27 @@ public class LevelObjectCreator {
         return parameterValues;
     }
 
-    private Object parseParameterValue(String parameter, Class<?> classParam, MapProperties rectangleMapProperties) throws NoSuchFieldException, IllegalAccessException, NoSuchMethodException, InvocationTargetException, ClassNotFoundException {
-        if (parameter.toLowerCase().startsWith("field"))
+    private Object parseParameterValue(String parameter,
+                                       Class<?> classParam,
+                                       MapProperties rectangleMapProperties)
+            throws NoSuchFieldException,
+                   IllegalAccessException,
+                   NoSuchMethodException,
+                   InvocationTargetException {
+        if (parameter.toLowerCase().startsWith(FIELD))
             return parseField(parameter, classParam);
-       if (parameter.toLowerCase().startsWith("method"))
-            return parseMethod(parameter, classParam);
-        if (parameter.toLowerCase().startsWith("property"))
+        if (parameter.toLowerCase().startsWith(METHOD))
+            return parseMethod(parameter);
+        if (parameter.toLowerCase().startsWith(PROPERTY))
             return parseProperty(parameter, classParam, rectangleMapProperties);
-        if (parameter.toLowerCase().startsWith("value"))
+        if (parameter.toLowerCase().startsWith(VALUE))
             return parseValue(parameter, classParam);
         return null;
     }
 
     private Object parseValue(String parameter, Class<?> classParam) {
-        String[] parts = parameter.split("\\.");
-        String valuePart = parts.length == 2 ? parts[1] : null;
+        String[] parts = parameter.split(COLON);
+        String valuePart = parts.length == LENGTH_TWO ? parts[SECOND_PART] : null;
         if (isInt(classParam))
             return Integer.valueOf(valuePart);
         if (isFloat(classParam))
@@ -194,27 +345,27 @@ public class LevelObjectCreator {
     }
 
     private Object parseField(String parameter, Class<?> classParam) throws NoSuchFieldException, IllegalAccessException {
-        String[] parts = parameter.split("\\.");
-        String fieldPart = parts.length == 2 ? parts[1] : null;
+        String[] parts = parameter.split(DOT_REGULAR_EXPRESSION);
+        String fieldPart = parts.length == LENGTH_TWO ? parts[SECOND_PART] : null;
         Field field = this.getClass().getDeclaredField(fieldPart);
         return field.get(this);
     }
 
-    private Object parseMethod(String parameter, Class<?> classParam)
+    private Object parseMethod(String parameter)
         throws
             NoSuchMethodException, InvocationTargetException, IllegalAccessException {
-        String[] parts = parameter.split("\\.");
-        String methodPart = parts.length == 2 ? parts[1] : null;
+        String[] parts = parameter.split(DOT_REGULAR_EXPRESSION);
+        String methodPart = parts.length == LENGTH_TWO ? parts[SECOND_PART] : null;
         Method method = this.getClass().getDeclaredMethod(methodPart);
         return method.invoke(this);
     }
 
     private Object parseProperty(String parameter, Class<?> classParam, MapProperties rectangleMapProperties) {
-        String[] parts = parameter.split("\\.");
+        String[] parts = parameter.split(DOT_REGULAR_EXPRESSION);
         if (isInt(classParam))
-            return Math.round(parts.length == 2 ? (Float) (Object) rectangleMapProperties.get(parts[1].toLowerCase(), classParam) : null);
+            return Math.round(parts.length == LENGTH_TWO ? (Float) (Object) rectangleMapProperties.get(parts[1].toLowerCase(), classParam) : null);
         else
-            return parts.length == 2 ? (Object) rectangleMapProperties.get(parts[1].toLowerCase(), classParam) : null;
+            return parts.length == LENGTH_TWO ? (Object) rectangleMapProperties.get(parts[1].toLowerCase(), classParam) : null;
     }
 
     private boolean isInt(Class clazz) {
@@ -225,7 +376,7 @@ public class LevelObjectCreator {
         return clazz.equals(float.class);
     }
 
-    private Array<String> getClassConstructorParameters(MapProperties rectangleMapObjectProperties, String key) {
+    private Array<String> getParameters(MapProperties rectangleMapObjectProperties, String key) {
         int parameterCount = 1;
         Array<String> parameters = new Array<>();
         String parameterKey = key + String.valueOf(parameterCount);
@@ -238,16 +389,17 @@ public class LevelObjectCreator {
         return parameters;
     }
 
-    Map<String,Class> builtInMap = new HashMap<String,Class>();{
-        builtInMap.put("int", Integer.TYPE );
-        builtInMap.put("long", Long.TYPE );
-        builtInMap.put("double", Double.TYPE );
-        builtInMap.put("float", Float.TYPE );
-        builtInMap.put("bool", Boolean.TYPE );
-        builtInMap.put("char", Character.TYPE );
-        builtInMap.put("byte", Byte.TYPE );
-        builtInMap.put("void", Void.TYPE );
-        builtInMap.put("short", Short.TYPE );
+    Map<String,Class> builtInMap = new HashMap<String,Class>();
+    {
+        builtInMap.put(INT, Integer.TYPE );
+        builtInMap.put(LONG, Long.TYPE );
+        builtInMap.put(DOUBLE, Double.TYPE );
+        builtInMap.put(FLOAT, Float.TYPE );
+        builtInMap.put(BOOL, Boolean.TYPE );
+        builtInMap.put(CHAR, Character.TYPE );
+        builtInMap.put(BYTE, Byte.TYPE );
+        builtInMap.put(VOID, Void.TYPE );
+        builtInMap.put(SHORT, Short.TYPE );
     }
 
     public Class<?>[] getParamTypes(Array<String> parameters){

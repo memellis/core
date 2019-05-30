@@ -16,6 +16,7 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.utils.Array;
+import com.badlogic.gdx.utils.GdxRuntimeException;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import com.ellzone.slotpuzzle2d.SlotPuzzleConstants;
@@ -144,8 +145,8 @@ public class SpinningSlotsWithMatchesWinFlashesLoadedLevel
             lightButtons = levelObjectCreator.getHoldLightButtons();
             reels = levelObjectCreator.getAnimatedReels();
             slotHandleSprite = levelObjectCreator.getHandle();
-        } catch (IllegalAccessException e) {
-            e.printStackTrace();
+        } catch (GdxRuntimeException gdxRuntimeException) {
+            throw new GdxRuntimeException(gdxRuntimeException);
         }
         initialiseReels();
     }
@@ -155,21 +156,21 @@ public class SpinningSlotsWithMatchesWinFlashesLoadedLevel
     }
 
     private void createPointLights() {
-        lightViewport = new FitViewport(SlotPuzzleConstants.V_WIDTH / PIXELS_PER_METER, SlotPuzzleConstants.V_HEIGHT / PIXELS_PER_METER);
-        lightViewport.getCamera().position.set(lightViewport.getCamera().position.x + SlotPuzzleConstants.V_WIDTH / PIXELS_PER_METER * 0.5f,
-                lightViewport.getCamera().position.y + SlotPuzzleConstants.V_HEIGHT / PIXELS_PER_METER * 0.5f,
+        lightViewport = new FitViewport(SlotPuzzleConstants.VIRTUAL_WIDTH / PIXELS_PER_METER, SlotPuzzleConstants.VIRTUAL_HEIGHT / PIXELS_PER_METER);
+        lightViewport.getCamera().position.set(lightViewport.getCamera().position.x + SlotPuzzleConstants.VIRTUAL_WIDTH / PIXELS_PER_METER * 0.5f,
+                lightViewport.getCamera().position.y + SlotPuzzleConstants.VIRTUAL_HEIGHT / PIXELS_PER_METER * 0.5f,
                 0);
         lightViewport.getCamera().update();
-        lightViewport.update(SlotPuzzleConstants.V_WIDTH / PIXELS_PER_METER,
-                             SlotPuzzleConstants.V_HEIGHT / PIXELS_PER_METER);
+        lightViewport.update(SlotPuzzleConstants.VIRTUAL_WIDTH / PIXELS_PER_METER,
+                             SlotPuzzleConstants.VIRTUAL_HEIGHT / PIXELS_PER_METER);
 
-        hudViewport = new FitViewport(SlotPuzzleConstants.V_WIDTH, SlotPuzzleConstants.V_HEIGHT, new OrthographicCamera());
+        hudViewport = new FitViewport(SlotPuzzleConstants.VIRTUAL_WIDTH, SlotPuzzleConstants.VIRTUAL_HEIGHT, new OrthographicCamera());
 
         PointLight reelLight = new PointLight(rayHandler, 32);
         reelLight.setActive(true);
         reelLight.setColor(Color.WHITE);
         reelLight.setDistance(2.0f);
-        reelLight.setPosition(SlotPuzzleConstants.V_WIDTH / ( PIXELS_PER_METER * 2), (SlotPuzzleConstants.V_HEIGHT + 96) / (PIXELS_PER_METER * 2));
+        reelLight.setPosition(SlotPuzzleConstants.VIRTUAL_WIDTH / ( PIXELS_PER_METER * 2), (SlotPuzzleConstants.VIRTUAL_HEIGHT + 96) / (PIXELS_PER_METER * 2));
 
         PointLight handleLight = new PointLight(rayHandler, 32);
         handleLight.setActive(true);
@@ -185,14 +186,6 @@ public class SpinningSlotsWithMatchesWinFlashesLoadedLevel
         reelHelperLight.setColor(Color.RED);
         reelHelperLight.setDistance(1.0f);
         reelHelperLight.setPosition(48 / PIXELS_PER_METER,  (sprites[0].getY() + 16) / PIXELS_PER_METER);
-    }
-
-    private PointLight createLevelLight(int x, int y) {
-        PointLight levelLight = new PointLight(rayHandler,4);
-        levelLight.setActive(true);
-        levelLight.setColor(Color.GRAY);
-        levelLight.setPosition(x / PIXELS_PER_METER, y / PIXELS_PER_METER);
-        return levelLight;
     }
 
     @Override

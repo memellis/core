@@ -44,7 +44,7 @@ public class DownloadMamuIcons extends SPPrototype {
 
 	@Override
 	public void create () {
-		stage = new Stage(new FitViewport(SlotPuzzleConstants.V_WIDTH, SlotPuzzleConstants.V_HEIGHT));
+		stage = new Stage(new FitViewport(SlotPuzzleConstants.VIRTUAL_WIDTH, SlotPuzzleConstants.VIRTUAL_HEIGHT));
 		skin = new Skin(Gdx.files.internal("ui/uiskin.json"));
 		Gdx.input.setInputProcessor(stage);
 		Table container = new Table();

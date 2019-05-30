@@ -38,8 +38,8 @@ public class LevelPopUp {
 	private BitmapFont levelFont, font;
 	private String currentLevel;
 	private String levelDescription;
-	private int sW = SlotPuzzleConstants.V_WIDTH;
-	private int sH = SlotPuzzleConstants.V_HEIGHT;
+	private int sW = SlotPuzzleConstants.VIRTUAL_WIDTH;
+	private int sH = SlotPuzzleConstants.VIRTUAL_HEIGHT;
 	
 	public LevelPopUp(SpriteBatch batch, TweenManager tweenManager, Array<Sprite> sprites, BitmapFont levelFont, String currentLevel, String levelDescription) {
 		this.tweenManager = tweenManager;

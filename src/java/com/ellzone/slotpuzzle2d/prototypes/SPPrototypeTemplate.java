@@ -117,8 +117,8 @@ public abstract class SPPrototypeTemplate extends SPPrototype {
         cam.position.set(0, 0, 10);
         cam.lookAt(0, 0, 0);
         cam.update();
-		displayWindowWidth = SlotPuzzleConstants.V_WIDTH;
-        displayWindowHeight = SlotPuzzleConstants.V_HEIGHT;
+		displayWindowWidth = SlotPuzzleConstants.VIRTUAL_WIDTH;
+        displayWindowHeight = SlotPuzzleConstants.VIRTUAL_HEIGHT;
     }
 
     protected void initialiseLibGdx() {
@@ -128,7 +128,7 @@ public abstract class SPPrototypeTemplate extends SPPrototype {
 
 	protected void initialiseScreen() {
         this.orthographicCamera = new OrthographicCamera();
-        viewport = new FitViewport(SlotPuzzleConstants.V_WIDTH, SlotPuzzleConstants.V_HEIGHT, orthographicCamera);
+        viewport = new FitViewport(SlotPuzzleConstants.VIRTUAL_WIDTH, SlotPuzzleConstants.VIRTUAL_HEIGHT, orthographicCamera);
 		stage = new Stage(viewport, batch);
 
         initialiseScreenOverride();
