@@ -103,7 +103,7 @@ public class LevelObjectCreator {
             } catch (Exception e) {
                 throw new GdxRuntimeException(e);
             }
-            if (huntingForComponents) {
+            while (huntingForComponents) {
                 String component = parseComponent(COMPONENT + componentCount, rectangleMapObjectProperties);
                 if (component != null) {
                     System.out.println(MessageFormat.format("{0}", component));
@@ -126,7 +126,8 @@ public class LevelObjectCreator {
                         componentCount++;
                     } else
                         huntingForComponents = false;
-                }
+                } else
+                    huntingForComponents = false;
             }
         }
     }
@@ -207,6 +208,11 @@ public class LevelObjectCreator {
     public void addComponentToEntity(PointLight pointLight, Component component) {
         if (levelPointLightCallback != null)
             levelPointLightCallback.addComponent(component);
+    }
+
+    public void addComponentToEntity(HoldLightButton holdLightButton, Component component) {
+        if (levelHoldLightButtonCallback != null)
+            levelHoldLightButtonCallback.addComponent(component);
     }
 
     private void delegateToCallback(AnimatedReel animatedReel) {

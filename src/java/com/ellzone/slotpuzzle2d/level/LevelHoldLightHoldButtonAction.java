@@ -22,12 +22,10 @@ import com.badlogic.ashley.core.PooledEngine;
 import com.badlogic.gdx.physics.box2d.World;
 import com.ellzone.slotpuzzle2d.components.LightButtonComponent;
 import com.ellzone.slotpuzzle2d.components.LightVisualComponent;
-import com.ellzone.slotpuzzle2d.components.PositionComponent;
 import com.ellzone.slotpuzzle2d.sprites.HoldLightButton;
 
 import box2dLight.RayHandler;
 
-import static com.ellzone.slotpuzzle2d.SlotPuzzleConstants.PIXELS_PER_METER;
 
 public class LevelHoldLightHoldButtonAction implements LevelHoldLightButtonCallback {
     private PooledEngine engine;
@@ -45,11 +43,7 @@ public class LevelHoldLightHoldButtonAction implements LevelHoldLightButtonCallb
     public void onEvent(HoldLightButton source) {
         entity = engine.createEntity();
         LightButtonComponent lightButtonComponent = new LightButtonComponent(source);
-        PositionComponent positionComponent =
-                new PositionComponent( source.getSprite().getX() * PIXELS_PER_METER,
-                                       source.getSprite().getY() * PIXELS_PER_METER);
         entity.add(lightButtonComponent);
-        entity.add(positionComponent);
         entity.add(new LightVisualComponent(lightButtonComponent.lightButton.getSprite()));
         engine.addEntity(entity);
     }
