@@ -24,6 +24,7 @@ import com.ellzone.slotpuzzle2d.effects.ReelAccessor;
 import com.ellzone.slotpuzzle2d.effects.SpriteAccessor;
 import com.ellzone.slotpuzzle2d.level.LevelCreatorInjectionInterface;
 import com.ellzone.slotpuzzle2d.level.LevelObjectCreator;
+import com.ellzone.slotpuzzle2d.level.PlayScreenIntroSequence;
 import com.ellzone.slotpuzzle2d.physics.DampenedSineParticle;
 import com.ellzone.slotpuzzle2d.prototypes.SPPrototypeTemplate;
 import com.ellzone.slotpuzzle2d.puzzlegrid.PuzzleGridTypeReelTile;
@@ -37,18 +38,15 @@ import com.ellzone.slotpuzzle2d.sprites.ReelTileEvent;
 import com.ellzone.slotpuzzle2d.sprites.ReelTileListener;
 import com.ellzone.slotpuzzle2d.sprites.Reels;
 import com.ellzone.slotpuzzle2d.sprites.SlotHandleSprite;
+import com.ellzone.slotpuzzle2d.tweenengine.BaseTween;
 import com.ellzone.slotpuzzle2d.tweenengine.SlotPuzzleTween;
-import com.ellzone.slotpuzzle2d.tweenengine.Timeline;
+import com.ellzone.slotpuzzle2d.tweenengine.TweenCallback;
 import com.ellzone.slotpuzzle2d.tweenengine.TweenManager;
 import com.ellzone.slotpuzzle2d.utils.AssetsAnnotation;
 import com.ellzone.slotpuzzle2d.utils.PixmapProcessors;
 import net.dermetfan.gdx.assets.AnnotationAssetManager;
 import java.util.Comparator;
 import java.util.Random;
-import aurelienribon.tweenengine.equations.Back;
-import aurelienribon.tweenengine.equations.Cubic;
-import aurelienribon.tweenengine.equations.Quad;
-import aurelienribon.tweenengine.equations.Quart;
 import box2dLight.PointLight;
 import box2dLight.RayHandler;
 
@@ -302,58 +300,30 @@ public class SpinningSlotsWithMatchesWinFlashesLoadedLevel
         reel.getReel().addListener(new ReelStoppedListener().invoke());
     }
 
+    private Array<ReelTile> getReelTilesFromAnimatedReels(Array<AnimatedReel> animatedReels) {
+        Array<ReelTile> reelTiles = new Array<>();
+        for (AnimatedReel animatedReel : animatedReels)
+            reelTiles.add(animatedReel.getReel());
+        return reelTiles;
+    }
+
     private void createIntroSequence() {
-        Timeline introSequence = Timeline.createParallel();
-        for(int i=0; i < reels.size; i++) {
-            introSequence = introSequence
-                    .push(buildSequence(reels.get(i).getReel(), i, random.nextFloat() * 5.0f, random.nextFloat() * 5.0f, reels.size));
+        PlayScreenIntroSequence playScreenIntroSequence = new PlayScreenIntroSequence(getReelTilesFromAnimatedReels(reels), tweenManager);
+        playScreenIntroSequence.createReelIntroSequence(introSequenceCallback);
+    }
+
+    private TweenCallback introSequenceCallback = new TweenCallback() {
+        @Override
+        public void onEvent(int type, BaseTween<?> source) {
+            delegateIntroSequenceCallback(type);
         }
+    };
 
-        introSequence
-                .pushPause(0.3f)
-                .start(tweenManager);
-    }
-
-    private Timeline buildSequence(Sprite target, int id, float delay1, float delay2, int numberOfSprites) {
-        Vector2 targetXY = getRandomCorner();
-        return Timeline.createSequence()
-                .push(SlotPuzzleTween.set(target, SpriteAccessor.POS_XY).target(targetXY.x, targetXY.y))
-                .push(SlotPuzzleTween.set(target, SpriteAccessor.SCALE_XY).target(30, 30))
-                .push(SlotPuzzleTween.set(target, SpriteAccessor.ROTATION).target(0))
-                .push(SlotPuzzleTween.set(target, SpriteAccessor.OPACITY).target(0))
-                .pushPause(delay1)
-                .beginParallel()
-                .push(SlotPuzzleTween.to(target, SpriteAccessor.OPACITY, 1.0f).target(1).ease(Quart.INOUT))
-                .push(SlotPuzzleTween.to(target, SpriteAccessor.SCALE_XY, 1.0f).target(1, 1).ease(Quart.INOUT))
-                .end()
-                .pushPause(-0.5f)
-                .push(SlotPuzzleTween.to(target, SpriteAccessor.POS_XY, 1.0f).target(target.getX(), displayWindowHeight / 2                                                                                         ).ease(Back.OUT))
-                .push(SlotPuzzleTween.to(target, SpriteAccessor.ROTATION, 0.8f).target(360).ease(Cubic.INOUT))
-                .pushPause(delay2)
-                .beginParallel()
-                .push(SlotPuzzleTween.to(target, SpriteAccessor.SCALE_XY, 0.3f).target(3, 3).ease(Quad.IN))
-                .push(SlotPuzzleTween.to(target, SpriteAccessor.OPACITY, 0.3f).target(0).ease(Quad.IN))
-                .end()
-                .pushPause(-0.5f)
-                .beginParallel()
-                .push(SlotPuzzleTween.to(target, SpriteAccessor.OPACITY, 1.0f).target(1).ease(Quart.INOUT))
-                .push(SlotPuzzleTween.to(target, SpriteAccessor.SCALE_XY, 1.0f).target(1, 1).ease(Quart.INOUT))
-                .end();
-    }
-
-    private Vector2 getRandomCorner() {
-        int randomCorner = random.nextInt(4);
-        switch (randomCorner) {
-            case 0:
-                return new Vector2(-1 * random.nextFloat(), -1 * random.nextFloat());
-            case 1:
-                return new Vector2(-1 * random.nextFloat(), displayWindowWidth + random.nextFloat());
-            case 2:
-                return new Vector2(displayWindowWidth + random.nextFloat(), -1 * random.nextFloat());
-            case 3:
-                return new Vector2(displayWindowWidth + random.nextFloat(), displayWindowWidth + random.nextFloat());
-            default:
-                return new Vector2(-0.5f, -0.5f);
+    private void delegateIntroSequenceCallback(int type) {
+        switch (type) {
+            case TweenCallback.END:
+                System.out.println("Intro Sequence finished");
+                break;
         }
     }
 
@@ -465,7 +435,7 @@ public class SpinningSlotsWithMatchesWinFlashesLoadedLevel
         for (int row = 0; row < matchGrid.length; row++) {
             Array<ReelTileGridValue> depthSearchResults = puzzleGridTypeReelTile.depthFirstSearchIncludeDiagonals(matchGrid[row][0]);
             if (puzzleGridTypeReelTile.isRow(depthSearchResults, matchGrid)) {
-                rowMacthesToDraw.add(drawMatches(depthSearchResults, 540, 510));
+                rowMacthesToDraw.add(drawMatches(depthSearchResults, 545, 450));
             };
         }
     }
@@ -473,7 +443,7 @@ public class SpinningSlotsWithMatchesWinFlashesLoadedLevel
     private Array<Vector2> drawMatches(Array<ReelTileGridValue> depthSearchResults, int startX, int startY) {
         Array<Vector2> points = new Array<Vector2>();
         for (ReelTileGridValue cell : depthSearchResults) {
-            points.add(new Vector2(startX + cell.c * 60, startY - cell.r * 60 ));
+            points.add(new Vector2(startX + cell.c * 65, startY - cell.r * 65 ));
         }
         return points;
     }

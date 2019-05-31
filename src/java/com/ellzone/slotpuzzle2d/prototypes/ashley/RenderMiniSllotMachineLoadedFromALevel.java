@@ -1,9 +1,11 @@
 package com.ellzone.slotpuzzle2d.prototypes.ashley;
 
+import com.badlogic.ashley.core.Entity;
 import com.badlogic.ashley.core.PooledEngine;
+import com.badlogic.ashley.systems.IteratingSystem;
+import com.badlogic.ashley.utils.ImmutableArray;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.assets.loaders.resolvers.InternalFileHandleResolver;
-import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Pixmap;
@@ -17,6 +19,7 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.GdxRuntimeException;
+import com.ellzone.slotpuzzle2d.components.AnimatedReelComponent;
 import com.ellzone.slotpuzzle2d.effects.ReelAccessor;
 import com.ellzone.slotpuzzle2d.effects.SpriteAccessor;
 import com.ellzone.slotpuzzle2d.level.LevelAnimatedReelAction;
@@ -29,19 +32,24 @@ import com.ellzone.slotpuzzle2d.level.LevelPointLightAction;
 import com.ellzone.slotpuzzle2d.level.LevelPointLightCallback;
 import com.ellzone.slotpuzzle2d.level.LevelSlotHandleSpriteAction;
 import com.ellzone.slotpuzzle2d.level.LevelSlotHandleSpriteCallback;
+import com.ellzone.slotpuzzle2d.level.PlayScreenIntroSequence;
 import com.ellzone.slotpuzzle2d.prototypes.SPPrototype;
-import com.ellzone.slotpuzzle2d.sprites.HoldLightButton;
-import com.ellzone.slotpuzzle2d.sprites.LightButton;
+import com.ellzone.slotpuzzle2d.sprites.AnimatedReel;
 import com.ellzone.slotpuzzle2d.sprites.ReelTile;
 import com.ellzone.slotpuzzle2d.sprites.Reels;
+import com.ellzone.slotpuzzle2d.systems.AnimatedReelSystem;
 import com.ellzone.slotpuzzle2d.systems.LightSystem;
+import com.ellzone.slotpuzzle2d.systems.ReelTileMovementSystem;
 import com.ellzone.slotpuzzle2d.systems.RenderSystem;
+import com.ellzone.slotpuzzle2d.tweenengine.BaseTween;
 import com.ellzone.slotpuzzle2d.tweenengine.SlotPuzzleTween;
+import com.ellzone.slotpuzzle2d.tweenengine.TweenCallback;
 import com.ellzone.slotpuzzle2d.tweenengine.TweenManager;
 import com.ellzone.slotpuzzle2d.utils.AssetsAnnotation;
 import com.ellzone.slotpuzzle2d.utils.PixmapProcessors;
 
 import net.dermetfan.gdx.assets.AnnotationAssetManager;
+
 import java.util.Comparator;
 import box2dLight.RayHandler;
 
@@ -73,6 +81,7 @@ public class RenderMiniSllotMachineLoadedFromALevel
         initialiseUniversalTweenEngine();
         setupEngine(rayHandler, camera);
         loadlevel();
+        setUpIntroSequence();
     }
 
     private OrthographicCamera setupCamera() {
@@ -119,6 +128,8 @@ public class RenderMiniSllotMachineLoadedFromALevel
         RenderSystem renderSystem = new RenderSystem(world, rayHandler, camera);
         engine.addSystem(renderSystem);
         engine.addSystem(new LightSystem(world, rayHandler, (OrthographicCamera) renderSystem.getLightViewport().getCamera()));
+        engine.addSystem(new AnimatedReelSystem());
+        engine.addSystem(new ReelTileMovementSystem());
     }
 
     private TiledMap getLevelAssets(AnnotationAssetManager annotationAssetManager) {
@@ -135,7 +146,6 @@ public class RenderMiniSllotMachineLoadedFromALevel
         TiledMap level = getLevelAssets(annotationAssetManager);
         slotHandleAtlas = getSlotHanldeAtlas(annotationAssetManager);
         Array<RectangleMapObject> extractedLevelRectangleMapObjects = extractLevelAssets(level);
-        Array<HoldLightButton> lightButtons = new Array<>();
         try {
             levelObjectCreator.createLevel(extractedLevelRectangleMapObjects);
         } catch (GdxRuntimeException gdxRuntimeException) {
@@ -170,6 +180,45 @@ public class RenderMiniSllotMachineLoadedFromALevel
 
     private Array<RectangleMapObject> getRectangleMapObjectsFromLevel(TiledMap level) {
         return level.getLayers().get(SLOT_REEL_OBJECT_LAYER).getObjects().getByType(RectangleMapObject.class);
+    }
+
+    private void setUpIntroSequence() {
+        Array<ReelTile> reelTiles = getReelTilesFromAnimatedReels(getAnimatedReels());
+        PlayScreenIntroSequence playScreenIntroSequence = new PlayScreenIntroSequence(reelTiles, tweenManager);
+        playScreenIntroSequence.createReelIntroSequence(introSequenceCallback);
+    }
+
+    private TweenCallback introSequenceCallback = new TweenCallback() {
+        @Override
+        public void onEvent(int type, BaseTween<?> source) {
+            delegateIntroSequenceCallback(type);
+        }
+    };
+
+    private void delegateIntroSequenceCallback(int type) {
+        switch (type) {
+            case TweenCallback.END:
+                System.out.print("Intro Sequence finished");
+                break;
+        }
+    }
+
+    private Array<AnimatedReel> getAnimatedReels() {
+        Array<AnimatedReel> animatedReels = new Array<>();
+        IteratingSystem animatedReelSystem = engine.getSystem(AnimatedReelSystem.class);
+        ImmutableArray<Entity> animatedReelEntities = animatedReelSystem.getEntities();
+        for (Entity animatedReelEntity : animatedReelEntities) {
+            AnimatedReelComponent animatedReelComponent = animatedReelEntity.getComponent(AnimatedReelComponent.class);
+            animatedReels.add(animatedReelComponent.animatedReel);
+        }
+        return animatedReels;
+    }
+
+    private Array<ReelTile> getReelTilesFromAnimatedReels(Array<AnimatedReel> animatedReels) {
+        Array<ReelTile> reelTiles = new Array<>();
+        for (AnimatedReel animatedReel : animatedReels)
+            reelTiles.add(animatedReel.getReel());
+        return reelTiles;
     }
 
     @Override

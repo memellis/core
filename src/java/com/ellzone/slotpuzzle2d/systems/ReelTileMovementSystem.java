@@ -4,7 +4,6 @@ import com.badlogic.ashley.core.ComponentMapper;
 import com.badlogic.ashley.core.Entity;
 import com.badlogic.ashley.core.Family;
 import com.badlogic.ashley.systems.IteratingSystem;
-import com.ellzone.slotpuzzle2d.components.MovementComponent;
 import com.ellzone.slotpuzzle2d.components.PositionComponent;
 import com.ellzone.slotpuzzle2d.components.ReelTileComponent;
 

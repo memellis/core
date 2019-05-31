@@ -19,12 +19,10 @@ package com.ellzone.slotpuzzle2d.level;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Array;
-import com.ellzone.slotpuzzle2d.SlotPuzzleConstants;
 import com.ellzone.slotpuzzle2d.effects.SpriteAccessor;
 import com.ellzone.slotpuzzle2d.sprites.ReelTile;
 import com.ellzone.slotpuzzle2d.tweenengine.SlotPuzzleTween;
 import com.ellzone.slotpuzzle2d.tweenengine.Timeline;
-import com.ellzone.slotpuzzle2d.tweenengine.TweenCallback;
 import com.ellzone.slotpuzzle2d.tweenengine.TweenManager;
 
 
@@ -35,28 +33,13 @@ import aurelienribon.tweenengine.equations.Quart;
 
 import static com.badlogic.gdx.math.MathUtils.random;
 
-public class PlayScreenIntroSequence {
-    private Array<ReelTile> reelTiles;
-    private TweenManager tweenManager;
-
+public class PlayScreenIntroSequence extends IntroSequence {
     public PlayScreenIntroSequence(Array<ReelTile> reelTiles, TweenManager tweenManager) {
-        this.reelTiles = reelTiles;
-        this.tweenManager = tweenManager;
+        super(reelTiles, tweenManager);
     }
 
-    public void createReelIntroSequence(TweenCallback introSequenceCallback) {
-        Timeline introSequence = Timeline.createParallel();
-        for(int i=0; i < reelTiles.size; i++) {
-            introSequence = introSequence
-                    .push(buildSequence(reelTiles.get(i), i, random.nextFloat() * 3.0f, random.nextFloat() * 3.0f));
-        }
-        introSequence.pushPause(0.3f)
-                .setCallback(introSequenceCallback)
-                .setCallbackTriggers(TweenCallback.END)
-                .start(tweenManager);
-    }
-
-    private Timeline buildSequence(Sprite target, int id, float delay1, float delay2) {
+    @Override
+    protected Timeline buildSequence(Sprite target, int id, float delay1, float delay2) {
         Vector2 targetXY = getRandomCorner();
         return Timeline.createSequence()
                 .push(SlotPuzzleTween.set(target, SpriteAccessor.POS_XY).target(targetXY.x, targetXY.y))
@@ -81,21 +64,5 @@ public class PlayScreenIntroSequence {
                 .push(SlotPuzzleTween.to(target, SpriteAccessor.OPACITY, 1.0f).target(1).ease(Quart.INOUT))
                 .push(SlotPuzzleTween.to(target, SpriteAccessor.SCALE_XY, 1.0f).target(1.0f, 1.0f).ease(Quart.INOUT))
                 .end();
-    }
-
-    private Vector2 getRandomCorner() {
-        int randomCorner = random.nextInt(4);
-        switch (randomCorner) {
-            case 0:
-                return new Vector2(-1 * random.nextFloat(), -1 * random.nextFloat());
-            case 1:
-                return new Vector2(-1 * random.nextFloat(), SlotPuzzleConstants.VIRTUAL_WIDTH + random.nextFloat());
-            case 2:
-                return new Vector2(SlotPuzzleConstants.VIRTUAL_HEIGHT / 2 + random.nextFloat(), -1 * random.nextFloat());
-            case 3:
-                return new Vector2(SlotPuzzleConstants.VIRTUAL_HEIGHT + random.nextFloat(), SlotPuzzleConstants.VIRTUAL_WIDTH + random.nextFloat());
-            default:
-                return new Vector2(-0.5f, -0.5f);
-        }
     }
 }

@@ -20,9 +20,9 @@ import com.badlogic.ashley.core.Entity;
 import com.badlogic.ashley.core.PooledEngine;
 import com.ellzone.slotpuzzle2d.components.AnimatedReelComponent;
 import com.ellzone.slotpuzzle2d.components.PositionComponent;
+import com.ellzone.slotpuzzle2d.components.ReelTileComponent;
 import com.ellzone.slotpuzzle2d.components.VisualComponent;
 import com.ellzone.slotpuzzle2d.sprites.AnimatedReel;
-import com.ellzone.slotpuzzle2d.utils.PixmapProcessors;
 
 public class LevelAnimatedReelAction implements LevelAnimatedReelCallback {
     private PooledEngine engine;
@@ -35,6 +35,8 @@ public class LevelAnimatedReelAction implements LevelAnimatedReelCallback {
         Entity entity = engine.createEntity();
         AnimatedReelComponent animatedReelComponent = new AnimatedReelComponent(source);
         entity.add(animatedReelComponent);
+        ReelTileComponent reelTileComponent = new ReelTileComponent(source.getReel());
+        entity.add(reelTileComponent);
         entity.add(new PositionComponent(source.getReel().getX(), source.getReel().getY()));
         entity.add(new VisualComponent(source.getReel()));
         engine.addEntity(entity);
