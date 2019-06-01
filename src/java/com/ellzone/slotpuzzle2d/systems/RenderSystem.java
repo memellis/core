@@ -108,6 +108,8 @@ public class RenderSystem extends EntitySystem {
         return lightViewport;
     }
 
+    public SpriteBatch getSpriteBatch() { return batch; }
+
     @Override
     public void update(float deltaTime) {
         if (startRendering) {

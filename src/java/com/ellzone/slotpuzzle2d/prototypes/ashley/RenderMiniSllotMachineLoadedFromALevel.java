@@ -6,12 +6,15 @@ import com.badlogic.ashley.systems.IteratingSystem;
 import com.badlogic.ashley.utils.ImmutableArray;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.assets.loaders.resolvers.InternalFileHandleResolver;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Sprite;
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
+import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.maps.objects.RectangleMapObject;
 import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.TmxMapLoader;
@@ -35,15 +38,23 @@ import com.ellzone.slotpuzzle2d.level.LevelSlotHandleSpriteAction;
 import com.ellzone.slotpuzzle2d.level.LevelSlotHandleSpriteCallback;
 import com.ellzone.slotpuzzle2d.level.PlayScreenIntroSequence;
 import com.ellzone.slotpuzzle2d.prototypes.SPPrototype;
+import com.ellzone.slotpuzzle2d.puzzlegrid.PuzzleGridTypeReelTile;
+import com.ellzone.slotpuzzle2d.puzzlegrid.ReelTileGridValue;
 import com.ellzone.slotpuzzle2d.sprites.AnimatedReel;
+import com.ellzone.slotpuzzle2d.sprites.ReelStoppedSpinningEvent;
 import com.ellzone.slotpuzzle2d.sprites.ReelTile;
+import com.ellzone.slotpuzzle2d.sprites.ReelTileEvent;
+import com.ellzone.slotpuzzle2d.sprites.ReelTileListener;
 import com.ellzone.slotpuzzle2d.sprites.Reels;
 import com.ellzone.slotpuzzle2d.systems.AnimatedReelSystem;
 import com.ellzone.slotpuzzle2d.systems.LightSystem;
 import com.ellzone.slotpuzzle2d.systems.PlayerControlSystem;
 import com.ellzone.slotpuzzle2d.systems.ReelTileMovementSystem;
 import com.ellzone.slotpuzzle2d.systems.RenderSystem;
+import com.ellzone.slotpuzzle2d.systems.SlotHandlePulledPlayerSystemEvent;
 import com.ellzone.slotpuzzle2d.systems.SlotHandleSystem;
+import com.ellzone.slotpuzzle2d.systems.SystemCallback;
+import com.ellzone.slotpuzzle2d.systems.SystemEvent;
 import com.ellzone.slotpuzzle2d.tweenengine.BaseTween;
 import com.ellzone.slotpuzzle2d.tweenengine.SlotPuzzleTween;
 import com.ellzone.slotpuzzle2d.tweenengine.TweenCallback;
@@ -72,10 +83,16 @@ public class RenderMiniSllotMachineLoadedFromALevel
     private AnnotationAssetManager annotationAssetManager;
     private TextureAtlas slotHandleAtlas;
     private Texture slotReelScrollTexture;
+    private Array<AnimatedReel> animatedReels;
+    private Array<ReelTile> reelTiles;
     private Reels reels;
     private TweenManager tweenManager = new TweenManager();
     private RenderSystem renderSystem;
     private FitViewport viewport;
+    private int[][] reelGrid = new int[3][3];
+    private Array<Array<Vector2>> rowMacthesToDraw = new Array<Array<Vector2>>();
+    private SpriteBatch batch;
+    private ShapeRenderer shapeRenderer;
 
     public void create() {
         OrthographicCamera camera = setupCamera();
@@ -87,7 +104,12 @@ public class RenderMiniSllotMachineLoadedFromALevel
         setUpScreen(camera);
         setupEngine(rayHandler, camera);
         loadlevel();
-        setUpIntroSequence();
+        animatedReels = getAnimatedReels();
+        reelTiles = getReelTilesFromAnimatedReels(animatedReels);
+        setUpIntroSequence(reelTiles);
+        addAnimatedReelsStopListener(animatedReels);
+        batch = renderSystem.getSpriteBatch();
+        shapeRenderer = new ShapeRenderer();
     }
 
     private OrthographicCamera setupCamera() {
@@ -141,9 +163,11 @@ public class RenderMiniSllotMachineLoadedFromALevel
         renderSystem = new RenderSystem(world, rayHandler, camera);
         engine.addSystem(renderSystem);
         engine.addSystem(new LightSystem(world, rayHandler, (OrthographicCamera) renderSystem.getLightViewport().getCamera()));
-        engine.addSystem(new PlayerControlSystem(viewport, renderSystem.getLightViewport(), annotationAssetManager));
+        PlayerControlSystem playerControlSystem = new PlayerControlSystem(viewport, renderSystem.getLightViewport(), annotationAssetManager);
+        engine.addSystem(playerControlSystem);
+        playerControlSystem.addCallback(slotHandlePulledAction);
     }
-Re
+
     private TiledMap getLevelAssets(AnnotationAssetManager annotationAssetManager) {
         return annotationAssetManager.get(LEVEL_6_ASSETS);
     }
@@ -194,8 +218,7 @@ Re
         return level.getLayers().get(SLOT_REEL_OBJECT_LAYER).getObjects().getByType(RectangleMapObject.class);
     }
 
-    private void setUpIntroSequence() {
-        Array<ReelTile> reelTiles = getReelTilesFromAnimatedReels(getAnimatedReels());
+    private void setUpIntroSequence(Array<ReelTile> reelTiles) {
         PlayScreenIntroSequence playScreenIntroSequence = new PlayScreenIntroSequence(reelTiles, tweenManager);
         playScreenIntroSequence.createReelIntroSequence(introSequenceCallback);
         renderSystem.setStartRendering(true);
@@ -232,6 +255,88 @@ Re
         for (AnimatedReel animatedReel : animatedReels)
             reelTiles.add(animatedReel.getReel());
         return reelTiles;
+    }
+
+    private void addAnimatedReelsStopListener(Array<AnimatedReel> animatedReels) {
+        for (AnimatedReel reel : animatedReels)
+            addReelStoppedListener(reel);
+    }
+
+    private void addReelStoppedListener(AnimatedReel animatedReel) {
+        animatedReel.getReel().addListener(new ReelStoppedListener().invoke());
+    }
+
+    private class ReelStoppedListener {
+        public ReelTileListener invoke() {
+            return new ReelTileListener() {
+                @Override
+                public void actionPerformed(ReelTileEvent event, ReelTile source) {
+                if (event instanceof ReelStoppedSpinningEvent) {
+                    matchReels();
+                }
+                }
+            };
+        }
+    }
+
+    private void matchReels() {
+        captureReelPositions();
+        PuzzleGridTypeReelTile puzzleGrid = new PuzzleGridTypeReelTile();
+        ReelTileGridValue[][] matchGrid = puzzleGrid.populateMatchGrid(reelGrid);
+        PuzzleGridTypeReelTile puzzleGridTypeReelTile = new PuzzleGridTypeReelTile();
+        matchGrid = puzzleGridTypeReelTile.createGridLinks(matchGrid);
+        matchRowsToDraw(matchGrid, puzzleGridTypeReelTile);
+    }
+
+    private void matchRowsToDraw(ReelTileGridValue[][] matchGrid, PuzzleGridTypeReelTile puzzleGridTypeReelTile) {
+        rowMacthesToDraw = new Array<Array<Vector2>>();
+        for (int row = 0; row < matchGrid.length; row++) {
+            Array<ReelTileGridValue> depthSearchResults = puzzleGridTypeReelTile.depthFirstSearchIncludeDiagonals(matchGrid[row][0]);
+            if (puzzleGridTypeReelTile.isRow(depthSearchResults, matchGrid)) {
+                rowMacthesToDraw.add(drawMatches(depthSearchResults, 545, 450));
+            };
+        }
+    }
+
+    private Array<Vector2> drawMatches(Array<ReelTileGridValue> depthSearchResults, int startX, int startY) {
+        Array<Vector2> points = new Array<Vector2>();
+        for (ReelTileGridValue cell : depthSearchResults) {
+            points.add(new Vector2(startX + cell.c * 65, startY - cell.r * 65 ));
+        }
+        return points;
+    }
+
+    private void captureReelPositions() {
+        for (int r = 0; r < reelGrid.length; r++) {
+            for (int c = 0; c < reelGrid[0].length; c++) {
+                reelGrid[r][c] = getReelPosition(r, c);
+            }
+        }
+    }
+
+    private int getReelPosition(int r, int c) {
+        int reelPosition = reelTiles.get(c).getEndReel() + r;
+        if (reelPosition < 0)
+            reelPosition = reelTiles.get(c).getNumberOfReelsInTexture() - 1;
+        else {
+            if(reelPosition > reelTiles.get(c).getNumberOfReelsInTexture() - 1) {
+                reelPosition = 0;
+            }
+        }
+        return reelPosition;
+    }
+
+    private SystemCallback slotHandlePulledAction = new SystemCallback() {
+        @Override
+        public void onEvent(SystemEvent systemEvent, Object source) {
+            delegateSlotHandlePulledAction(systemEvent, source);
+        }
+    };
+
+    private void delegateSlotHandlePulledAction(SystemEvent systemEvent, Object source) {
+        if (systemEvent instanceof SlotHandlePulledPlayerSystemEvent)
+            if (rowMacthesToDraw.size > 0)
+                rowMacthesToDraw.removeRange(0, rowMacthesToDraw.size - 1);
     }
 
     @Override
@@ -271,5 +376,20 @@ Re
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
         engine.update(Gdx.graphics.getDeltaTime());
         tweenManager.update(Gdx.graphics.getDeltaTime());
+        renderMacthedRows(batch, shapeRenderer);
+    }
+
+    private void renderMacthedRows(SpriteBatch batch, ShapeRenderer shapeRenderer) {
+        batch.begin();
+        shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
+        shapeRenderer.setColor(Color.RED);
+        for (Array<Vector2> matchedRow : rowMacthesToDraw) {
+            if (matchedRow.size >= 2)
+                for (int i = 0; i < matchedRow.size - 1; i++) {
+                    shapeRenderer.rectLine(matchedRow.get(i).x, matchedRow.get(i).y, matchedRow.get(i + 1).x, matchedRow.get(i + 1).y, 2);
+                }
+        }
+        shapeRenderer.end();
+        batch.end();
     }
 }

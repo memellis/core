@@ -71,7 +71,6 @@ public class LevelObjectCreator {
     private LevelAnimatedReelCallback levelAnimatedReelCallback;
     private LevelSlotHandleSpriteCallback levelSlotHandleSpriteCallback;
     private LevelPointLightCallback levelPointLightCallback;
-    private LevelPointLightAction levelPointLightAction;
 
     public LevelObjectCreator(LevelCreatorInjectionInterface injection, World world, RayHandler rayHandler) {
         this.levelCreatorInjectionInterface = injection;

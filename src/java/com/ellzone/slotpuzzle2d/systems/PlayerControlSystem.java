@@ -49,7 +49,7 @@ public class PlayerControlSystem extends EntitySystem {
     private ComponentMapper<AnimatedReelComponent> animatedReelComponentMapper = ComponentMapper.getFor(AnimatedReelComponent.class);
     private ComponentMapper<LightButtonComponent> lightButtonComponentMapper = ComponentMapper.getFor(LightButtonComponent.class);
     private ComponentMapper<SlothandleSpriteComponent> slothandleSpriteComponentMapper = ComponentMapper.getFor(SlothandleSpriteComponent.class);
-
+    private SystemCallback systemCallback;
 
     public PlayerControlSystem(Viewport viewport, Viewport lightViewPort, AnnotationAssetManager annotationAssetManager) {
         this.viewport = viewport;
@@ -66,7 +66,10 @@ public class PlayerControlSystem extends EntitySystem {
 
     @Override
     public void removedFromEngine(Engine engine) {
+    }
 
+    public void addCallback(SystemCallback callback) {
+        this.systemCallback = callback;
     }
 
     @Override
@@ -144,7 +147,7 @@ public class PlayerControlSystem extends EntitySystem {
     private void slotHandlePulled(SlotHandleSprite slotHandleSprite) {
         slotHandleSprite.pullSlotHandle();
         playPullLeverSound();
-//        clearRowMatchesToDraw();
+        clearRowMatchesToDraw();
         int lightButtonIndex = 0;
         for (Entity animatedReelEntity : animatedReelEntities) {
             spinAnimatedReel(animatedReelEntity, lightButtonIndex);
@@ -154,6 +157,10 @@ public class PlayerControlSystem extends EntitySystem {
 
     private void playPullLeverSound() {
         ((Sound) annotationAssetManager.get(AssetsAnnotation.SOUND_PULL_LEVER)).play();
+    }
+
+    private void clearRowMatchesToDraw() {
+        systemCallback.onEvent(new SlotHandlePulledPlayerSystemEvent(), this);
     }
 
     private void spinAnimatedReel(Entity animatedReelEntity, int lightButtonIndex) {
