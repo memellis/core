@@ -143,7 +143,7 @@ public class RenderMiniSllotMachineLoadedFromALevel
         engine.addSystem(new LightSystem(world, rayHandler, (OrthographicCamera) renderSystem.getLightViewport().getCamera()));
         engine.addSystem(new PlayerControlSystem(viewport, renderSystem.getLightViewport(), annotationAssetManager));
     }
-
+Re
     private TiledMap getLevelAssets(AnnotationAssetManager annotationAssetManager) {
         return annotationAssetManager.get(LEVEL_6_ASSETS);
     }
