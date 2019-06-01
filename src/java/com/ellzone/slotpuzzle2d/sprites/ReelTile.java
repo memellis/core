@@ -304,4 +304,9 @@ public class ReelTile extends ReelSprite {
     public int getScrollTextureHeight() {
         return scrollTexture.getHeight();
     }
+
+    public int getNumberOfReelsInTexture() {
+        return numberOfReelsInTexture;
+    }
+
 }

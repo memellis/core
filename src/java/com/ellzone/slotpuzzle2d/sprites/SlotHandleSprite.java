@@ -58,7 +58,21 @@ public class SlotHandleSprite {
 	public Sprite getSlotHandleBaseSprite() {
 		return slotHandleBase;
 	}
-	
+
+
+	public void pullSlotHandle() {
+		slotHandleSequence.start(tweenManager);
+	}
+
+	public Rectangle getBoundingRectangle() {
+		return slotHandle.getBoundingRectangle();
+	}
+
+	public void draw(SpriteBatch spriteBatch) {
+		slotHandleBase.draw(spriteBatch);
+		slotHandle.draw(spriteBatch);
+	}
+
 	private void defineSlotHandleSprite() {
 		slotHandle = slotHandleAtlas.createSprite(SLOT_HANDLE);
 		slotHandleBase = slotHandleAtlas.createSprite(SLOT_HANDLE_BASE);
@@ -77,11 +91,11 @@ public class SlotHandleSprite {
 								.target(0)
 								.ease(Sine.IN));
 
-        slotHandleSequence.push(SlotPuzzleTween.to(slotHandle, SpriteAccessor.ROTATION, 1.0f)
+        slotHandleSequence.push(SlotPuzzleTween.to(slotHandle, SpriteAccessor.ROTATION, 0.75f)
 								.target(-60.0f)
 								.ease(Sine.OUT));
 
-        slotHandleSequence.push(SlotPuzzleTween.to(slotHandle, SpriteAccessor.ROTATION, 1.0f)
+        slotHandleSequence.push(SlotPuzzleTween.to(slotHandle, SpriteAccessor.ROTATION, 0.75f)
 								.target(0.0f)
 								.ease(Sine.OUT)
 								.setCallback(slotHandleCallback)
@@ -99,16 +113,4 @@ public class SlotHandleSprite {
         createSlotHandleTween();
 	}
 	
-	public void pullSlotHandle() {
-		slotHandleSequence.start(tweenManager);
-	}
-	
-	public Rectangle getBoundingRectangle() {
-		return slotHandle.getBoundingRectangle();
-	}
-	
-	public void draw(SpriteBatch spriteBatch) {
-        slotHandleBase.draw(spriteBatch);
-		slotHandle.draw(spriteBatch);
-	}
 }

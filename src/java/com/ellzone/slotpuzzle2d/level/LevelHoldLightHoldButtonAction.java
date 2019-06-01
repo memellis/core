@@ -22,6 +22,7 @@ import com.badlogic.ashley.core.PooledEngine;
 import com.badlogic.gdx.physics.box2d.World;
 import com.ellzone.slotpuzzle2d.components.LightButtonComponent;
 import com.ellzone.slotpuzzle2d.components.LightVisualComponent;
+import com.ellzone.slotpuzzle2d.components.PlayerComponent;
 import com.ellzone.slotpuzzle2d.sprites.HoldLightButton;
 
 import box2dLight.RayHandler;
@@ -45,6 +46,7 @@ public class LevelHoldLightHoldButtonAction implements LevelHoldLightButtonCallb
         LightButtonComponent lightButtonComponent = new LightButtonComponent(source);
         entity.add(lightButtonComponent);
         entity.add(new LightVisualComponent(lightButtonComponent.lightButton.getSprite()));
+        entity.add(new PlayerComponent());
         engine.addEntity(entity);
     }
 

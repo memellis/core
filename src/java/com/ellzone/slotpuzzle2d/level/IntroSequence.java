@@ -22,7 +22,7 @@ public abstract class IntroSequence {
 
     public void createReelIntroSequence(TweenCallback introSequenceCallback) {
         Timeline introSequence = Timeline.createParallel();
-        for(int i=0; i < reelTiles.size; i++) {
+        for(int i = 0; i < reelTiles.size; i++) {
             introSequence = introSequence
                     .push(buildSequence(reelTiles.get(i), i, random.nextFloat() * 3.0f, random.nextFloat() * 3.0f));
         }
@@ -30,6 +30,7 @@ public abstract class IntroSequence {
                 .setCallback(introSequenceCallback)
                 .setCallbackTriggers(TweenCallback.END)
                 .start(tweenManager);
+        System.out.println("Intro sequence started...");
     }
 
     protected Vector2 getRandomCorner() {

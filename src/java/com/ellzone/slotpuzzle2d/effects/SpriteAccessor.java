@@ -50,7 +50,8 @@ public class SpriteAccessor implements TweenAccessor<Sprite> {
 				returnValues[1] = target.getScaleY();
 				return 2;
 
-			case ROTATION: returnValues[0] = target.getRotation(); return 1;
+			case ROTATION: returnValues[0] = target.getRotation();
+				return 1;
 			case OPACITY: returnValues[0] = target.getColor().a; return 1;
 
 			case TINT:

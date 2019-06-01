@@ -19,6 +19,7 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.GdxRuntimeException;
+import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.ellzone.slotpuzzle2d.components.AnimatedReelComponent;
 import com.ellzone.slotpuzzle2d.effects.ReelAccessor;
 import com.ellzone.slotpuzzle2d.effects.SpriteAccessor;
@@ -39,8 +40,10 @@ import com.ellzone.slotpuzzle2d.sprites.ReelTile;
 import com.ellzone.slotpuzzle2d.sprites.Reels;
 import com.ellzone.slotpuzzle2d.systems.AnimatedReelSystem;
 import com.ellzone.slotpuzzle2d.systems.LightSystem;
+import com.ellzone.slotpuzzle2d.systems.PlayerControlSystem;
 import com.ellzone.slotpuzzle2d.systems.ReelTileMovementSystem;
 import com.ellzone.slotpuzzle2d.systems.RenderSystem;
+import com.ellzone.slotpuzzle2d.systems.SlotHandleSystem;
 import com.ellzone.slotpuzzle2d.tweenengine.BaseTween;
 import com.ellzone.slotpuzzle2d.tweenengine.SlotPuzzleTween;
 import com.ellzone.slotpuzzle2d.tweenengine.TweenCallback;
@@ -71,6 +74,8 @@ public class RenderMiniSllotMachineLoadedFromALevel
     private Texture slotReelScrollTexture;
     private Reels reels;
     private TweenManager tweenManager = new TweenManager();
+    private RenderSystem renderSystem;
+    private FitViewport viewport;
 
     public void create() {
         OrthographicCamera camera = setupCamera();
@@ -79,6 +84,7 @@ public class RenderMiniSllotMachineLoadedFromALevel
         annotationAssetManager = loadAssets();
         createSlotReelScrollTexture(annotationAssetManager);
         initialiseUniversalTweenEngine();
+        setUpScreen(camera);
         setupEngine(rayHandler, camera);
         loadlevel();
         setUpIntroSequence();
@@ -89,6 +95,10 @@ public class RenderMiniSllotMachineLoadedFromALevel
         camera.position.set(VIRTUAL_WIDTH / 2, VIRTUAL_HEIGHT / 2, 0);
         camera.update();
         return camera;
+    }
+
+    private void setUpScreen(OrthographicCamera camera) {
+        viewport = new FitViewport(VIRTUAL_WIDTH, VIRTUAL_HEIGHT, camera);
     }
 
     private World createWorld() {
@@ -125,11 +135,13 @@ public class RenderMiniSllotMachineLoadedFromALevel
 
     private void setupEngine(RayHandler rayHandler, OrthographicCamera camera) {
         engine = new PooledEngine();
-        RenderSystem renderSystem = new RenderSystem(world, rayHandler, camera);
-        engine.addSystem(renderSystem);
-        engine.addSystem(new LightSystem(world, rayHandler, (OrthographicCamera) renderSystem.getLightViewport().getCamera()));
         engine.addSystem(new AnimatedReelSystem());
         engine.addSystem(new ReelTileMovementSystem());
+        engine.addSystem(new SlotHandleSystem());
+        renderSystem = new RenderSystem(world, rayHandler, camera);
+        engine.addSystem(renderSystem);
+        engine.addSystem(new LightSystem(world, rayHandler, (OrthographicCamera) renderSystem.getLightViewport().getCamera()));
+        engine.addSystem(new PlayerControlSystem(viewport, renderSystem.getLightViewport(), annotationAssetManager));
     }
 
     private TiledMap getLevelAssets(AnnotationAssetManager annotationAssetManager) {
@@ -186,6 +198,7 @@ public class RenderMiniSllotMachineLoadedFromALevel
         Array<ReelTile> reelTiles = getReelTilesFromAnimatedReels(getAnimatedReels());
         PlayScreenIntroSequence playScreenIntroSequence = new PlayScreenIntroSequence(reelTiles, tweenManager);
         playScreenIntroSequence.createReelIntroSequence(introSequenceCallback);
+        renderSystem.setStartRendering(true);
     }
 
     private TweenCallback introSequenceCallback = new TweenCallback() {
@@ -247,10 +260,16 @@ public class RenderMiniSllotMachineLoadedFromALevel
     }
 
     @Override
+    public void resize(int width, int height) {
+        viewport.update(width, height);
+        renderSystem.getLightViewport().update(width, height);
+    }
+
+    @Override
     public void render () {
         Gdx.gl.glClearColor(0, 0, 0, 1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
-        tweenManager.update(Gdx.graphics.getDeltaTime());
         engine.update(Gdx.graphics.getDeltaTime());
+        tweenManager.update(Gdx.graphics.getDeltaTime());
     }
 }
