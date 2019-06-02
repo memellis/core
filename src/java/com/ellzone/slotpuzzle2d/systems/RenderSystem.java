@@ -92,15 +92,14 @@ public class RenderSystem extends EntitySystem {
     }
 
     private Viewport createLightViewPort() {
-        lightViewport = new FitViewport(VIRTUAL_WIDTH / PIXELS_PER_METER,
-                                        VIRTUAL_HEIGHT / PIXELS_PER_METER);
+        lightViewport = new FitViewport((float) VIRTUAL_WIDTH / PIXELS_PER_METER,
+                                        (float) VIRTUAL_HEIGHT / PIXELS_PER_METER);
         lightViewport.getCamera().position.set(
-                lightViewport.getCamera().position.x + VIRTUAL_WIDTH / PIXELS_PER_METER * 0.5f,
-                lightViewport.getCamera().position.y + VIRTUAL_HEIGHT / PIXELS_PER_METER * 0.5f,
+                VIRTUAL_WIDTH / PIXELS_PER_METER * 0.5f,
+                VIRTUAL_HEIGHT / PIXELS_PER_METER * 0.5f,
                 0);
         lightViewport.getCamera().update();
-        lightViewport.update(VIRTUAL_WIDTH / PIXELS_PER_METER,
-                             VIRTUAL_HEIGHT / PIXELS_PER_METER);
+        lightViewport.update(VIRTUAL_WIDTH, VIRTUAL_HEIGHT);
         return lightViewport;
     }
 

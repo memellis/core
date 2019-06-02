@@ -17,14 +17,14 @@
 package com.ellzone.slotpuzzle2d;
 
 public class SlotPuzzleConstants {
-	public final static String SLOT_PUZZLE = "Slot Puzzle";
-	public final static int VIRTUAL_WIDTH = 800;
-	public final static int VIRTUAL_HEIGHT = 480;
-	public final static int PIXELS_PER_METER = 100;
-	public static final float EARTH_GRAVITY = -9.8f;
-	public final static String DEBUG = "DEBUG";
-	public final static String INFO = "INFO";
-	public final static String ERROR = "ERROR";
-	public final static String LIBGDX_LOGLEVEL_PROPERTY = "libgdx.logLevel";
-	public final static String LIBGDX_LOGLEVEL = "LIBGDX_LOGLEVEL";
+    public final static String SLOT_PUZZLE = "Slot Puzzle";
+    public final static int VIRTUAL_WIDTH = 800;
+    public final static int VIRTUAL_HEIGHT = 480;
+    public final static int PIXELS_PER_METER = 100;
+    public static final float EARTH_GRAVITY = -9.8f;
+    public final static String DEBUG = "DEBUG";
+    public final static String INFO = "INFO";
+    public final static String ERROR = "ERROR";
+    public final static String LIBGDX_LOGLEVEL_PROPERTY = "libgdx.logLevel";
+    public final static String LIBGDX_LOGLEVEL = "LIBGDX_LOGLEVEL";
 }

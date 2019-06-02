@@ -50,6 +50,8 @@ import java.util.Random;
 import box2dLight.PointLight;
 import box2dLight.RayHandler;
 
+import static com.ellzone.slotpuzzle2d.SlotPuzzleConstants.VIRTUAL_HEIGHT;
+import static com.ellzone.slotpuzzle2d.SlotPuzzleConstants.VIRTUAL_WIDTH;
 import static com.ellzone.slotpuzzle2d.prototypes.screens.PlayScreenPrototype.SLOT_REEL_OBJECT_LAYER;
 import static com.ellzone.slotpuzzle2d.SlotPuzzleConstants.PIXELS_PER_METER;
 
@@ -108,10 +110,6 @@ public class SpinningSlotsWithMatchesWinFlashesLoadedLevel
         }
     }
 
-    public Texture getlotReelScrollTexture() {
-        return slotReelScrollTexture;
-    }
-
     @Override
     protected void initialiseOverride() {
         touch = new Vector2();
@@ -154,21 +152,20 @@ public class SpinningSlotsWithMatchesWinFlashesLoadedLevel
     }
 
     private void createPointLights() {
-        lightViewport = new FitViewport(SlotPuzzleConstants.VIRTUAL_WIDTH / PIXELS_PER_METER, SlotPuzzleConstants.VIRTUAL_HEIGHT / PIXELS_PER_METER);
-        lightViewport.getCamera().position.set(lightViewport.getCamera().position.x + SlotPuzzleConstants.VIRTUAL_WIDTH / PIXELS_PER_METER * 0.5f,
-                lightViewport.getCamera().position.y + SlotPuzzleConstants.VIRTUAL_HEIGHT / PIXELS_PER_METER * 0.5f,
-                0);
+        lightViewport = new FitViewport((float) VIRTUAL_WIDTH / PIXELS_PER_METER, (float) VIRTUAL_HEIGHT / PIXELS_PER_METER);
+        lightViewport.getCamera().position.set( (float) VIRTUAL_WIDTH / PIXELS_PER_METER * 0.5f,
+                                                (float) VIRTUAL_HEIGHT / PIXELS_PER_METER * 0.5f,
+                                                 0);
         lightViewport.getCamera().update();
-        lightViewport.update(SlotPuzzleConstants.VIRTUAL_WIDTH / PIXELS_PER_METER,
-                             SlotPuzzleConstants.VIRTUAL_HEIGHT / PIXELS_PER_METER);
+        lightViewport.update(VIRTUAL_WIDTH, VIRTUAL_HEIGHT);
 
-        hudViewport = new FitViewport(SlotPuzzleConstants.VIRTUAL_WIDTH, SlotPuzzleConstants.VIRTUAL_HEIGHT, new OrthographicCamera());
+        hudViewport = new FitViewport(VIRTUAL_WIDTH, VIRTUAL_HEIGHT, new OrthographicCamera());
 
         PointLight reelLight = new PointLight(rayHandler, 32);
         reelLight.setActive(true);
         reelLight.setColor(Color.WHITE);
         reelLight.setDistance(2.0f);
-        reelLight.setPosition(SlotPuzzleConstants.VIRTUAL_WIDTH / ( PIXELS_PER_METER * 2), (SlotPuzzleConstants.VIRTUAL_HEIGHT + 96) / (PIXELS_PER_METER * 2));
+        reelLight.setPosition(VIRTUAL_WIDTH / ( PIXELS_PER_METER * 2), (VIRTUAL_HEIGHT + 96) / (PIXELS_PER_METER * 2));
 
         PointLight handleLight = new PointLight(rayHandler, 32);
         handleLight.setActive(true);
@@ -394,6 +391,7 @@ public class SpinningSlotsWithMatchesWinFlashesLoadedLevel
     private void handleReelsTouched() {
         for (AnimatedReel animatedReel : reels) {
             if (animatedReel.getReel().getBoundingRectangle().contains(touch)) {
+                clearRowMatchesToDraw();
                 if (animatedReel.getReel().isSpinning()) {
                     if (animatedReel.getDampenedSineState() == DampenedSineParticle.DSState.UPDATING_DAMPENED_SINE) {
                         reelSpriteHelp = animatedReel.getReel().getCurrentReel();
