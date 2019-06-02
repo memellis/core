@@ -18,7 +18,6 @@ package com.ellzone.slotpuzzle2d.prototypes.cylinder;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.assets.loaders.resolvers.InternalFileHandleResolver;
-import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.PerspectiveCamera;
 import com.badlogic.gdx.graphics.Pixmap;
@@ -40,7 +39,7 @@ import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.TmxMapLoader;
 import com.badlogic.gdx.utils.Array;
 import com.ellzone.slotpuzzle2d.prototypes.SPPrototype;
-import com.ellzone.slotpuzzle2d.sprites.Reels;
+import com.ellzone.slotpuzzle2d.sprites.ReelSprites;
 import com.ellzone.slotpuzzle2d.utils.AssetsAnnotation;
 import com.ellzone.slotpuzzle2d.utils.PixmapProcessors;
 
@@ -59,9 +58,9 @@ public class Render3DCylinder2 extends SPPrototype {
     public void create() {
 
         annotationAssetManager =  loadAssets();
-        Reels reels = new Reels(annotationAssetManager);
+        ReelSprites reelSprites = new ReelSprites(annotationAssetManager);
 
-        final Texture reelTexture = initialiseReelTexture(reels);
+        final Texture reelTexture = initialiseReelTexture(reelSprites);
         PixmapProcessors.savePixmap(PixmapProcessors.getPixmapFromTextureRegion(new TextureRegion(reelTexture, reelTexture.getWidth(), reelTexture.getHeight())));
 
         instances.add(createReelModelInstance(reelTexture));
@@ -105,8 +104,8 @@ public class Render3DCylinder2 extends SPPrototype {
         cam.update();
     }
 
-    private Texture initialiseReelTexture(Reels reels) {
-        Pixmap slotReelScrollPixmap = PixmapProcessors.createHorizontalPixmapToAnimate(reels.getReels());
+    private Texture initialiseReelTexture(ReelSprites reelSprites) {
+        Pixmap slotReelScrollPixmap = PixmapProcessors.createHorizontalPixmapToAnimate(reelSprites.getSprites());
         return new Texture(slotReelScrollPixmap);
     }
 

@@ -29,10 +29,13 @@ import com.badlogic.gdx.utils.viewport.Viewport;
 import com.ellzone.slotpuzzle2d.components.AnimatedReelComponent;
 import com.ellzone.slotpuzzle2d.components.LightButtonComponent;
 import com.ellzone.slotpuzzle2d.components.PlayerComponent;
+import com.ellzone.slotpuzzle2d.components.ReelHelperComponent;
 import com.ellzone.slotpuzzle2d.components.SlothandleSpriteComponent;
+import com.ellzone.slotpuzzle2d.components.VisualComponent;
 import com.ellzone.slotpuzzle2d.physics.DampenedSineParticle;
 import com.ellzone.slotpuzzle2d.sprites.AnimatedReel;
 import com.ellzone.slotpuzzle2d.sprites.LightButton;
+import com.ellzone.slotpuzzle2d.sprites.ReelHelper;
 import com.ellzone.slotpuzzle2d.sprites.SlotHandleSprite;
 import com.ellzone.slotpuzzle2d.utils.AssetsAnnotation;
 import com.ellzone.slotpuzzle2d.utils.Random;
@@ -46,9 +49,11 @@ public class PlayerControlSystem extends EntitySystem {
     private ImmutableArray<Entity> animatedReelEntities;
     private ImmutableArray<Entity> lightButtonEntities;
     private ImmutableArray<Entity> slotHandleEntities;
+    private ImmutableArray<Entity> reelHelperEntities;
     private ComponentMapper<AnimatedReelComponent> animatedReelComponentMapper = ComponentMapper.getFor(AnimatedReelComponent.class);
     private ComponentMapper<LightButtonComponent> lightButtonComponentMapper = ComponentMapper.getFor(LightButtonComponent.class);
     private ComponentMapper<SlothandleSpriteComponent> slothandleSpriteComponentMapper = ComponentMapper.getFor(SlothandleSpriteComponent.class);
+    private ComponentMapper<ReelHelperComponent> reelHelperComponentMapper = ComponentMapper.getFor(ReelHelperComponent.class);
     private SystemCallback systemCallback;
 
     public PlayerControlSystem(Viewport viewport, Viewport lightViewPort, AnnotationAssetManager annotationAssetManager) {
@@ -62,6 +67,7 @@ public class PlayerControlSystem extends EntitySystem {
         animatedReelEntities = engine.getEntitiesFor(Family.all(AnimatedReelComponent.class, PlayerComponent.class).get());
         lightButtonEntities = engine.getEntitiesFor(Family.all(LightButtonComponent.class, PlayerComponent.class).get());
         slotHandleEntities = engine.getEntitiesFor(Family.all(SlothandleSpriteComponent.class, PlayerComponent.class).get());
+        reelHelperEntities = engine.getEntitiesFor(Family.all(ReelHelperComponent.class, PlayerComponent.class).get());
     }
 
     @Override
@@ -100,8 +106,7 @@ public class PlayerControlSystem extends EntitySystem {
         if (animatedReel.getReel().getBoundingRectangle().contains(touch)) {
             if (animatedReel.getReel().isSpinning()) {
                 if (animatedReel.getDampenedSineState() == DampenedSineParticle.DSState.UPDATING_DAMPENED_SINE) {
-//                    reelSpriteHelp = animatedReel.getReel().getCurrentReel();
-//                    animatedReel.getReel().setEndReel(reelSpriteHelp - 1 < 0 ? 0 : reelSpriteHelp - 1);
+                    setReelHelpers(animatedReel);
                 }
             } else {
                     animatedReel.setEndReel(Random.getInstance().nextInt(animatedReel.getReel().getNumberOfReelsInTexture()));
@@ -109,6 +114,20 @@ public class PlayerControlSystem extends EntitySystem {
                     animatedReel.getReel().startSpinning();
             }
         }
+    }
+
+    private void setReelHelpers(AnimatedReel animatedReel) {
+        for (Entity reelHelper : reelHelperEntities)
+            setReelHelper(reelHelper, animatedReel);
+    }
+
+    private void setReelHelper(Entity reelHelperEntity, AnimatedReel animatedReel) {
+        ReelHelperComponent reelHelperComponent = reelHelperEntity.getComponent(ReelHelperComponent.class);
+        VisualComponent visualComponent = reelHelperEntity.getComponent(VisualComponent.class);
+        ReelHelper reelHelper = reelHelperComponent.reelHelper;
+        int reelSpriteHelp = animatedReel.getReel().getCurrentReel();
+        visualComponent.region = reelHelper.getSprites()[reelSpriteHelp];
+        animatedReel.getReel().setEndReel(reelSpriteHelp - 1 < 0 ? 0 : reelSpriteHelp - 1);
     }
 
     private void handleSlotHandleIsTouched() {

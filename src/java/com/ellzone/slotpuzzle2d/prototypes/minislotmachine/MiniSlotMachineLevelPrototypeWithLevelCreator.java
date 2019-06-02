@@ -53,8 +53,8 @@ import com.ellzone.slotpuzzle2d.scene.Hud;
 import com.ellzone.slotpuzzle2d.scene.MapTile;
 import com.ellzone.slotpuzzle2d.screens.PlayScreen;
 import com.ellzone.slotpuzzle2d.sprites.AnimatedReel;
+import com.ellzone.slotpuzzle2d.sprites.ReelSprites;
 import com.ellzone.slotpuzzle2d.sprites.ReelTile;
-import com.ellzone.slotpuzzle2d.sprites.Reels;
 import com.ellzone.slotpuzzle2d.sprites.Score;
 import com.ellzone.slotpuzzle2d.tweenengine.SlotPuzzleTween;
 import com.ellzone.slotpuzzle2d.tweenengine.Timeline;
@@ -111,7 +111,7 @@ class MiniSlotMachinePrototypeWithLevelCreator {
 public class MiniSlotMachineLevelPrototypeWithLevelCreator extends SPPrototypeTemplate {
     public static final int GAME_LEVEL_WIDTH = 12;
     public static final int GAME_LEVEL_HEIGHT = 9;
-    public static final String REEL_OBJECT_LAYER = "Reels";
+    public static final String REEL_OBJECT_LAYER = "ReelSprites";
     public static final String HIDDEN_PATTERN_LEVEL_TYPE = "HiddenPattern";
     public static final String PLAYING_CARD_LEVEL_TYPE = "PlayingCard";
     public static final String MINI_SLOT_MACHINE_LEVEL_NAME = "Mini Slot Machine";
@@ -132,7 +132,7 @@ public class MiniSlotMachineLevelPrototypeWithLevelCreator extends SPPrototypeTe
     private MapProperties levelProperties;
     private TextureAtlas reelAtlas, tilesAtlas, carddeckAtlas;
     private Array<DampenedSineParticle> dampenedSines;
-    private Reels reels;
+    private ReelSprites reelSprites;
     private Array<ReelTile> reelTiles;
     private Array<AnimatedReel> animatedReels;
     private LevelDoor levelDoor;
@@ -229,10 +229,10 @@ public class MiniSlotMachineLevelPrototypeWithLevelCreator extends SPPrototypeTe
 
     private void createSlotReelTexture() {
         slotReelPixmap = new Pixmap(PlayScreen.TILE_WIDTH, PlayScreen.TILE_HEIGHT, Pixmap.Format.RGBA8888);
-        slotReelPixmap = PixmapProcessors.createDynamicScrollAnimatedPixmap(reels.getReels(), reels.getReels().length);
+        slotReelPixmap = PixmapProcessors.createDynamicScrollAnimatedPixmap(reelSprites.getSprites(), reelSprites.getSprites().length);
         slotReelTexture = new Texture(slotReelPixmap);
-        slotReelScrollPixmap = new Pixmap((int) reels.getReelWidth(), (int)reels.getReelHeight(), Pixmap.Format.RGBA8888);
-        slotReelScrollPixmap = PixmapProcessors.createPixmapToAnimate(reels.getReels());
+        slotReelScrollPixmap = new Pixmap((int) reelSprites.getReelWidth(), (int) reelSprites.getReelHeight(), Pixmap.Format.RGBA8888);
+        slotReelScrollPixmap = PixmapProcessors.createPixmapToAnimate(reelSprites.getSprites());
         slotReelScrollTexture = new Texture(slotReelScrollPixmap);
         slotReelScrollheight = slotReelScrollTexture.getHeight();
     }
@@ -246,7 +246,7 @@ public class MiniSlotMachineLevelPrototypeWithLevelCreator extends SPPrototypeTe
     }
 
     private void initialiseReels(AnnotationAssetManager annotationAssetManager) {
-        this.reels = new Reels(annotationAssetManager);
+        this.reelSprites = new ReelSprites(annotationAssetManager);
     }
 
     private void initialiseLevelDoor() {
@@ -294,10 +294,10 @@ public class MiniSlotMachineLevelPrototypeWithLevelCreator extends SPPrototypeTe
                     processIsTileClicked();
                     break;
                 case REELS_SPINNING:
-                    Gdx.app.debug(logTag, "Reels Spinning");
+                    Gdx.app.debug(logTag, "ReelSprites Spinning");
                     break;
                 case REELS_FLASHING:
-                    Gdx.app.debug(logTag, "Reels Flashing");
+                    Gdx.app.debug(logTag, "ReelSprites Flashing");
                 case RESTARTING_LEVEL:
                     Gdx.app.debug(logTag, "Restarting Level");
                     break;
@@ -339,7 +339,7 @@ public class MiniSlotMachineLevelPrototypeWithLevelCreator extends SPPrototypeTe
                     } else {
                         if (!reel.getFlashTween()) {
                             reelSlowingTargetTime = 3.0f;
-                            reel.setEndReel(Random.getInstance().nextInt(reels.getReels().length - 1));
+                            reel.setEndReel(Random.getInstance().nextInt(reelSprites.getSprites().length - 1));
                             reel.startSpinning();
                             levelCreator.setNumberOfReelsSpinning(levelCreator.getNumberOfReelsSpinning()+1);
                             reel.setSy(0);
@@ -423,7 +423,7 @@ public class MiniSlotMachineLevelPrototypeWithLevelCreator extends SPPrototypeTe
             score.render(batch);
         }
         if (displaySpinHelp) {
-            reels.getReels()[displaySpinHelpSprite].draw(batch);
+            reelSprites.getSprites()[displaySpinHelpSprite].draw(batch);
         }
         batch.end();
         renderReelBoxes(batch, reelBoxes, reelTiles);

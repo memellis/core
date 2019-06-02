@@ -20,21 +20,20 @@ import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
-import com.ellzone.slotpuzzle2d.sprites.Reels;
+import com.ellzone.slotpuzzle2d.sprites.ReelSprites;
 import com.ellzone.slotpuzzle2d.sprites.ReelTile;
 import com.ellzone.slotpuzzle2d.sprites.ReelTiles;
 import com.ellzone.slotpuzzle2d.physics.Particles;
 import com.ellzone.slotpuzzle2d.physics.Particle;
 import com.ellzone.slotpuzzle2d.physics.Vector;
-import com.badlogic.gdx.Gdx;
 import com.ellzone.slotpuzzle2d.utils.Random;
 
 import net.dermetfan.gdx.assets.AnnotationAssetManager;
 
 public class Particle3ExtendingParticleTemplate extends ParticleTemplate {
 	private static final float VELOCITY_MIN = 2.0f;
-	private Reels reels;
-	private Sprite[] reelSprites;
+	private ReelSprites reelSprites;
+	private Sprite[] sprites;
 	private ReelTiles reelTiles;
 	private Array<ReelTile> reelTilesArray;
 	private Particles particles;
@@ -64,15 +63,15 @@ public class Particle3ExtendingParticleTemplate extends ParticleTemplate {
 	}
 	
 	private void initialiseReelTiles(AnnotationAssetManager annotationAssetManager) {
-        reels = new Reels(annotationAssetManager);
-        reelSprites = reels.getReels();
-        reelTiles = new ReelTiles(reels);
+        reelSprites = new ReelSprites(annotationAssetManager);
+        sprites = reelSprites.getSprites();
+        reelTiles = new ReelTiles(reelSprites);
 		reelTilesArray = reelTiles.getReelTiles();
 		slotReelScrollheight = reelTiles.getReelTileTextureHeight();
     }
 	
 	private void initialiseParticles() {
-		particles = new Particles(reels, reelTiles);
+		particles = new Particles(reelSprites, reelTiles);
 		reelParticles = particles.getParticles();
 		accelerator = particles.getAccelerator();
 		dampPoint = particles.getDampoint();
@@ -134,7 +133,7 @@ public class Particle3ExtendingParticleTemplate extends ParticleTemplate {
                     reelSlot.setSy(savedSy + dsEndReel);
                     if(Math.abs(ds)<0.0000001f) {
                         reinitialiseParticle(0);
-                        reelSlot.setEndReel(com.ellzone.slotpuzzle2d.utils.Random.getInstance().nextInt(reels.getReels().length - 1));
+                        reelSlot.setEndReel(com.ellzone.slotpuzzle2d.utils.Random.getInstance().nextInt(reelSprites.getSprites().length - 1));
                     }
                 }
             }
@@ -166,8 +165,8 @@ public class Particle3ExtendingParticleTemplate extends ParticleTemplate {
 		batch.begin();
 		for (ReelTile reelSlot : reelTilesArray) {
 			reelSlot.draw(batch);
-			reelSprites[reelSlot.getEndReel()].setX(reelSlot.getWidth());
-			reelSprites[reelSlot.getEndReel()].draw(batch);
+			sprites[reelSlot.getEndReel()].setX(reelSlot.getWidth());
+			sprites[reelSlot.getEndReel()].draw(batch);
 		}
 		batch.end();
 		drawGraphPoint(shapeRenderer);

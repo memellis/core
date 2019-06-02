@@ -50,8 +50,8 @@ import com.ellzone.slotpuzzle2d.puzzlegrid.TupleValueIndex;
 import com.ellzone.slotpuzzle2d.scene.Hud;
 import com.ellzone.slotpuzzle2d.screens.PlayScreen;
 import com.ellzone.slotpuzzle2d.sprites.AnimatedReel;
+import com.ellzone.slotpuzzle2d.sprites.ReelSprites;
 import com.ellzone.slotpuzzle2d.sprites.ReelTile;
-import com.ellzone.slotpuzzle2d.sprites.Reels;
 import com.ellzone.slotpuzzle2d.sprites.Score;
 import com.ellzone.slotpuzzle2d.tweenengine.SlotPuzzleTween;
 import com.ellzone.slotpuzzle2d.tweenengine.Timeline;
@@ -76,7 +76,7 @@ public class MiniSlotMachineLevelPrototypeScenario1 extends SPPrototypeTemplate 
     private OrthographicCamera camera;
     private TiledMap miniSlotMachineLevel;
     private TextureAtlas carddeckAtlas;
-    private Reels reels;
+    private ReelSprites reelSprites;
     private Array<ReelTile> reelTiles;
     private Array<AnimatedReel> animatedReels;
     private LevelDoor levelDoor;
@@ -180,10 +180,10 @@ public class MiniSlotMachineLevelPrototypeScenario1 extends SPPrototypeTemplate 
 
     private void createSlotReelTexture() {
         Pixmap slotReelPixmap = new Pixmap(PlayScreen.TILE_WIDTH, PlayScreen.TILE_HEIGHT, Pixmap.Format.RGBA8888);
-        slotReelPixmap = PixmapProcessors.createDynamicScrollAnimatedPixmap(reels.getReels(), reels.getReels().length);
+        slotReelPixmap = PixmapProcessors.createDynamicScrollAnimatedPixmap(reelSprites.getSprites(), reelSprites.getSprites().length);
         Texture slotReelTexture = new Texture(slotReelPixmap);
-        Pixmap slotReelScrollPixmap = new Pixmap(reels.getReelWidth(), reels.getReelHeight(), Pixmap.Format.RGBA8888);
-        slotReelScrollPixmap = PixmapProcessors.createPixmapToAnimate(reels.getReels());
+        Pixmap slotReelScrollPixmap = new Pixmap(reelSprites.getReelWidth(), reelSprites.getReelHeight(), Pixmap.Format.RGBA8888);
+        slotReelScrollPixmap = PixmapProcessors.createPixmapToAnimate(reelSprites.getSprites());
         Texture slotReelScrollTexture = new Texture(slotReelScrollPixmap);
     }
 
@@ -196,7 +196,7 @@ public class MiniSlotMachineLevelPrototypeScenario1 extends SPPrototypeTemplate 
     }
 
     private void initialiseReels(AnnotationAssetManager annotationAssetManager) {
-        this.reels = new Reels(annotationAssetManager);
+        this.reelSprites = new ReelSprites(annotationAssetManager);
     }
 
     private void initialiseLevelDoor() {
@@ -323,7 +323,7 @@ public class MiniSlotMachineLevelPrototypeScenario1 extends SPPrototypeTemplate 
     }
 
     private void startReelSpinning(ReelTile reel, AnimatedReel animatedReel) {
-        reel.setEndReel(Random.getInstance().nextInt(reels.getReels().length - 1));
+        reel.setEndReel(Random.getInstance().nextInt(reelSprites.getSprites().length - 1));
         reel.startSpinning();
         levelCreator.setNumberOfReelsSpinning(levelCreator.getNumberOfReelsSpinning() + 1);
         reel.setSy(0);
@@ -396,7 +396,7 @@ public class MiniSlotMachineLevelPrototypeScenario1 extends SPPrototypeTemplate 
             score.render(batch);
         }
         if (displaySpinHelp) {
-            reels.getReels()[displaySpinHelpSprite].draw(batch);
+            reelSprites.getSprites()[displaySpinHelpSprite].draw(batch);
         }
         batch.end();
         renderReelBoxes(batch, reelBoxes);

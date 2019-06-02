@@ -17,20 +17,20 @@
 package com.ellzone.slotpuzzle2d.physics;
 
 import com.badlogic.gdx.utils.Array;
+import com.ellzone.slotpuzzle2d.sprites.ReelSprites;
 import com.ellzone.slotpuzzle2d.sprites.ReelTile;
 import com.ellzone.slotpuzzle2d.sprites.ReelTiles;
-import com.ellzone.slotpuzzle2d.sprites.Reels;
 
 public class Particles {
 	private Vector accelerator;
 	private Array<Particle> reelParticles;
 	private ReelTiles reelTiles;
-	private Reels reels;
+	private ReelSprites reelSprites;
 	private Particle reelParticle;
 	private int dampPoint;
 	
-	public Particles(Reels reels, ReelTiles reelTiles) {
-		this.reels = reels;
+	public Particles(ReelSprites reelSprites, ReelTiles reelTiles) {
+		this.reelSprites = reelSprites;
 		this.reelTiles = reelTiles;
 	    initialiseParticles();	
 	}
@@ -44,7 +44,7 @@ public class Particles {
         reelParticle.velocity.setY(4);
         reelParticle.accelerate(new Vector(0, 2f));
         reelParticles.add(reelParticle);
-        dampPoint = reelTiles.getReelTileTextureHeight() * 20 + reelTile0.getEndReel() * reels.getReelHeight();
+        dampPoint = reelTiles.getReelTileTextureHeight() * 20 + reelTile0.getEndReel() * reelSprites.getReelHeight();
 	}
 	
 	public Array<Particle> getParticles() {

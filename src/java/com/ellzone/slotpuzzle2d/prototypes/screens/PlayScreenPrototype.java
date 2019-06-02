@@ -56,7 +56,7 @@ import com.ellzone.slotpuzzle2d.physics.SPPhysicsEvent;
 import com.ellzone.slotpuzzle2d.physics.Vector;
 import com.ellzone.slotpuzzle2d.puzzlegrid.PuzzleGridTypeReelTile;
 import com.ellzone.slotpuzzle2d.puzzlegrid.ReelTileGridValue;
-import com.ellzone.slotpuzzle2d.sprites.Reels;
+import com.ellzone.slotpuzzle2d.sprites.ReelSprites;
 import com.ellzone.slotpuzzle2d.puzzlegrid.PuzzleGridType;
 import com.ellzone.slotpuzzle2d.puzzlegrid.TupleValueIndex;
 import com.ellzone.slotpuzzle2d.scene.Hud;
@@ -106,7 +106,7 @@ public class PlayScreenPrototype implements Screen {
     private Sound chaChingSound, pullLeverSound, reelSpinningSound, reelStoppedSound, jackpotSound;
     private TiledMap level;
     private MapTile mapTile;
-    private Reels reels;
+    private ReelSprites reelSprites;
     private Array<DampenedSineParticle> dampenedSines;
     private Random random;
     private OrthogonalTiledMapRenderer tileMapRenderer;
@@ -187,7 +187,7 @@ public class PlayScreenPrototype implements Screen {
     }
 
     private void initialiseReels(AnnotationAssetManager annotationAssetManager) {
-        reels = new Reels(annotationAssetManager);
+        reelSprites = new ReelSprites(annotationAssetManager);
     }
 
     private void initialisePlayScreen() {
@@ -202,10 +202,10 @@ public class PlayScreenPrototype implements Screen {
 
     private void createSlotReelTexture() {
         slotReelPixmap = new Pixmap(PlayScreen.TILE_WIDTH, PlayScreen.TILE_HEIGHT, Pixmap.Format.RGBA8888);
-        slotReelPixmap = PixmapProcessors.createDynamicScrollAnimatedPixmap(reels.getReels(), reels.getReels().length);
+        slotReelPixmap = PixmapProcessors.createDynamicScrollAnimatedPixmap(reelSprites.getSprites(), reelSprites.getSprites().length);
         slotReelTexture = new Texture(slotReelPixmap);
-        slotReelScrollPixmap = new Pixmap((int) reels.getReelWidth(), (int)reels.getReelHeight(), Pixmap.Format.RGBA8888);
-        slotReelScrollPixmap = PixmapProcessors.createPixmapToAnimate(reels.getReels());
+        slotReelScrollPixmap = new Pixmap((int) reelSprites.getReelWidth(), (int) reelSprites.getReelHeight(), Pixmap.Format.RGBA8888);
+        slotReelScrollPixmap = PixmapProcessors.createPixmapToAnimate(reelSprites.getSprites());
         slotReelScrollTexture = new Texture(slotReelScrollPixmap);
         slotReelScrollheight = slotReelScrollTexture.getHeight();
     }
@@ -270,13 +270,13 @@ public class PlayScreenPrototype implements Screen {
     }
 
     private void addReel(Rectangle mapRectangle) {
-        int endReel = Random.getInstance().nextInt(this.reels.getReels().length);
-        ReelTile reel = new ReelTile(slotReelTexture, this.reels.getReels().length, 0, 0, reels.getReelWidth(), reels.getReelHeight(), reels.getReelWidth(), reels.getReelHeight(), endReel, (Sound) game.annotationAssetManager.get(AssetsAnnotation.SOUND_REEL_SPINNING));
+        int endReel = Random.getInstance().nextInt(this.reelSprites.getSprites().length);
+        ReelTile reel = new ReelTile(slotReelTexture, this.reelSprites.getSprites().length, 0, 0, reelSprites.getReelWidth(), reelSprites.getReelHeight(), reelSprites.getReelWidth(), reelSprites.getReelHeight(), endReel, (Sound) game.annotationAssetManager.get(AssetsAnnotation.SOUND_REEL_SPINNING));
         reel.setX(mapRectangle.getX());
         reel.setY(mapRectangle.getY());
         reel.setSx(0);
         int startReel = Random.getInstance().nextInt((int) slotReelScrollheight);
-        startReel = (startReel / ((int) this.reels.getReelWidth())) * (int)this.reels.getReelHeight();
+        startReel = (startReel / ((int) this.reelSprites.getReelWidth())) * (int)this.reelSprites.getReelHeight();
         reel.setSy(startReel);
         reel.addListener(new ReelTileListener() {
                              @Override
@@ -350,7 +350,7 @@ public class PlayScreenPrototype implements Screen {
             DampenedSineParticle ds = (DampenedSineParticle)source.getSource();
             ReelTile reel = (ReelTile)ds.getUserData();
             Timeline endReelSeq = Timeline.createSequence();
-            float endSy = (reel.getEndReel() * reels.getReelHeight()) % slotReelScrollheight;
+            float endSy = (reel.getEndReel() * reelSprites.getReelHeight()) % slotReelScrollheight;
             reel.setSy(reel.getSy() % (slotReelScrollheight));
             endReelSeq = endReelSeq.push(SlotPuzzleTween.to(reel, ReelAccessor.SCROLL_XY, reelSlowingTargetTime)
                     .target(0f, endSy)
@@ -721,7 +721,7 @@ public class PlayScreenPrototype implements Screen {
                 } else {
                     if (!reel.getFlashTween()) {
                         reelSlowingTargetTime = 3.0f;
-                        reel.setEndReel(random.nextInt(reels.getReels().length - 1));
+                        reel.setEndReel(random.nextInt(reelSprites.getSprites().length - 1));
 
                         reel.startSpinning();
                         reelsSpinning++;
@@ -837,7 +837,7 @@ public class PlayScreenPrototype implements Screen {
                 score.render(game.batch);
             }
             if (displaySpinHelp) {
-                reels.getReels()[displaySpinHelpSprite].draw(game.batch);
+                reelSprites.getSprites()[displaySpinHelpSprite].draw(game.batch);
             }
             game.batch.end();
             switch (playState) {

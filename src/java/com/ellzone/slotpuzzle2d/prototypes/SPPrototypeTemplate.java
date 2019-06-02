@@ -27,7 +27,7 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.TmxMapLoader;
 import com.badlogic.gdx.math.MathUtils;
-import com.ellzone.slotpuzzle2d.sprites.Reels;
+import com.ellzone.slotpuzzle2d.sprites.ReelSprites;
 import com.ellzone.slotpuzzle2d.tweenengine.SlotPuzzleTween;
 import com.ellzone.slotpuzzle2d.tweenengine.TweenManager;
 import com.badlogic.gdx.utils.viewport.FitViewport;
@@ -44,7 +44,7 @@ public abstract class SPPrototypeTemplate extends SPPrototype {
 
     protected final TweenManager tweenManager = new TweenManager();
     protected AnnotationAssetManager annotationAssetManager;
-    protected Reels reels;
+    protected ReelSprites reelSprites;
     protected Sprite[] sprites;
 	protected int spriteWidth, spriteHeight;
     protected PerspectiveCamera cam;
@@ -76,7 +76,7 @@ public abstract class SPPrototypeTemplate extends SPPrototype {
 		initialiseCamera();
         annotationAssetManager = loadAssets();
         loadAssetsOverride();
-        reels = initialiseReels(annotationAssetManager);
+        reelSprites = initialiseReels(annotationAssetManager);
         initialiseUniversalTweenEngine();
         initialiseOverride();
     }
@@ -95,9 +95,9 @@ public abstract class SPPrototypeTemplate extends SPPrototype {
         return annotationAssetManager;
     }
 
-    private Reels initialiseReels(AnnotationAssetManager annotationAssetManager) {
-        Reels reels = new Reels(annotationAssetManager);
-        sprites = reels.getReels();
+    private ReelSprites initialiseReels(AnnotationAssetManager annotationAssetManager) {
+        ReelSprites reelSprites = new ReelSprites(annotationAssetManager);
+        sprites = reelSprites.getSprites();
         float startPosition = (displayWindowWidth - sprites.length * sprites[0].getWidth()) / 2;
         int i = 0;
         for (Sprite sprite : sprites) {
@@ -109,7 +109,7 @@ public abstract class SPPrototypeTemplate extends SPPrototype {
         spriteWidth = (int) sprites[0].getWidth();
         spriteHeight = (int) sprites[0].getHeight();
 
-        return reels;
+        return reelSprites;
     }
 	
     protected void initialiseCamera() {

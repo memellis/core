@@ -18,10 +18,10 @@ package com.ellzone.slotpuzzle2d.prototypes.particle;
 
 import com.ellzone.slotpuzzle2d.physics.DampenedSine;
 import com.badlogic.gdx.utils.Array;
+import com.ellzone.slotpuzzle2d.sprites.ReelSprites;
 import com.ellzone.slotpuzzle2d.sprites.ReelTile;
 import com.ellzone.slotpuzzle2d.physics.SPPhysicsCallback;
 import com.ellzone.slotpuzzle2d.physics.SPPhysicsEvent;
-import com.ellzone.slotpuzzle2d.sprites.Reels;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import java.util.Random;
@@ -39,8 +39,8 @@ public class Particle5ExtendingParticleTemplate extends ParticleTemplate {
 	private Array<DampenedSine> dampenedSines;
 	private DampenedSine dampenedSine;
 	private float graphStep;
-	private Reels reels;
-	private Sprite[] reelSprites;
+	private ReelSprites reelSprites;
+	private Sprite[] sprites;
 	private ShapeRenderer shapeRenderer;
 	private Random random;
 	private ReelTiles reelTiles;
@@ -68,15 +68,15 @@ public class Particle5ExtendingParticleTemplate extends ParticleTemplate {
 	}
 	
 	private void initialiseReelTiles(AnnotationAssetManager annotationAssetManager) {
-        reels = new Reels(annotationAssetManager);
-        reelSprites = reels.getReels();
-		reelTiles = new ReelTiles(reels);
+        reelSprites = new ReelSprites(annotationAssetManager);
+        sprites = reelSprites.getSprites();
+		reelTiles = new ReelTiles(reelSprites);
 		reelTilesArray = reelTiles.getReelTiles();
 		slotReelScrollheight = reelTiles.getReelTileTextureHeight();
 	}
 	
 	private void initialiseParticles() {
-		particles = new Particles(reels, reelTiles);
+		particles = new Particles(reelSprites, reelTiles);
 		reelParticles = particles.getParticles();
 		accelerator = particles.getAccelerator();
 		dampPoint = particles.getDampoint();
@@ -116,7 +116,7 @@ public class Particle5ExtendingParticleTemplate extends ParticleTemplate {
             if (type == SPPhysicsCallback.END) {
                 DampenedSine ds = (DampenedSine)source.getSource();
                 ReelTile reel = (ReelTile)ds.getUserData();
-                reel.setEndReel(random.nextInt(reelSprites.length - 1));
+                reel.setEndReel(random.nextInt(sprites.length - 1));
                 ds.position.y = 0;
                 ds.initialiseDampenedSine();
                 ds.setEndReel(reel.getEndReel());
@@ -177,8 +177,8 @@ public class Particle5ExtendingParticleTemplate extends ParticleTemplate {
 		batch.begin();
         for (ReelTile reelTile : reelTilesArray) {
             reelTile.draw(batch);
-            reelSprites[reelTile.getEndReel()].setX(reelTile.getWidth());
-			reelSprites[reelTile.getEndReel()].draw(batch);
+            sprites[reelTile.getEndReel()].setX(reelTile.getWidth());
+			sprites[reelTile.getEndReel()].draw(batch);
 		}
         batch.end();
         drawGraphPoint(shapeRenderer);

@@ -53,7 +53,7 @@ import com.badlogic.gdx.utils.TimeUtils;
 import com.ellzone.slotpuzzle2d.SlotPuzzleConstants;
 import com.ellzone.slotpuzzle2d.effects.ReelAccessor;
 import com.ellzone.slotpuzzle2d.effects.SpriteAccessor;
-import com.ellzone.slotpuzzle2d.sprites.Reels;
+import com.ellzone.slotpuzzle2d.sprites.ReelSprites;
 import com.ellzone.slotpuzzle2d.prototypes.SPPrototype;
 import com.ellzone.slotpuzzle2d.sprites.AnimatedReel;
 import com.ellzone.slotpuzzle2d.sprites.ReelTile;
@@ -80,7 +80,7 @@ public class Box2DFallingReels extends SPPrototype implements InputProcessor {
     private Body hitBody = null;
     private TweenManager tweenManager = new TweenManager();
     Array<AnimatedReel> animatedReels;
-    private Reels reels;
+    private ReelSprites reelSprites;
     private Pixmap slotReelScrollPixmap;
     private Texture slotReelScrollTexture;
     private int spriteWidth, spriteHeight;
@@ -98,9 +98,9 @@ public class Box2DFallingReels extends SPPrototype implements InputProcessor {
         font = new BitmapFont();
         font.setColor(Color.RED);
         loadAssets();
-        reels = new Reels(annotationAssetManager);
-        spriteWidth = reels.getReelWidth();
-        spriteHeight = reels.getReelHeight();
+        reelSprites = new ReelSprites(annotationAssetManager);
+        spriteWidth = reelSprites.getReelWidth();
+        spriteHeight = reelSprites.getReelHeight();
         this.displayWindowWidth = SlotPuzzleConstants.VIRTUAL_WIDTH;
         this.displayWindowHeight = SlotPuzzleConstants.VIRTUAL_HEIGHT;
         initialiseUniversalTweenEngine();
@@ -131,12 +131,12 @@ public class Box2DFallingReels extends SPPrototype implements InputProcessor {
     private void initialiseReelSlots() {
         animatedReels = new Array<AnimatedReel>();
         slotReelScrollPixmap = new Pixmap(spriteWidth, spriteHeight, Pixmap.Format.RGBA8888);
-        slotReelScrollPixmap = PixmapProcessors.createPixmapToAnimate(reels.getReels());
+        slotReelScrollPixmap = PixmapProcessors.createPixmapToAnimate(reelSprites.getSprites());
         slotReelScrollTexture = new Texture(slotReelScrollPixmap);
         for (int i = 0; i < 20; i++) {
             AnimatedReel animatedReel = new AnimatedReel(slotReelScrollTexture, 0, 0, spriteWidth, spriteHeight, spriteWidth, spriteHeight, 0, reelSpinningSound, reelStoppingSound, tweenManager);
             animatedReel.setSx(0);
-            animatedReel.setEndReel(Random.getInstance().nextInt(reels.getReels().length - 1));
+            animatedReel.setEndReel(Random.getInstance().nextInt(reelSprites.getSprites().length - 1));
             animatedReel.getReel().startSpinning();
             animatedReels.add(animatedReel);
         }

@@ -246,7 +246,7 @@ public class CreateLevelReels extends SPPrototypeTemplate {
                             reel.setEndReel(reel.getCurrentReel());
                         }
                     } else {
-                        reel.setEndReel(Random.getInstance().nextInt(reels.getReels().length - 1));
+                        reel.setEndReel(Random.getInstance().nextInt(reelSprites.getSprites().length - 1));
                         reel.setSpinning(true);
                         reel.setSy(0);
                         dampenedSines.get(dsIndex).initialiseDampenedSine();

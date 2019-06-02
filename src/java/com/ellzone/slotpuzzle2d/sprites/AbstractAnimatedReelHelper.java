@@ -37,7 +37,7 @@ public abstract class AbstractAnimatedReelHelper {
     private Array<AnimatedReel> animatedReels;
     private Pixmap slotReelScrollPixmap;
     private Texture slotReelScrollTexture;
-    private Reels reels;
+    private ReelSprites reelSprites;
     private int spriteWidth, spriteHeight;
 
     void loadAssets(AssetManager assetManager) {
@@ -53,19 +53,19 @@ public abstract class AbstractAnimatedReelHelper {
         this.reelStoppingSound = assetManager.get("sounds/reel-stopped.wav");
     }
 
-    Reels initialiseReels(AnnotationAssetManager annotationAssetManager) {
-        reels = new Reels(annotationAssetManager);
-        spriteWidth = reels.getReelWidth();
-        spriteHeight = reels.getReelHeight();
-        return reels;
+    ReelSprites initialiseReels(AnnotationAssetManager annotationAssetManager) {
+        reelSprites = new ReelSprites(annotationAssetManager);
+        spriteWidth = reelSprites.getReelWidth();
+        spriteHeight = reelSprites.getReelHeight();
+        return reelSprites;
     }
 
     public Array<AnimatedReel> getAnimatedReels() {
         return this.animatedReels;
     }
 
-    public Reels getReels() {
-        return this.reels;
+    public ReelSprites getReelSprites() {
+        return this.reelSprites;
     }
 
     public void update(float dt) {

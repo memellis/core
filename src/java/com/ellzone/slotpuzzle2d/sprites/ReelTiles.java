@@ -24,28 +24,28 @@ import com.ellzone.slotpuzzle2d.utils.Random;
 
 public class ReelTiles {
 	private Array<ReelTile> reelTiles;
-	private Reels reels;
+	private ReelSprites reelSprites;
 	private Pixmap slotReelScrollPixmap;
 	private Texture slotReelScrollTexture;
 	private ReelTile reelTile;
 	
-	public ReelTiles(Reels reels) {
-		this.reels = reels;
+	public ReelTiles(ReelSprites reelSprites) {
+		this.reelSprites = reelSprites;
 		initialiseReelTiles();
 	}
 	
 	private void initialiseReelTiles() {
 	    reelTiles = new Array<ReelTile>();
-	    slotReelScrollPixmap = new Pixmap(reels.getReelHeight(), reels.getReelHeight(), Pixmap.Format.RGBA8888);
-		slotReelScrollPixmap = PixmapProcessors.createPixmapToAnimate(reels.getReels());
+	    slotReelScrollPixmap = new Pixmap(reelSprites.getReelHeight(), reelSprites.getReelHeight(), Pixmap.Format.RGBA8888);
+		slotReelScrollPixmap = PixmapProcessors.createPixmapToAnimate(reelSprites.getSprites());
 		slotReelScrollTexture = new Texture(slotReelScrollPixmap);
-	    reelTile = new ReelTile(slotReelScrollTexture, slotReelScrollTexture.getHeight() / reels.getReelHeight(), 0, 32, reels.getReelWidth(), reels.getReelHeight(), reels.getReelWidth(), reels.getReelHeight(), 0, null);
+	    reelTile = new ReelTile(slotReelScrollTexture, slotReelScrollTexture.getHeight() / reelSprites.getReelHeight(), 0, 32, reelSprites.getReelWidth(), reelSprites.getReelHeight(), reelSprites.getReelWidth(), reelSprites.getReelHeight(), 0, null);
 	    reelTile.setX(0);
 	    reelTile.setY(0);
 	    reelTile.setSx(0);
-	    reelTile.setEndReel(Random.getInstance().nextInt(reels.getReels().length - 1));
-	    //reelTile.setSy(slotReelScrollTexture.getHeight() + 128 + reelTile.getEndReel() * reels.getReelHeight() );
-		reelTile.setSy(slotReelScrollTexture.getHeight() + reelTile.getEndReel() * reels.getReelHeight() );
+	    reelTile.setEndReel(Random.getInstance().nextInt(reelSprites.getSprites().length - 1));
+	    //reelTile.setSy(slotReelScrollTexture.getHeight() + 128 + reelTile.getEndReel() * reelSprites.getReelHeight() );
+		reelTile.setSy(slotReelScrollTexture.getHeight() + reelTile.getEndReel() * reelSprites.getReelHeight() );
 	    reelTiles.add(reelTile);
 	}
 	

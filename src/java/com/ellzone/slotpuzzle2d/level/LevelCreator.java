@@ -123,7 +123,7 @@ public class LevelCreator {
     public static final String BONUS_LEVEL_TYPE = "Bonus";
     public static final String MINI_SLOT_MACHINE_TYPE = "MiniSlotMachine";
     public static final String HIDDEN_PATTERN_LAYER_NAME = "Hidden Pattern Object";
-    public static final String REELS_LAYER_NAME = "Reels";
+    public static final String REELS_LAYER_NAME = "ReelSprites";
     public static final String REELS_OBJECT_NAME = "Reel";
     public static final String LIGHT_BUTTON_OBJECT_NME = "Button";
     public static final String SLOT_HANDLER_OBJECT_NAME = "Handle";
@@ -328,7 +328,7 @@ public class LevelCreator {
                     }
                 }
             } else {
-                System.out.println(reelsSpinning+" reels not spinning and notHitSinkBottom");
+                System.out.println(reelsSpinning+" reelSprites not spinning and notHitSinkBottom");
                 printReelTiles();
                 if (testForJackpot(reelTiles, this.levelWidth, this.levelHeight)) {
                     iWonABonus();
@@ -569,7 +569,7 @@ public class LevelCreator {
                     if (numberOfReelBoxesToDelete <= 0) {
                         if ((playState == PlayScreen.PlayStates.INTRO_FLASHING) |
                             (playState == PlayScreen.PlayStates.REELS_FLASHING)) {
-                            // Need to detect when all reels have fallen
+                            // Need to detect when all reelSprites have fallen
                             if (reelsAboveHaveFallen) {
                                 if (!matchedReels) {
                                     dropReplacementReelBoxes = true;
@@ -694,7 +694,7 @@ public class LevelCreator {
             Color reelTileColor = reelTile.getColor();
             reelTileColor.set(reelTileColor.r, reelTileColor.g, reelTileColor.b, 1.0f);
             reelTile.setColor(reelTileColor);
-            reelTile.setEndReel(Random.getInstance().nextInt(animatedReelHelper.getReels().getReels().length - 1));
+            reelTile.setEndReel(Random.getInstance().nextInt(animatedReelHelper.getReelSprites().getSprites().length - 1));
             Body reelTileBody = physics.createBoxBody(BodyDef.BodyType.DynamicBody,
                     reelTile.getX() + 20,
                     reelTile.getY() + 360,

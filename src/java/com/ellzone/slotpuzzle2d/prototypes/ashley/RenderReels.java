@@ -13,19 +13,16 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.TmxMapLoader;
 import com.badlogic.gdx.math.MathUtils;
-import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Array;
 import com.ellzone.slotpuzzle2d.SlotPuzzleConstants;
 import com.ellzone.slotpuzzle2d.components.PositionComponent;
 import com.ellzone.slotpuzzle2d.components.ReelTileComponent;
 import com.ellzone.slotpuzzle2d.components.VisualComponent;
 import com.ellzone.slotpuzzle2d.effects.ReelAccessor;
-import com.ellzone.slotpuzzle2d.effects.SpriteAccessor;
 import com.ellzone.slotpuzzle2d.level.PlayScreenIntroSequence;
 import com.ellzone.slotpuzzle2d.prototypes.SPPrototype;
-import com.ellzone.slotpuzzle2d.screens.PlayScreen;
 import com.ellzone.slotpuzzle2d.sprites.ReelTile;
-import com.ellzone.slotpuzzle2d.sprites.Reels;
+import com.ellzone.slotpuzzle2d.sprites.ReelSprites;
 import com.ellzone.slotpuzzle2d.systems.ReelTileMovementSystem;
 import com.ellzone.slotpuzzle2d.systems.RenderSystem;
 import com.ellzone.slotpuzzle2d.tweenengine.BaseTween;
@@ -38,12 +35,6 @@ import com.ellzone.slotpuzzle2d.utils.PixmapProcessors;
 import com.ellzone.slotpuzzle2d.utils.Random;
 
 import net.dermetfan.gdx.assets.AnnotationAssetManager;
-
-
-import aurelienribon.tweenengine.equations.Back;
-import aurelienribon.tweenengine.equations.Cubic;
-import aurelienribon.tweenengine.equations.Quad;
-import aurelienribon.tweenengine.equations.Quart;
 
 public class RenderReels extends SPPrototype {
     public static final int NUMBER_OF_REEL_TILES = 15;
@@ -121,9 +112,9 @@ public class RenderReels extends SPPrototype {
         return reelEntity;
     }
 
-    private Reels initialiseReels(AnnotationAssetManager annotationAssetManager) {
-        Reels reels = new Reels(annotationAssetManager);
-        sprites = reels.getReels();
+    private ReelSprites initialiseReels(AnnotationAssetManager annotationAssetManager) {
+        ReelSprites reelSprites = new ReelSprites(annotationAssetManager);
+        sprites = reelSprites.getSprites();
         float startPosition = (displayWindowWidth - sprites.length * sprites[0].getWidth()) / 2;
         int i = 0;
         for (Sprite sprite : sprites) {
@@ -135,7 +126,7 @@ public class RenderReels extends SPPrototype {
         spriteWidth = (int) sprites[0].getWidth();
         spriteHeight = (int) sprites[0].getHeight();
 
-        return reels;
+        return reelSprites;
     }
 
     private Texture getReelTexture() {

@@ -34,6 +34,8 @@ import com.ellzone.slotpuzzle2d.level.LevelHoldLightHoldButtonAction;
 import com.ellzone.slotpuzzle2d.level.LevelObjectCreator;
 import com.ellzone.slotpuzzle2d.level.LevelPointLightAction;
 import com.ellzone.slotpuzzle2d.level.LevelPointLightCallback;
+import com.ellzone.slotpuzzle2d.level.LevelReelHelperAction;
+import com.ellzone.slotpuzzle2d.level.LevelReelHelperCallback;
 import com.ellzone.slotpuzzle2d.level.LevelSlotHandleSpriteAction;
 import com.ellzone.slotpuzzle2d.level.LevelSlotHandleSpriteCallback;
 import com.ellzone.slotpuzzle2d.level.PlayScreenIntroSequence;
@@ -41,11 +43,11 @@ import com.ellzone.slotpuzzle2d.prototypes.SPPrototype;
 import com.ellzone.slotpuzzle2d.puzzlegrid.PuzzleGridTypeReelTile;
 import com.ellzone.slotpuzzle2d.puzzlegrid.ReelTileGridValue;
 import com.ellzone.slotpuzzle2d.sprites.AnimatedReel;
+import com.ellzone.slotpuzzle2d.sprites.ReelSprites;
 import com.ellzone.slotpuzzle2d.sprites.ReelStoppedSpinningEvent;
 import com.ellzone.slotpuzzle2d.sprites.ReelTile;
 import com.ellzone.slotpuzzle2d.sprites.ReelTileEvent;
 import com.ellzone.slotpuzzle2d.sprites.ReelTileListener;
-import com.ellzone.slotpuzzle2d.sprites.Reels;
 import com.ellzone.slotpuzzle2d.systems.AnimatedReelSystem;
 import com.ellzone.slotpuzzle2d.systems.LightSystem;
 import com.ellzone.slotpuzzle2d.systems.PlayerControlSystem;
@@ -64,12 +66,10 @@ import com.ellzone.slotpuzzle2d.utils.PixmapProcessors;
 
 import net.dermetfan.gdx.assets.AnnotationAssetManager;
 
-import java.text.MessageFormat;
 import java.util.Comparator;
 import box2dLight.RayHandler;
 
 import static com.ellzone.slotpuzzle2d.SlotPuzzleConstants.EARTH_GRAVITY;
-import static com.ellzone.slotpuzzle2d.SlotPuzzleConstants.PIXELS_PER_METER;
 import static com.ellzone.slotpuzzle2d.SlotPuzzleConstants.VIRTUAL_HEIGHT;
 import static com.ellzone.slotpuzzle2d.SlotPuzzleConstants.VIRTUAL_WIDTH;
 import static com.ellzone.slotpuzzle2d.prototypes.screens.PlayScreenPrototype.SLOT_REEL_OBJECT_LAYER;
@@ -87,7 +87,7 @@ public class RenderMiniSllotMachineLoadedFromALevel
     private Texture slotReelScrollTexture;
     private Array<AnimatedReel> animatedReels;
     private Array<ReelTile> reelTiles;
-    private Reels reels;
+    private ReelSprites reelSprites;
     private TweenManager tweenManager = new TweenManager();
     private RenderSystem renderSystem;
     private FitViewport viewport;
@@ -145,8 +145,8 @@ public class RenderMiniSllotMachineLoadedFromALevel
     }
 
     private void createSlotReelScrollTexture(AnnotationAssetManager annotationAssetManager) {
-        reels = new Reels(annotationAssetManager);
-        Pixmap slotReelScrollPixmap = PixmapProcessors.createPixmapToAnimate(reels.getReels());
+        reelSprites = new ReelSprites(annotationAssetManager);
+        Pixmap slotReelScrollPixmap = PixmapProcessors.createPixmapToAnimate(reelSprites.getSprites());
         slotReelScrollTexture = new Texture(slotReelScrollPixmap);
     }
 
@@ -200,6 +200,8 @@ public class RenderMiniSllotMachineLoadedFromALevel
         levelObjectCreator.addSlotHandleCallback(levelSlotHandleSpriteCallback);
         LevelPointLightCallback levelPointLightCallback = new LevelPointLightAction(engine);
         levelObjectCreator.addPointLightCallback(levelPointLightCallback);
+        LevelReelHelperCallback levelReelHelperCallback = new LevelReelHelperAction(engine);
+        levelObjectCreator.addReelHelperCallback(levelReelHelperCallback);
     }
 
     private Array<RectangleMapObject> extractLevelAssets(TiledMap level) {
@@ -347,8 +349,8 @@ public class RenderMiniSllotMachineLoadedFromALevel
     }
 
     @Override
-    public Reels getReels() {
-        return reels;
+    public ReelSprites getReelSprites() {
+        return reelSprites;
     }
 
     @Override

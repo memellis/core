@@ -41,7 +41,7 @@ public class AnimatedReelHelper {
     private Array<ReelTile> reelTiles;
     private Pixmap slotReelScrollPixmap;
     private Texture slotReelScrollTexture;
-    private Reels reels;
+    private ReelSprites reelSprites;
     private int spriteWidth, spriteHeight;
     private int reelDisplayHeight = 0;
 
@@ -73,9 +73,9 @@ public class AnimatedReelHelper {
     }
 
     private void initialiseReels(AnnotationAssetManager annotationAssetManager){
-        reels = new Reels(annotationAssetManager);
-        spriteWidth = reels.getReelWidth();
-        spriteHeight = reels.getReelHeight();
+        reelSprites = new ReelSprites(annotationAssetManager);
+        spriteWidth = reelSprites.getReelWidth();
+        spriteHeight = reelSprites.getReelHeight();
         if (reelDisplayHeight == 0)
             reelDisplayHeight = spriteHeight;
     }
@@ -83,12 +83,12 @@ public class AnimatedReelHelper {
     private void initialiseReelSlots() {
         animatedReels = new Array<AnimatedReel>();
         slotReelScrollPixmap = new Pixmap(spriteWidth, spriteHeight, Pixmap.Format.RGBA8888);
-        slotReelScrollPixmap = PixmapProcessors.createPixmapToAnimate(reels.getReels());
+        slotReelScrollPixmap = PixmapProcessors.createPixmapToAnimate(reelSprites.getSprites());
         slotReelScrollTexture = new Texture(slotReelScrollPixmap);
         for (int i = 0; i < numberOfAnimatedReels; i++) {
             AnimatedReel animatedReel = new AnimatedReel(slotReelScrollTexture, 0, 0, spriteWidth, spriteHeight, spriteWidth, reelDisplayHeight, 0, null, reelStoppingSound, tweenManager);
             animatedReel.setSx(0);
-            animatedReel.setEndReel(Random.getInstance().nextInt(reels.getReels().length - 1));
+            animatedReel.setEndReel(Random.getInstance().nextInt(reelSprites.getSprites().length - 1));
             animatedReel.getReel().startSpinning();
             animatedReels.add(animatedReel);
         }
@@ -106,8 +106,8 @@ public class AnimatedReelHelper {
         return reelTiles;
     }
 
-    public Reels getReels() {
-        return this.reels;
+    public ReelSprites getReelSprites() {
+        return this.reelSprites;
     }
 
     public void update(float dt) {

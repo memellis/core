@@ -64,7 +64,7 @@ public class LevelCreatorScenario1 {
     public static final String HIDDEN_PATTERN_LAYER_NAME = "Hidden Pattern Object";
     public static final String PLAYING_CARD_LEVEL_TYPE = "PlayingCard";
     public static final String BONUS_LEVEL_TYPE = "BonusLevelType";
-    public static final String REELS_LAYER_NAME = "Reels";
+    public static final String REELS_LAYER_NAME = "ReelSprites";
 
     private LevelDoor levelDoor;
     private TiledMap level;
@@ -724,7 +724,7 @@ public class LevelCreatorScenario1 {
             Color reelTileColor = reelTile.getColor();
             reelTileColor.set(reelTileColor.r, reelTileColor.g, reelTileColor.b, 1.0f);
             reelTile.setColor(reelTileColor);
-            reelTile.setEndReel(Random.getInstance().nextInt(animatedReelHelper.getReels().getReels().length - 1));
+            reelTile.setEndReel(Random.getInstance().nextInt(animatedReelHelper.getReelSprites().getSprites().length - 1));
             reelTile.resetReel();
             Body reelTileBody = physics.createBoxBody(BodyDef.BodyType.DynamicBody,
                     reelTile.getDestinationX() + 20,

@@ -12,7 +12,8 @@ import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.GdxRuntimeException;
 import com.ellzone.slotpuzzle2d.sprites.AnimatedReel;
 import com.ellzone.slotpuzzle2d.sprites.HoldLightButton;
-import com.ellzone.slotpuzzle2d.sprites.Reels;
+import com.ellzone.slotpuzzle2d.sprites.ReelHelper;
+import com.ellzone.slotpuzzle2d.sprites.ReelSprites;
 import com.ellzone.slotpuzzle2d.sprites.SlotHandleSprite;
 import com.ellzone.slotpuzzle2d.tweenengine.TweenManager;
 import com.ellzone.slotpuzzle2d.utils.AssetsAnnotation;
@@ -71,6 +72,7 @@ public class LevelObjectCreator {
     private LevelAnimatedReelCallback levelAnimatedReelCallback;
     private LevelSlotHandleSpriteCallback levelSlotHandleSpriteCallback;
     private LevelPointLightCallback levelPointLightCallback;
+    private LevelReelHelperCallback levelReelHelperCallback;
 
     public LevelObjectCreator(LevelCreatorInjectionInterface injection, World world, RayHandler rayHandler) {
         this.levelCreatorInjectionInterface = injection;
@@ -139,8 +141,8 @@ public class LevelObjectCreator {
         return reels;
     }
 
-    public Reels getReels() {
-        return levelCreatorInjectionInterface.getReels();
+    public ReelSprites getReelSprites() {
+        return levelCreatorInjectionInterface.getReelSprites();
     }
 
     public SlotHandleSprite getHandle() { return handle; }
@@ -183,6 +185,8 @@ public class LevelObjectCreator {
 
     public void addTo(PointLight pointLight) { pointLights.add(pointLight);}
 
+    public void addTo(ReelHelper reelHelper) {}
+
     public void addHoldLightButtonCallback(LevelHoldLightButtonCallback callback) {
         this.levelHoldLightButtonCallback = callback;
     }
@@ -197,6 +201,10 @@ public class LevelObjectCreator {
 
     public void addPointLightCallback(LevelPointLightCallback callback) {
         this.levelPointLightCallback = callback;
+    }
+
+    public void addReelHelperCallback(LevelReelHelperCallback callback) {
+        this.levelReelHelperCallback = callback;
     }
 
     private void delegateToCallback(HoldLightButton holdLightButton) {
@@ -214,6 +222,11 @@ public class LevelObjectCreator {
             levelHoldLightButtonCallback.addComponent(component);
     }
 
+    public void addComponentToEntity(ReelHelper reelHelper, Component component) {
+        if (levelReelHelperCallback != null)
+            levelReelHelperCallback.addComponent(component);
+    }
+
     private void delegateToCallback(AnimatedReel animatedReel) {
         if (levelPointLightCallback != null)
             levelAnimatedReelCallback.onEvent(animatedReel);
@@ -228,6 +241,11 @@ public class LevelObjectCreator {
     private void delegateToCallback(PointLight pointLight) {
         if (levelPointLightCallback != null)
             levelPointLightCallback.onEvent(pointLight);
+    }
+
+    private void delegateToCallback(ReelHelper reelHelper) {
+        if (levelReelHelperCallback != null)
+            levelReelHelperCallback.onEvent(reelHelper);
     }
 
     private void invokeObjectmethod(Object createdObject, String methodName) {

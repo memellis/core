@@ -70,7 +70,7 @@ public class B2dContactListener implements ContactListener {
     private void dealWithReelsHittingSinkBottom(MiniSlotMachineLevelPrototypeWithLevelCreator prototype, ReelTile reelTile) {
         MiniSlotMachineLevelPrototypeWithLevelCreator.numberOfReelsToHitSinkBottom++;
         if (MiniSlotMachineLevelPrototypeWithLevelCreator.numberOfReelsToHitSinkBottom >= MiniSlotMachineLevelPrototypeWithLevelCreator.MAX_NUMBER_OF_REELS_HIT_SINK_BOTTOM) {
-            System.out.println("Reels Tiles have fallen to the bottom of the sink!");
+            System.out.println("ReelSprites Tiles have fallen to the bottom of the sink!");
             prototype.dealWithHitSinkBottom(reelTile);
             this.prototype = prototype;
         }

@@ -26,12 +26,9 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.VertexAttributes;
 import com.badlogic.gdx.graphics.g3d.Environment;
 import com.badlogic.gdx.graphics.g3d.Material;
-import com.badlogic.gdx.graphics.g3d.Model;
 import com.badlogic.gdx.graphics.g3d.ModelBatch;
 import com.badlogic.gdx.graphics.g3d.ModelInstance;
 import com.badlogic.gdx.graphics.g3d.attributes.ColorAttribute;
-import com.badlogic.gdx.graphics.g3d.attributes.FloatAttribute;
-import com.badlogic.gdx.graphics.g3d.attributes.TextureAttribute;
 import com.badlogic.gdx.graphics.g3d.environment.DirectionalLight;
 import com.badlogic.gdx.graphics.g3d.utils.CameraInputController;
 import com.badlogic.gdx.graphics.g3d.utils.MeshBuilder;
@@ -43,7 +40,7 @@ import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.TmxMapLoader;
 import com.badlogic.gdx.utils.Array;
 import com.ellzone.slotpuzzle2d.prototypes.SPPrototype;
-import com.ellzone.slotpuzzle2d.sprites.Reels;
+import com.ellzone.slotpuzzle2d.sprites.ReelSprites;
 import com.ellzone.slotpuzzle2d.utils.AssetsAnnotation;
 import com.ellzone.slotpuzzle2d.utils.PixmapProcessors;
 
@@ -106,8 +103,8 @@ public class Render3DCylinder3 extends SPPrototype {
         cam.update();
     }
 
-    private Texture initialiseReelTexture(Reels reels) {
-        Pixmap slotReelScrollPixmap = PixmapProcessors.createHorizontalPixmapToAnimate(reels.getReels());
+    private Texture initialiseReelTexture(ReelSprites reelSprites) {
+        Pixmap slotReelScrollPixmap = PixmapProcessors.createHorizontalPixmapToAnimate(reelSprites.getSprites());
         return new Texture(slotReelScrollPixmap);
     }
 

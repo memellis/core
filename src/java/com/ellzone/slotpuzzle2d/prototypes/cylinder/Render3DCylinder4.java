@@ -18,14 +18,12 @@ package com.ellzone.slotpuzzle2d.prototypes.cylinder;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.assets.loaders.resolvers.InternalFileHandleResolver;
-import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.PerspectiveCamera;
 import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.VertexAttributes;
-import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g3d.Environment;
 import com.badlogic.gdx.graphics.g3d.Material;
 import com.badlogic.gdx.graphics.g3d.Model;
@@ -43,33 +41,12 @@ import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.TmxMapLoader;
 import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.utils.Array;
-import com.ellzone.slotpuzzle2d.SlotPuzzleConstants;
-import com.ellzone.slotpuzzle2d.effects.ReelAccessor;
-import com.ellzone.slotpuzzle2d.effects.ReelLetterAccessor;
-import com.ellzone.slotpuzzle2d.effects.SpriteAccessor;
 import com.ellzone.slotpuzzle2d.prototypes.SPPrototype;
-import com.ellzone.slotpuzzle2d.sprites.ReelLetterTile;
-import com.ellzone.slotpuzzle2d.sprites.ReelTile;
-import com.ellzone.slotpuzzle2d.sprites.Reels;
-import com.ellzone.slotpuzzle2d.tweenengine.SlotPuzzleTween;
+import com.ellzone.slotpuzzle2d.sprites.ReelSprites;
 import com.ellzone.slotpuzzle2d.utils.AssetsAnnotation;
-import com.ellzone.slotpuzzle2d.utils.FileUtils;
 import com.ellzone.slotpuzzle2d.utils.PixmapProcessors;
-import com.ellzone.slotpuzzle2d.utils.Random;
 
 import net.dermetfan.gdx.assets.AnnotationAssetManager;
-
-import org.jrenner.smartfont.SmartFontGenerator;
-
-import java.io.IOException;
-
-import static com.ellzone.slotpuzzle2d.prototypes.screens.IntroScreenPrototype.FONT_LARGE;
-import static com.ellzone.slotpuzzle2d.prototypes.screens.IntroScreenPrototype.FONT_MEDIUM;
-import static com.ellzone.slotpuzzle2d.prototypes.screens.IntroScreenPrototype.FONT_SMALL;
-import static com.ellzone.slotpuzzle2d.prototypes.screens.IntroScreenPrototype.GENERATED_FONTS_DIR;
-import static com.ellzone.slotpuzzle2d.prototypes.screens.IntroScreenPrototype.LIBERATION_MONO_REGULAR_FONT_NAME;
-import static com.ellzone.slotpuzzle2d.prototypes.tween.ReelLetterTilePlay.REEL_HEIGHT;
-import static com.ellzone.slotpuzzle2d.prototypes.tween.ReelLetterTilePlay.REEL_WIDTH;
 
 public class Render3DCylinder4 extends SPPrototype {
 
@@ -83,8 +60,8 @@ public class Render3DCylinder4 extends SPPrototype {
     @Override
     public void create() {
         annotationAssetManager =  loadAssets();
-        Reels reels = new Reels(annotationAssetManager);
-        final Texture reelTexture = initialiseReelTexture(reels);
+        ReelSprites reelSprites = new ReelSprites(annotationAssetManager);
+        final Texture reelTexture = initialiseReelTexture(reelSprites);
         instances = createReelModelInstance(reelTexture, instances);
         modelBatch = new ModelBatch();
         createEnvironment();
@@ -161,8 +138,8 @@ public class Render3DCylinder4 extends SPPrototype {
         cam.update();
     }
 
-    private Texture initialiseReelTexture(Reels reels) {
-        Pixmap slotReelScrollPixmap = PixmapProcessors.createHorizontalPixmapToAnimate(reels.getReels());
+    private Texture initialiseReelTexture(ReelSprites reelSprites) {
+        Pixmap slotReelScrollPixmap = PixmapProcessors.createHorizontalPixmapToAnimate(reelSprites.getSprites());
         return new Texture(slotReelScrollPixmap);
     }
 

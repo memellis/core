@@ -24,6 +24,7 @@ import com.badlogic.ashley.core.Family;
 import com.badlogic.ashley.utils.ImmutableArray;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.utils.viewport.FitViewport;
@@ -139,19 +140,17 @@ public class RenderSystem extends EntitySystem {
         VisualComponent visual = visualMapper.get(e);
         TransformComponent transform = transformMapper.get(e);
 
-        float width = visual.region.getRegionWidth();
-        float height = visual.region.getRegionHeight();
-
-        batch.draw(visual.region,
-                   position.x,
-                   position.y,
-                   transform.origin.x,
-                   transform.origin.y,
-                   width,
-                   height,
-                   transform.scale.x,
-                   transform.scale.y,
-                   transform.rotation);
+        if ((visual.region != null) & (!transform.isHidden))
+            batch.draw(visual.region,
+                       position.x,
+                       position.y,
+                       transform.origin.x,
+                       transform.origin.y,
+                       visual.region.getRegionWidth(),
+                       visual.region.getRegionHeight(),
+                       transform.scale.x,
+                       transform.scale.y,
+                       transform.rotation);
     }
 
     private void drawLightVisualEntities() {

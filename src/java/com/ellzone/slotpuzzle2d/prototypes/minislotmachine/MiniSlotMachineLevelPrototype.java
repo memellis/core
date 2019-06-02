@@ -53,12 +53,12 @@ import com.ellzone.slotpuzzle2d.puzzlegrid.TupleValueIndex;
 import com.ellzone.slotpuzzle2d.scene.Hud;
 import com.ellzone.slotpuzzle2d.scene.MapTile;
 import com.ellzone.slotpuzzle2d.screens.PlayScreen;
+import com.ellzone.slotpuzzle2d.sprites.ReelSprites;
 import com.ellzone.slotpuzzle2d.sprites.ReelStoppedFlashingEvent;
 import com.ellzone.slotpuzzle2d.sprites.ReelStoppedSpinningEvent;
 import com.ellzone.slotpuzzle2d.sprites.ReelTile;
 import com.ellzone.slotpuzzle2d.sprites.ReelTileEvent;
 import com.ellzone.slotpuzzle2d.sprites.ReelTileListener;
-import com.ellzone.slotpuzzle2d.sprites.Reels;
 import com.ellzone.slotpuzzle2d.sprites.Score;
 import com.ellzone.slotpuzzle2d.tweenengine.BaseTween;
 import com.ellzone.slotpuzzle2d.tweenengine.SlotPuzzleTween;
@@ -76,7 +76,7 @@ public class MiniSlotMachineLevelPrototype extends SPPrototypeTemplate {
 
     public static final int GAME_LEVEL_WIDTH = 11;
     public static final int GAME_LEVEL_HEIGHT = 8;
-    public static final String REEL_OBJECT_LAYER = "Reels";
+    public static final String REEL_OBJECT_LAYER = "ReelSprites";
     public static final String HIDDEN_PATTERN_LEVEL_TYPE = "HiddenPattern";
     public static final String PLAYING_CARD_LEVEL_TYPE = "PlayingCard";
     public static final String MINI_SLOT_MACHINE_LEVEL_NAME = "Mini Slot Machine";
@@ -92,7 +92,7 @@ public class MiniSlotMachineLevelPrototype extends SPPrototypeTemplate {
     private TextureAtlas reelAtlas, tilesAtlas, carddeckAtlas;
     private Array<DampenedSineParticle> dampenedSines;
     private PlayScreen.PlayStates playState;
-    private Reels reels;
+    private ReelSprites reelSprites;
     private Array<ReelTile> reelTiles;
     private LevelDoor levelDoor;
     private Array<Score> scores;
@@ -154,10 +154,10 @@ public class MiniSlotMachineLevelPrototype extends SPPrototypeTemplate {
 
     private void createSlotReelTexture() {
         slotReelPixmap = new Pixmap(PlayScreen.TILE_WIDTH, PlayScreen.TILE_HEIGHT, Pixmap.Format.RGBA8888);
-        slotReelPixmap = PixmapProcessors.createDynamicScrollAnimatedPixmap(reels.getReels(), reels.getReels().length);
+        slotReelPixmap = PixmapProcessors.createDynamicScrollAnimatedPixmap(reelSprites.getSprites(), reelSprites.getSprites().length);
         slotReelTexture = new Texture(slotReelPixmap);
-        slotReelScrollPixmap = new Pixmap((int) reels.getReelWidth(), (int)reels.getReelHeight(), Pixmap.Format.RGBA8888);
-        slotReelScrollPixmap = PixmapProcessors.createPixmapToAnimate(reels.getReels());
+        slotReelScrollPixmap = new Pixmap((int) reelSprites.getReelWidth(), (int) reelSprites.getReelHeight(), Pixmap.Format.RGBA8888);
+        slotReelScrollPixmap = PixmapProcessors.createPixmapToAnimate(reelSprites.getSprites());
         slotReelScrollTexture = new Texture(slotReelScrollPixmap);
         slotReelScrollheight = slotReelScrollTexture.getHeight();
     }
@@ -172,7 +172,7 @@ public class MiniSlotMachineLevelPrototype extends SPPrototypeTemplate {
     }
 
     private void initialiseReels(AnnotationAssetManager annotationAssetManager) {
-        this.reels = new Reels(annotationAssetManager);
+        this.reelSprites = new ReelSprites(annotationAssetManager);
     }
 
     private void initialiseLevelDoor() {
@@ -272,7 +272,7 @@ public class MiniSlotMachineLevelPrototype extends SPPrototypeTemplate {
             DampenedSineParticle ds = (DampenedSineParticle)source.getSource();
             ReelTile reel = (ReelTile)ds.getUserData();
             Timeline endReelSeq = Timeline.createSequence();
-            float endSy = (reel.getEndReel() * reels.getReelHeight()) % slotReelScrollheight;
+            float endSy = (reel.getEndReel() * reelSprites.getReelHeight()) % slotReelScrollheight;
             reel.setSy(reel.getSy() % (slotReelScrollheight));
             endReelSeq = endReelSeq.push(SlotPuzzleTween.to(reel, ReelAccessor.SCROLL_XY, reelSlowingTargetTime)
                     .target(0f, endSy)
@@ -347,13 +347,13 @@ public class MiniSlotMachineLevelPrototype extends SPPrototypeTemplate {
     }
 
     private void addReel(Rectangle mapRectangle, Array<ReelTile> reelTiles) {
-        int endReel = Random.getInstance().nextInt(this.reels.getReels().length);
-        ReelTile reel = new ReelTile(slotReelTexture, this.reels.getReels().length, 0, 0, reels.getReelWidth(), reels.getReelHeight(), reels.getReelWidth(), reels.getReelHeight(), endReel, this.reelSpinningSound);
+        int endReel = Random.getInstance().nextInt(this.reelSprites.getSprites().length);
+        ReelTile reel = new ReelTile(slotReelTexture, this.reelSprites.getSprites().length, 0, 0, reelSprites.getReelWidth(), reelSprites.getReelHeight(), reelSprites.getReelWidth(), reelSprites.getReelHeight(), endReel, this.reelSpinningSound);
         reel.setX(mapRectangle.getX());
         reel.setY(mapRectangle.getY());
         reel.setSx(0);
         int startReel = Random.getInstance().nextInt((int) slotReelScrollheight);
-        startReel = (startReel / ((int) this.reels.getReelWidth())) * (int) this.reels.getReelHeight();
+        startReel = (startReel / ((int) this.reelSprites.getReelWidth())) * (int) this.reelSprites.getReelHeight();
         reel.setSy(startReel);
         addReelListener(reel);
         reelTiles.add(reel);
@@ -760,7 +760,7 @@ public class MiniSlotMachineLevelPrototype extends SPPrototypeTemplate {
                 } else {
                     if (!reel.getFlashTween()) {
                         reelSlowingTargetTime = 3.0f;
-                        reel.setEndReel(Random.getInstance().nextInt(reels.getReels().length - 1));
+                        reel.setEndReel(Random.getInstance().nextInt(reelSprites.getSprites().length - 1));
 
                         reel.startSpinning();
                         reelsSpinning++;
@@ -852,7 +852,7 @@ public class MiniSlotMachineLevelPrototype extends SPPrototypeTemplate {
             score.render(batch);
         }
         if (displaySpinHelp) {
-            reels.getReels()[displaySpinHelpSprite].draw(batch);
+            reelSprites.getSprites()[displaySpinHelpSprite].draw(batch);
         }
         batch.end();
         switch (playState) {

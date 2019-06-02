@@ -20,8 +20,8 @@ import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.math.Vector2;
 import com.ellzone.slotpuzzle2d.physics.Particles;
+import com.ellzone.slotpuzzle2d.sprites.ReelSprites;
 import com.ellzone.slotpuzzle2d.sprites.ReelTile;
-import com.ellzone.slotpuzzle2d.sprites.Reels;
 import com.ellzone.slotpuzzle2d.physics.Vector;
 import com.ellzone.slotpuzzle2d.physics.Particle;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
@@ -31,8 +31,8 @@ import net.dermetfan.gdx.assets.AnnotationAssetManager;
 
 public class Particle2ExtendingParticleTemplate extends ParticleTemplate {
     private static final float VELOCITY_MIN = 2.0f;
-	private Reels reels;
-	private Sprite[] reelSprites;
+	private ReelSprites reelSprites;
+	private Sprite[] sprites;
     private ReelTiles reelTiles;
 	private Array<ReelTile> reelTilesArray;
 	private Vector accelerator;
@@ -63,14 +63,14 @@ public class Particle2ExtendingParticleTemplate extends ParticleTemplate {
 	}
 
 	private void initialiseReelTiles(AnnotationAssetManager annotationAssetManager) {
-        reels = new Reels(annotationAssetManager);
-        reelSprites = reels.getReels();
-        reelTiles = new ReelTiles(reels);
+        reelSprites = new ReelSprites(annotationAssetManager);
+        sprites = reelSprites.getSprites();
+        reelTiles = new ReelTiles(reelSprites);
 		reelTilesArray = reelTiles.getReelTiles();
     }
 
 	private void intialiseParticles() {
-		particles = new Particles(reels, reelTiles);
+		particles = new Particles(reelSprites, reelTiles);
 		reelParticles = particles.getParticles();
 		accelerator = particles.getAccelerator();
 		dampPoint = particles.getDampoint();

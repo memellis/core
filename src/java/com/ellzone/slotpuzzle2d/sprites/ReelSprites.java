@@ -16,15 +16,13 @@
 
 package com.ellzone.slotpuzzle2d.sprites;
 
-import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.ellzone.slotpuzzle2d.utils.AssetsAnnotation;
-import com.ellzone.slotpuzzle2d.utils.PixmapProcessors;
 
 import net.dermetfan.gdx.assets.AnnotationAssetManager;
 
-public class Reels {
+public class ReelSprites {
     public final static String REEL_PACK_ATLAS = "reel/reels.pack.atlas";
     public final static String CHERRY = "cherry 40x40";
     public final static String CHEESECAKE = "cheesecake 40x40";
@@ -39,7 +37,7 @@ public class Reels {
     private int spriteWidth;
     private int spriteHeight;
 
-    public Reels(AnnotationAssetManager annotationAssetManager) {
+    public ReelSprites(AnnotationAssetManager annotationAssetManager) {
         initialiseReels(annotationAssetManager);
     }
 
@@ -70,7 +68,7 @@ public class Reels {
         return spriteHeight;
     }
 
-    public Sprite[] getReels() {
+    public Sprite[] getSprites() {
         return reels;
     }
 

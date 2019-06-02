@@ -29,8 +29,8 @@ import com.ellzone.slotpuzzle2d.physics.DampenedSineParticle;
 import com.ellzone.slotpuzzle2d.puzzlegrid.ReelTileGridValue;
 import com.ellzone.slotpuzzle2d.scene.Hud;
 import com.ellzone.slotpuzzle2d.sprites.AnimatedReel;
+import com.ellzone.slotpuzzle2d.sprites.ReelSprites;
 import com.ellzone.slotpuzzle2d.sprites.ReelTile;
-import com.ellzone.slotpuzzle2d.sprites.Reels;
 import com.ellzone.slotpuzzle2d.utils.Random;
 
 import org.junit.After;
@@ -60,7 +60,7 @@ public class TestMiniSlotMachineLevelPrototypeScenario1ProcessIsTiledClicked {
     private final static String ANIMATEDREELS_FIELD_NAME = "animatedReels";
     private final static String PULLLEVELSOUND_FIELD_NAME = "pullLeverSound";
     private final static String REELSPIININGSOUND_FIELD_NAME = "reelSpinningSound";
-    private final static String REELS_FIELD_NAME = "reels";
+    private final static String REELS_FIELD_NAME = "reelSprites";
 
     private MiniSlotMachineLevelPrototypeScenario1 partialMockMiniSlotMachineLevelPrototypeScenario1;
     private LevelCreatorScenario1 levelCreatorScenario1Mock;
@@ -75,7 +75,7 @@ public class TestMiniSlotMachineLevelPrototypeScenario1ProcessIsTiledClicked {
     private Sound pullLeverSoundMock, reelSpinningSoundMock;
     private boolean spinning;
     private Random randomMock;
-    private Reels reelsMock;
+    private ReelSprites reelSpritesMock;
     private Sprite spriteMock;
 
     @Before
@@ -107,7 +107,7 @@ public class TestMiniSlotMachineLevelPrototypeScenario1ProcessIsTiledClicked {
         reelTileMock = createMock(ReelTile.class);
         animatedReelsMock = createMock(Array.class);
         animatedReelMock = createMock(AnimatedReel.class);
-        reelsMock = createMock(Reels.class);
+        reelSpritesMock = createMock(ReelSprites.class);
     }
 
     private void setUpLibGDXMocks() {
@@ -148,7 +148,7 @@ public class TestMiniSlotMachineLevelPrototypeScenario1ProcessIsTiledClicked {
         pullLeverSoundMock = null;
         reelSpinningSoundMock = null;
         randomMock = null;
-        reelsMock = null;
+        reelSpritesMock = null;
     }
 
     private void tearDownMockGdx() {
@@ -166,7 +166,7 @@ public class TestMiniSlotMachineLevelPrototypeScenario1ProcessIsTiledClicked {
         Whitebox.setInternalState(partialMockMiniSlotMachineLevelPrototypeScenario1, ANIMATEDREELS_FIELD_NAME, animatedReelsMock);
         Whitebox.setInternalState(partialMockMiniSlotMachineLevelPrototypeScenario1, PULLLEVELSOUND_FIELD_NAME, pullLeverSoundMock);
         Whitebox.setInternalState(partialMockMiniSlotMachineLevelPrototypeScenario1, REELSPIININGSOUND_FIELD_NAME, reelSpinningSoundMock);
-        Whitebox.setInternalState(partialMockMiniSlotMachineLevelPrototypeScenario1, REELS_FIELD_NAME, reelsMock);
+        Whitebox.setInternalState(partialMockMiniSlotMachineLevelPrototypeScenario1, REELS_FIELD_NAME, reelSpritesMock);
     }
 
     private void setUpTestData() {
@@ -214,7 +214,7 @@ public class TestMiniSlotMachineLevelPrototypeScenario1ProcessIsTiledClicked {
     private void expectationsStartSpinning() {
         expect(Random.getInstance()).andReturn(randomMock);
         expect(randomMock.nextInt(0)).andReturn(0);
-        expect(reelsMock.getReels()).andReturn(new Sprite[] {spriteMock});
+        expect(reelSpritesMock.getSprites()).andReturn(new Sprite[] {spriteMock});
         reelTileMock.startSpinning();
         reelTileMock.setEndReel(0);
         expect(levelCreatorScenario1Mock.getNumberOfReelsSpinning()).andReturn(1);
@@ -274,7 +274,7 @@ public class TestMiniSlotMachineLevelPrototypeScenario1ProcessIsTiledClicked {
                animatedReelMock,
                pullLeverSoundMock,
                reelSpinningSoundMock,
-               reelsMock,
+                reelSpritesMock,
                randomMock);
     }
 
@@ -290,7 +290,7 @@ public class TestMiniSlotMachineLevelPrototypeScenario1ProcessIsTiledClicked {
                animatedReelMock,
                pullLeverSoundMock,
                reelSpinningSoundMock,
-               reelsMock,
+                reelSpritesMock,
                randomMock);
     }
 

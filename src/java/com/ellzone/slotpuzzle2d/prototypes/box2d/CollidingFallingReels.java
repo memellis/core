@@ -45,7 +45,7 @@ public class CollidingFallingReels extends SPPrototypeTemplate {
 
     @Override
     protected void initialiseOverride() {
-        sprites = reels.getReels();
+        sprites = reelSprites.getSprites();
         sprites[0].setPosition(-sprites[0].getWidth() / 2, -sprites[0].getHeight()/2 + 200);
         sprites[1].setPosition(-sprites[0].getWidth() / 2 + 20, -sprites[0].getHeight()/2 + 400);
 

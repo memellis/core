@@ -92,13 +92,13 @@ public class Bezier2 extends SPPrototypeTemplate {
     private void initialiseReelSlots() {
         reelTiles = new Array<ReelTile>();
         slotReelScrollPixmap = new Pixmap(spriteWidth, spriteHeight, Pixmap.Format.RGBA8888);
-        slotReelScrollPixmap = PixmapProcessors.createPixmapToAnimate(reels.getReels());
+        slotReelScrollPixmap = PixmapProcessors.createPixmapToAnimate(reelSprites.getSprites());
         slotReelScrollTexture = new Texture(slotReelScrollPixmap);
         reelTile = new ReelTile(slotReelScrollTexture, slotReelScrollTexture.getHeight() / spriteHeight, 0, 32, spriteWidth, spriteHeight, spriteWidth, spriteHeight, 0, null);
         reelTile.setX(0);
         reelTile.setY(0);
         reelTile.setSx(0);
-        reelTile.setEndReel(Random.getInstance().nextInt(reels.getReels().length - 1));
+        reelTile.setEndReel(Random.getInstance().nextInt(reelSprites.getSprites().length - 1));
         reelTile.setSy(0);
         reelTiles.add(reelTile);
     }

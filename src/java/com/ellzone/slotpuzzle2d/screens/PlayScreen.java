@@ -63,8 +63,8 @@ import com.ellzone.slotpuzzle2d.scene.Hud;
 import com.ellzone.slotpuzzle2d.scene.MapTile;
 import com.ellzone.slotpuzzle2d.sprites.AnimatedReel;
 import com.ellzone.slotpuzzle2d.sprites.AnimatedReelHelper;
+import com.ellzone.slotpuzzle2d.sprites.ReelSprites;
 import com.ellzone.slotpuzzle2d.sprites.ReelTile;
-import com.ellzone.slotpuzzle2d.sprites.Reels;
 import com.ellzone.slotpuzzle2d.sprites.Score;
 import com.ellzone.slotpuzzle2d.utils.AssetsAnnotation;
 import com.ellzone.slotpuzzle2d.tweenengine.BaseTween;
@@ -86,7 +86,7 @@ public class PlayScreen implements Screen, PlayInterface {
 	public static final int SLOT_REEL_OBJECT_LAYER = 2;
 	public static final float PUZZLE_GRID_START_X = 160.0f;
 	public static final float PUZZLE_GRID_START_Y = 40.0f;
-    private static final String REELS_LAYER_NAME = "Reels";
+    private static final String REELS_LAYER_NAME = "ReelSprites";
 	private static final String SLOTPUZZLE_SCREEN = "PlayScreen";
     private LevelLoader levelLoader;
 	private PlayStateMachine playStateMachine;
@@ -306,8 +306,8 @@ public class PlayScreen implements Screen, PlayInterface {
 	}
 
 	private void createSprites() {
-        Reels reelsSprites = new Reels(game.annotationAssetManager);
-		sprites = reelsSprites.getReels();
+        ReelSprites reelSpritesSprites = new ReelSprites(game.annotationAssetManager);
+		sprites = reelSpritesSprites.getSprites();
 	}
 
     private void getMapProperties(TiledMap level) {

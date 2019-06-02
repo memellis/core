@@ -16,7 +16,7 @@ import com.ellzone.slotpuzzle2d.components.PositionComponent;
 import com.ellzone.slotpuzzle2d.components.SpriteComponent;
 import com.ellzone.slotpuzzle2d.components.VisualComponent;
 import com.ellzone.slotpuzzle2d.prototypes.SPPrototype;
-import com.ellzone.slotpuzzle2d.sprites.Reels;
+import com.ellzone.slotpuzzle2d.sprites.ReelSprites;
 import com.ellzone.slotpuzzle2d.systems.MovementSystem;
 import com.ellzone.slotpuzzle2d.systems.RenderSystem;
 import com.ellzone.slotpuzzle2d.utils.AssetsAnnotation;
@@ -28,7 +28,7 @@ public class RenderSystemTest extends SPPrototype {
     public static final String ANDROID_JPG = "android.jpg";
     public static final int NUMBER_OF_COINS = 100;
     PooledEngine engine;
-    Reels reels;
+    ReelSprites reelSprites;
     Random random = Random.getInstance();
 
     public void create() {
@@ -36,7 +36,7 @@ public class RenderSystemTest extends SPPrototype {
 
         AnnotationAssetManager annotationAssetManager = getAnnotationAssetManager();
 
-        reels = new Reels(annotationAssetManager);
+        reelSprites = new ReelSprites(annotationAssetManager);
         Texture androidTexture = new Texture(ANDROID_JPG);
         setupEngine(camera);
         setupCrate(androidTexture);
@@ -56,7 +56,7 @@ public class RenderSystemTest extends SPPrototype {
     private void addAReel() {
         Entity reelEntity = engine.createEntity();
         addPositionComponent(reelEntity);
-        SpriteComponent spriteComponent = new SpriteComponent(reels.getReels()[getNextRandomReel()]);
+        SpriteComponent spriteComponent = new SpriteComponent(reelSprites.getSprites()[getNextRandomReel()]);
         reelEntity.add(spriteComponent);
         reelEntity = addMovementComponent(reelEntity);
         reelEntity = addVisualComponent(reelEntity, spriteComponent);
@@ -74,7 +74,7 @@ public class RenderSystemTest extends SPPrototype {
     }
 
     private int getNextRandomReel() {
-        return random.nextInt(reels.getReels().length);
+        return random.nextInt(reelSprites.getSprites().length);
     }
 
     private Entity addPositionComponent(Entity reelEntity) {
