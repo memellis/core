@@ -79,8 +79,8 @@ public class TestHiddenPlayingCard {
         HiddenPlayingCard hiddenPlayingCard = new HiddenPlayingCard(levelMock, textureAtlasMock);
         assertThat(hiddenPlayingCard.isHiddenPatternRevealed(testGrid,
                                                              reelTiles,
-                                                              testGrid[0].length,
-                                                               testGrid.length),
+                                                             testGrid[0].length,
+                                                             testGrid.length),
                    is(false));
         verifyAll();
     }

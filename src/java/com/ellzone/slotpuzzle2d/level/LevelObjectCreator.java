@@ -89,46 +89,48 @@ public class LevelObjectCreator {
         for (RectangleMapObject rectangleMapObject : levelRectangleMapObjects) {
             MapProperties rectangleMapObjectProperties = rectangleMapObject.getProperties();
             Class<?> clazz = getClass(rectangleMapObjectProperties);
-            Array<String> constructorParameters = getParameters(rectangleMapObjectProperties, PARAMETER);
-            Class<?>[] classParameters = getParamTypes(constructorParameters);
-            Constructor<?> constructor = getConstructor(clazz, classParameters);
-            Array<String> constructorParameterValues = getParameters(rectangleMapObjectProperties, PARAMETER_VALUE);
-            try {
-                createdObject = getCreatedObject(rectangleMapObjectProperties, classParameters, constructor, constructorParameterValues);
-                if (createdObject != null) {
-                    invokeObjectmethod(createdObject, ADD_TO);
-                    invokeObjectmethod(createdObject, DELEGATE_TO_CALLBACK);
-                    componentCount = 1;
-                    huntingForComponents = true;
+            if (clazz != null) {
+                Array<String> constructorParameters = getParameters(rectangleMapObjectProperties, PARAMETER);
+                Class<?>[] classParameters = getParamTypes(constructorParameters);
+                Constructor<?> constructor = getConstructor(clazz, classParameters);
+                Array<String> constructorParameterValues = getParameters(rectangleMapObjectProperties, PARAMETER_VALUE);
+                try {
+                    createdObject = getCreatedObject(rectangleMapObjectProperties, classParameters, constructor, constructorParameterValues);
+                    if (createdObject != null) {
+                        invokeObjectmethod(createdObject, ADD_TO);
+                        invokeObjectmethod(createdObject, DELEGATE_TO_CALLBACK);
+                        componentCount = 1;
+                        huntingForComponents = true;
+                    }
+                } catch (Exception e) {
+                    throw new GdxRuntimeException(e);
                 }
-            } catch (Exception e) {
-                throw new GdxRuntimeException(e);
-            }
-            while (huntingForComponents) {
-                String component = parseComponent(COMPONENT + componentCount, rectangleMapObjectProperties);
-                if (component != null) {
-                    System.out.println(MessageFormat.format("{0}", component));
-                    components.add(component);
-                    Array<String> componentParameters = getParameters(rectangleMapObjectProperties, COMPONENT + componentCount + PROPERTY_NAME);
-                    if (componentParameters != null) {
-                        Class<?>[] componentParameterTypes = getParamTypes(componentParameters);
-                        Array<String> componentParameterValues = getParameters(rectangleMapObjectProperties, COMPONENT + componentCount + "Value");
-                        Class<?> componentClass = getClass(component);
-                        Constructor<?> componentConstructor = getConstructor(componentClass, componentParameterTypes);
-                        try {
-                            createdComponent = getCreatedObject(rectangleMapObjectProperties, componentParameterTypes, componentConstructor, componentParameterValues);
-                            if (createdObject != null) {
-                                invokeComponentObjectmethod(createdObject, createdComponent, ADD_COMPONENT_TO_ENTITY);
-                                System.out.println(MessageFormat.format("About to create component {0}", component));
+                while (huntingForComponents) {
+                    String component = parseComponent(COMPONENT + componentCount, rectangleMapObjectProperties);
+                    if (component != null) {
+                        System.out.println(MessageFormat.format("{0}", component));
+                        components.add(component);
+                        Array<String> componentParameters = getParameters(rectangleMapObjectProperties, COMPONENT + componentCount + PROPERTY_NAME);
+                        if (componentParameters != null) {
+                            Class<?>[] componentParameterTypes = getParamTypes(componentParameters);
+                            Array<String> componentParameterValues = getParameters(rectangleMapObjectProperties, COMPONENT + componentCount + "Value");
+                            Class<?> componentClass = getClass(component);
+                            Constructor<?> componentConstructor = getConstructor(componentClass, componentParameterTypes);
+                            try {
+                                createdComponent = getCreatedObject(rectangleMapObjectProperties, componentParameterTypes, componentConstructor, componentParameterValues);
+                                if (createdObject != null) {
+                                    invokeComponentObjectmethod(createdObject, createdComponent, ADD_COMPONENT_TO_ENTITY);
+                                    System.out.println(MessageFormat.format("About to create component {0}", component));
+                                }
+                            } catch (Exception e) {
+                                throw new GdxRuntimeException(e);
                             }
-                        } catch (Exception e) {
-                            throw new GdxRuntimeException(e);
-                        }
-                        componentCount++;
+                            componentCount++;
+                        } else
+                            huntingForComponents = false;
                     } else
                         huntingForComponents = false;
-                } else
-                    huntingForComponents = false;
+                }
             }
         }
     }
@@ -310,7 +312,7 @@ public class LevelObjectCreator {
     private Class<?> getClass(MapProperties rectangleMapObjectProperties) {
         String className = (String) rectangleMapObjectProperties.get(CLASS);
         System.out.println(String.format("creating className: %s", className));
-        return getClass(className);
+        return className == null ? null : getClass(className);
     }
 
     private Class<?> getClass(String className) {

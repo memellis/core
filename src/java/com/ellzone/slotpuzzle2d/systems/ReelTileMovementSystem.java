@@ -24,6 +24,8 @@ import com.ellzone.slotpuzzle2d.components.PositionComponent;
 import com.ellzone.slotpuzzle2d.components.ReelTileComponent;
 import com.ellzone.slotpuzzle2d.components.TransformComponent;
 
+import java.text.MessageFormat;
+
 public class ReelTileMovementSystem extends IteratingSystem {
     private ComponentMapper<PositionComponent> positionComponentComponentMapper = ComponentMapper.getFor(PositionComponent.class);
     private ComponentMapper<TransformComponent> transformComponentComponentMapper = ComponentMapper.getFor(TransformComponent.class);
@@ -41,5 +43,7 @@ public class ReelTileMovementSystem extends IteratingSystem {
         position.x = reelTile.reelTile.getX();
         position.y = reelTile.reelTile.getY();
         transformComponent.rotation = reelTile.reelTile.getRotation();
+        transformComponent.scale.x = reelTile.reelTile.getScaleX();
+        transformComponent.scale.y = reelTile.reelTile.getScaleY();
     }
 }

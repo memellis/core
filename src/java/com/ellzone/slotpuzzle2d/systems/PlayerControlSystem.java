@@ -101,7 +101,7 @@ public class PlayerControlSystem extends EntitySystem {
     }
 
     private void animatedReelEntityTouched(Entity animatedReelEntity) {
-        AnimatedReelComponent animatedReelComponent = animatedReelEntity.getComponent(AnimatedReelComponent.class);
+        AnimatedReelComponent animatedReelComponent = animatedReelComponentMapper.get(animatedReelEntity);
         AnimatedReel animatedReel = animatedReelComponent.animatedReel;
         if (animatedReel.getReel().getBoundingRectangle().contains(touch)) {
             if (animatedReel.getReel().isSpinning()) {
@@ -122,7 +122,7 @@ public class PlayerControlSystem extends EntitySystem {
     }
 
     private void setReelHelper(Entity reelHelperEntity, AnimatedReel animatedReel) {
-        ReelHelperComponent reelHelperComponent = reelHelperEntity.getComponent(ReelHelperComponent.class);
+        ReelHelperComponent reelHelperComponent = reelHelperComponentMapper.get(reelHelperEntity);
         VisualComponent visualComponent = reelHelperEntity.getComponent(VisualComponent.class);
         ReelHelper reelHelper = reelHelperComponent.reelHelper;
         int reelSpriteHelp = animatedReel.getReel().getCurrentReel();
@@ -159,7 +159,7 @@ public class PlayerControlSystem extends EntitySystem {
     }
 
     private boolean isAnimatedReelsNotSpinning(Entity animatedReelEntity) {
-        AnimatedReelComponent animatedReelComponent = animatedReelEntity.getComponent(AnimatedReelComponent.class);
+        AnimatedReelComponent animatedReelComponent = animatedReelComponentMapper.get(animatedReelEntity);
         return animatedReelComponent.animatedReel.getReel().isSpinning();
      }
 
@@ -199,7 +199,7 @@ public class PlayerControlSystem extends EntitySystem {
     }
 
     private void lightButtonEntityTouched(Entity lightButtonEntity) {
-        LightButtonComponent lightButtonComponent = lightButtonEntity.getComponent(LightButtonComponent.class);
+        LightButtonComponent lightButtonComponent = lightButtonComponentMapper.get(lightButtonEntity);
         LightButton lightButton = lightButtonComponent.lightButton;
         if (lightButton.getSprite().getBoundingRectangle().contains(touch.x, touch.y)) {
             if (lightButton.getLight().isActive())

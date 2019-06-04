@@ -25,13 +25,10 @@ import com.ellzone.slotpuzzle2d.tweenengine.SlotPuzzleTween;
 import com.ellzone.slotpuzzle2d.tweenengine.Timeline;
 import com.ellzone.slotpuzzle2d.tweenengine.TweenManager;
 
-
 import aurelienribon.tweenengine.equations.Back;
 import aurelienribon.tweenengine.equations.Cubic;
 import aurelienribon.tweenengine.equations.Quad;
 import aurelienribon.tweenengine.equations.Quart;
-
-import static com.badlogic.gdx.math.MathUtils.random;
 
 public class PlayScreenIntroSequence extends IntroSequence {
     public PlayScreenIntroSequence(Array<ReelTile> reelTiles, TweenManager tweenManager) {

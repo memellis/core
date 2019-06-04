@@ -95,6 +95,12 @@ public class RenderMiniSllotMachineLoadedFromALevel
     private Array<Array<Vector2>> rowMacthesToDraw = new Array<Array<Vector2>>();
     private SpriteBatch batch;
     private ShapeRenderer shapeRenderer;
+    private enum IntroSequenceState {
+        INTRO_SEQUENCE_NOT_STARTED,
+        INTRO_SEQUENCE_STARTED,
+        INTRO_SEQUENCE_FINISHED
+    }
+    private IntroSequenceState introSequenceStatus;
 
     public void create() {
         OrthographicCamera camera = setupCamera();
@@ -108,10 +114,10 @@ public class RenderMiniSllotMachineLoadedFromALevel
         loadlevel();
         animatedReels = getAnimatedReels();
         reelTiles = getReelTilesFromAnimatedReels(animatedReels);
-        setUpIntroSequence(reelTiles);
         addAnimatedReelsStopListener(animatedReels);
         batch = renderSystem.getSpriteBatch();
         shapeRenderer = new ShapeRenderer();
+        setUpIntroSequence(reelTiles);
     }
 
     private OrthographicCamera setupCamera() {
@@ -163,6 +169,7 @@ public class RenderMiniSllotMachineLoadedFromALevel
         engine.addSystem(new ReelTileMovementSystem());
         engine.addSystem(new SlotHandleSystem());
         renderSystem = new RenderSystem(world, rayHandler, camera);
+        renderSystem.setStartRendering(true);
         engine.addSystem(renderSystem);
         engine.addSystem(new LightSystem(world, rayHandler, (OrthographicCamera) renderSystem.getLightViewport().getCamera()));
         PlayerControlSystem playerControlSystem = new PlayerControlSystem(viewport, renderSystem.getLightViewport(), annotationAssetManager);
@@ -223,9 +230,10 @@ public class RenderMiniSllotMachineLoadedFromALevel
     }
 
     private void setUpIntroSequence(Array<ReelTile> reelTiles) {
+        introSequenceStatus = IntroSequenceState.INTRO_SEQUENCE_NOT_STARTED;
         PlayScreenIntroSequence playScreenIntroSequence = new PlayScreenIntroSequence(reelTiles, tweenManager);
         playScreenIntroSequence.createReelIntroSequence(introSequenceCallback);
-        renderSystem.setStartRendering(true);
+        introSequenceStatus = IntroSequenceState.INTRO_SEQUENCE_STARTED;
     }
 
     private TweenCallback introSequenceCallback = new TweenCallback() {
@@ -239,6 +247,7 @@ public class RenderMiniSllotMachineLoadedFromALevel
         switch (type) {
             case TweenCallback.END:
                 System.out.print("Intro Sequence finished");
+                introSequenceStatus = IntroSequenceState.INTRO_SEQUENCE_FINISHED;
                 break;
         }
     }
@@ -284,12 +293,14 @@ public class RenderMiniSllotMachineLoadedFromALevel
     }
 
     private void matchReels() {
-        captureReelPositions();
-        PuzzleGridTypeReelTile puzzleGrid = new PuzzleGridTypeReelTile();
-        ReelTileGridValue[][] matchGrid = puzzleGrid.populateMatchGrid(reelGrid);
-        PuzzleGridTypeReelTile puzzleGridTypeReelTile = new PuzzleGridTypeReelTile();
-        matchGrid = puzzleGridTypeReelTile.createGridLinks(matchGrid);
-        matchRowsToDraw(matchGrid, puzzleGridTypeReelTile);
+        if (introSequenceStatus == IntroSequenceState.INTRO_SEQUENCE_FINISHED) {
+            captureReelPositions();
+            PuzzleGridTypeReelTile puzzleGrid = new PuzzleGridTypeReelTile();
+            ReelTileGridValue[][] matchGrid = puzzleGrid.populateMatchGrid(reelGrid);
+            PuzzleGridTypeReelTile puzzleGridTypeReelTile = new PuzzleGridTypeReelTile();
+            matchGrid = puzzleGridTypeReelTile.createGridLinks(matchGrid);
+            matchRowsToDraw(matchGrid, puzzleGridTypeReelTile);
+        }
     }
 
     private void matchRowsToDraw(ReelTileGridValue[][] matchGrid, PuzzleGridTypeReelTile puzzleGridTypeReelTile) {
@@ -323,9 +334,8 @@ public class RenderMiniSllotMachineLoadedFromALevel
         if (reelPosition < 0)
             reelPosition = reelTiles.get(c).getNumberOfReelsInTexture() - 1;
         else {
-            if(reelPosition > reelTiles.get(c).getNumberOfReelsInTexture() - 1) {
+            if(reelPosition > reelTiles.get(c).getNumberOfReelsInTexture() - 1)
                 reelPosition = 0;
-            }
         }
         return reelPosition;
     }
