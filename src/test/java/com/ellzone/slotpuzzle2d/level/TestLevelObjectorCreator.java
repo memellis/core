@@ -1,6 +1,5 @@
 package com.ellzone.slotpuzzle2d.level;
 
-import com.badlogic.ashley.systems.IteratingSystem;
 import com.badlogic.gdx.maps.MapLayer;
 import com.badlogic.gdx.maps.MapLayers;
 import com.badlogic.gdx.maps.MapObjects;
@@ -9,27 +8,26 @@ import com.badlogic.gdx.maps.objects.RectangleMapObject;
 import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.utils.Array;
-import com.badlogic.gdx.utils.ObjectMap;
+import com.badlogic.gdx.utils.GdxRuntimeException;
 import com.ellzone.slotpuzzle2d.puzzlegrid.TupleValueIndex;
-import com.ellzone.slotpuzzle2d.screens.PlayScreen;
-import com.ellzone.slotpuzzle2d.sprites.ReelTile;
 import com.ellzone.slotpuzzle2d.utils.InputMatrix;
 
+import org.hamcrest.CoreMatchers;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.powermock.api.easymock.PowerMock;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
-import org.powermock.reflect.Whitebox;
 
 import box2dLight.RayHandler;
 
+import static junit.framework.TestCase.assertTrue;
 import static org.easymock.EasyMock.expect;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.notNullValue;
+import static org.hamcrest.CoreMatchers.nullValue;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.powermock.api.easymock.PowerMock.createMock;
 import static org.powermock.api.easymock.PowerMock.replay;
@@ -39,6 +37,7 @@ import static org.powermock.api.easymock.PowerMock.verify;
 @PrepareForTest({LevelObjectCreator.class, World.class})
 
 public class TestLevelObjectorCreator {
+    public static final String REFLECTION_MAP_CREATION_CLASS_FOR_TESTING = "com.ellzone.slotpuzzle2d.level.ReflectionMapCreationClassForTesting";
     private World worldMock;
     private RayHandler rayHandlerMock;
     private TiledMap levelMock;
@@ -78,13 +77,23 @@ public class TestLevelObjectorCreator {
         assertThat(rectangleMapObjects.size, is(equalTo(0)));
     }
 
+    @Test(expected = GdxRuntimeException.class)
+    public void testCreateLevelWhenRectangleMapObjectsIsNull() {
+        rectangleMapObjects = null;
+        LevelObjectCreator levelObjectCreator = new LevelObjectCreator(levelCreatorInjectionInterfaceMock, worldMock, rayHandlerMock);
+        assertThat(levelObjectCreator, is(notNullValue()));
+        levelObjectCreator.createLevel(rectangleMapObjects);
+        assertThat(rectangleMapObjects, CoreMatchers.<Array<RectangleMapObject>>is((Array<RectangleMapObject>) equalTo(nullValue())));
+    }
+
     @Test
-    public void testCreateLevelWhenThereIsOneRectangleMapObjectWithProperties() {
+    public void testCreateLevelWhenThereIsOneRectangleMapObjectWithNoClassProperties() {
         rectangleMapObjects = new Array<>();
-        rectangleMapObjects.add(createARectangleMockObject());
+        rectangleMapObjects.add(createARectangleMockObject(new MapProperties()));
         for (RectangleMapObject rectangleMapObjectMocked : rectangleMapObjects)
             replay(rectangleMapObjectMocked);
-        LevelObjectCreator levelObjectCreator = new LevelObjectCreator(levelCreatorInjectionInterfaceMock, worldMock, rayHandlerMock);
+        LevelObjectCreator levelObjectCreator =
+                new LevelObjectCreator(levelCreatorInjectionInterfaceMock, worldMock, rayHandlerMock);
         assertThat(levelObjectCreator, is(notNullValue()));
         levelObjectCreator.createLevel(rectangleMapObjects);
         assertThat(rectangleMapObjects.size, is(equalTo(1)));
@@ -92,9 +101,67 @@ public class TestLevelObjectorCreator {
             verify(rectangleMapObjectMocked);
     }
 
+    @Test(expected = GdxRuntimeException.class)
+    public void testCreateLevelWhenThereisOneRectangleMapObjectWithClassPropertiesWithNoAddToMethod() {
+        rectangleMapObjects = new Array<>();
+        rectangleMapObjects.add(createARectangleMockObjectWithAClassProperty());
+        for (RectangleMapObject rectangleMapObjectMocked : rectangleMapObjects)
+            replay(rectangleMapObjectMocked);
+        LevelObjectCreatorForTestWithNoMethods levelObjectCreator =
+                new LevelObjectCreatorForTestWithNoMethods(
+                        levelCreatorInjectionInterfaceMock, worldMock, rayHandlerMock);
+        assertThat(levelObjectCreator, is(notNullValue()));
+        levelObjectCreator.createLevel(rectangleMapObjects);
+    }
 
-    private RectangleMapObject createARectangleMockObject() {
+    @Test(expected = GdxRuntimeException.class)
+    public void testCreateLevelWhenThereisOneRectangleMapObjectWithClassPropertiesWithNoDelegateToMethod() {
+        rectangleMapObjects = new Array<>();
+        rectangleMapObjects.add(createARectangleMockObjectWithAClassProperty());
+        for (RectangleMapObject rectangleMapObjectMocked : rectangleMapObjects)
+            replay(rectangleMapObjectMocked);
+        LevelObjectCreatorForTestWithNoDelegateToMethod levelObjectCreator =
+                new LevelObjectCreatorForTestWithNoDelegateToMethod(
+                        levelCreatorInjectionInterfaceMock, worldMock, rayHandlerMock);
+        assertThat(levelObjectCreator, is(notNullValue()));
+        levelObjectCreator.createLevel(rectangleMapObjects);
+    }
+
+    @Test
+    public void testCreateLevelWhenThereisOneRectangleMapObjectWithClassProperties() {
+        rectangleMapObjects = new Array<>();
+        rectangleMapObjects.add(createARectangleMockObjectWithAClassProperty());
+        for (RectangleMapObject rectangleMapObjectMocked : rectangleMapObjects)
+            replay(rectangleMapObjectMocked);
+        LevelObjectCreatorForTest levelObjectCreator = new LevelObjectCreatorForTest(levelCreatorInjectionInterfaceMock, worldMock, rayHandlerMock);
+        assertThat(levelObjectCreator, is(notNullValue()));
+        levelObjectCreator.createLevel(rectangleMapObjects);
+        assertThat(rectangleMapObjects.size, is(equalTo(1)));
+        assertTrue(levelObjectCreator.getReflectionMapCreationClassForTesting() instanceof ReflectionMapCreationClassForTesting);
+        assertTrue(levelObjectCreator.getDelegatedToCallback());
+        for (RectangleMapObject rectangleMapObjectMocked : rectangleMapObjects)
+            verify(rectangleMapObjectMocked);
+    }
+
+    private RectangleMapObject createARectangleMockObjectWithAClassProperty() {
+        MapProperties customMapProperties = new MapProperties();
+        customMapProperties.put(LevelObjectCreator.CLASS, REFLECTION_MAP_CREATION_CLASS_FOR_TESTING);
+        return createARectangleMockObject(customMapProperties);
+    }
+
+    private RectangleMapObject createARectangleMockObject(MapProperties customeMapProperties) {
         RectangleMapObject rectangleMapObjectMock1 = createMock(RectangleMapObject.class);
+        MapProperties mapProperties = getMapProperties();
+        addCustomMapProperties(mapProperties, customeMapProperties);
+        expect(rectangleMapObjectMock1.getProperties()).andReturn(mapProperties);
+        return rectangleMapObjectMock1;
+    }
+
+    private void addCustomMapProperties(MapProperties mapProperties, MapProperties customeMapProperties) {
+        mapProperties.putAll(customeMapProperties);
+    }
+
+    private MapProperties getMapProperties() {
         MapProperties mapProperties1 = new MapProperties();
         mapProperties1.put("ID", 148);
         mapProperties1.put("Name", "Button");
@@ -104,8 +171,7 @@ public class TestLevelObjectorCreator {
         mapProperties1.put("Width", "40.0");
         mapProperties1.put("Height", "40.0");
         mapProperties1.put("Rotation", "0");
-        expect(rectangleMapObjectMock1.getProperties()).andReturn(mapProperties1);
-        return rectangleMapObjectMock1;
+        return mapProperties1;
     }
 
 
@@ -194,5 +260,4 @@ public class TestLevelObjectorCreator {
         }
         return noOfEmptyMatrixCells;
     }
-
 }
