@@ -1,3 +1,19 @@
+/*
+ Copyright 2011 See AUTHORS file.
+
+ Licensed under the Apache License, Version 2.0 (the "License");
+ you may not use this file except in compliance with the License.
+ You may obtain a copy of the License at
+
+ http://www.apache.org/licenses/LICENSE-2.0
+
+ Unless required by applicable law or agreed to in writing, software
+ distributed under the License is distributed on an "AS IS" BASIS,
+ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ See the License for the specific language governing permissions and
+ limitations under the License.
+ */
+
 package com.ellzone.slotpuzzle2d.level;
 
 import com.badlogic.ashley.core.Component;
@@ -60,19 +76,15 @@ public class LevelObjectCreator {
     public static final String CLASS = "Class";
     public static final String ADD_COMPONENT_TO_ENTITY = "addComponentToEntity";
 
-    private Array<HoldLightButton> lightButtons = new Array<>();
-    private Array<AnimatedReel> reels = new Array<>();
-    private Array<PointLight> pointLights = new Array<>();
-    private SlotHandleSprite handle;
-    private LevelCreatorInjectionInterface levelCreatorInjectionInterface;
-    private World world;
-    private RayHandler rayHandler;
-    private Color reelPointLightColor = new Color(0.2f, 0.2f, 0.2f, 0.2f);
-    private LevelHoldLightButtonCallback levelHoldLightButtonCallback;
-    private LevelAnimatedReelCallback levelAnimatedReelCallback;
-    private LevelSlotHandleSpriteCallback levelSlotHandleSpriteCallback;
-    private LevelPointLightCallback levelPointLightCallback;
-    private LevelReelHelperCallback levelReelHelperCallback;
+    protected Array<HoldLightButton> lightButtons = new Array<>();
+    protected Array<AnimatedReel> reels = new Array<>();
+    protected Array<PointLight> pointLights = new Array<>();
+    protected SlotHandleSprite handle;
+    protected ReelHelper reelHelper;
+    protected LevelCreatorInjectionInterface levelCreatorInjectionInterface;
+    protected World world;
+    protected RayHandler rayHandler;
+    protected Color reelPointLightColor = new Color(0.2f, 0.2f, 0.2f, 0.2f);
 
     public LevelObjectCreator(LevelCreatorInjectionInterface injection, World world, RayHandler rayHandler) {
         this.levelCreatorInjectionInterface = injection;
@@ -134,81 +146,6 @@ public class LevelObjectCreator {
 
     public TextureAtlas getSlotHandleAtlas() {
         return levelCreatorInjectionInterface.getSlothandleAtlas();
-    }
-
-    public void addTo(HoldLightButton holdLightButton) {
-        lightButtons.add(holdLightButton);
-    }
-
-    public void addTo(AnimatedReel reel) {
-        reels.add(reel);
-    }
-
-    public void addTo(SlotHandleSprite handle) { this.handle = handle; }
-
-    public void addTo(PointLight pointLight) { pointLights.add(pointLight);}
-
-    public void addTo(ReelHelper reelHelper) {}
-
-    public void addHoldLightButtonCallback(LevelHoldLightButtonCallback callback) {
-        this.levelHoldLightButtonCallback = callback;
-    }
-
-    public void addAnimatedReelCallback(LevelAnimatedReelCallback callback) {
-        this.levelAnimatedReelCallback = callback;
-    }
-
-    public void addSlotHandleCallback(LevelSlotHandleSpriteCallback callback) {
-        this.levelSlotHandleSpriteCallback = callback;
-    }
-
-    public void addPointLightCallback(LevelPointLightCallback callback) {
-        this.levelPointLightCallback = callback;
-    }
-
-    public void addReelHelperCallback(LevelReelHelperCallback callback) {
-        this.levelReelHelperCallback = callback;
-    }
-
-    private void delegateToCallback(HoldLightButton holdLightButton) {
-        if (levelHoldLightButtonCallback != null)
-            levelHoldLightButtonCallback.onEvent(holdLightButton);
-    }
-
-    public void addComponentToEntity(PointLight pointLight, Component component) {
-        if (levelPointLightCallback != null)
-            levelPointLightCallback.addComponent(component);
-    }
-
-    public void addComponentToEntity(HoldLightButton holdLightButton, Component component) {
-        if (levelHoldLightButtonCallback != null)
-            levelHoldLightButtonCallback.addComponent(component);
-    }
-
-    public void addComponentToEntity(ReelHelper reelHelper, Component component) {
-        if (levelReelHelperCallback != null)
-            levelReelHelperCallback.addComponent(component);
-    }
-
-    private void delegateToCallback(AnimatedReel animatedReel) {
-        if (levelPointLightCallback != null)
-            levelAnimatedReelCallback.onEvent(animatedReel);
-    }
-
-    private void delegateToCallback(SlotHandleSprite slotHandleSprite) {
-        if (levelPointLightCallback != null)
-            levelSlotHandleSpriteCallback.onEvent(slotHandleSprite);
-    }
-
-
-    private void delegateToCallback(PointLight pointLight) {
-        if (levelPointLightCallback != null)
-            levelPointLightCallback.onEvent(pointLight);
-    }
-
-    private void delegateToCallback(ReelHelper reelHelper) {
-        if (levelReelHelperCallback != null)
-            levelReelHelperCallback.onEvent(reelHelper);
     }
 
     private Object[] parseConstructorParameterValues(Array<String> constructorParameterValues,

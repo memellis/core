@@ -32,6 +32,7 @@ import com.ellzone.slotpuzzle2d.level.LevelCreatorInjectionInterface;
 import com.ellzone.slotpuzzle2d.level.LevelHoldLightButtonCallback;
 import com.ellzone.slotpuzzle2d.level.LevelHoldLightHoldButtonAction;
 import com.ellzone.slotpuzzle2d.level.LevelObjectCreator;
+import com.ellzone.slotpuzzle2d.level.LevelObjectCreatorEntityHolder;
 import com.ellzone.slotpuzzle2d.level.LevelPointLightAction;
 import com.ellzone.slotpuzzle2d.level.LevelPointLightCallback;
 import com.ellzone.slotpuzzle2d.level.LevelReelHelperAction;
@@ -186,7 +187,7 @@ public class RenderMiniSllotMachineLoadedFromALevel
     }
 
     private void loadlevel() {
-        LevelObjectCreator levelObjectCreator = new LevelObjectCreator(this, world, rayHandler);
+        LevelObjectCreatorEntityHolder levelObjectCreator = new LevelObjectCreatorEntityHolder(this, world, rayHandler);
         addLevelCallbacks(levelObjectCreator);
         TiledMap level = getLevelAssets(annotationAssetManager);
         slotHandleAtlas = getSlotHanldeAtlas(annotationAssetManager);
@@ -198,7 +199,7 @@ public class RenderMiniSllotMachineLoadedFromALevel
         }
     }
 
-    private void addLevelCallbacks(LevelObjectCreator levelObjectCreator) {
+    private void addLevelCallbacks(LevelObjectCreatorEntityHolder levelObjectCreator) {
         LevelHoldLightButtonCallback levelHoldLightButtonCallback = new LevelHoldLightHoldButtonAction(engine, world, rayHandler);
         levelObjectCreator.addHoldLightButtonCallback(levelHoldLightButtonCallback);
         LevelAnimatedReelCallback levelAnimatedReelCallback = new LevelAnimatedReelAction(engine);

@@ -122,6 +122,7 @@ public class SPPrototypes {
         EdgeShapes.class,
         EdgeShapesBigCatchBox.class,
 		FrameBufferParticleEffectSample.class,
+        GdxAiEntityMessaging.class,
         Light.class,
         SmoothScrollingWorldMap.class,
         SubPixelPerfectSmoothScrolling.class,
