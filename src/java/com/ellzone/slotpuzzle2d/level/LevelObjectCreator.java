@@ -408,13 +408,15 @@ public class LevelObjectCreator {
             return parameters;
         }
 
-        private Constructor<?> getConstructor(Class<?> clazz, Class<?>[] classParameters) {
+        private Constructor<?> getConstructor(Class<?> clazz, Class<?>[] classParameters)
+            throws GdxRuntimeException {
             Constructor<?> constructor = null;
             try {
                 constructor = clazz.getConstructor(classParameters);
             } catch (NoSuchMethodException nsme) {
-                System.out.println(String.format("No such constructor exception %s",
-                        nsme.getMessage()));
+                throw new GdxRuntimeException(
+                        MessageFormat.format("No such constructor: {0}",
+                                                            nsme.getMessage()));
             }
             return constructor;
         }

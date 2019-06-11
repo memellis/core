@@ -1,12 +1,18 @@
 apply plugin: "java"
-apply plugin: 'jacoco'
+apply plugin: "jacoco"
+apply plugin: "artemis"
+apply plugin: "artemis-fluid"
+
+ext {
+    fluidOutputDir = file("$buildDir/generated-sources/fluid")
+}
 
 sourceCompatibility = 1.7
 targetCompatibility = 1.7
 
 [compileJava, compileTestJava]*.options*.encoding = 'UTF-8'
 
-sourceSets.main.java.srcDirs = [ "src/java" ]
+sourceSets.main.java.srcDirs = [ "src/java", fluidOutputDir ]
 
 sourceSets {
     test {
@@ -16,8 +22,64 @@ sourceSets {
     }
 }
 
+test {
+    useJUnitPlatform()
+    failFast=true
+
+    testLogging {
+        // set options for log level LIFECYCLE
+        events "failed"
+        exceptionFormat "short"
+
+        // set options for log level DEBUG
+        debug {
+            events "started", "skipped", "failed"
+            exceptionFormat "full"
+        }
+
+        // remove standard output/error logging from --info builds
+        // by assigning only 'failed' and 'skipped' events
+        info.events = ["failed", "skipped"]
+    }
+}
+
 dependencies {
     testCompile 'junit:junit:4.12'
+}
+
+// artemis-odb: weaving settings.
+weave {
+    enableArtemisPlugin = true
+    enablePooledWeaving = true
+    optimizeEntitySystems = true
+    classesDir = sourceSets.main.java.outputDir
+}
+
+fluid {
+    generatedSourcesDirectory = fluidOutputDir
+    classpath = sourceSets.main.compileClasspath
+
+    // optional parameters. Uncomment to activate.
+    // preferences.prefixComponentGetter = "get" // prefix for Pos E::[get]pos()
+    // preferences.prefixComponentCreate = "" // prefix for E E::[]pos()
+    // preferences.prefixComponentHas = "has" // prefix for boolean E::[has]Pos()
+    // preferences.prefixComponentRemove = "remove" // prefix for E E::[remove]Pos()
+    // preferences.generateTagMethods = true // add tag convenience methods to E.
+    // preferences.generateGroupMethods = true // add group convenience methods to E.
+    // preferences.generateBooleanComponentAccessors = true // Generate boolean accessors for flag components?
+    // preferences.swallowGettersWithParameters = false // global setting. overridden by @Fluid annotation.
+}
+
+compileJava.dependsOn fluid
+classes.finalizedBy weave
+
+idea.module {
+    generatedSourceDirs += fluidOutputDir
+    excludeDirs -= file("$buildDir")
+    excludeDirs += file("$buildDir/classes")
+    excludeDirs += file("$buildDir/dependency-cache")
+    excludeDirs += file("$buildDir/libs")
+    excludeDirs += file("$buildDir/tmp")
 }
 
 jacocoTestReport {

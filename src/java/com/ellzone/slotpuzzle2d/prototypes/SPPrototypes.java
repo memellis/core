@@ -18,6 +18,7 @@ package com.ellzone.slotpuzzle2d.prototypes;
 
 import com.badlogic.gdx.utils.reflect.ClassReflection;
 import com.badlogic.gdx.utils.reflect.ReflectionException;
+import com.ellzone.slotpuzzle2d.prototypes.artemis.ArtemisOdbQuickStart;
 import com.ellzone.slotpuzzle2d.prototypes.ashley.RenderLightButtons;
 import com.ellzone.slotpuzzle2d.prototypes.ashley.RenderMiniSllotMachineLoadedFromALevel;
 import com.ellzone.slotpuzzle2d.prototypes.ashley.RenderReels;
@@ -106,6 +107,7 @@ import com.ellzone.slotpuzzle2d.prototypes.icons.DownloadMamuIcons;
 
 public class SPPrototypes {
     public static final List<Class<? extends SPPrototype>> tests = new ArrayList<Class<? extends SPPrototype>>((Collection<? extends Class<? extends SPPrototype>>) Arrays.asList(
+        ArtemisOdbQuickStart.class,
         Basic2D.class,
         Bezier1.class,
         Bezier2.class,

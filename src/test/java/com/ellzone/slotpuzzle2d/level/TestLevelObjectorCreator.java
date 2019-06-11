@@ -9,6 +9,10 @@ import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.GdxRuntimeException;
+import com.ellzone.slotpuzzle2d.level.fixtures.LevelObjectCreatorForTest;
+import com.ellzone.slotpuzzle2d.level.fixtures.LevelObjectCreatorForTestWithNoDelegateToMethod;
+import com.ellzone.slotpuzzle2d.level.fixtures.LevelObjectCreatorForTestWithNoMethods;
+import com.ellzone.slotpuzzle2d.level.fixtures.ReflectionMapCreationClassForTesting;
 import com.ellzone.slotpuzzle2d.puzzlegrid.TupleValueIndex;
 import com.ellzone.slotpuzzle2d.utils.InputMatrix;
 
@@ -37,7 +41,7 @@ import static org.powermock.api.easymock.PowerMock.verify;
 @PrepareForTest({LevelObjectCreator.class, World.class})
 
 public class TestLevelObjectorCreator {
-    public static final String REFLECTION_MAP_CREATION_CLASS_FOR_TESTING = "com.ellzone.slotpuzzle2d.level.ReflectionMapCreationClassForTesting";
+    public static final String REFLECTION_MAP_CREATION_CLASS_FOR_TESTING = "com.ellzone.slotpuzzle2d.level.fixtures.ReflectionMapCreationClassForTesting";
     private World worldMock;
     private RayHandler rayHandlerMock;
     private TiledMap levelMock;
@@ -143,22 +147,45 @@ public class TestLevelObjectorCreator {
             verify(rectangleMapObjectMocked);
     }
 
+    @Test(expected = GdxRuntimeException.class)
+    public void testCreateLevelWhenThereIsOneRectangleMapObjectWithClassAndOneFloatConstructor() {
+        rectangleMapObjects = new Array<>();
+        rectangleMapObjects.add(createARectangleMockObjectWithAClassPropertyAndConstructorWithOneFloatArgumentOnly());
+        for (RectangleMapObject rectangleMapObjectMocked : rectangleMapObjects)
+            replay(rectangleMapObjectMocked);
+        LevelObjectCreatorForTest levelObjectCreator = new LevelObjectCreatorForTest(levelCreatorInjectionInterfaceMock, worldMock, rayHandlerMock);
+        assertThat(levelObjectCreator, is(notNullValue()));
+        levelObjectCreator.createLevel(rectangleMapObjects);
+    }
+
     private RectangleMapObject createARectangleMockObjectWithAClassProperty() {
+        MapProperties customMapProperties = createClassProperty();
+        return createARectangleMockObject(customMapProperties);
+    }
+
+    private MapProperties createClassProperty() {
         MapProperties customMapProperties = new MapProperties();
         customMapProperties.put(LevelObjectCreator.CLASS, REFLECTION_MAP_CREATION_CLASS_FOR_TESTING);
+        return customMapProperties;
+    }
+
+    private RectangleMapObject createARectangleMockObjectWithAClassPropertyAndConstructorWithOneFloatArgumentOnly() {
+        MapProperties customMapProperties = createClassProperty();
+        customMapProperties.put("Parameter1", "float");
         return createARectangleMockObject(customMapProperties);
     }
 
     private RectangleMapObject createARectangleMockObject(MapProperties customeMapProperties) {
         RectangleMapObject rectangleMapObjectMock1 = createMock(RectangleMapObject.class);
         MapProperties mapProperties = getMapProperties();
-        addCustomMapProperties(mapProperties, customeMapProperties);
+        mapProperties =  addCustomMapProperties(mapProperties, customeMapProperties);
         expect(rectangleMapObjectMock1.getProperties()).andReturn(mapProperties);
         return rectangleMapObjectMock1;
     }
 
-    private void addCustomMapProperties(MapProperties mapProperties, MapProperties customeMapProperties) {
+    private MapProperties addCustomMapProperties(MapProperties mapProperties, MapProperties customeMapProperties) {
         mapProperties.putAll(customeMapProperties);
+        return mapProperties;
     }
 
     private MapProperties getMapProperties() {
