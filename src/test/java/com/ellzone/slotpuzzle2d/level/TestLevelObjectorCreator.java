@@ -42,6 +42,12 @@ import static org.powermock.api.easymock.PowerMock.verify;
 
 public class TestLevelObjectorCreator {
     public static final String REFLECTION_MAP_CREATION_CLASS_FOR_TESTING = "com.ellzone.slotpuzzle2d.level.fixtures.ReflectionMapCreationClassForTesting";
+    public static final String REFLECTION_MAP_CREATION_CLASS_FOR_TESTING_WITH_FLOAT_ARGUMENT =
+            "com.ellzone.slotpuzzle2d.level.fixtures.ReflectionMapCreationClassForTestingWithFloatArgument";
+    public static final String PARAMETER_1 = "Parameter1";
+    public static final String FLOAT = "float";
+    public static final String PARAMETER_VALUE_1 = "ParameterValue1";
+    public static final String VALUE_3 = "Value:3";
     private World worldMock;
     private RayHandler rayHandlerMock;
     private TiledMap levelMock;
@@ -108,7 +114,7 @@ public class TestLevelObjectorCreator {
     @Test(expected = GdxRuntimeException.class)
     public void testCreateLevelWhenThereisOneRectangleMapObjectWithClassPropertiesWithNoAddToMethod() {
         rectangleMapObjects = new Array<>();
-        rectangleMapObjects.add(createARectangleMockObjectWithAClassProperty());
+        rectangleMapObjects.add(createARectangleMockObjectWithAClassProperty(REFLECTION_MAP_CREATION_CLASS_FOR_TESTING));
         for (RectangleMapObject rectangleMapObjectMocked : rectangleMapObjects)
             replay(rectangleMapObjectMocked);
         LevelObjectCreatorForTestWithNoMethods levelObjectCreator =
@@ -121,7 +127,7 @@ public class TestLevelObjectorCreator {
     @Test(expected = GdxRuntimeException.class)
     public void testCreateLevelWhenThereisOneRectangleMapObjectWithClassPropertiesWithNoDelegateToMethod() {
         rectangleMapObjects = new Array<>();
-        rectangleMapObjects.add(createARectangleMockObjectWithAClassProperty());
+        rectangleMapObjects.add(createARectangleMockObjectWithAClassProperty(REFLECTION_MAP_CREATION_CLASS_FOR_TESTING));
         for (RectangleMapObject rectangleMapObjectMocked : rectangleMapObjects)
             replay(rectangleMapObjectMocked);
         LevelObjectCreatorForTestWithNoDelegateToMethod levelObjectCreator =
@@ -134,7 +140,7 @@ public class TestLevelObjectorCreator {
     @Test
     public void testCreateLevelWhenThereisOneRectangleMapObjectWithClassProperties() {
         rectangleMapObjects = new Array<>();
-        rectangleMapObjects.add(createARectangleMockObjectWithAClassProperty());
+        rectangleMapObjects.add(createARectangleMockObjectWithAClassProperty(REFLECTION_MAP_CREATION_CLASS_FOR_TESTING));
         for (RectangleMapObject rectangleMapObjectMocked : rectangleMapObjects)
             replay(rectangleMapObjectMocked);
         LevelObjectCreatorForTest levelObjectCreator = new LevelObjectCreatorForTest(levelCreatorInjectionInterfaceMock, worldMock, rayHandlerMock);
@@ -148,9 +154,9 @@ public class TestLevelObjectorCreator {
     }
 
     @Test(expected = GdxRuntimeException.class)
-    public void testCreateLevelWhenThereIsOneRectangleMapObjectWithClassAndOneFloatConstructor() {
+    public void testCreateLevelWhenThereIsOneRectangleMapObjectWithClassAndConstructorWithOneFloatArgumentAndNoValue() {
         rectangleMapObjects = new Array<>();
-        rectangleMapObjects.add(createARectangleMockObjectWithAClassPropertyAndConstructorWithOneFloatArgumentOnly());
+        rectangleMapObjects.add(createARectangleMockObjectWithAClassPropertyAndConstructorWithOneFloatArgumentOnly(REFLECTION_MAP_CREATION_CLASS_FOR_TESTING));
         for (RectangleMapObject rectangleMapObjectMocked : rectangleMapObjects)
             replay(rectangleMapObjectMocked);
         LevelObjectCreatorForTest levelObjectCreator = new LevelObjectCreatorForTest(levelCreatorInjectionInterfaceMock, worldMock, rayHandlerMock);
@@ -158,20 +164,39 @@ public class TestLevelObjectorCreator {
         levelObjectCreator.createLevel(rectangleMapObjects);
     }
 
-    private RectangleMapObject createARectangleMockObjectWithAClassProperty() {
-        MapProperties customMapProperties = createClassProperty();
+    @Test
+    public void testCreateLevelWhenThereIsOneRectangleMapObjectWithClassAndContructotWithFloatArgumentAndValue() {
+        rectangleMapObjects = new Array<>();
+        rectangleMapObjects.add(createLevelWhenThereIsOneRectangleMapObjectWithClassAndContructotWithFloatArgumentAndValue(REFLECTION_MAP_CREATION_CLASS_FOR_TESTING_WITH_FLOAT_ARGUMENT));
+        for (RectangleMapObject rectangleMapObjectMocked : rectangleMapObjects)
+            replay(rectangleMapObjectMocked);
+        LevelObjectCreatorForTest levelObjectCreator = new LevelObjectCreatorForTest(levelCreatorInjectionInterfaceMock, worldMock, rayHandlerMock);
+        assertThat(levelObjectCreator, is(notNullValue()));
+        levelObjectCreator.createLevel(rectangleMapObjects);
+        assertThat(levelObjectCreator.getReflectionMapCreationClassForTestingWithFloatArgument().getTestFloatField(), CoreMatchers.<Float>is(equalTo(3.0f)));
+    }
+
+    private RectangleMapObject createLevelWhenThereIsOneRectangleMapObjectWithClassAndContructotWithFloatArgumentAndValue(String className) {
+        MapProperties customMapProperties = createClassProperty(className);
+        customMapProperties.put(PARAMETER_1, FLOAT);
+        customMapProperties.put(PARAMETER_VALUE_1, VALUE_3);
         return createARectangleMockObject(customMapProperties);
     }
 
-    private MapProperties createClassProperty() {
+    private RectangleMapObject createARectangleMockObjectWithAClassProperty(String className) {
+        MapProperties customMapProperties = createClassProperty(className);
+        return createARectangleMockObject(customMapProperties);
+    }
+
+    private MapProperties createClassProperty(String className) {
         MapProperties customMapProperties = new MapProperties();
-        customMapProperties.put(LevelObjectCreator.CLASS, REFLECTION_MAP_CREATION_CLASS_FOR_TESTING);
+        customMapProperties.put(LevelObjectCreator.CLASS, className);
         return customMapProperties;
     }
 
-    private RectangleMapObject createARectangleMockObjectWithAClassPropertyAndConstructorWithOneFloatArgumentOnly() {
-        MapProperties customMapProperties = createClassProperty();
-        customMapProperties.put("Parameter1", "float");
+    private RectangleMapObject createARectangleMockObjectWithAClassPropertyAndConstructorWithOneFloatArgumentOnly(String className) {
+        MapProperties customMapProperties = createClassProperty(className);
+        customMapProperties.put(PARAMETER_1, FLOAT);
         return createARectangleMockObject(customMapProperties);
     }
 
