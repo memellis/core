@@ -8,7 +8,7 @@ import box2dLight.RayHandler;
 
 public class LevelObjectCreatorForTest extends LevelObjectCreator {
     private ReflectionMapCreationClassForTesting reflectionMapCreationClassForTesting;
-    private ReflectionMapCreationClassForTestingWithFloatArgument reflectionMapCreationClassForTestingWithFloatArgument;
+    private ReflectionMapCreationClassForTestingWithDifferentContstuctors reflectionMapCreationClassForTestingWithDifferentContstuctors;
     private boolean delegatedToCallbackCalled = false;
     public LevelObjectCreatorForTest(LevelCreatorInjectionInterface levelCreatorInjectionInterface,
                                      World world,
@@ -24,11 +24,11 @@ public class LevelObjectCreatorForTest extends LevelObjectCreator {
         delegatedToCallbackCalled = true;
     }
 
-    public void addTo(ReflectionMapCreationClassForTestingWithFloatArgument reflectionMapCreationClassForTestingWithFloatArgument) {
-        this.reflectionMapCreationClassForTestingWithFloatArgument = reflectionMapCreationClassForTestingWithFloatArgument;
+    public void addTo(ReflectionMapCreationClassForTestingWithDifferentContstuctors reflectionMapCreationClassForTestingWithDifferentContstuctors) {
+        this.reflectionMapCreationClassForTestingWithDifferentContstuctors = reflectionMapCreationClassForTestingWithDifferentContstuctors;
     }
 
-    public void delegateToCallback(ReflectionMapCreationClassForTestingWithFloatArgument reflectionMapCreationClassForTestingWithFloatArgument) {
+    public void delegateToCallback(ReflectionMapCreationClassForTestingWithDifferentContstuctors reflectionMapCreationClassForTestingWithDifferentContstuctors) {
         delegatedToCallbackCalled = true;
     }
 
@@ -36,8 +36,8 @@ public class LevelObjectCreatorForTest extends LevelObjectCreator {
         return reflectionMapCreationClassForTesting;
     }
 
-    public ReflectionMapCreationClassForTestingWithFloatArgument getReflectionMapCreationClassForTestingWithFloatArgument() {
-        return reflectionMapCreationClassForTestingWithFloatArgument;
+    public ReflectionMapCreationClassForTestingWithDifferentContstuctors getReflectionMapCreationClassForTestingWithDifferentContstuctors() {
+        return reflectionMapCreationClassForTestingWithDifferentContstuctors;
     }
 
     public boolean getDelegatedToCallback() {

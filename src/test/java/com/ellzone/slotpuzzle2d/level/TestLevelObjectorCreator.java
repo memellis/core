@@ -42,12 +42,16 @@ import static org.powermock.api.easymock.PowerMock.verify;
 
 public class TestLevelObjectorCreator {
     public static final String REFLECTION_MAP_CREATION_CLASS_FOR_TESTING = "com.ellzone.slotpuzzle2d.level.fixtures.ReflectionMapCreationClassForTesting";
-    public static final String REFLECTION_MAP_CREATION_CLASS_FOR_TESTING_WITH_FLOAT_ARGUMENT =
-            "com.ellzone.slotpuzzle2d.level.fixtures.ReflectionMapCreationClassForTestingWithFloatArgument";
+    public static final String REFLECTION_MAP_CREATION_CLASS_FOR_TESTING_WITH_DIFFERENT_CONSTRUCTORS =
+            "com.ellzone.slotpuzzle2d.level.fixtures.ReflectionMapCreationClassForTestingWithDifferentContstuctors";
     public static final String PARAMETER_1 = "Parameter1";
     public static final String FLOAT = "float";
+    public static final String INT = "int";
+    public static final String BOOLEAN = "bool";
     public static final String PARAMETER_VALUE_1 = "ParameterValue1";
     public static final String VALUE_3 = "Value:3";
+    public static final float THREE_AS_FLOAT = 3.0f;
+    public static final int THREE_AS_INT = 3;
     private World worldMock;
     private RayHandler rayHandlerMock;
     private TiledMap levelMock;
@@ -167,14 +171,54 @@ public class TestLevelObjectorCreator {
     @Test
     public void testCreateLevelWhenThereIsOneRectangleMapObjectWithClassAndContructotWithFloatArgumentAndValue() {
         rectangleMapObjects = new Array<>();
-        rectangleMapObjects.add(createLevelWhenThereIsOneRectangleMapObjectWithClassAndContructotWithFloatArgumentAndValue(REFLECTION_MAP_CREATION_CLASS_FOR_TESTING_WITH_FLOAT_ARGUMENT));
+        rectangleMapObjects.add(createLevelWhenThereIsOneRectangleMapObjectWithClassAndContructotWithFloatArgumentAndValue(REFLECTION_MAP_CREATION_CLASS_FOR_TESTING_WITH_DIFFERENT_CONSTRUCTORS));
         for (RectangleMapObject rectangleMapObjectMocked : rectangleMapObjects)
             replay(rectangleMapObjectMocked);
         LevelObjectCreatorForTest levelObjectCreator = new LevelObjectCreatorForTest(levelCreatorInjectionInterfaceMock, worldMock, rayHandlerMock);
         assertThat(levelObjectCreator, is(notNullValue()));
         levelObjectCreator.createLevel(rectangleMapObjects);
-        assertThat(levelObjectCreator.getReflectionMapCreationClassForTestingWithFloatArgument().getTestFloatField(), CoreMatchers.<Float>is(equalTo(3.0f)));
+        assertThat(levelObjectCreator.getReflectionMapCreationClassForTestingWithDifferentContstuctors().getTestFloatField(), CoreMatchers.<Float>is(equalTo(THREE_AS_FLOAT)));
     }
+
+    @Test
+    public void testCreateLevelWhenThereIsOneRectangleMapObjectWithClassAndContructotWithIntArgumentAndValue() {
+        rectangleMapObjects = new Array<>();
+        rectangleMapObjects.add(createLevelWhenThereIsOneRectangleMapObjectWithClassAndContructotWithIntArgumentAndValue(REFLECTION_MAP_CREATION_CLASS_FOR_TESTING_WITH_DIFFERENT_CONSTRUCTORS));
+        for (RectangleMapObject rectangleMapObjectMocked : rectangleMapObjects)
+            replay(rectangleMapObjectMocked);
+        LevelObjectCreatorForTest levelObjectCreator = new LevelObjectCreatorForTest(levelCreatorInjectionInterfaceMock, worldMock, rayHandlerMock);
+        assertThat(levelObjectCreator, is(notNullValue()));
+        levelObjectCreator.createLevel(rectangleMapObjects);
+        assertThat(levelObjectCreator.getReflectionMapCreationClassForTestingWithDifferentContstuctors().getTestIntField(), CoreMatchers.<Integer>is(equalTo(THREE_AS_INT)));
+    }
+
+    @Test
+    public void testCreateLevelWhenThereIsOneRectangleMapObjectWithClassAndContructotWithBooleanArgumentAndValue() {
+        rectangleMapObjects = new Array<>();
+        rectangleMapObjects.add(createLevelWhenThereIsOneRectangleMapObjectWithClassAndContructotWithBooleanArgumentAndValue(REFLECTION_MAP_CREATION_CLASS_FOR_TESTING_WITH_DIFFERENT_CONSTRUCTORS));
+        for (RectangleMapObject rectangleMapObjectMocked : rectangleMapObjects)
+            replay(rectangleMapObjectMocked);
+        LevelObjectCreatorForTest levelObjectCreator = new LevelObjectCreatorForTest(levelCreatorInjectionInterfaceMock, worldMock, rayHandlerMock);
+        assertThat(levelObjectCreator, is(notNullValue()));
+        levelObjectCreator.createLevel(rectangleMapObjects);
+        assertThat(levelObjectCreator.getReflectionMapCreationClassForTestingWithDifferentContstuctors().getTestBooleanField(), is(false));
+    }
+
+    private RectangleMapObject createLevelWhenThereIsOneRectangleMapObjectWithClassAndContructotWithBooleanArgumentAndValue(String className) {
+        MapProperties customMapProperties = createClassProperty(className);
+        customMapProperties.put(PARAMETER_1, BOOLEAN);
+        customMapProperties.put(PARAMETER_VALUE_1, "Value:false");
+        return createARectangleMockObject(customMapProperties);
+    }
+
+
+    private RectangleMapObject createLevelWhenThereIsOneRectangleMapObjectWithClassAndContructotWithIntArgumentAndValue(String className) {
+        MapProperties customMapProperties = createClassProperty(className);
+        customMapProperties.put(PARAMETER_1, INT);
+        customMapProperties.put(PARAMETER_VALUE_1, VALUE_3);
+        return createARectangleMockObject(customMapProperties);
+    }
+
 
     private RectangleMapObject createLevelWhenThereIsOneRectangleMapObjectWithClassAndContructotWithFloatArgumentAndValue(String className) {
         MapProperties customMapProperties = createClassProperty(className);

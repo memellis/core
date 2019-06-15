@@ -189,6 +189,8 @@ public class LevelObjectCreator {
             return Integer.valueOf(valuePart);
         if (isFloat(classParam))
             return Float.valueOf(valuePart);
+        if (isBoolean(classParam))
+            return Boolean.valueOf(valuePart);
         return null;
     }
 
@@ -211,9 +213,13 @@ public class LevelObjectCreator {
     private Object parseProperty(String parameter, Class<?> classParam, MapProperties rectangleMapProperties) {
         String[] parts = parameter.split(DOT_REGULAR_EXPRESSION);
         if (isInt(classParam))
+            return Math.round(parts.length == LENGTH_TWO ? (Integer) (Object) rectangleMapProperties.get(parts[1].toLowerCase(), classParam) : null);
+        if (isFloat(classParam))
             return Math.round(parts.length == LENGTH_TWO ? (Float) (Object) rectangleMapProperties.get(parts[1].toLowerCase(), classParam) : null);
-        else
-            return parts.length == LENGTH_TWO ? (Object) rectangleMapProperties.get(parts[1].toLowerCase(), classParam) : null;
+        if (isBoolean(classParam))
+            return parts.length == LENGTH_TWO ? (Boolean) (Object) rectangleMapProperties.get(parts[1].toLowerCase(), classParam) : null;
+
+        return parts.length == LENGTH_TWO ? (Object) rectangleMapProperties.get(parts[1].toLowerCase(), classParam) : null;
     }
 
     private boolean isInt(Class clazz) {
@@ -224,8 +230,11 @@ public class LevelObjectCreator {
         return clazz.equals(float.class);
     }
 
-    Map<String,Class> builtInMap = new HashMap<String,Class>();
-    {
+    private boolean isBoolean(Class clazz) {
+        return clazz.equals(boolean.class);
+    }
+
+    Map<String,Class> builtInMap = new HashMap<String,Class>(); {
         builtInMap.put(INT, Integer.TYPE );
         builtInMap.put(LONG, Long.TYPE );
         builtInMap.put(DOUBLE, Double.TYPE );
@@ -248,7 +257,7 @@ public class LevelObjectCreator {
                 else
                     classParameters[index++] = Class.forName(type);
             } catch (ClassNotFoundException cnfe) {
-                System.out.println(cnfe.getMessage());
+                throw  new GdxRuntimeException(MessageFormat.format("Type {0} not found",type));
             }
         }
         return classParameters;
