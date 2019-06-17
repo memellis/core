@@ -213,9 +213,9 @@ public class LevelObjectCreator {
     private Object parseProperty(String parameter, Class<?> classParam, MapProperties rectangleMapProperties) {
         String[] parts = parameter.split(DOT_REGULAR_EXPRESSION);
         if (isInt(classParam))
-            return Math.round(parts.length == LENGTH_TWO ? (Integer) (Object) rectangleMapProperties.get(parts[1], classParam) : null);
+            return Math.round(parts.length == LENGTH_TWO ? (Integer)  convertToIntegerFromDouble((Double) rectangleMapProperties.get(parts[1], classParam)) : null);
         if (isFloat(classParam))
-            return Math.round(parts.length == LENGTH_TWO ? Float.valueOf((String) rectangleMapProperties.get(parts[1], classParam)) : null);
+            return parts.length == LENGTH_TWO ? (Float) convertToFloatFromDouble((Double) rectangleMapProperties.get(parts[1], classParam)) : null;
         if (isBoolean(classParam))
             return parts.length == LENGTH_TWO ? (Boolean) (Object) rectangleMapProperties.get(parts[1], classParam) : null;
 
@@ -232,6 +232,14 @@ public class LevelObjectCreator {
 
     private boolean isBoolean(Class clazz) {
         return clazz.equals(boolean.class);
+    }
+
+    private Float convertToFloatFromDouble(Double doubleParam){
+        return new Float(doubleParam.floatValue());
+    }
+
+    private Integer convertToIntegerFromDouble(Double doubleParam){
+        return new Integer(doubleParam.intValue());
     }
 
     Map<String,Class> builtInMap = new HashMap<String,Class>(); {
