@@ -213,13 +213,13 @@ public class LevelObjectCreator {
     private Object parseProperty(String parameter, Class<?> classParam, MapProperties rectangleMapProperties) {
         String[] parts = parameter.split(DOT_REGULAR_EXPRESSION);
         if (isInt(classParam))
-            return Math.round(parts.length == LENGTH_TWO ? (Integer) (Object) rectangleMapProperties.get(parts[1].toLowerCase(), classParam) : null);
+            return Math.round(parts.length == LENGTH_TWO ? (Integer) (Object) rectangleMapProperties.get(parts[1], classParam) : null);
         if (isFloat(classParam))
-            return Math.round(parts.length == LENGTH_TWO ? (Float) (Object) rectangleMapProperties.get(parts[1].toLowerCase(), classParam) : null);
+            return Math.round(parts.length == LENGTH_TWO ? Float.valueOf((String) rectangleMapProperties.get(parts[1], classParam)) : null);
         if (isBoolean(classParam))
-            return parts.length == LENGTH_TWO ? (Boolean) (Object) rectangleMapProperties.get(parts[1].toLowerCase(), classParam) : null;
+            return parts.length == LENGTH_TWO ? (Boolean) (Object) rectangleMapProperties.get(parts[1], classParam) : null;
 
-        return parts.length == LENGTH_TWO ? (Object) rectangleMapProperties.get(parts[1].toLowerCase(), classParam) : null;
+        return parts.length == LENGTH_TWO ? (Object) rectangleMapProperties.get(parts[1], classParam) : null;
     }
 
     private boolean isInt(Class clazz) {

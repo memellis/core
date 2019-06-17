@@ -10,6 +10,8 @@ public class LevelObjectCreatorForTest extends LevelObjectCreator {
     private ReflectionMapCreationClassForTesting reflectionMapCreationClassForTesting;
     private ReflectionMapCreationClassForTestingWithDifferentContstuctors reflectionMapCreationClassForTestingWithDifferentContstuctors;
     private boolean delegatedToCallbackCalled = false;
+    public float testPublicFloatField;
+
     public LevelObjectCreatorForTest(LevelCreatorInjectionInterface levelCreatorInjectionInterface,
                                      World world,
                                      RayHandler rayHandler) {
@@ -43,4 +45,6 @@ public class LevelObjectCreatorForTest extends LevelObjectCreator {
     public boolean getDelegatedToCallback() {
         return delegatedToCallbackCalled;
     }
+
+    public float getTestPublicFloatField() { return testPublicFloatField; }
 }
