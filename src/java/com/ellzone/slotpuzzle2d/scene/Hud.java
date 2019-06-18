@@ -42,7 +42,7 @@ public class Hud implements Disposable {
     private static Label scoreLabel, livesLeftLabel;
     private Label countdownLabel, livesLabel, timeLabel, levelLabel, worldLabel, slotPuzzle;
 
-    public Hud(SpriteBatch sb){
+    public Hud(SpriteBatch batch){
         worldTimer = 300;
         timeCount = 0;
         score = 0;
@@ -52,7 +52,7 @@ public class Hud implements Disposable {
         startWorldTimer = false;
 
         viewport = new FitViewport(SlotPuzzleConstants.VIRTUAL_WIDTH, SlotPuzzleConstants.VIRTUAL_HEIGHT, new OrthographicCamera());
-        stage = new Stage(viewport, sb);
+        stage = new Stage(viewport, batch);
 
         Table table = new Table();
         table.top();

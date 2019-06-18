@@ -43,6 +43,7 @@ import com.ellzone.slotpuzzle2d.level.PlayScreenIntroSequence;
 import com.ellzone.slotpuzzle2d.prototypes.SPPrototype;
 import com.ellzone.slotpuzzle2d.puzzlegrid.PuzzleGridTypeReelTile;
 import com.ellzone.slotpuzzle2d.puzzlegrid.ReelTileGridValue;
+import com.ellzone.slotpuzzle2d.scene.Hud;
 import com.ellzone.slotpuzzle2d.sprites.AnimatedReel;
 import com.ellzone.slotpuzzle2d.sprites.ReelSprites;
 import com.ellzone.slotpuzzle2d.sprites.ReelStoppedSpinningEvent;
@@ -80,6 +81,7 @@ public class RenderMiniSllotMachineLoadedFromALevel
        implements LevelCreatorInjectionInterface {
 
     public static final String LEVEL_6_ASSETS = "levels/level 6 component based - 40x40.tmx";
+    public static final String LEVEL_6_NAME = "1-6";
     private PooledEngine engine;
     private World world;
     private RayHandler rayHandler;
@@ -102,6 +104,7 @@ public class RenderMiniSllotMachineLoadedFromALevel
         INTRO_SEQUENCE_FINISHED
     }
     private IntroSequenceState introSequenceStatus;
+    private Hud hud;
 
     public void create() {
         OrthographicCamera camera = setupCamera();
@@ -119,6 +122,13 @@ public class RenderMiniSllotMachineLoadedFromALevel
         batch = renderSystem.getSpriteBatch();
         shapeRenderer = new ShapeRenderer();
         setUpIntroSequence(reelTiles);
+        hud = setUpHud(batch);
+    }
+
+    private Hud setUpHud(SpriteBatch batch) {
+        Hud hud = new Hud(batch);
+        hud.setLevelName(LEVEL_6_NAME);
+        return hud;
     }
 
     private OrthographicCamera setupCamera() {
@@ -249,6 +259,7 @@ public class RenderMiniSllotMachineLoadedFromALevel
             case TweenCallback.END:
                 System.out.print("Intro Sequence finished");
                 introSequenceStatus = IntroSequenceState.INTRO_SEQUENCE_FINISHED;
+                hud.startWorldTimer();
                 break;
         }
     }
@@ -389,9 +400,17 @@ public class RenderMiniSllotMachineLoadedFromALevel
     public void render () {
         Gdx.gl.glClearColor(0, 0, 0, 1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
-        engine.update(Gdx.graphics.getDeltaTime());
-        tweenManager.update(Gdx.graphics.getDeltaTime());
+        float deltaTime = Gdx.graphics.getDeltaTime();
+        engine.update(deltaTime);
+        tweenManager.update(deltaTime);
         renderMacthedRows(batch, shapeRenderer);
+        hud.update(deltaTime);
+        renderHud(batch);
+    }
+
+    private void renderHud(SpriteBatch batch) {
+        batch.setProjectionMatrix(hud.stage.getCamera().combined);
+        hud.stage.draw();
     }
 
     private void renderMacthedRows(SpriteBatch batch, ShapeRenderer shapeRenderer) {
