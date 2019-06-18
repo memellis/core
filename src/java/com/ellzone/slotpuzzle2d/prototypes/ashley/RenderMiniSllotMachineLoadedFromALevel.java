@@ -105,6 +105,7 @@ public class RenderMiniSllotMachineLoadedFromALevel
     }
     private IntroSequenceState introSequenceStatus;
     private Hud hud;
+    private boolean pulledSlotHandle = false;
 
     public void create() {
         OrthographicCamera camera = setupCamera();
@@ -305,7 +306,7 @@ public class RenderMiniSllotMachineLoadedFromALevel
     }
 
     private void matchReels() {
-        if (introSequenceStatus == IntroSequenceState.INTRO_SEQUENCE_FINISHED) {
+        if ((introSequenceStatus == IntroSequenceState.INTRO_SEQUENCE_FINISHED) & (pulledSlotHandle)) {
             captureReelPositions();
             PuzzleGridTypeReelTile puzzleGrid = new PuzzleGridTypeReelTile();
             ReelTileGridValue[][] matchGrid = puzzleGrid.populateMatchGrid(reelGrid);
@@ -360,9 +361,11 @@ public class RenderMiniSllotMachineLoadedFromALevel
     };
 
     private void delegateSlotHandlePulledAction(SystemEvent systemEvent, Object source) {
-        if (systemEvent instanceof SlotHandlePulledPlayerSystemEvent)
+        if (systemEvent instanceof SlotHandlePulledPlayerSystemEvent) {
+            pulledSlotHandle = true;
             if (rowMacthesToDraw.size > 0)
                 rowMacthesToDraw.removeRange(0, rowMacthesToDraw.size - 1);
+        }
     }
 
     @Override
