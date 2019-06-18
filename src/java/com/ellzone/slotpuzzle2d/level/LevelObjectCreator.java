@@ -47,6 +47,8 @@ import java.util.Map;
 import box2dLight.PointLight;
 import box2dLight.RayHandler;
 
+import static jdk.nashorn.internal.runtime.JSType.isString;
+
 public class LevelObjectCreator {
     public static final String ADD_TO = "addTo";
     public static final String DELEGATE_TO_CALLBACK = "delegateToCallback";
@@ -191,6 +193,8 @@ public class LevelObjectCreator {
             return Float.valueOf(valuePart);
         if (isBoolean(classParam))
             return Boolean.valueOf(valuePart);
+        if (isString(classParam))
+            return valuePart;
         return null;
     }
 
@@ -213,13 +217,13 @@ public class LevelObjectCreator {
     private Object parseProperty(String parameter, Class<?> classParam, MapProperties rectangleMapProperties) {
         String[] parts = parameter.split(DOT_REGULAR_EXPRESSION);
         if (isInt(classParam))
-            return Math.round(parts.length == LENGTH_TWO ? (Integer)  convertToIntegerFromDouble((Double) rectangleMapProperties.get(parts[1], classParam)) : null);
+            return parts.length == LENGTH_TWO ? convertToIntegerFromFloat((Float) rectangleMapProperties.get(parts[1].toLowerCase(), classParam)) : null;
         if (isFloat(classParam))
-            return parts.length == LENGTH_TWO ? (Float) convertToFloatFromDouble((Double) rectangleMapProperties.get(parts[1], classParam)) : null;
+            return parts.length == LENGTH_TWO ? (Float) rectangleMapProperties.get(parts[1].toLowerCase(), classParam) : null;
         if (isBoolean(classParam))
-            return parts.length == LENGTH_TWO ? (Boolean) (Object) rectangleMapProperties.get(parts[1], classParam) : null;
+            return parts.length == LENGTH_TWO ? (Boolean) (Object) rectangleMapProperties.get(parts[1].toLowerCase(), classParam) : null;
 
-        return parts.length == LENGTH_TWO ? (Object) rectangleMapProperties.get(parts[1], classParam) : null;
+        return parts.length == LENGTH_TWO ? (Object) rectangleMapProperties.get(parts[1].toLowerCase(), classParam) : null;
     }
 
     private boolean isInt(Class clazz) {
@@ -234,12 +238,11 @@ public class LevelObjectCreator {
         return clazz.equals(boolean.class);
     }
 
-    private Float convertToFloatFromDouble(Double doubleParam){
-        return new Float(doubleParam.floatValue());
-    }
+    private boolean isString(Class clazz) { return clazz.equals(String.class); }
 
-    private Integer convertToIntegerFromDouble(Double doubleParam){
-        return new Integer(doubleParam.intValue());
+
+    private Integer convertToIntegerFromFloat(Float floatParam){
+        return new Integer(floatParam.intValue());
     }
 
     Map<String,Class> builtInMap = new HashMap<String,Class>(); {

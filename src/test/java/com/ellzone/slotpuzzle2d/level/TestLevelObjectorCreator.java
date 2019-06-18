@@ -14,7 +14,6 @@ import com.ellzone.slotpuzzle2d.level.fixtures.LevelObjectCreatorForTestWithNoDe
 import com.ellzone.slotpuzzle2d.level.fixtures.LevelObjectCreatorForTestWithNoMethods;
 import com.ellzone.slotpuzzle2d.level.fixtures.ReflectionMapCreationClassForTesting;
 import com.ellzone.slotpuzzle2d.puzzlegrid.TupleValueIndex;
-import com.ellzone.slotpuzzle2d.utils.InputMatrix;
 
 import org.hamcrest.CoreMatchers;
 import org.junit.After;
@@ -268,6 +267,26 @@ public class TestLevelObjectorCreator {
         assertThat(levelObjectCreator.getReflectionMapCreationClassForTestingWithDifferentContstuctors().getTestBooleanField(), CoreMatchers.<Boolean>is(equalTo(true)));
     }
 
+    @Test
+    public void testCreateLevelWhenThereIsOneRectantleMapObjectWithClassWithPropertyStringProperty() {
+        rectangleMapObjects = new Array<>();
+        rectangleMapObjects.add(createLevelWhenThereIsOneRectangleMapObjectWithClassWithPropertyStringProperty(REFLECTION_MAP_CREATION_CLASS_FOR_TESTING_WITH_DIFFERENT_CONSTRUCTORS));
+        for (RectangleMapObject rectangleMapObjectMocked : rectangleMapObjects)
+            replay(rectangleMapObjectMocked);
+        LevelObjectCreatorForTest levelObjectCreator = new LevelObjectCreatorForTest(levelCreatorInjectionInterfaceMock, worldMock, rayHandlerMock);
+        assertThat(levelObjectCreator, is(notNullValue()));
+        levelObjectCreator.createLevel(rectangleMapObjects);
+        assertThat(levelObjectCreator.getReflectionMapCreationClassForTestingWithDifferentContstuctors().getTestFieldString(), CoreMatchers.<String>is(equalTo("Button")));
+    }
+
+    private RectangleMapObject createLevelWhenThereIsOneRectangleMapObjectWithClassWithPropertyStringProperty(String className) {
+        MapProperties customMapProperties = createClassProperty(className);
+        customMapProperties.put(PARAMETER_1, "java.lang.String");
+        customMapProperties.put(PARAMETER_VALUE_1, "Property.Name");
+        return createARectangleMockObject(customMapProperties);
+    }
+
+
     private RectangleMapObject createLevelWhenThereIsOneRectangleMapObjectWithClassWithPropertyBooleanProperty(String className) {
         MapProperties customMapProperties = createClassProperty(className);
         customMapProperties.put(PARAMETER_1, BOOLEAN);
@@ -358,13 +377,13 @@ public class TestLevelObjectorCreator {
     private MapProperties getMapProperties() {
         MapProperties mapProperties1 = new MapProperties();
         mapProperties1.put("ID", 148);
-        mapProperties1.put("Name", "Button");
-        mapProperties1.put("Visible", true);
-        mapProperties1.put("X", 320.0);
-        mapProperties1.put("Y", 360.0);
-        mapProperties1.put("Width", 40.0);
-        mapProperties1.put("Height", 40.0);
-        mapProperties1.put("Rotation", 0);
+        mapProperties1.put("name", "Button");
+        mapProperties1.put("visible", true);
+        mapProperties1.put("x", 320.0f);
+        mapProperties1.put("y", 360.0f);
+        mapProperties1.put("width", 40.0f);
+        mapProperties1.put("height", 40.0f);
+        mapProperties1.put("rotation", 0f);
         return mapProperties1;
     }
 
@@ -383,14 +402,6 @@ public class TestLevelObjectorCreator {
         rectangleMapObjects = new Array<>();
         RectangleMapObject rectangleMapObject = createMock(RectangleMapObject.class);
         rectangleMapObjects.add(rectangleMapObject);
-    }
-
-    private void setUpLevel() {
-        testMatrix = createLevelMatrix();
-        assertThat(testMatrix.length, is(equalTo(9)));
-        assertThat(testMatrix[0].length, is(equalTo(12)));
-        int noOfEmptyMatrixCells = createGrid(testMatrix);
-        assertThat(noOfEmptyMatrixCells, is(equalTo(testGrid.length * testGrid[0].length)));
     }
 
     private void setUpMocks() {
@@ -422,36 +433,5 @@ public class TestLevelObjectorCreator {
         mapLayerMock = createMock(MapLayer.class);
         mapObjectsMock = createMock(MapObjects.class);
         mapPropertiesMock = createMock(MapProperties.class);
-    }
-
-    private void verifyAll() {
-    }
-
-    private int[][] createLevelMatrix() {
-        String matrixToInput = "12 x 9\n"
-                + "-1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1\n"
-                + "-1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1\n"
-                + "-1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1\n"
-                + "-1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1\n"
-                + "-1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1\n"
-                + "-1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1\n"
-                + "-1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1\n"
-                + "-1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1\n"
-                + "-1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1\n";
-        InputMatrix inputMatrix = new InputMatrix(matrixToInput);
-        return inputMatrix.readMatrix();
-    }
-
-    private int createGrid(int[][] matrix) {
-        int noOfEmptyMatrixCells = 0;
-        testGrid = new TupleValueIndex[matrix.length][matrix[0].length];
-        for (int r = 0; r < matrix.length; r++) {
-            for (int c = 0; c < matrix[0].length; c++) {
-                testGrid[r][c] = new TupleValueIndex(r, c, r * matrix[0].length + c, matrix[r][c]);
-                if (matrix[r][c] == -1)
-                    noOfEmptyMatrixCells++;
-            }
-        }
-        return noOfEmptyMatrixCells;
     }
 }
