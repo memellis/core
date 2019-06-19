@@ -53,6 +53,9 @@ public class TestLevelObjectorCreator {
     public static final float THREE_AS_FLOAT = 3.0f;
     public static final int THREE_AS_INT = 3;
     public static final String VALUE_FALSE = "Value:false";
+    public static final String PROPERTY_VISIBLE = "Property.Visible";
+    public static final String PROPERTY_NAME = "Property.Name";
+    public static final String JAVA_LANG_STRING = "java.lang.String";
     private World worldMock;
     private RayHandler rayHandlerMock;
     private TiledMap levelMock;
@@ -279,10 +282,28 @@ public class TestLevelObjectorCreator {
         assertThat(levelObjectCreator.getReflectionMapCreationClassForTestingWithDifferentContstuctors().getTestFieldString(), CoreMatchers.<String>is(equalTo("Button")));
     }
 
-    private RectangleMapObject createLevelWhenThereIsOneRectangleMapObjectWithClassWithPropertyStringProperty(String className) {
+    @Test(expected = GdxRuntimeException.class)
+    public void testCreateLevelWhenThereIsOneRectangleMapObjectClassWithNonExistantProperty() {
+        rectangleMapObjects = new Array<>();
+        rectangleMapObjects.add(createLevelWhenThereIsOneRectangleMapObjectWithClassWithNonExistantProperty(REFLECTION_MAP_CREATION_CLASS_FOR_TESTING_WITH_DIFFERENT_CONSTRUCTORS));
+        for (RectangleMapObject rectangleMapObjectMocked : rectangleMapObjects)
+            replay(rectangleMapObjectMocked);
+        LevelObjectCreatorForTest levelObjectCreator = new LevelObjectCreatorForTest(levelCreatorInjectionInterfaceMock, worldMock, rayHandlerMock);
+        assertThat(levelObjectCreator, is(notNullValue()));
+        levelObjectCreator.createLevel(rectangleMapObjects);
+    }
+
+    private RectangleMapObject createLevelWhenThereIsOneRectangleMapObjectWithClassWithNonExistantProperty(String className) {
         MapProperties customMapProperties = createClassProperty(className);
         customMapProperties.put(PARAMETER_1, "java.lang.String");
-        customMapProperties.put(PARAMETER_VALUE_1, "Property.Name");
+        customMapProperties.put(PARAMETER_VALUE_1, "Property.NonExistant");
+        return createARectangleMockObject(customMapProperties);
+    }
+
+    private RectangleMapObject createLevelWhenThereIsOneRectangleMapObjectWithClassWithPropertyStringProperty(String className) {
+        MapProperties customMapProperties = createClassProperty(className);
+        customMapProperties.put(PARAMETER_1, JAVA_LANG_STRING);
+        customMapProperties.put(PARAMETER_VALUE_1, PROPERTY_NAME);
         return createARectangleMockObject(customMapProperties);
     }
 
@@ -290,7 +311,7 @@ public class TestLevelObjectorCreator {
     private RectangleMapObject createLevelWhenThereIsOneRectangleMapObjectWithClassWithPropertyBooleanProperty(String className) {
         MapProperties customMapProperties = createClassProperty(className);
         customMapProperties.put(PARAMETER_1, BOOLEAN);
-        customMapProperties.put(PARAMETER_VALUE_1, "Property.Visible");
+        customMapProperties.put(PARAMETER_VALUE_1, PROPERTY_VISIBLE);
         return createARectangleMockObject(customMapProperties);
     }
 

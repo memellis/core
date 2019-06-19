@@ -47,8 +47,6 @@ import java.util.Map;
 import box2dLight.PointLight;
 import box2dLight.RayHandler;
 
-import static jdk.nashorn.internal.runtime.JSType.isString;
-
 public class LevelObjectCreator {
     public static final String ADD_TO = "addTo";
     public static final String DELEGATE_TO_CALLBACK = "delegateToCallback";
@@ -217,13 +215,33 @@ public class LevelObjectCreator {
     private Object parseProperty(String parameter, Class<?> classParam, MapProperties rectangleMapProperties) {
         String[] parts = parameter.split(DOT_REGULAR_EXPRESSION);
         if (isInt(classParam))
-            return parts.length == LENGTH_TWO ? convertToIntegerFromFloat((Float) rectangleMapProperties.get(parts[1].toLowerCase(), classParam)) : null;
+            return getInteger(classParam, rectangleMapProperties, parts);
         if (isFloat(classParam))
             return parts.length == LENGTH_TWO ? (Float) rectangleMapProperties.get(parts[1].toLowerCase(), classParam) : null;
         if (isBoolean(classParam))
             return parts.length == LENGTH_TWO ? (Boolean) (Object) rectangleMapProperties.get(parts[1].toLowerCase(), classParam) : null;
 
-        return parts.length == LENGTH_TWO ? (Object) rectangleMapProperties.get(parts[1].toLowerCase(), classParam) : null;
+        return getObject(classParam, rectangleMapProperties, parts);
+    }
+
+    private Object getObject(Class<?> classParam, MapProperties rectangleMapProperties, String[] parts) {
+        if (parts.length == LENGTH_TWO) {
+            Object parsedObject = (Object) rectangleMapProperties.get(parts[1].toLowerCase(), classParam);
+            if (parsedObject != null)
+                return parsedObject;
+            else throw new GdxCouldNotParsePropertyException("");
+        } else
+            throw new GdxCouldNotParsePropertyException("");
+    }
+
+    private Integer getInteger(Class<?> classParam, MapProperties rectangleMapProperties, String[] parts) throws GdxRuntimeException {
+        if (parts.length == LENGTH_TWO) {
+            Integer parsedInteger = convertToIntegerFromFloat((Float) rectangleMapProperties.get(parts[1].toLowerCase(), classParam));
+            if (parsedInteger != null)
+                return parsedInteger;
+            else throw new GdxCouldNotParsePropertyException("");
+        } else
+            throw new GdxCouldNotParsePropertyException("");
     }
 
     private boolean isInt(Class clazz) {
@@ -458,6 +476,12 @@ public class LevelObjectCreator {
 
         private String parseComponent(String component, MapProperties rectangleMapObjectProperties) {
             return (String) rectangleMapObjectProperties.get(component);
+        }
+    }
+
+    public class GdxCouldNotParsePropertyException extends GdxRuntimeException {
+        public GdxCouldNotParsePropertyException(String message) {
+            super(message);
         }
     }
 }
