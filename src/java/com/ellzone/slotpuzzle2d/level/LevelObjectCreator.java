@@ -179,7 +179,8 @@ public class LevelObjectCreator {
             return parseProperty(parameter, classParam, rectangleMapProperties);
         if (parameter.toLowerCase().startsWith(VALUE))
             return parseValue(parameter, classParam);
-        return null;
+        throw new GdxCouldNotParseParameterValueException(
+                MessageFormat.format("Parameter={0}", parameter));
     }
 
     private Object parseValue(String parameter, Class<?> classParam) {
@@ -481,6 +482,12 @@ public class LevelObjectCreator {
 
     public class GdxCouldNotParsePropertyException extends GdxRuntimeException {
         public GdxCouldNotParsePropertyException(String message) {
+            super(message);
+        }
+    }
+
+    public class GdxCouldNotParseParameterValueException extends GdxRuntimeException {
+        public GdxCouldNotParseParameterValueException(String message) {
             super(message);
         }
     }
