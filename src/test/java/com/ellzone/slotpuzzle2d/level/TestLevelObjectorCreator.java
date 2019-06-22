@@ -13,7 +13,9 @@ import com.ellzone.slotpuzzle2d.level.fixtures.ReflectionMapCreationClassForTest
 import org.hamcrest.CoreMatchers;
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
@@ -24,6 +26,7 @@ import static junit.framework.TestCase.assertTrue;
 import static org.easymock.EasyMock.expect;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.isA;
 import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.hamcrest.CoreMatchers.nullValue;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -52,10 +55,21 @@ public class TestLevelObjectorCreator {
     public static final String PROPERTY_NAME = "Property.Name";
     public static final String JAVA_LANG_STRING = "java.lang.String";
     public static final String PROPERTY_NON_EXISTANT = "Property.NonExistant";
+    public static final float X_POS_FLOAT_PROPERTY = 320.0f;
+    public static final String BUTTON_PROPERTY = "Button";
+    public static final float Y_POS_FLOAT_PROPERTY = 360.0f;
+    public static final float WITDH_FLOAT_PROPERTY = 40.0f;
+    public static final float HEIGHT_FLOAT_PROPERTY = 40.0f;
+    public static final String PROPERTY_X = "Property.X";
+    public static final String METHOD_GET_TEST_PUBLIC_FLOAT_FIELD = "Method.getTestPublicFloatField";
+    public static final String FIELD_TEST_PUBLIC_FLOAT_FIELD = "Field.testPublicFloatField";
     private World worldMock;
     private RayHandler rayHandlerMock;
     private LevelCreatorInjectionInterface levelCreatorInjectionInterfaceMock;
     private Array<RectangleMapObject> rectangleMapObjects;
+
+    @Rule
+    public ExpectedException thrown = ExpectedException.none();
 
     private enum LevelMapObjects {
         ANIMATED_REEL(1),
@@ -237,21 +251,42 @@ public class TestLevelObjectorCreator {
         assertThat(levelObjectCreator.
                     getReflectionMapCreationClassForTestingWithDifferentContstuctors().
                     getTestFieldString(),
-                   CoreMatchers.<String>is(equalTo("Button")));
+                   CoreMatchers.<String>is(equalTo(BUTTON_PROPERTY)));
     }
 
-    @Test(expected = GdxRuntimeException.class)
     public void testCreateLevelWhenThereIsOneRectangleMapObjectClassWithNonExistantProperty() {
+        thrown.expect(GdxRuntimeException.class);
+        thrown.expectCause(isA(LevelObjectCreator.GdxCouldNotParsePropertyException.class));
         createLevelObjectCreatorForTest(
                 createLevelWhenThereIsOneRectangleMapObjectWithClassWithNonExistantProperty(
                         REFLECTION_MAP_CREATION_CLASS_FOR_TESTING_WITH_DIFFERENT_CONSTRUCTORS));
     }
 
-    @Test(expected = GdxRuntimeException.class)
+    @Test
     public void testCreateLevelWhenThereIsOneRectangleMapObjectWithClassNonParsableParameterValue() {
+        thrown.expect(GdxRuntimeException.class);
+        thrown.expectCause(isA(LevelObjectCreator.GdxCouldNotParseParameterValueException.class));
         createLevelObjectCreatorForTest(
                 createLevelWhenThereIsOneRectangleMapObjectWithClassNonParsableParameterValue(
                         REFLECTION_MAP_CREATION_CLASS_FOR_TESTING_WITH_DIFFERENT_CONSTRUCTORS));
+    }
+
+    @Test
+    public void testCreateLevelWhenThereIsOneRectangleMapObjectWithClassAndAComponent() {
+        LevelObjectCreatorForTest levelObjectCreator = createLevelObjectCreatorForTest(
+            createLevelWhenThereIsOneRectangleMapObjectWithClassAndAComponent(
+                       REFLECTION_MAP_CREATION_CLASS_FOR_TESTING_WITH_DIFFERENT_CONSTRUCTORS));
+        assertThat(levelObjectCreator.getAddedToComponentEntity(), is(true));
+    }
+
+    private RectangleMapObject createLevelWhenThereIsOneRectangleMapObjectWithClassAndAComponent(String className) {
+        MapProperties customMapProperties = createClassProperty(className);
+        customMapProperties.put("Component1", "com.ellzone.slotpuzzle2d.level.fixtures.TestComponent");
+        customMapProperties.put(PARAMETER_1, JAVA_LANG_STRING);
+        customMapProperties.put(PARAMETER_VALUE_1, PROPERTY_NAME);
+        customMapProperties.put("Component1Property1", JAVA_LANG_STRING);
+        customMapProperties.put("Component1Value1", "Value:Component1Value1");
+        return createARectangleMockObject(customMapProperties);
     }
 
     private RectangleMapObject createLevelWhenThereIsOneRectangleMapObjectWithClassNonParsableParameterValue(String className) {
@@ -307,28 +342,28 @@ public class TestLevelObjectorCreator {
     private RectangleMapObject createLevelWhenThereIsOneRectangleMapObjectWithClassWithPropertyIntProperty(String className) {
         MapProperties customMapProperties = createClassProperty(className);
         customMapProperties.put(PARAMETER_1, INT);
-        customMapProperties.put(PARAMETER_VALUE_1, "Property.X");
+        customMapProperties.put(PARAMETER_VALUE_1, PROPERTY_X);
         return createARectangleMockObject(customMapProperties);
     }
 
     private RectangleMapObject createLevelWhenThereIsOneRectangleMapObjectWithClassWithPropertyFloatProperty(String className) {
         MapProperties customMapProperties = createClassProperty(className);
         customMapProperties.put(PARAMETER_1, FLOAT);
-        customMapProperties.put(PARAMETER_VALUE_1, "Property.X");
+        customMapProperties.put(PARAMETER_VALUE_1, PROPERTY_X);
         return createARectangleMockObject(customMapProperties);
     }
 
     private RectangleMapObject createLevelWhenThereIsOneRectangleMapObjectWithClassWithMethodProperty(String className) {
         MapProperties customMapProperties = createClassProperty(className);
         customMapProperties.put(PARAMETER_1, FLOAT);
-        customMapProperties.put(PARAMETER_VALUE_1, "Method.getTestPublicFloatField");
+        customMapProperties.put(PARAMETER_VALUE_1, METHOD_GET_TEST_PUBLIC_FLOAT_FIELD);
         return createARectangleMockObject(customMapProperties);
     }
 
     private RectangleMapObject createLevelWhenThereIsOneRectangleMapObjectWithClassWithFieldProperty(String className) {
         MapProperties customMapProperties = createClassProperty(className);
         customMapProperties.put(PARAMETER_1, FLOAT);
-        customMapProperties.put(PARAMETER_VALUE_1, "Field.testPublicFloatField");
+        customMapProperties.put(PARAMETER_VALUE_1, FIELD_TEST_PUBLIC_FLOAT_FIELD);
         return createARectangleMockObject(customMapProperties);
     }
 
@@ -386,12 +421,12 @@ public class TestLevelObjectorCreator {
     private MapProperties getMapProperties() {
         MapProperties mapProperties1 = new MapProperties();
         mapProperties1.put("ID", 148);
-        mapProperties1.put("name", "Button");
+        mapProperties1.put("name", BUTTON_PROPERTY);
         mapProperties1.put("visible", true);
-        mapProperties1.put("x", 320.0f);
-        mapProperties1.put("y", 360.0f);
-        mapProperties1.put("width", 40.0f);
-        mapProperties1.put("height", 40.0f);
+        mapProperties1.put("x", X_POS_FLOAT_PROPERTY);
+        mapProperties1.put("y", Y_POS_FLOAT_PROPERTY);
+        mapProperties1.put("width", WITDH_FLOAT_PROPERTY);
+        mapProperties1.put("height", HEIGHT_FLOAT_PROPERTY);
         mapProperties1.put("rotation", 0f);
         return mapProperties1;
     }
@@ -405,12 +440,6 @@ public class TestLevelObjectorCreator {
     @After
     public void tearDown() {
         tearDownMocks();
-    }
-
-    private void setUpRectangleMapObectsWithOneEmptyRectangleMapObjectMock() {
-        rectangleMapObjects = new Array<>();
-        RectangleMapObject rectangleMapObject = createMock(RectangleMapObject.class);
-        rectangleMapObjects.add(rectangleMapObject);
     }
 
     private void setUpMocks() {

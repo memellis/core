@@ -92,9 +92,10 @@ public class LevelObjectCreator {
         this.rayHandler = rayHandler;
     };
 
+    public LevelObjectCreator() {
+    }
+
     public void createLevel(Array<RectangleMapObject> levelRectangleMapObjects) throws GdxRuntimeException {
-        Object createdObject = null;
-        Object createdComponent = null;
         boolean huntingForComponents = true;
         int componentCount = 1;
         Array<String> components = new Array<>();
