@@ -195,7 +195,7 @@ public class LevelObjectCreator {
             return Boolean.valueOf(valuePart);
         if (isString(classParam))
             return valuePart;
-        return null;
+        throw new GdxCouldNotParseParameterValueException(parameter);
     }
 
     private Object parseField(String parameter, Class<?> classParam) throws NoSuchFieldException, IllegalAccessException {
@@ -259,7 +259,6 @@ public class LevelObjectCreator {
     }
 
     private boolean isString(Class clazz) { return clazz.equals(String.class); }
-
 
     private Integer convertToIntegerFromFloat(Float floatParam){
         return new Integer(floatParam.intValue());

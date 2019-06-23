@@ -63,6 +63,8 @@ public class TestLevelObjectorCreator {
     public static final String PROPERTY_X = "Property.X";
     public static final String METHOD_GET_TEST_PUBLIC_FLOAT_FIELD = "Method.getTestPublicFloatField";
     public static final String FIELD_TEST_PUBLIC_FLOAT_FIELD = "Field.testPublicFloatField";
+    public static final String JAVA_LANG_OBJECT = "java.lang.Object";
+    public static final String VALUE_OBJECT = "Value:Object";
     private World worldMock;
     private RayHandler rayHandlerMock;
     private LevelCreatorInjectionInterface levelCreatorInjectionInterfaceMock;
@@ -277,6 +279,24 @@ public class TestLevelObjectorCreator {
             createLevelWhenThereIsOneRectangleMapObjectWithClassAndAComponent(
                        REFLECTION_MAP_CREATION_CLASS_FOR_TESTING_WITH_DIFFERENT_CONSTRUCTORS));
         assertThat(levelObjectCreator.getAddedToComponentEntity(), is(true));
+    }
+
+    @Test
+    public void testCreateLevelWhenThereIsOneRectangleMapObjectWithClassAndObjectParameterValue() {
+        thrown.expect(GdxRuntimeException.class);
+        thrown.expectCause(isA(LevelObjectCreator.GdxCouldNotParseParameterValueException.class));
+        thrown.expectMessage(VALUE_OBJECT);
+        createLevelObjectCreatorForTest(
+                createLevelWhenThereIsOneRectangleMapObjectWithClassAndObjectParameterValue(
+                        REFLECTION_MAP_CREATION_CLASS_FOR_TESTING_WITH_DIFFERENT_CONSTRUCTORS));
+
+    }
+
+    private RectangleMapObject createLevelWhenThereIsOneRectangleMapObjectWithClassAndObjectParameterValue(String className) {
+        MapProperties customMapProperties = createClassProperty(className);
+        customMapProperties.put(PARAMETER_1, JAVA_LANG_OBJECT);
+        customMapProperties.put(PARAMETER_VALUE_1, VALUE_OBJECT);
+        return createARectangleMockObject(customMapProperties);
     }
 
     private RectangleMapObject createLevelWhenThereIsOneRectangleMapObjectWithClassAndAComponent(String className) {

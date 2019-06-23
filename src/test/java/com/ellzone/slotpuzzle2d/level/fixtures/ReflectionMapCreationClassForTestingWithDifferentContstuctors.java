@@ -5,6 +5,7 @@ public class ReflectionMapCreationClassForTestingWithDifferentContstuctors exten
     private int testIntField;
     private boolean testFieldBoolean;
     private String testFieldString;
+    private Object testFieldObject;
 
     public ReflectionMapCreationClassForTestingWithDifferentContstuctors(float testFloatArgument) {
         this.testFloatField = testFloatArgument;
@@ -22,6 +23,10 @@ public class ReflectionMapCreationClassForTestingWithDifferentContstuctors exten
         this.testFieldString = testFieldString;
     }
 
+    public ReflectionMapCreationClassForTestingWithDifferentContstuctors(Object testFieldObject) {
+        this.testFieldObject = testFieldObject;
+    }
+
     public float getTestFloatField() {
         return testFloatField;
     }
@@ -33,4 +38,6 @@ public class ReflectionMapCreationClassForTestingWithDifferentContstuctors exten
     public String getTestFieldString() {
         return testFieldString;
     }
+
+    public Object getTestFieldObject() { return testFieldObject; }
 }
