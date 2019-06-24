@@ -13,6 +13,7 @@ import com.ellzone.slotpuzzle2d.level.fixtures.ReflectionMapCreationClassForTest
 import org.hamcrest.CoreMatchers;
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
@@ -256,6 +257,7 @@ public class TestLevelObjectorCreator {
                    CoreMatchers.<String>is(equalTo(BUTTON_PROPERTY)));
     }
 
+    @Test
     public void testCreateLevelWhenThereIsOneRectangleMapObjectClassWithNonExistantProperty() {
         thrown.expect(GdxRuntimeException.class);
         thrown.expectCause(isA(LevelObjectCreator.GdxCouldNotParsePropertyException.class));
@@ -289,7 +291,24 @@ public class TestLevelObjectorCreator {
         createLevelObjectCreatorForTest(
                 createLevelWhenThereIsOneRectangleMapObjectWithClassAndObjectParameterValue(
                         REFLECTION_MAP_CREATION_CLASS_FOR_TESTING_WITH_DIFFERENT_CONSTRUCTORS));
+    }
 
+
+    @Test
+    public void testCreateLevelWhenThereIsOneRectangleMapObjectWithClassObjectAndObjectParameterIsNotValid() {
+        thrown.expect(GdxRuntimeException.class);
+        thrown.expectCause(isA(LevelObjectCreator.GdxCouldNotParsePropertyException.class));
+        thrown.expectMessage("Expected number of property parts to be 2 actually found 3");
+        createLevelObjectCreatorForTest(
+                createLevelWhenThereIsOneRectangleMapObjectWithClassObjectAndObjectParameterIsNotValid(
+                        REFLECTION_MAP_CREATION_CLASS_FOR_TESTING_WITH_DIFFERENT_CONSTRUCTORS));
+    }
+
+    private RectangleMapObject createLevelWhenThereIsOneRectangleMapObjectWithClassObjectAndObjectParameterIsNotValid(String className) {
+        MapProperties customMapProperties = createClassProperty(className);
+        customMapProperties.put(PARAMETER_1, JAVA_LANG_OBJECT);
+        customMapProperties.put(PARAMETER_VALUE_1, "Property.3.14");
+        return createARectangleMockObject(customMapProperties);
     }
 
     private RectangleMapObject createLevelWhenThereIsOneRectangleMapObjectWithClassAndObjectParameterValue(String className) {
@@ -450,7 +469,6 @@ public class TestLevelObjectorCreator {
         mapProperties1.put("rotation", 0f);
         return mapProperties1;
     }
-
 
     @Before
     public void setUp() {

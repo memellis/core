@@ -233,7 +233,10 @@ public class LevelObjectCreator {
                 return parsedObject;
             else throw new GdxCouldNotParsePropertyException("");
         } else
-            throw new GdxCouldNotParsePropertyException("");
+            throw new GdxCouldNotParsePropertyException(
+                    MessageFormat.format(
+                            "Expected number of property parts to be {0} actually found {1}",
+                            LENGTH_TWO, parts.length));
     }
 
     private Integer getInteger(Class<?> classParam, MapProperties rectangleMapProperties, String[] parts) throws GdxRuntimeException {
