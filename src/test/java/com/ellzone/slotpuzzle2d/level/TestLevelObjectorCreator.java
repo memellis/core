@@ -13,7 +13,6 @@ import com.ellzone.slotpuzzle2d.level.fixtures.ReflectionMapCreationClassForTest
 import org.hamcrest.CoreMatchers;
 import org.junit.After;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
@@ -66,6 +65,30 @@ public class TestLevelObjectorCreator {
     public static final String FIELD_TEST_PUBLIC_FLOAT_FIELD = "Field.testPublicFloatField";
     public static final String JAVA_LANG_OBJECT = "java.lang.Object";
     public static final String VALUE_OBJECT = "Value:Object";
+    public static final String EXPECTED_NUMBER_OF_PROPERTY_PARTS_TO_BE_2_ACTUALLY_FOUND_3 = "Expected number of property parts to be 2 actually found 3";
+    public static final String COMPONENT_1_PROPERTY_1 = "Component1Property1";
+    public static final String INTEGER = "Integer";
+    public static final String COMPONENT_1 = "Component1";
+    public static final String COM_ELLZONE_SLOTPUZZLE_2D_LEVEL_FIXTURES_TEST_COMPONENT = "com.ellzone.slotpuzzle2d.level.fixtures.TestComponent";
+    public static final String COULD_NOT_EXTRACT_INTEGER_FROM_3_14 = "Could not extract integer from <3 14>";
+    public static final String COULD_NOT_EXTRACT_FLOAT_FROM_3_14 = "Could not extract float from <3 14>";
+    public static final String COULD_NOT_EXTRACT_BOOLEAN_FROM_3_14 = "Could not extract boolean from <3 14>";
+    public static final String NON_EXISTANT_CLASS = "non-existant class";
+    public static final String PROPERTY_3_14 = "Property.3 14";
+    public static final String PROPERTY_3_DOT_14 = "Property.3.14";
+    public static final String COMPONENT_1_VALUE_1 = "Component1Value1";
+    public static final String VALUE_COMPONENT_1_VALUE_1 = "Value:Component1Value1";
+    public static final String ABC = "ABC";
+    public static final String ID = "ID";
+    public static final String NAME = "name";
+    public static final String VISIBLE = "visible";
+    public static final String X = "x";
+    public static final String Y = "y";
+    public static final String WIDTH = "width";
+    public static final String HEIGHT = "height";
+    public static final String ROTATION = "rotation";
+    public static final float TEST_FLOAT = 320.0f;
+    public static final int TEST_INTEGER = 320;
     private World worldMock;
     private RayHandler rayHandlerMock;
     private LevelCreatorInjectionInterface levelCreatorInjectionInterfaceMock;
@@ -221,7 +244,7 @@ public class TestLevelObjectorCreator {
         assertThat(levelObjectCreator.
                       getReflectionMapCreationClassForTestingWithDifferentContstuctors().
                       getTestFloatField(),
-                   CoreMatchers.<Float>is(equalTo(320.0f)));
+                   CoreMatchers.<Float>is(equalTo(TEST_FLOAT)));
     }
 
     @Test
@@ -232,7 +255,7 @@ public class TestLevelObjectorCreator {
         assertThat(levelObjectCreator.
                      getReflectionMapCreationClassForTestingWithDifferentContstuctors().
                      getTestIntField(),
-                   CoreMatchers.<Integer>is(equalTo(320)));
+                   CoreMatchers.<Integer>is(equalTo(TEST_INTEGER)));
     }
 
     @Test
@@ -284,34 +307,134 @@ public class TestLevelObjectorCreator {
     }
 
     @Test
-    public void testCreateLevelWhenThereIsOneRectangleMapObjectWithClassAndObjectParameterValue() {
+    public void testCreateLevelWhenThereIsOneRectangleMapObjectWithClassAndInvalidValueObjectParameterValue() {
         thrown.expect(GdxRuntimeException.class);
         thrown.expectCause(isA(LevelObjectCreator.GdxCouldNotParseParameterValueException.class));
         thrown.expectMessage(VALUE_OBJECT);
         createLevelObjectCreatorForTest(
-                createLevelWhenThereIsOneRectangleMapObjectWithClassAndObjectParameterValue(
+                createLevelWhenThereIsOneRectangleMapObjectWithClassAndInvalidObjectParameterValue(
                         REFLECTION_MAP_CREATION_CLASS_FOR_TESTING_WITH_DIFFERENT_CONSTRUCTORS));
     }
-
 
     @Test
     public void testCreateLevelWhenThereIsOneRectangleMapObjectWithClassObjectAndObjectParameterIsNotValid() {
         thrown.expect(GdxRuntimeException.class);
         thrown.expectCause(isA(LevelObjectCreator.GdxCouldNotParsePropertyException.class));
-        thrown.expectMessage("Expected number of property parts to be 2 actually found 3");
+        thrown.expectMessage(EXPECTED_NUMBER_OF_PROPERTY_PARTS_TO_BE_2_ACTUALLY_FOUND_3);
         createLevelObjectCreatorForTest(
                 createLevelWhenThereIsOneRectangleMapObjectWithClassObjectAndObjectParameterIsNotValid(
                         REFLECTION_MAP_CREATION_CLASS_FOR_TESTING_WITH_DIFFERENT_CONSTRUCTORS));
     }
 
-    private RectangleMapObject createLevelWhenThereIsOneRectangleMapObjectWithClassObjectAndObjectParameterIsNotValid(String className) {
+    @Test
+    public void testCreateLevelWhenThereIsOneRectangleMapObjectWithClassObjectInvalidIntegerParamterValue() {
+        thrown.expect(GdxRuntimeException.class);
+        thrown.expectCause(isA(LevelObjectCreator.GdxCouldNotParsePropertyException.class));
+        thrown.expectMessage(COULD_NOT_EXTRACT_INTEGER_FROM_3_14);
+        createLevelObjectCreatorForTest(
+                createLevelWhenThereIsOneRectangleMapObjectWithClassObjectInvalidIntegerParamterValue(
+                        REFLECTION_MAP_CREATION_CLASS_FOR_TESTING_WITH_DIFFERENT_CONSTRUCTORS));
+    }
+
+    @Test
+    public void testCreateLevelWhenThereIsOneRectangleMapObjectWithClassObjectInvalidFloatParamterValue() {
+        thrown.expect(GdxRuntimeException.class);
+        thrown.expectCause(isA(LevelObjectCreator.GdxCouldNotParsePropertyException.class));
+        thrown.expectMessage(COULD_NOT_EXTRACT_FLOAT_FROM_3_14);
+        createLevelObjectCreatorForTest(
+                createLevelWhenThereIsOneRectangleMapObjectWithClassObjectInvalidFloatParamterValue(
+                        REFLECTION_MAP_CREATION_CLASS_FOR_TESTING_WITH_DIFFERENT_CONSTRUCTORS));
+    }
+
+    @Test
+    public void testCreateLevelWhenThereIsOneRectangleMapObjectWithClassObjectInvalidBooleanParamterValue() {
+        thrown.expect(GdxRuntimeException.class);
+        thrown.expectCause(isA(LevelObjectCreator.GdxCouldNotParsePropertyException.class));
+        thrown.expectMessage(COULD_NOT_EXTRACT_BOOLEAN_FROM_3_14);
+        createLevelObjectCreatorForTest(
+                createLevelWhenThereIsOneRectangleMapObjectWithClassObjectInvalidBooleanParamterValue(
+                        REFLECTION_MAP_CREATION_CLASS_FOR_TESTING_WITH_DIFFERENT_CONSTRUCTORS));
+    }
+
+    @Test
+    public void testCreateLevelWhenThereIsOneRectangleMapObjectWithNonExistantClass() {
+        thrown.expect(GdxRuntimeException.class);
+        thrown.expectCause(isA(ClassNotFoundException.class));
+        thrown.expectMessage(NON_EXISTANT_CLASS);
+        createLevelObjectCreatorForTest(
+                createLevelWhenThereIsOneRectangleMapObjectWithNonExistantClass(
+                        NON_EXISTANT_CLASS));
+    }
+
+    @Test
+    public void testCreateLevelWhenThereIsOneRectangleMapObjectWithNonExistantParameter() {
+        thrown.expect(GdxRuntimeException.class);
+        thrown.expectCause(isA(ClassNotFoundException.class));
+        thrown.expectMessage(INTEGER);
+        createLevelObjectCreatorForTest(
+                createLevelWhenThereIsOneRectangleMapObjectWithNonExistantParameter(
+                        REFLECTION_MAP_CREATION_CLASS_FOR_TESTING_WITH_DIFFERENT_CONSTRUCTORS));
+    }
+
+    @Test
+    public void testCreateLevelWhenThereIsOneRectangleMapObjectWithClassAndAComponentWithNonExistantParameterType() {
+        thrown.expect(GdxRuntimeException.class);
+        thrown.expectCause(isA(ClassNotFoundException.class));
+        thrown.expectMessage(INTEGER);
+        createLevelObjectCreatorForTest(
+                createLevelWhenThereIsOneRectangleMapObjectWithClassAndAComponentWithNonExistantParamterType(
+                REFLECTION_MAP_CREATION_CLASS_FOR_TESTING_WITH_DIFFERENT_CONSTRUCTORS));
+    }
+
+    private RectangleMapObject createLevelWhenThereIsOneRectangleMapObjectWithClassAndAComponentWithNonExistantParamterType(String className) {
         MapProperties customMapProperties = createClassProperty(className);
-        customMapProperties.put(PARAMETER_1, JAVA_LANG_OBJECT);
-        customMapProperties.put(PARAMETER_VALUE_1, "Property.3.14");
+        customMapProperties.put(COMPONENT_1, COM_ELLZONE_SLOTPUZZLE_2D_LEVEL_FIXTURES_TEST_COMPONENT);
+        customMapProperties.put(PARAMETER_1, JAVA_LANG_STRING);
+        customMapProperties.put(PARAMETER_VALUE_1, PROPERTY_NAME);
+        customMapProperties.put(COMPONENT_1_PROPERTY_1, INTEGER);
         return createARectangleMockObject(customMapProperties);
     }
 
-    private RectangleMapObject createLevelWhenThereIsOneRectangleMapObjectWithClassAndObjectParameterValue(String className) {
+    private RectangleMapObject createLevelWhenThereIsOneRectangleMapObjectWithNonExistantParameter(String className) {
+        MapProperties customMapProperties = createClassProperty(className);
+        customMapProperties.put(PARAMETER_1, INTEGER);
+        return createARectangleMockObject(customMapProperties);
+    }
+
+    private RectangleMapObject createLevelWhenThereIsOneRectangleMapObjectWithNonExistantClass(String className) {
+        MapProperties customMapProperties = createClassProperty(className);
+        return createARectangleMockObject(customMapProperties);
+    }
+
+    private RectangleMapObject createLevelWhenThereIsOneRectangleMapObjectWithClassObjectInvalidBooleanParamterValue(String className) {
+        MapProperties customMapProperties = createClassProperty(className);
+        customMapProperties.put(PARAMETER_1, BOOLEAN);
+        customMapProperties.put(PARAMETER_VALUE_1, PROPERTY_3_14);
+        return createARectangleMockObject(customMapProperties);
+    }
+
+    private RectangleMapObject createLevelWhenThereIsOneRectangleMapObjectWithClassObjectInvalidFloatParamterValue(String className) {
+        MapProperties customMapProperties = createClassProperty(className);
+        customMapProperties.put(PARAMETER_1, FLOAT);
+        customMapProperties.put(PARAMETER_VALUE_1, PROPERTY_3_14);
+        return createARectangleMockObject(customMapProperties);
+    }
+
+    private RectangleMapObject createLevelWhenThereIsOneRectangleMapObjectWithClassObjectInvalidIntegerParamterValue(String className) {
+        MapProperties customMapProperties = createClassProperty(className);
+        customMapProperties.put(PARAMETER_1, INT);
+        customMapProperties.put(PARAMETER_VALUE_1, PROPERTY_3_14);
+        return createARectangleMockObject(customMapProperties);
+    }
+
+    private RectangleMapObject createLevelWhenThereIsOneRectangleMapObjectWithClassObjectAndObjectParameterIsNotValid(String className) {
+        MapProperties customMapProperties = createClassProperty(className);
+        customMapProperties.put(PARAMETER_1, JAVA_LANG_OBJECT);
+        customMapProperties.put(PARAMETER_VALUE_1, PROPERTY_3_DOT_14);
+        return createARectangleMockObject(customMapProperties);
+    }
+
+    private RectangleMapObject createLevelWhenThereIsOneRectangleMapObjectWithClassAndInvalidObjectParameterValue(String className) {
         MapProperties customMapProperties = createClassProperty(className);
         customMapProperties.put(PARAMETER_1, JAVA_LANG_OBJECT);
         customMapProperties.put(PARAMETER_VALUE_1, VALUE_OBJECT);
@@ -320,18 +443,18 @@ public class TestLevelObjectorCreator {
 
     private RectangleMapObject createLevelWhenThereIsOneRectangleMapObjectWithClassAndAComponent(String className) {
         MapProperties customMapProperties = createClassProperty(className);
-        customMapProperties.put("Component1", "com.ellzone.slotpuzzle2d.level.fixtures.TestComponent");
+        customMapProperties.put(COMPONENT_1, COM_ELLZONE_SLOTPUZZLE_2D_LEVEL_FIXTURES_TEST_COMPONENT);
         customMapProperties.put(PARAMETER_1, JAVA_LANG_STRING);
         customMapProperties.put(PARAMETER_VALUE_1, PROPERTY_NAME);
-        customMapProperties.put("Component1Property1", JAVA_LANG_STRING);
-        customMapProperties.put("Component1Value1", "Value:Component1Value1");
+        customMapProperties.put(COMPONENT_1_PROPERTY_1, JAVA_LANG_STRING);
+        customMapProperties.put(COMPONENT_1_VALUE_1, VALUE_COMPONENT_1_VALUE_1);
         return createARectangleMockObject(customMapProperties);
     }
 
     private RectangleMapObject createLevelWhenThereIsOneRectangleMapObjectWithClassNonParsableParameterValue(String className) {
         MapProperties customMapProperties = createClassProperty(className);
         customMapProperties.put(PARAMETER_1, FLOAT);
-        customMapProperties.put(PARAMETER_VALUE_1, "ABC");
+        customMapProperties.put(PARAMETER_VALUE_1, ABC);
         return createARectangleMockObject(customMapProperties);
     }
 
@@ -459,14 +582,14 @@ public class TestLevelObjectorCreator {
 
     private MapProperties getMapProperties() {
         MapProperties mapProperties1 = new MapProperties();
-        mapProperties1.put("ID", 148);
-        mapProperties1.put("name", BUTTON_PROPERTY);
-        mapProperties1.put("visible", true);
-        mapProperties1.put("x", X_POS_FLOAT_PROPERTY);
-        mapProperties1.put("y", Y_POS_FLOAT_PROPERTY);
-        mapProperties1.put("width", WITDH_FLOAT_PROPERTY);
-        mapProperties1.put("height", HEIGHT_FLOAT_PROPERTY);
-        mapProperties1.put("rotation", 0f);
+        mapProperties1.put(ID, 148);
+        mapProperties1.put(NAME, BUTTON_PROPERTY);
+        mapProperties1.put(VISIBLE, true);
+        mapProperties1.put(X, X_POS_FLOAT_PROPERTY);
+        mapProperties1.put(Y, Y_POS_FLOAT_PROPERTY);
+        mapProperties1.put(WIDTH, WITDH_FLOAT_PROPERTY);
+        mapProperties1.put(HEIGHT, HEIGHT_FLOAT_PROPERTY);
+        mapProperties1.put(ROTATION, 0f);
         return mapProperties1;
     }
 
@@ -490,9 +613,5 @@ public class TestLevelObjectorCreator {
         worldMock = null;
         rayHandlerMock = null;
         levelCreatorInjectionInterfaceMock = null;
-    }
-
-    private void replayAll() {
-        levelCreatorInjectionInterfaceMock = createMock(LevelCreatorInjectionInterface.class);
     }
 }

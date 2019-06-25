@@ -17,6 +17,7 @@
 package com.ellzone.slotpuzzle2d.level;
 
 import com.badlogic.ashley.core.Component;
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
@@ -219,34 +220,61 @@ public class LevelObjectCreator {
         if (isInt(classParam))
             return getInteger(classParam, rectangleMapProperties, parts);
         if (isFloat(classParam))
-            return parts.length == LENGTH_TWO ? (Float) rectangleMapProperties.get(parts[1].toLowerCase(), classParam) : null;
+            return getFloat(classParam, rectangleMapProperties, parts);
         if (isBoolean(classParam))
-            return parts.length == LENGTH_TWO ? (Boolean) (Object) rectangleMapProperties.get(parts[1].toLowerCase(), classParam) : null;
+            return getBoolean(classParam, rectangleMapProperties, parts);
 
         return getObject(classParam, rectangleMapProperties, parts);
     }
 
+    private Integer getInteger(Class<?> classParam, MapProperties rectangleMapProperties, String[] parts) throws GdxRuntimeException {
+        verifyThereAreTwoParts(parts);
+        Integer parsedInteger = convertToIntegerFromFloat((Float) rectangleMapProperties.get(parts[1].toLowerCase(), classParam));
+        if (parsedInteger != null)
+            return parsedInteger;
+        throw new GdxCouldNotParsePropertyException(
+                MessageFormat.format("Could not extract integer from <{0}>",
+                        parts[1]));
+    }
+
+    private Float getFloat(Class<?> classParam, MapProperties rectangleMapProperties, String[] parts) {
+        verifyThereAreTwoParts(parts);
+        Float parsedFloat = (Float) rectangleMapProperties.get(parts[1].toLowerCase(), classParam);
+        if (parsedFloat != null)
+            return parsedFloat;
+        throw new GdxCouldNotParsePropertyException(
+                MessageFormat.format("Could not extract float from <{0}>",
+                        parts[1]));
+    }
+
+    private Boolean getBoolean(Class<?> classParam, MapProperties rectangleMapProperties, String[] parts) {
+        verifyThereAreTwoParts(parts);
+        Boolean parsedBoolean = (Boolean) rectangleMapProperties.get(parts[1].toLowerCase(), classParam);
+        if (parsedBoolean != null)
+            return parsedBoolean;
+        throw new GdxCouldNotParsePropertyException(
+                MessageFormat.format("Could not extract boolean from <{0}>",
+                        parts[1]));
+    }
+
     private Object getObject(Class<?> classParam, MapProperties rectangleMapProperties, String[] parts) {
-        if (parts.length == LENGTH_TWO) {
-            Object parsedObject = (Object) rectangleMapProperties.get(parts[1].toLowerCase(), classParam);
-            if (parsedObject != null)
-                return parsedObject;
-            else throw new GdxCouldNotParsePropertyException("");
-        } else
+        verifyThereAreTwoParts(parts);
+        Object parsedObject = (Object) rectangleMapProperties.get(parts[1].toLowerCase(), classParam);
+        if (parsedObject != null)
+            return parsedObject;
+        else throw new GdxCouldNotParsePropertyException(
+                MessageFormat.format("Could not extract object from <{0}>",
+                                         parts[1]));
+    }
+
+
+    private void verifyThereAreTwoParts(String[] parts) {
+        if (parts.length != LENGTH_TWO)
             throw new GdxCouldNotParsePropertyException(
                     MessageFormat.format(
                             "Expected number of property parts to be {0} actually found {1}",
-                            LENGTH_TWO, parts.length));
-    }
-
-    private Integer getInteger(Class<?> classParam, MapProperties rectangleMapProperties, String[] parts) throws GdxRuntimeException {
-        if (parts.length == LENGTH_TWO) {
-            Integer parsedInteger = convertToIntegerFromFloat((Float) rectangleMapProperties.get(parts[1].toLowerCase(), classParam));
-            if (parsedInteger != null)
-                return parsedInteger;
-            else throw new GdxCouldNotParsePropertyException("");
-        } else
-            throw new GdxCouldNotParsePropertyException("");
+                                LENGTH_TWO,
+                                parts.length));
     }
 
     private boolean isInt(Class clazz) {
@@ -264,7 +292,7 @@ public class LevelObjectCreator {
     private boolean isString(Class clazz) { return clazz.equals(String.class); }
 
     private Integer convertToIntegerFromFloat(Float floatParam){
-        return new Integer(floatParam.intValue());
+        return floatParam == null ? null : new Integer(floatParam.intValue());
     }
 
     Map<String,Class> builtInMap = new HashMap<String,Class>(); {
@@ -290,7 +318,7 @@ public class LevelObjectCreator {
                 else
                     classParameters[index++] = Class.forName(type);
             } catch (ClassNotFoundException cnfe) {
-                throw  new GdxRuntimeException(MessageFormat.format("Type {0} not found",type));
+                throw  new GdxRuntimeException(cnfe);
             }
         }
         return classParameters;
@@ -411,10 +439,8 @@ public class LevelObjectCreator {
             Constructor<?> componentConstructor = getConstructor(componentClass, componentParameterTypes);
             try {
                 createdComponent = getCreatedObject(rectangleMapObjectProperties, componentParameterTypes, componentConstructor, componentParameterValues);
-                if (createdObject != null) {
+                if (createdObject != null)
                     invokeComponentObjectMethod(createdObject, createdComponent, ADD_COMPONENT_TO_ENTITY);
-                    System.out.println(MessageFormat.format("About to create component {0}", component));
-                }
             } catch (Exception e) {
                 throw new GdxRuntimeException(e);
             }
@@ -432,7 +458,7 @@ public class LevelObjectCreator {
             try {
                 clazz = Class.forName(className);
             } catch (ClassNotFoundException cnfe) {
-                System.out.println(String.format("Class not found %s.", clazz));
+                throw new GdxRuntimeException(cnfe);
             }
             return clazz;
         }
