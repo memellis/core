@@ -41,7 +41,6 @@ public class Version {
 			REVISION = v.length < REVISION_PARSE_POSITION ? 0 : Integer.valueOf(v[2]);
 		}
 		catch (Throwable t) {
-			// Should never happen
 			throw new GdxRuntimeException("Invalid version " + VERSION, t);
 		}
 	}
