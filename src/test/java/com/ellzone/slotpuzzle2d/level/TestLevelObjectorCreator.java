@@ -1,3 +1,19 @@
+/*
+ Copyright 2011 See AUTHORS file.
+
+ Licensed under the Apache License, Version 2.0 (the "License");
+ you may not use this file except in compliance with the License.
+ You may obtain a copy of the License at
+
+ http://www.apache.org/licenses/LICENSE-2.0
+
+ Unless required by applicable law or agreed to in writing, software
+ distributed under the License is distributed on an "AS IS" BASIS,
+ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ See the License for the specific language governing permissions and
+ limitations under the License.
+ */
+
 package com.ellzone.slotpuzzle2d.level;
 
 import com.badlogic.gdx.maps.MapProperties;
@@ -6,6 +22,7 @@ import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.GdxRuntimeException;
 import com.ellzone.slotpuzzle2d.level.fixtures.LevelObjectCreatorForTest;
+import com.ellzone.slotpuzzle2d.level.fixtures.LevelObjectCreatorForTestWithNoAddToComponentMethod;
 import com.ellzone.slotpuzzle2d.level.fixtures.LevelObjectCreatorForTestWithNoDelegateToMethod;
 import com.ellzone.slotpuzzle2d.level.fixtures.LevelObjectCreatorForTestWithNoMethods;
 import com.ellzone.slotpuzzle2d.level.fixtures.ReflectionMapCreationClassForTesting;
@@ -89,6 +106,12 @@ public class TestLevelObjectorCreator {
     public static final String ROTATION = "rotation";
     public static final float TEST_FLOAT = 320.0f;
     public static final int TEST_INTEGER = 320;
+    public static final String NO_SUCH_GET_TEST_PUBLIC_FLOAT_FIELD = "com.ellzone.slotpuzzle2d.level.fixtures.LevelObjectCreatorForTest.noSuchGetTestPublicFloatField()";
+    public static final String FOR_INPUT_STRING_3_14 = "For input string: \"3 14\"";
+    public static final String VALUE_3_14 = "Value:3 14";
+    public static final String METHOD_NO_SUCH_GET_TEST_PUBLIC_FLOAT_FIELD = "Method.noSuchGetTestPublicFloatField";
+    public static final String NO_ADD_TO_COMPONENT_METHOD_ADD_COMPONENT_TO_ENTITY = "com.ellzone.slotpuzzle2d.level.fixtures.LevelObjectCreatorForTestWithNoAddToComponentMethod.addComponentToEntity";
+    public static final String TEST_COMPONENT = "com.ellzone.slotpuzzle2d.level.fixtures.TestComponent";
     private World worldMock;
     private RayHandler rayHandlerMock;
     private LevelCreatorInjectionInterface levelCreatorInjectionInterfaceMock;
@@ -179,7 +202,8 @@ public class TestLevelObjectorCreator {
         LevelObjectCreatorForTest levelObjectCreator = createLevelObjectCreatorForTest(
                 createARectangleMockObjectWithAClassProperty(REFLECTION_MAP_CREATION_CLASS_FOR_TESTING));
         assertThat(rectangleMapObjects.size, is(equalTo(1)));
-        assertTrue(levelObjectCreator.getReflectionMapCreationClassForTesting() instanceof ReflectionMapCreationClassForTesting);
+        assertTrue(levelObjectCreator.getReflectionMapCreationClassForTesting() instanceof
+                      ReflectionMapCreationClassForTesting);
         assertTrue(levelObjectCreator.getDelegatedToCallback());
         for (RectangleMapObject rectangleMapObjectMocked : rectangleMapObjects)
             verify(rectangleMapObjectMocked);
@@ -197,7 +221,10 @@ public class TestLevelObjectorCreator {
         LevelObjectCreatorForTest levelObjectCreator = createLevelObjectCreatorForTest(
                 createLevelWhenThereIsOneRectangleMapObjectWithClassAndContructotWithFloatArgumentAndValue(
                         REFLECTION_MAP_CREATION_CLASS_FOR_TESTING_WITH_DIFFERENT_CONSTRUCTORS));
-        assertThat(levelObjectCreator.getReflectionMapCreationClassForTestingWithDifferentContstuctors().getTestFloatField(), CoreMatchers.<Float>is(equalTo(THREE_AS_FLOAT)));
+        assertThat(levelObjectCreator.
+                     getReflectionMapCreationClassForTestingWithDifferentContstuctors().
+                     getTestFloatField(),
+                   CoreMatchers.<Float>is(equalTo(THREE_AS_FLOAT)));
     }
 
     @Test
@@ -205,7 +232,10 @@ public class TestLevelObjectorCreator {
         LevelObjectCreatorForTest levelObjectCreator = createLevelObjectCreatorForTest(
                 createLevelWhenThereIsOneRectangleMapObjectWithClassAndContructotWithIntArgumentAndValue(
                         REFLECTION_MAP_CREATION_CLASS_FOR_TESTING_WITH_DIFFERENT_CONSTRUCTORS));
-        assertThat(levelObjectCreator.getReflectionMapCreationClassForTestingWithDifferentContstuctors().getTestIntField(), CoreMatchers.<Integer>is(equalTo(THREE_AS_INT)));
+        assertThat(levelObjectCreator.
+                     getReflectionMapCreationClassForTestingWithDifferentContstuctors().
+                     getTestIntField(),
+                   CoreMatchers.<Integer>is(equalTo(THREE_AS_INT)));
     }
 
     @Test
@@ -213,7 +243,10 @@ public class TestLevelObjectorCreator {
         LevelObjectCreatorForTest levelObjectCreator = createLevelObjectCreatorForTest(
                 createLevelWhenThereIsOneRectangleMapObjectWithClassAndContructotWithBooleanArgumentAndValue(
                         REFLECTION_MAP_CREATION_CLASS_FOR_TESTING_WITH_DIFFERENT_CONSTRUCTORS));
-        assertThat(levelObjectCreator.getReflectionMapCreationClassForTestingWithDifferentContstuctors().getTestBooleanField(), is(false));
+        assertThat(levelObjectCreator.
+                     getReflectionMapCreationClassForTestingWithDifferentContstuctors().
+                     getTestBooleanField(),
+                   is(false));
     }
 
     @Test
@@ -223,7 +256,10 @@ public class TestLevelObjectorCreator {
                         REFLECTION_MAP_CREATION_CLASS_FOR_TESTING_WITH_DIFFERENT_CONSTRUCTORS));
         levelObjectCreator.testPublicFloatField = THREE_AS_FLOAT;
         levelObjectCreator.createLevel(rectangleMapObjects);
-        assertThat(levelObjectCreator.getReflectionMapCreationClassForTestingWithDifferentContstuctors().getTestFloatField(), CoreMatchers.<Float>is(equalTo(THREE_AS_FLOAT)));
+        assertThat(levelObjectCreator.
+                     getReflectionMapCreationClassForTestingWithDifferentContstuctors().
+                     getTestFloatField(),
+                   CoreMatchers.<Float>is(equalTo(THREE_AS_FLOAT)));
     }
 
     @Test
@@ -233,7 +269,10 @@ public class TestLevelObjectorCreator {
                         REFLECTION_MAP_CREATION_CLASS_FOR_TESTING_WITH_DIFFERENT_CONSTRUCTORS));
         levelObjectCreator.testPublicFloatField = THREE_AS_FLOAT;
         levelObjectCreator.createLevel(rectangleMapObjects);
-        assertThat(levelObjectCreator.getReflectionMapCreationClassForTestingWithDifferentContstuctors().getTestFloatField(), CoreMatchers.<Float>is(equalTo(THREE_AS_FLOAT)));
+        assertThat(levelObjectCreator.
+                     getReflectionMapCreationClassForTestingWithDifferentContstuctors().
+                     getTestFloatField(),
+                   CoreMatchers.<Float>is(equalTo(THREE_AS_FLOAT)));
     }
 
     @Test
@@ -383,10 +422,90 @@ public class TestLevelObjectorCreator {
         thrown.expectMessage(INTEGER);
         createLevelObjectCreatorForTest(
                 createLevelWhenThereIsOneRectangleMapObjectWithClassAndAComponentWithNonExistantParamterType(
-                REFLECTION_MAP_CREATION_CLASS_FOR_TESTING_WITH_DIFFERENT_CONSTRUCTORS));
+                    REFLECTION_MAP_CREATION_CLASS_FOR_TESTING_WITH_DIFFERENT_CONSTRUCTORS));
     }
 
-    private RectangleMapObject createLevelWhenThereIsOneRectangleMapObjectWithClassAndAComponentWithNonExistantParamterType(String className) {
+    @Test
+    public void testCreateLevelWhenThereIsOneRectantleMapObjectWithClassWithMethodPropertyInokingNonExistantMethod() {
+        thrown.expect(GdxRuntimeException.class);
+        thrown.expectCause(isA(NoSuchMethodException.class));
+        thrown.expectMessage(NO_SUCH_GET_TEST_PUBLIC_FLOAT_FIELD);
+        createLevelObjectCreatorForTest(
+                createLevelWhenThereIsOneRectantleMapObjectWithClassWithMethodPropertyInokingNonExistantMethod(
+                    REFLECTION_MAP_CREATION_CLASS_FOR_TESTING_WITH_DIFFERENT_CONSTRUCTORS));
+    }
+
+    @Test
+    public void testCreateLevelWhenThereIsOneRectangleMapObjectWithClassAndAComponentFailedToInvoke() {
+        thrown.expect(GdxRuntimeException.class);
+        thrown.expectCause(isA(NumberFormatException.class));
+        thrown.expectMessage(FOR_INPUT_STRING_3_14);
+        createLevelObjectCreatorForTest(
+                createLevelWhenThereIsOneRectangleMapObjectWithClassAndAComponentFailedToInvoke(
+                        REFLECTION_MAP_CREATION_CLASS_FOR_TESTING_WITH_DIFFERENT_CONSTRUCTORS));
+    }
+
+    @Test
+    public void testCreateLevelWhenThereIsOneRectangleMapObjectWithClassAndAComponentObjectMethodFailedToInvoke() {
+        thrown.expect(GdxRuntimeException.class);
+        thrown.expectCause(isA(NoSuchMethodException.class));
+        thrown.expectMessage(NO_ADD_TO_COMPONENT_METHOD_ADD_COMPONENT_TO_ENTITY);
+        createLevelObjectCreatorForTestWithNoAddToComponentMethod(
+                createLevelWhenThereIsOneRectangleMapObjectWithClassAndAComponentObjectMethodFailedToInvoke(
+                        REFLECTION_MAP_CREATION_CLASS_FOR_TESTING_WITH_DIFFERENT_CONSTRUCTORS));
+    }
+
+    @Test
+    public void testCreateLevelWhenThereIsOneRectangleMapObjectWithClassAndAComponentWithNoParameters() {
+        thrown.expect(LevelObjectCreator.GdxComponentHasNoParamtersException.class);
+        thrown.expectMessage(TEST_COMPONENT);
+        createLevelObjectCreatorForTest(
+                createLevelWhenThereIsOneRectangleMapObjectWithClassAndAComponentWithNoParameters(
+                        REFLECTION_MAP_CREATION_CLASS_FOR_TESTING_WITH_DIFFERENT_CONSTRUCTORS));
+    }
+
+    private RectangleMapObject
+    createLevelWhenThereIsOneRectangleMapObjectWithClassAndAComponentWithNoParameters(String className) {
+        MapProperties customMapProperties = createClassProperty(className);
+        customMapProperties.put(COMPONENT_1, TEST_COMPONENT);
+        customMapProperties.put(PARAMETER_1, JAVA_LANG_STRING);
+        customMapProperties.put(PARAMETER_VALUE_1, PROPERTY_NAME);
+        return createARectangleMockObject(customMapProperties);
+    }
+
+    private RectangleMapObject
+    createLevelWhenThereIsOneRectangleMapObjectWithClassAndAComponentObjectMethodFailedToInvoke(String className) {
+        MapProperties customMapProperties = createClassProperty(className);
+        customMapProperties.put(COMPONENT_1, COM_ELLZONE_SLOTPUZZLE_2D_LEVEL_FIXTURES_TEST_COMPONENT);
+        customMapProperties.put(PARAMETER_1, JAVA_LANG_STRING);
+        customMapProperties.put(PARAMETER_VALUE_1, PROPERTY_NAME);
+        customMapProperties.put(COMPONENT_1_PROPERTY_1, INT);
+        customMapProperties.put(COMPONENT_1_VALUE_1, VALUE_3);
+        return createARectangleMockObject(customMapProperties);
+    }
+
+    private RectangleMapObject
+    createLevelWhenThereIsOneRectangleMapObjectWithClassAndAComponentFailedToInvoke(String className) {
+        MapProperties customMapProperties = createClassProperty(className);
+        customMapProperties.put(COMPONENT_1, COM_ELLZONE_SLOTPUZZLE_2D_LEVEL_FIXTURES_TEST_COMPONENT);
+        customMapProperties.put(PARAMETER_1, JAVA_LANG_STRING);
+        customMapProperties.put(PARAMETER_VALUE_1, PROPERTY_NAME);
+        customMapProperties.put(COMPONENT_1_PROPERTY_1, INT);
+        customMapProperties.put(COMPONENT_1_VALUE_1, VALUE_3_14);
+        return createARectangleMockObject(customMapProperties);
+    }
+
+    private RectangleMapObject
+    createLevelWhenThereIsOneRectantleMapObjectWithClassWithMethodPropertyInokingNonExistantMethod(String className) {
+        MapProperties customMapProperties = createClassProperty(className);
+        customMapProperties.put(PARAMETER_1, FLOAT);
+        customMapProperties.put(PARAMETER_VALUE_1,
+                METHOD_NO_SUCH_GET_TEST_PUBLIC_FLOAT_FIELD);
+        return createARectangleMockObject(customMapProperties);
+    }
+
+    private RectangleMapObject
+    createLevelWhenThereIsOneRectangleMapObjectWithClassAndAComponentWithNonExistantParamterType(String className) {
         MapProperties customMapProperties = createClassProperty(className);
         customMapProperties.put(COMPONENT_1, COM_ELLZONE_SLOTPUZZLE_2D_LEVEL_FIXTURES_TEST_COMPONENT);
         customMapProperties.put(PARAMETER_1, JAVA_LANG_STRING);
@@ -395,53 +514,61 @@ public class TestLevelObjectorCreator {
         return createARectangleMockObject(customMapProperties);
     }
 
-    private RectangleMapObject createLevelWhenThereIsOneRectangleMapObjectWithNonExistantParameter(String className) {
+    private RectangleMapObject
+    createLevelWhenThereIsOneRectangleMapObjectWithNonExistantParameter(String className) {
         MapProperties customMapProperties = createClassProperty(className);
         customMapProperties.put(PARAMETER_1, INTEGER);
         return createARectangleMockObject(customMapProperties);
     }
 
-    private RectangleMapObject createLevelWhenThereIsOneRectangleMapObjectWithNonExistantClass(String className) {
+    private RectangleMapObject
+    createLevelWhenThereIsOneRectangleMapObjectWithNonExistantClass(String className) {
         MapProperties customMapProperties = createClassProperty(className);
         return createARectangleMockObject(customMapProperties);
     }
 
-    private RectangleMapObject createLevelWhenThereIsOneRectangleMapObjectWithClassObjectInvalidBooleanParamterValue(String className) {
+    private RectangleMapObject
+    createLevelWhenThereIsOneRectangleMapObjectWithClassObjectInvalidBooleanParamterValue(String className) {
         MapProperties customMapProperties = createClassProperty(className);
         customMapProperties.put(PARAMETER_1, BOOLEAN);
         customMapProperties.put(PARAMETER_VALUE_1, PROPERTY_3_14);
         return createARectangleMockObject(customMapProperties);
     }
 
-    private RectangleMapObject createLevelWhenThereIsOneRectangleMapObjectWithClassObjectInvalidFloatParamterValue(String className) {
+    private RectangleMapObject
+    createLevelWhenThereIsOneRectangleMapObjectWithClassObjectInvalidFloatParamterValue(String className) {
         MapProperties customMapProperties = createClassProperty(className);
         customMapProperties.put(PARAMETER_1, FLOAT);
         customMapProperties.put(PARAMETER_VALUE_1, PROPERTY_3_14);
         return createARectangleMockObject(customMapProperties);
     }
 
-    private RectangleMapObject createLevelWhenThereIsOneRectangleMapObjectWithClassObjectInvalidIntegerParamterValue(String className) {
+    private RectangleMapObject
+    createLevelWhenThereIsOneRectangleMapObjectWithClassObjectInvalidIntegerParamterValue(String className) {
         MapProperties customMapProperties = createClassProperty(className);
         customMapProperties.put(PARAMETER_1, INT);
         customMapProperties.put(PARAMETER_VALUE_1, PROPERTY_3_14);
         return createARectangleMockObject(customMapProperties);
     }
 
-    private RectangleMapObject createLevelWhenThereIsOneRectangleMapObjectWithClassObjectAndObjectParameterIsNotValid(String className) {
+    private RectangleMapObject
+    createLevelWhenThereIsOneRectangleMapObjectWithClassObjectAndObjectParameterIsNotValid(String className) {
         MapProperties customMapProperties = createClassProperty(className);
         customMapProperties.put(PARAMETER_1, JAVA_LANG_OBJECT);
         customMapProperties.put(PARAMETER_VALUE_1, PROPERTY_3_DOT_14);
         return createARectangleMockObject(customMapProperties);
     }
 
-    private RectangleMapObject createLevelWhenThereIsOneRectangleMapObjectWithClassAndInvalidObjectParameterValue(String className) {
+    private RectangleMapObject
+    createLevelWhenThereIsOneRectangleMapObjectWithClassAndInvalidObjectParameterValue(String className) {
         MapProperties customMapProperties = createClassProperty(className);
         customMapProperties.put(PARAMETER_1, JAVA_LANG_OBJECT);
         customMapProperties.put(PARAMETER_VALUE_1, VALUE_OBJECT);
         return createARectangleMockObject(customMapProperties);
     }
 
-    private RectangleMapObject createLevelWhenThereIsOneRectangleMapObjectWithClassAndAComponent(String className) {
+    private RectangleMapObject
+    createLevelWhenThereIsOneRectangleMapObjectWithClassAndAComponent(String className) {
         MapProperties customMapProperties = createClassProperty(className);
         customMapProperties.put(COMPONENT_1, COM_ELLZONE_SLOTPUZZLE_2D_LEVEL_FIXTURES_TEST_COMPONENT);
         customMapProperties.put(PARAMETER_1, JAVA_LANG_STRING);
@@ -451,7 +578,8 @@ public class TestLevelObjectorCreator {
         return createARectangleMockObject(customMapProperties);
     }
 
-    private RectangleMapObject createLevelWhenThereIsOneRectangleMapObjectWithClassNonParsableParameterValue(String className) {
+    private RectangleMapObject
+    createLevelWhenThereIsOneRectangleMapObjectWithClassNonParsableParameterValue(String className) {
         MapProperties customMapProperties = createClassProperty(className);
         customMapProperties.put(PARAMETER_1, FLOAT);
         customMapProperties.put(PARAMETER_VALUE_1, ABC);
@@ -460,7 +588,8 @@ public class TestLevelObjectorCreator {
 
     private LevelObjectCreatorForTest newLevelObjectCreatorForTest(RectangleMapObject rectangleMapObject) {
         createRectangleMapObjects(rectangleMapObject);
-        LevelObjectCreatorForTest levelObjectCreator = new LevelObjectCreatorForTest(levelCreatorInjectionInterfaceMock, worldMock, rayHandlerMock);
+        LevelObjectCreatorForTest levelObjectCreator = new LevelObjectCreatorForTest(
+                levelCreatorInjectionInterfaceMock, worldMock, rayHandlerMock);
         assertThat(levelObjectCreator, is(notNullValue()));
         return levelObjectCreator;
     }
@@ -472,6 +601,25 @@ public class TestLevelObjectorCreator {
         return levelObjectCreator;
     }
 
+    private LevelObjectCreatorForTestWithNoAddToComponentMethod
+    createLevelObjectCreatorForTestWithNoAddToComponentMethod(RectangleMapObject rectangleMapObject) {
+        createRectangleMapObjects(rectangleMapObject);
+        LevelObjectCreatorForTestWithNoAddToComponentMethod levelObjectCreator =
+                newLevelObjectCreatorForTestWithNoAddToComponentMethod(rectangleMapObject);
+        levelObjectCreator.createLevel(rectangleMapObjects);
+        return levelObjectCreator;
+    }
+
+    private LevelObjectCreatorForTestWithNoAddToComponentMethod
+    newLevelObjectCreatorForTestWithNoAddToComponentMethod(RectangleMapObject rectangleMapObject) {
+        createRectangleMapObjects(rectangleMapObject);
+        LevelObjectCreatorForTestWithNoAddToComponentMethod
+                levelObjectCreator = new LevelObjectCreatorForTestWithNoAddToComponentMethod(
+                    levelCreatorInjectionInterfaceMock, worldMock, rayHandlerMock);
+        assertThat(levelObjectCreator, is(notNullValue()));
+        return levelObjectCreator;
+    }
+
     private void createRectangleMapObjects(RectangleMapObject rectangleMapObject) {
         rectangleMapObjects = new Array<>();
         rectangleMapObjects.add(rectangleMapObject);
@@ -479,71 +627,80 @@ public class TestLevelObjectorCreator {
             replay(rectangleMapObjectMocked);
     }
 
-    private RectangleMapObject createLevelWhenThereIsOneRectangleMapObjectWithClassWithNonExistantProperty(String className) {
+    private RectangleMapObject
+    createLevelWhenThereIsOneRectangleMapObjectWithClassWithNonExistantProperty(String className) {
         MapProperties customMapProperties = createClassProperty(className);
         customMapProperties.put(PARAMETER_1, JAVA_LANG_STRING);
         customMapProperties.put(PARAMETER_VALUE_1, PROPERTY_NON_EXISTANT);
         return createARectangleMockObject(customMapProperties);
     }
 
-    private RectangleMapObject createLevelWhenThereIsOneRectangleMapObjectWithClassWithPropertyStringProperty(String className) {
+    private RectangleMapObject
+    createLevelWhenThereIsOneRectangleMapObjectWithClassWithPropertyStringProperty(String className) {
         MapProperties customMapProperties = createClassProperty(className);
         customMapProperties.put(PARAMETER_1, JAVA_LANG_STRING);
         customMapProperties.put(PARAMETER_VALUE_1, PROPERTY_NAME);
         return createARectangleMockObject(customMapProperties);
     }
 
-
-    private RectangleMapObject createLevelWhenThereIsOneRectangleMapObjectWithClassWithPropertyBooleanProperty(String className) {
+    private RectangleMapObject
+    createLevelWhenThereIsOneRectangleMapObjectWithClassWithPropertyBooleanProperty(String className) {
         MapProperties customMapProperties = createClassProperty(className);
         customMapProperties.put(PARAMETER_1, BOOLEAN);
         customMapProperties.put(PARAMETER_VALUE_1, PROPERTY_VISIBLE);
         return createARectangleMockObject(customMapProperties);
     }
 
-    private RectangleMapObject createLevelWhenThereIsOneRectangleMapObjectWithClassWithPropertyIntProperty(String className) {
+    private RectangleMapObject
+    createLevelWhenThereIsOneRectangleMapObjectWithClassWithPropertyIntProperty(String className) {
         MapProperties customMapProperties = createClassProperty(className);
         customMapProperties.put(PARAMETER_1, INT);
         customMapProperties.put(PARAMETER_VALUE_1, PROPERTY_X);
         return createARectangleMockObject(customMapProperties);
     }
 
-    private RectangleMapObject createLevelWhenThereIsOneRectangleMapObjectWithClassWithPropertyFloatProperty(String className) {
+    private RectangleMapObject
+    createLevelWhenThereIsOneRectangleMapObjectWithClassWithPropertyFloatProperty(String className) {
         MapProperties customMapProperties = createClassProperty(className);
         customMapProperties.put(PARAMETER_1, FLOAT);
         customMapProperties.put(PARAMETER_VALUE_1, PROPERTY_X);
         return createARectangleMockObject(customMapProperties);
     }
 
-    private RectangleMapObject createLevelWhenThereIsOneRectangleMapObjectWithClassWithMethodProperty(String className) {
+    private RectangleMapObject
+    createLevelWhenThereIsOneRectangleMapObjectWithClassWithMethodProperty(String className) {
         MapProperties customMapProperties = createClassProperty(className);
         customMapProperties.put(PARAMETER_1, FLOAT);
         customMapProperties.put(PARAMETER_VALUE_1, METHOD_GET_TEST_PUBLIC_FLOAT_FIELD);
         return createARectangleMockObject(customMapProperties);
     }
 
-    private RectangleMapObject createLevelWhenThereIsOneRectangleMapObjectWithClassWithFieldProperty(String className) {
+    private RectangleMapObject
+    createLevelWhenThereIsOneRectangleMapObjectWithClassWithFieldProperty(String className) {
         MapProperties customMapProperties = createClassProperty(className);
         customMapProperties.put(PARAMETER_1, FLOAT);
         customMapProperties.put(PARAMETER_VALUE_1, FIELD_TEST_PUBLIC_FLOAT_FIELD);
         return createARectangleMockObject(customMapProperties);
     }
 
-    private RectangleMapObject createLevelWhenThereIsOneRectangleMapObjectWithClassAndContructotWithBooleanArgumentAndValue(String className) {
+    private RectangleMapObject
+    createLevelWhenThereIsOneRectangleMapObjectWithClassAndContructotWithBooleanArgumentAndValue(String className) {
         MapProperties customMapProperties = createClassProperty(className);
         customMapProperties.put(PARAMETER_1, BOOLEAN);
         customMapProperties.put(PARAMETER_VALUE_1, VALUE_FALSE);
         return createARectangleMockObject(customMapProperties);
     }
 
-    private RectangleMapObject createLevelWhenThereIsOneRectangleMapObjectWithClassAndContructotWithIntArgumentAndValue(String className) {
+    private RectangleMapObject
+    createLevelWhenThereIsOneRectangleMapObjectWithClassAndContructotWithIntArgumentAndValue(String className) {
         MapProperties customMapProperties = createClassProperty(className);
         customMapProperties.put(PARAMETER_1, INT);
         customMapProperties.put(PARAMETER_VALUE_1, VALUE_3);
         return createARectangleMockObject(customMapProperties);
     }
 
-    private RectangleMapObject createLevelWhenThereIsOneRectangleMapObjectWithClassAndContructotWithFloatArgumentAndValue(String className) {
+    private RectangleMapObject
+    createLevelWhenThereIsOneRectangleMapObjectWithClassAndContructotWithFloatArgumentAndValue(String className) {
         MapProperties customMapProperties = createClassProperty(className);
         customMapProperties.put(PARAMETER_1, FLOAT);
         customMapProperties.put(PARAMETER_VALUE_1, VALUE_3);
@@ -561,7 +718,8 @@ public class TestLevelObjectorCreator {
         return customMapProperties;
     }
 
-    private RectangleMapObject createARectangleMockObjectWithAClassPropertyAndConstructorWithOneFloatArgumentOnly(String className) {
+    private RectangleMapObject
+    createARectangleMockObjectWithAClassPropertyAndConstructorWithOneFloatArgumentOnly(String className) {
         MapProperties customMapProperties = createClassProperty(className);
         customMapProperties.put(PARAMETER_1, FLOAT);
         return createARectangleMockObject(customMapProperties);

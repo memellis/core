@@ -17,7 +17,6 @@
 package com.ellzone.slotpuzzle2d.level;
 
 import com.badlogic.ashley.core.Component;
-import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
@@ -76,6 +75,11 @@ public class LevelObjectCreator {
     public static final String SHORT = "short";
     public static final String CLASS = "Class";
     public static final String ADD_COMPONENT_TO_ENTITY = "addComponentToEntity";
+    public static final String COULD_NOT_EXTRACT_INTEGER_FROM_MESSAGE = "Could not extract integer from <{0}>";
+    public static final String COULD_NOT_EXTRACT_FLOAT_FROM_MESSAGE = "Could not extract float from <{0}>";
+    public static final String COULD_NOT_EXTRACT_BOOLEAN_FROM_MESSAGE = "Could not extract boolean from <{0}>";
+    public static final String COULD_NOT_EXTRACT_OBJECT_FROM_MESSAGE = "Could not extract object from <{0}>";
+    public static final String EXPECTED_NUMBER_OF_PROPERTY_PARTS_TO_BE_MESSAGE = "Expected number of property parts to be {0} actually found {1}";
 
     protected Array<HoldLightButton> lightButtons = new Array<>();
     protected Array<AnimatedReel> reels = new Array<>();
@@ -233,7 +237,7 @@ public class LevelObjectCreator {
         if (parsedInteger != null)
             return parsedInteger;
         throw new GdxCouldNotParsePropertyException(
-                MessageFormat.format("Could not extract integer from <{0}>",
+                MessageFormat.format(COULD_NOT_EXTRACT_INTEGER_FROM_MESSAGE,
                         parts[1]));
     }
 
@@ -243,7 +247,7 @@ public class LevelObjectCreator {
         if (parsedFloat != null)
             return parsedFloat;
         throw new GdxCouldNotParsePropertyException(
-                MessageFormat.format("Could not extract float from <{0}>",
+                MessageFormat.format(COULD_NOT_EXTRACT_FLOAT_FROM_MESSAGE,
                         parts[1]));
     }
 
@@ -253,7 +257,7 @@ public class LevelObjectCreator {
         if (parsedBoolean != null)
             return parsedBoolean;
         throw new GdxCouldNotParsePropertyException(
-                MessageFormat.format("Could not extract boolean from <{0}>",
+                MessageFormat.format(COULD_NOT_EXTRACT_BOOLEAN_FROM_MESSAGE,
                         parts[1]));
     }
 
@@ -263,7 +267,7 @@ public class LevelObjectCreator {
         if (parsedObject != null)
             return parsedObject;
         else throw new GdxCouldNotParsePropertyException(
-                MessageFormat.format("Could not extract object from <{0}>",
+                MessageFormat.format(COULD_NOT_EXTRACT_OBJECT_FROM_MESSAGE,
                                          parts[1]));
     }
 
@@ -272,7 +276,7 @@ public class LevelObjectCreator {
         if (parts.length != LENGTH_TWO)
             throw new GdxCouldNotParsePropertyException(
                     MessageFormat.format(
-                            "Expected number of property parts to be {0} actually found {1}",
+                            EXPECTED_NUMBER_OF_PROPERTY_PARTS_TO_BE_MESSAGE,
                                 LENGTH_TWO,
                                 parts.length));
     }
@@ -337,23 +341,20 @@ public class LevelObjectCreator {
         }
     }
 
-    private void invokeComponentObjectMethod(Object createdObject, Object createdComponent, String methodName) {
+    private void invokeComponentObjectMethod(Object createdObject, Object createdComponent, String methodName)
+        throws
+            NoSuchMethodException,
+            IllegalAccessException,
+            InvocationTargetException {
         Class[] methodParameters = new Class[2];
         methodParameters[0] = createdObject.getClass();
         methodParameters[1] = Component.class;
-        try {
             Method method = this.getClass().getDeclaredMethod(methodName, methodParameters);
             method.invoke(this, createdObject, createdComponent);
-        } catch (NoSuchMethodException e) {
-            throw new GdxRuntimeException(e);
-        } catch (IllegalAccessException e) {
-            throw new GdxRuntimeException(e);
-        } catch (InvocationTargetException e) {
-            throw new GdxRuntimeException(e);
-        }
     }
 
     private class ProcessCustomMapProperties {
+        public static final String NO_SUCH_CONSTRUCTOR_MESSAGE = "No such constructor: {0}";
         private boolean huntingForComponents;
         private int componentCount;
         private Array<String> components;
@@ -422,10 +423,10 @@ public class LevelObjectCreator {
                     System.out.println(MessageFormat.format("{0}", component));
                     components.add(component);
                     Array<String> componentParameters = getParameters(rectangleMapObjectProperties, COMPONENT + componentCount + PROPERTY_NAME);
-                    if (componentParameters != null) {
+                    if (componentParameters.size > 0) {
                         invokeCreatedComponentObjectMethod(rectangleMapObjectProperties, createdObject, component, componentParameters);
                     } else
-                        huntingForComponents = false;
+                        throw new GdxComponentHasNoParamtersException(component);
                 } else
                     huntingForComponents = false;
             }
@@ -483,8 +484,7 @@ public class LevelObjectCreator {
                 constructor = clazz.getConstructor(classParameters);
             } catch (NoSuchMethodException nsme) {
                 throw new GdxRuntimeException(
-                        MessageFormat.format("No such constructor: {0}",
-                                                            nsme.getMessage()));
+                        MessageFormat.format(NO_SUCH_CONSTRUCTOR_MESSAGE, nsme.getMessage()));
             }
             return constructor;
         }
@@ -519,5 +519,9 @@ public class LevelObjectCreator {
         public GdxCouldNotParseParameterValueException(String message) {
             super(message);
         }
+    }
+
+    public class GdxComponentHasNoParamtersException extends GdxRuntimeException {
+        public GdxComponentHasNoParamtersException(String message) {super(message); }
     }
 }

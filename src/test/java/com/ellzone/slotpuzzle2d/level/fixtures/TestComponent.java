@@ -20,7 +20,13 @@ import com.badlogic.ashley.core.Component;
 
 public class TestComponent implements Component {
     public String testComponentField;
+    public int testIntComponentField;
+
     public TestComponent(String testComponentValue) {
         this.testComponentField = testComponentValue;
+    }
+
+    public TestComponent(int testIntComponentField) {
+        this.testIntComponentField = testIntComponentField;
     }
 }
