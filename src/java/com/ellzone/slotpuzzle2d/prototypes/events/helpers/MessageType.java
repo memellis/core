@@ -1,6 +1,4 @@
-package com.ellzone.slotpuzzle2d.prototypes.events;
-
-import com.ellzone.slotpuzzle2d.level.Suit;
+package com.ellzone.slotpuzzle2d.prototypes.events.helpers;
 
 public enum  MessageType {
     AddedCompoenent("AddComponent", 0),
@@ -10,12 +8,13 @@ public enum  MessageType {
 
     public final String name;
     public final int index;
+
     private MessageType(String name, int index) {
         this.name = name;
         this.index = index;
     }
-    public static int getNumberOfMessages() {
-        return Suit.values().length;
-    }
 
+    public static int getNumberOfTypes() {
+        return MessageType.values().length;
     }
+}

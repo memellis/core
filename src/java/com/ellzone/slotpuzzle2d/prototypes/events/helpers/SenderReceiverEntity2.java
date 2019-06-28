@@ -1,9 +1,10 @@
-package com.ellzone.slotpuzzle2d.prototypes.events;
+package com.ellzone.slotpuzzle2d.prototypes.events.helpers;
 
 import com.badlogic.gdx.ai.msg.MessageDispatcher;
 import com.badlogic.gdx.ai.msg.MessageManager;
 import com.badlogic.gdx.ai.msg.Telegram;
 import com.badlogic.gdx.ai.msg.Telegraph;
+import com.ellzone.slotpuzzle2d.prototypes.events.helpers.MessageType;
 
 import java.text.MessageFormat;
 

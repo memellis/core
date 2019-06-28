@@ -16,6 +16,7 @@
 
 package com.ellzone.slotpuzzle2d.utils;
 
+import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
@@ -42,55 +43,68 @@ public class AssetsAnnotation {
     WORLD_MAP = "levels/WorldMap.tmx";
 
     @AnnotationAssetManager.Asset(TextureAtlas.class)
-    public static String CARDDECK = "playingcards/carddeck.atlas",
-                         REELS = "reel/reels.pack.atlas",
-                         SLOT_HANDLE = "slot_handle/slot_handle.pack.atlas",
-                         SLOT_HANDLE_ANIMATION = "handle/handle.pack.atlas",
-                         SPLASH = "splash/pack.atlas",
-                         SPLASH3 = "splash/splash3.pack.atlas",
-                         TILES = "tiles/tiles.pack.atlas";
+    public final static
+        String
+            CARDDECK = "playingcards/carddeck.atlas",
+            REELS = "reel/reels.pack.atlas",
+            SLOT_HANDLE = "slot_handle/slot_handle.pack.atlas",
+            SLOT_HANDLE_ANIMATION = "handle/handle.pack.atlas",
+            SPLASH = "splash/pack.atlas",
+            SPLASH3 = "splash/splash3.pack.atlas",
+            TILES = "tiles/tiles.pack.atlas";
 
     @AnnotationAssetManager.Asset(Texture.class)
-    public static String PROGRESS_BAR = "loading_screen/progress_bar.png",
-                         PROGRESS_BAR_BASE = "loading_screen/progress_bar_base.png";
+    public final static
+        String
+            PROGRESS_BAR = "loading_screen/progress_bar.png",
+            PROGRESS_BAR_BASE = "loading_screen/progress_bar_base.png";
 
     @AnnotationAssetManager.Asset(Sound.class)
-    public static String SOUND_CHA_CHING = "sounds/cha-ching.mp3",
-                         SOUND_PULL_LEVER = "sounds/pull-lever1.mp3",
-                         SOUND_REEL_SPINNING = "sounds/reel-spinning.mp3",
-                         SOUND_REEL_STOPPED = "sounds/reel-stopped.mp3",
-                         SOUND_JACKPOINT = "sounds/jackpot.mp3";
+    public final static
+        String
+            SOUND_CHA_CHING = "sounds/cha-ching.mp3",
+            SOUND_PULL_LEVER = "sounds/pull-lever1.mp3",
+            SOUND_REEL_SPINNING = "sounds/reel-spinning.mp3",
+            SOUND_REEL_STOPPED = "sounds/reel-stopped.mp3",
+            SOUND_JACKPOINT = "sounds/jackpot.mp3";
 
-    public static String CHERRY = "cherry",
-                         CHERRY40x40 = "cherry 40x40",
-                         CHEESECAKE = "cheesecake",
-                         CHEESECAKE40x40 = "cheesecake 40x40",
-                         GRAPES = "grapes",
-                         GRAPES40x40 = "grapes 40x40",
-                         JELLY = "jelly",
-                         JELLY40x40 = "jelly 40x40",
-                         LEMON = "lemon",
-                         LEMON40x40 = "lemon 40x40",
-                         PEACH = "peach",
-                         PEACH40x40 = "peach 40x40",
-                         PEAR = "pear",
-                         PEAR40x40 = "pear 40x40",
-                         TOMATO = "tomato",
-                         TOMATO40x40 = "tomato 40x40",
-                         GAME_POPUP = "GamePopUp",
-                         LEVEL_SPRITE = "level",
-                         OVER = "over",
-                         COMPLETE = "complete",
-                         UNIVERSAL = "universal",
-                         TWEEN = "tween",
-                         ENGINE = "engine",
-                         LOGO = "logo",
-                         WHITE = "white",
-                         POWERED = "powered",
-                         GDXBLUR = "gdxblur",
-                         GDX = "gdx",
-                         SLOT = "slot",
-                         PUZZLE = "machine";
+    @AnnotationAssetManager.Asset(Music.class)
+    public final static
+        String
+            MUSIC_INTRO_SCREEN = "sounds/8.12.mp3";
+
+    public final static
+        String
+            CHERRY = "cherry",
+            CHERRY40x40 = "cherry 40x40",
+            CHEESECAKE = "cheesecake",
+            CHEESECAKE40x40 = "cheesecake 40x40",
+            GRAPES = "grapes",
+            GRAPES40x40 = "grapes 40x40",
+            JELLY = "jelly",
+            JELLY40x40 = "jelly 40x40",
+            LEMON = "lemon",
+            LEMON40x40 = "lemon 40x40",
+            PEACH = "peach",
+            PEACH40x40 = "peach 40x40",
+            PEAR = "pear",
+            PEAR40x40 = "pear 40x40",
+            TOMATO = "tomato",
+            TOMATO40x40 = "tomato 40x40",
+            GAME_POPUP = "GamePopUp",
+            LEVEL_SPRITE = "level",
+            OVER = "over",
+            COMPLETE = "complete",
+            UNIVERSAL = "universal",
+            TWEEN = "tween",
+            ENGINE = "engine",
+            LOGO = "logo",
+            WHITE = "white",
+            POWERED = "powered",
+            GDXBLUR = "gdxblur",
+            GDX = "gdx",
+            SLOT = "slot",
+            PUZZLE = "machine";
 
     public AssetsAnnotation() {}
 }

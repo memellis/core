@@ -23,6 +23,7 @@ import com.ellzone.slotpuzzle2d.prototypes.ashley.RenderLightButtons;
 import com.ellzone.slotpuzzle2d.prototypes.ashley.RenderMiniSllotMachineLoadedFromALevel;
 import com.ellzone.slotpuzzle2d.prototypes.ashley.RenderReels;
 import com.ellzone.slotpuzzle2d.prototypes.ashley.RenderSystemTest;
+import com.ellzone.slotpuzzle2d.prototypes.audio.PlayMusic;
 import com.ellzone.slotpuzzle2d.prototypes.box2d.Box2DFallingReels;
 import com.ellzone.slotpuzzle2d.prototypes.box2d.Box2DFallingSpinningReelsWithCatchBox;
 import com.ellzone.slotpuzzle2d.prototypes.box2d.Box2DLights;
@@ -148,6 +149,7 @@ public class SPPrototypes {
 	    Particle4ExtendingParticleTemplate.class,																										   
 		Particle5ExtendingParticleTemplate.class,
 		Particle6ExtendingParticleTemplate.class,
+        PlayMusic.class,
         Render3DCylinder1.class,
         Render3DCylinder2.class,
         Render3DCylinder3.class,
