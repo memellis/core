@@ -92,7 +92,6 @@ public class LevelCreatorScenario1 {
     private int numberOfReelBoxesToReplace, numberOfReelBoxesToDelete;
     boolean matchedReels = false;
     boolean reelsAboveHaveFallen = false;
-    //int scenario1Reels[] = {4, 6, 4, 3, 0, 0, 6, 0, 0, 2, 3, 4};
     int scenario1Reels[] = {4, 6, 2, 5, 0, 1, 3, 1, 0, 4, 3, 4};
     Array<TupleValueIndex> reelsToFall;
 

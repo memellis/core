@@ -31,8 +31,6 @@ import com.ellzone.slotpuzzle2d.tweenengine.TweenCallback;
 import com.ellzone.slotpuzzle2d.tweenengine.TweenManager;
 import com.ellzone.slotpuzzle2d.utils.Random;
 
-import java.text.MessageFormat;
-
 import aurelienribon.tweenengine.equations.Elastic;
 
 public class AnimatedReel {
@@ -61,6 +59,10 @@ public class AnimatedReel {
 	private TweenManager tweenManager;
 	private float reelSlowingTargetTime;
 	private Vector accelerate;
+
+    public AnimatedReel(Texture texture, float x, float y, float tileWidth, float tileHeight, float reelDisplayWidth, float reelDisplayHeight, int endReel, TweenManager tweenManager) {
+        this(texture, x, y, tileWidth, tileHeight, reelDisplayWidth, reelDisplayHeight, endReel, null, null, tweenManager);
+    }
 
 	public AnimatedReel(Texture texture, float x, float y, float tileWidth, float tileHeight, float reelDisplayWidth, float reelDisplayHeight, int endReel, Sound spinningSound, Sound stoppingSound, TweenManager tweenManager) {
 		this.texture = texture;
