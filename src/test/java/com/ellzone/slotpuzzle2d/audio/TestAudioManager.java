@@ -55,7 +55,7 @@ public class TestAudioManager {
         messageManager = MessageManager.getInstance();
         messageManager.addListeners(audioManager,
                 MessageType.PlayMusic.index,
-                MessageType.StopPlayMusic.index);
+                MessageType.StopMusic.index);
         return messageManager;
     }
 
