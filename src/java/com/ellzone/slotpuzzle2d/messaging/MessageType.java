@@ -6,7 +6,9 @@ public enum MessageType {
     AddedEntity("AddedEntity", 2),
     RemovedEntity("RemovedEntity",3),
     PlayMusic("PlayMusic", 4),
-    StopPlayMusic("StopPlayMusic", 5);
+    StopMusic("StopMusic", 5),
+    PauseMusic("PauseMusic", 6),
+    GetCurrentMusicTrack("GetCurrentMusicTrack", 7);
 
     public final String name;
     public final int index;

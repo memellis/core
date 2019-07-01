@@ -1,5 +1,6 @@
 package com.ellzone.slotpuzzle2d.audio;
 
+import com.badlogic.gdx.ai.msg.MessageManager;
 import com.badlogic.gdx.ai.msg.Telegram;
 import com.badlogic.gdx.ai.msg.Telegraph;
 import com.badlogic.gdx.audio.Music;
@@ -34,14 +35,21 @@ public class AudioManager implements Telegraph {
 
     @Override
     public boolean handleMessage(Telegram message) {
+        System.out.println("audio manager handle message called");
         if (message.message == MessageType.PlayMusic.index) {
             currentlyPlaying = musicLibrary.get(AssetsAnnotation.MUSIC_INTRO_SCREEN);
             currentlyPlaying.play();
+            MessageManager.getInstance().dispatchMessage(MessageType.GetCurrentMusicTrack.index, currentlyPlaying);
             return true;
         }
-        if (message.message == MessageType.StopPlayMusic.index) {
+        if (message.message == MessageType.StopMusic.index) {
             if (currentlyPlaying != null)
                 currentlyPlaying.stop();
+            return true;
+        }
+        if (message.message == MessageType.PauseMusic.index) {
+            if (currentlyPlaying != null)
+                currentlyPlaying.pause();
             return true;
         }
         return false;

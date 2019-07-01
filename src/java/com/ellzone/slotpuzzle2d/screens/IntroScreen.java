@@ -17,13 +17,18 @@
 package com.ellzone.slotpuzzle2d.screens;
 
 import java.io.IOException;
+import java.text.MessageFormat;
 import java.util.Random;
 import org.jrenner.smartfont.SmartFontGenerator;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.InputAdapter;
+import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.ai.msg.MessageManager;
+import com.badlogic.gdx.ai.msg.Telegram;
+import com.badlogic.gdx.ai.msg.Telegraph;
+import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
@@ -33,15 +38,20 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
+import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer;
 import com.badlogic.gdx.physics.box2d.World;
+import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
+import com.badlogic.gdx.scenes.scene2d.ui.Slider;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton.TextButtonStyle;
+import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
@@ -53,7 +63,6 @@ import com.ellzone.slotpuzzle2d.effects.ReelLetterAccessor;
 import com.ellzone.slotpuzzle2d.effects.SpriteAccessor;
 import com.ellzone.slotpuzzle2d.messaging.MessageType;
 import com.ellzone.slotpuzzle2d.physics.DampenedSineParticle;
-import com.ellzone.slotpuzzle2d.physics.Vector;
 import com.ellzone.slotpuzzle2d.sprites.AnimatedReel;
 import com.ellzone.slotpuzzle2d.sprites.LightButtonBuilder;
 import com.ellzone.slotpuzzle2d.sprites.ReelLetter;
@@ -79,7 +88,7 @@ import aurelienribon.tweenengine.equations.Elastic;
 import box2dLight.PointLight;
 import box2dLight.RayHandler;
 
-public class IntroScreen extends InputAdapter implements Screen {
+public class IntroScreen extends InputAdapter implements Screen, Telegraph {
 	public static final String LIBERATION_MONO_REGULAR_FONT_NAME = "LiberationMono-Regular.ttf";
 	public static final String GENERATED_FONTS_DIR = "generated-fonts/";
 	public static final String FONT_SMALL = "exo-small";
@@ -115,7 +124,9 @@ public class IntroScreen extends InputAdapter implements Screen {
     private TextButton button;
     private TextButtonStyle textButtonStyle;
     private Skin skin;
+    private Slider slider;
     private TextureAtlas buttonAtlas;
+    private TextureRegion playBackButtons;
     private TweenManager tweenManager = new TweenManager();
     private ReelTile reelTile;
     private ReelSprites reelSprites;
@@ -137,6 +148,13 @@ public class IntroScreen extends InputAdapter implements Screen {
     private boolean show = false;
     private AudioManager audioManager;
     private MessageManager messageManager;
+    private boolean sliderUpdating;
+    private Rectangle playButton, stopButton, pauseButton;
+    private Music currentTrack = null;
+    private float songDuration = 183.0f;
+    private float currentPosition = 0.0f;
+    private float slidertimerCount = 0.0f;
+    private InputMultiplexer inputMultiplexer;
 
     public IntroScreen(SlotPuzzle game) {
         this.game = game;
@@ -151,19 +169,48 @@ public class IntroScreen extends InputAdapter implements Screen {
         initialiseIntroScreenText();
         initialiseBox2D();
         initialiseLaunchButton();
+        initialisePlaybackButtons();
         initialiseIntroSequence();
         initialiseStarfield();
         audioManager = new AudioManager(game.annotationAssetManager);
         messageManager = setUpMessages();
         messageManager.dispatchMessage(MessageType.PlayMusic.index, AssetsAnnotation.MUSIC_INTRO_SCREEN);
         isLoaded = true;
+        inputMultiplexer = new InputMultiplexer();
+        inputMultiplexer.addProcessor(this);
+        inputMultiplexer.addProcessor(stage);
+        Gdx.input.setInputProcessor(inputMultiplexer);
+    }
+
+    private void initialisePlaybackButtons() {
+        playBackButtons = new TextureRegion(new Texture(Gdx.files.internal("playback.png")));
+        playButton = new Rectangle(13,60, 40,42);
+        stopButton = new Rectangle(79, 60, 40, 42);
+        pauseButton = new Rectangle(147, 60, 40, 42);
+
+        Skin skin = new Skin(Gdx.files.internal("ui/uiskin.json"));
+        slider = new Slider(0, 100, 0.1f, false, skin);
+        slider.setPosition(30, 20);
+        slider.addListener(new ChangeListener() {
+            @Override
+            public void changed (ChangeEvent event, Actor actor) {
+                if (!sliderUpdating && slider.isDragging())
+                    System.out.println("slider.getValue() / 100f"+slider.getValue() / 100f);
+                    if (currentTrack != null)
+                      currentTrack.setPosition((slider.getValue() / 100f) * songDuration);
+            }
+        });
+        stage.addActor(slider);
     }
 
     private MessageManager setUpMessages() {
         messageManager = MessageManager.getInstance();
         messageManager.addListeners(audioManager,
                 MessageType.PlayMusic.index,
-                MessageType.StopPlayMusic.index);
+                MessageType.StopMusic.index,
+                MessageType.PauseMusic.index);
+        messageManager.addListeners(this,
+                MessageType.GetCurrentMusicTrack.index);
         return messageManager;
     }
 
@@ -360,7 +407,16 @@ public class IntroScreen extends InputAdapter implements Screen {
         slotReelPixmap = PixmapProcessors.createPixmapToAnimate(reelSprites.getSprites());
         slotReelTexture = new Texture(slotReelPixmap);
 
-        reelTile = new ReelTile(slotReelTexture, slotReelTexture.getHeight() / REEL_HEIGHT, slotReelTexture.getWidth(), slotReelTexture.getHeight(), slotReelTexture.getWidth(), slotReelTexture.getHeight(), REEL_WIDTH, REEL_HEIGHT, 0, null);
+        reelTile = new ReelTile(
+                 slotReelTexture,
+                slotReelTexture.getHeight() / REEL_HEIGHT,
+                 slotReelTexture.getWidth(),
+                viewport.getScreenHeight() / 2,
+                 slotReelTexture.getWidth(),
+                viewport.getWorldHeight() / 2,
+                 REEL_WIDTH, REEL_HEIGHT,
+                0,
+                null);
 
         Timeline reelSeq = Timeline.createSequence();
         reelSeq = reelSeq.push(SlotPuzzleTween.set(reelTile, ReelAccessor.SCROLL_XY).target(0f, 0f).ease(Bounce.IN));
@@ -408,12 +464,13 @@ public class IntroScreen extends InputAdapter implements Screen {
     @Override
     public boolean touchDown (int screenX, int screenY, int pointer, int button) {
         if (button == Input.Buttons.LEFT) {
+            System.out.println("Left button pressed");
             point.set(screenX, screenY, 0);
             lightViewport.getCamera().unproject(point);
             if (launchButton.getSprite().getBoundingRectangle().contains(point.x, point.y)) {
                 launchButton.getLight().setActive(true);
                 endOfIntroScreen = true;
-                messageManager.dispatchMessage(MessageType.StopPlayMusic.index, AssetsAnnotation.MUSIC_INTRO_SCREEN);
+                messageManager.dispatchMessage(MessageType.StopMusic.index, AssetsAnnotation.MUSIC_INTRO_SCREEN);
                 return true;
             }
         }
@@ -431,9 +488,9 @@ public class IntroScreen extends InputAdapter implements Screen {
     }
 
     public void update(float delta) {
+        handleInput();
         tweenManager.update(delta);
         updateTimer(delta);
-        int dsIndex = 0;
 		for (AnimatedReel reel : reelLetterTiles)
          	reel.update(delta);
         reelTile.update(delta);
@@ -442,6 +499,19 @@ public class IntroScreen extends InputAdapter implements Screen {
                 game.setScreen(new WorldScreen(game));
                 dispose();
             }
+        }
+    }
+
+    private void handleInput() {
+        if (Gdx.input.justTouched()) {
+            Vector3 unprojectedTouch = new Vector3(Gdx.input.getX(), Gdx.input.getY(), 0);
+            viewport.unproject(unprojectedTouch);
+            if (playButton.contains(unprojectedTouch.x, unprojectedTouch.y))
+                messageManager.dispatchMessage(MessageType.PlayMusic.index, AssetsAnnotation.MUSIC_INTRO_SCREEN);
+            if (stopButton.contains(unprojectedTouch.x, unprojectedTouch.y))
+                messageManager.dispatchMessage(MessageType.StopMusic.index, AssetsAnnotation.MUSIC_INTRO_SCREEN);
+            if (pauseButton.contains(unprojectedTouch.x, unprojectedTouch.y))
+                messageManager.dispatchMessage(MessageType.PauseMusic.index, AssetsAnnotation.MUSIC_INTRO_SCREEN);
         }
     }
 
@@ -454,8 +524,21 @@ public class IntroScreen extends InputAdapter implements Screen {
             Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
             if (isLoaded) {
+                slidertimerCount += delta;
+                if (slidertimerCount > 0.25f) {
+                    slidertimerCount = 0.0f;
+                    if (currentTrack != null) {
+                        currentPosition = currentTrack.getPosition();
+//                        sliderUpdating = true;
+//                        slider.setValue((currentTrack.getPosition() / songDuration) * 100f);
+//                        sliderUpdating = false;
+                    }
+                }
+
                 starField.updateStarfield(delta, this.shapeRenderer);
                 game.batch.begin();
+                game.batch.draw(playBackButtons, 0, 60);
+                fontSmall.draw(game.batch, String.format("%02d:%02d",(int)currentPosition / 60, (int)currentPosition % 60), 75, 60);
                 for (AnimatedReel reel : reelLetterTiles)
                     reel.draw(game.batch);
                 reelTile.draw(game.batch);
@@ -465,6 +548,7 @@ public class IntroScreen extends InputAdapter implements Screen {
                 rayHandler.setCombinedMatrix((OrthographicCamera) lightViewport.getCamera());
                 rayHandler.updateAndRender();
                 debugRenderer.render(world, lightViewport.getCamera().combined);
+                stage.act();
                 stage.draw();
             }
         }
@@ -517,5 +601,12 @@ public class IntroScreen extends InputAdapter implements Screen {
 
     public SlotPuzzle getGame() {
         return this.game;
+    }
+
+    @Override
+    public boolean handleMessage(Telegram message) {
+        if (message.message == MessageType.GetCurrentMusicTrack.index)
+            currentTrack = (Music) message.extraInfo;
+        return false;
     }
 }
