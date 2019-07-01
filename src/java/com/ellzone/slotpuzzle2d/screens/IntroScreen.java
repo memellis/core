@@ -58,6 +58,7 @@ import com.badlogic.gdx.utils.viewport.Viewport;
 import com.ellzone.slotpuzzle2d.SlotPuzzle;
 import com.ellzone.slotpuzzle2d.Version;
 import com.ellzone.slotpuzzle2d.audio.AudioManager;
+import com.ellzone.slotpuzzle2d.audio.MusicPlayer;
 import com.ellzone.slotpuzzle2d.effects.ReelAccessor;
 import com.ellzone.slotpuzzle2d.effects.ReelLetterAccessor;
 import com.ellzone.slotpuzzle2d.effects.SpriteAccessor;
@@ -88,7 +89,7 @@ import aurelienribon.tweenengine.equations.Elastic;
 import box2dLight.PointLight;
 import box2dLight.RayHandler;
 
-public class IntroScreen extends InputAdapter implements Screen, Telegraph {
+public class IntroScreen extends InputAdapter implements Screen {
 	public static final String LIBERATION_MONO_REGULAR_FONT_NAME = "LiberationMono-Regular.ttf";
 	public static final String GENERATED_FONTS_DIR = "generated-fonts/";
 	public static final String FONT_SMALL = "exo-small";
@@ -155,6 +156,7 @@ public class IntroScreen extends InputAdapter implements Screen, Telegraph {
     private float currentPosition = 0.0f;
     private float slidertimerCount = 0.0f;
     private InputMultiplexer inputMultiplexer;
+    private MusicPlayer musicPlayer;
 
     public IntroScreen(SlotPuzzle game) {
         this.game = game;
@@ -169,38 +171,18 @@ public class IntroScreen extends InputAdapter implements Screen, Telegraph {
         initialiseIntroScreenText();
         initialiseBox2D();
         initialiseLaunchButton();
-        initialisePlaybackButtons();
         initialiseIntroSequence();
         initialiseStarfield();
         audioManager = new AudioManager(game.annotationAssetManager);
+        musicPlayer = new MusicPlayer(game.batch, stage, viewport, 0, 0);
+        musicPlayer.setVisible(false);
         messageManager = setUpMessages();
         messageManager.dispatchMessage(MessageType.PlayMusic.index, AssetsAnnotation.MUSIC_INTRO_SCREEN);
-        isLoaded = true;
         inputMultiplexer = new InputMultiplexer();
         inputMultiplexer.addProcessor(this);
         inputMultiplexer.addProcessor(stage);
         Gdx.input.setInputProcessor(inputMultiplexer);
-    }
-
-    private void initialisePlaybackButtons() {
-        playBackButtons = new TextureRegion(new Texture(Gdx.files.internal("playback.png")));
-        playButton = new Rectangle(13,60, 40,42);
-        stopButton = new Rectangle(79, 60, 40, 42);
-        pauseButton = new Rectangle(147, 60, 40, 42);
-
-        Skin skin = new Skin(Gdx.files.internal("ui/uiskin.json"));
-        slider = new Slider(0, 100, 0.1f, false, skin);
-        slider.setPosition(30, 20);
-        slider.addListener(new ChangeListener() {
-            @Override
-            public void changed (ChangeEvent event, Actor actor) {
-                if (!sliderUpdating && slider.isDragging())
-                    System.out.println("slider.getValue() / 100f"+slider.getValue() / 100f);
-                    if (currentTrack != null)
-                      currentTrack.setPosition((slider.getValue() / 100f) * songDuration);
-            }
-        });
-        stage.addActor(slider);
+        isLoaded = true;
     }
 
     private MessageManager setUpMessages() {
@@ -209,7 +191,7 @@ public class IntroScreen extends InputAdapter implements Screen, Telegraph {
                 MessageType.PlayMusic.index,
                 MessageType.StopMusic.index,
                 MessageType.PauseMusic.index);
-        messageManager.addListeners(this,
+        messageManager.addListeners(musicPlayer,
                 MessageType.GetCurrentMusicTrack.index);
         return messageManager;
     }
@@ -464,15 +446,16 @@ public class IntroScreen extends InputAdapter implements Screen, Telegraph {
     @Override
     public boolean touchDown (int screenX, int screenY, int pointer, int button) {
         if (button == Input.Buttons.LEFT) {
-            System.out.println("Left button pressed");
             point.set(screenX, screenY, 0);
             lightViewport.getCamera().unproject(point);
             if (launchButton.getSprite().getBoundingRectangle().contains(point.x, point.y)) {
                 launchButton.getLight().setActive(true);
                 endOfIntroScreen = true;
                 messageManager.dispatchMessage(MessageType.StopMusic.index, AssetsAnnotation.MUSIC_INTRO_SCREEN);
-                return true;
             }
+        }
+        if (button == Input.Buttons.RIGHT) {
+            musicPlayer.setVisible(!musicPlayer.isVisible());
         }
         return false;
     }
@@ -488,7 +471,7 @@ public class IntroScreen extends InputAdapter implements Screen, Telegraph {
     }
 
     public void update(float delta) {
-        handleInput();
+        musicPlayer.update(delta);
         tweenManager.update(delta);
         updateTimer(delta);
 		for (AnimatedReel reel : reelLetterTiles)
@@ -502,19 +485,6 @@ public class IntroScreen extends InputAdapter implements Screen, Telegraph {
         }
     }
 
-    private void handleInput() {
-        if (Gdx.input.justTouched()) {
-            Vector3 unprojectedTouch = new Vector3(Gdx.input.getX(), Gdx.input.getY(), 0);
-            viewport.unproject(unprojectedTouch);
-            if (playButton.contains(unprojectedTouch.x, unprojectedTouch.y))
-                messageManager.dispatchMessage(MessageType.PlayMusic.index, AssetsAnnotation.MUSIC_INTRO_SCREEN);
-            if (stopButton.contains(unprojectedTouch.x, unprojectedTouch.y))
-                messageManager.dispatchMessage(MessageType.StopMusic.index, AssetsAnnotation.MUSIC_INTRO_SCREEN);
-            if (pauseButton.contains(unprojectedTouch.x, unprojectedTouch.y))
-                messageManager.dispatchMessage(MessageType.PauseMusic.index, AssetsAnnotation.MUSIC_INTRO_SCREEN);
-        }
-    }
-
     @Override
     public void render(float delta) {
         if (show) {
@@ -524,21 +494,9 @@ public class IntroScreen extends InputAdapter implements Screen, Telegraph {
             Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
             if (isLoaded) {
-                slidertimerCount += delta;
-                if (slidertimerCount > 0.25f) {
-                    slidertimerCount = 0.0f;
-                    if (currentTrack != null) {
-                        currentPosition = currentTrack.getPosition();
-//                        sliderUpdating = true;
-//                        slider.setValue((currentTrack.getPosition() / songDuration) * 100f);
-//                        sliderUpdating = false;
-                    }
-                }
-
                 starField.updateStarfield(delta, this.shapeRenderer);
                 game.batch.begin();
-                game.batch.draw(playBackButtons, 0, 60);
-                fontSmall.draw(game.batch, String.format("%02d:%02d",(int)currentPosition / 60, (int)currentPosition % 60), 75, 60);
+                musicPlayer.draw();
                 for (AnimatedReel reel : reelLetterTiles)
                     reel.draw(game.batch);
                 reelTile.draw(game.batch);
@@ -603,10 +561,10 @@ public class IntroScreen extends InputAdapter implements Screen, Telegraph {
         return this.game;
     }
 
-    @Override
-    public boolean handleMessage(Telegram message) {
-        if (message.message == MessageType.GetCurrentMusicTrack.index)
-            currentTrack = (Music) message.extraInfo;
-        return false;
-    }
+//    @Override
+//    public boolean handleMessage(Telegram message) {
+//        if (message.message == MessageType.GetCurrentMusicTrack.index)
+//            currentTrack = (Music) message.extraInfo;
+//        return false;
+//    }
 }
