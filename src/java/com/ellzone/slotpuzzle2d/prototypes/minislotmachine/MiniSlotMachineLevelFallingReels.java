@@ -38,6 +38,7 @@ import com.ellzone.slotpuzzle2d.SlotPuzzleConstants;
 import com.ellzone.slotpuzzle2d.effects.ReelAccessor;
 import com.ellzone.slotpuzzle2d.effects.ScoreAccessor;
 import com.ellzone.slotpuzzle2d.effects.SpriteAccessor;
+import com.ellzone.slotpuzzle2d.finitestatemachine.PlayStates;
 import com.ellzone.slotpuzzle2d.level.Card;
 import com.ellzone.slotpuzzle2d.level.Level;
 import com.ellzone.slotpuzzle2d.level.LevelDoor;
@@ -134,7 +135,7 @@ public class MiniSlotMachineLevelFallingReels extends SPPrototypeTemplate {
     private TextureAtlas reelAtlas, tilesAtlas, carddeckAtlas;
     private MiniSlotMachineLeve1 miniSlotMachineLeve1;
     private Array<DampenedSineParticle> dampenedSines;
-    private PlayScreen.PlayStates playState;
+    private PlayStates playState;
     private ReelSprites reelSprites;
     private Array<ReelTile> reelTiles;
     private LevelDoor levelDoor;
@@ -175,7 +176,7 @@ public class MiniSlotMachineLevelFallingReels extends SPPrototypeTemplate {
         hud.setLevelName(levelDoor.getLevelName());
         hud.resetWorldTime(300);
         hud.startWorldTimer();
-        playState = PlayScreen.PlayStates.PLAYING;
+        playState = PlayStates.PLAYING;
     }
 
     private void getMapProperties(TiledMap level) {
@@ -202,7 +203,7 @@ public class MiniSlotMachineLevelFallingReels extends SPPrototypeTemplate {
     }
 
     private void createPlayScreen() {
-        this.playState = PlayScreen.PlayStates.INITIALISING;
+        this.playState = PlayStates.INITIALISING;
         initialisePlayScreen();
     }
 
@@ -413,7 +414,7 @@ public class MiniSlotMachineLevelFallingReels extends SPPrototypeTemplate {
         this.reelStoppedSound.play();
 
         this.reelsSpinning--;
-        if (playState == PlayScreen.PlayStates.PLAYING) {
+        if (playState == PlayStates.PLAYING) {
             if (reelsSpinning <= -1) {
                 if (levelDoor.getLevelType().equals(HIDDEN_PATTERN_LEVEL_TYPE)) {
                     if (testForHiddenPatternRevealed(reelTiles)) {
@@ -442,7 +443,7 @@ public class MiniSlotMachineLevelFallingReels extends SPPrototypeTemplate {
     private void iWonTheLevel() {
         gameOver = true;
         win = true;
-        playState = PlayScreen.PlayStates.WON_LEVEL;
+        playState = PlayStates.WON_LEVEL;
         mapTile.getLevel().setLevelCompleted();
         mapTile.getLevel().setScore(Hud.getScore());
     }
@@ -515,7 +516,7 @@ public class MiniSlotMachineLevelFallingReels extends SPPrototypeTemplate {
         if (testForAnyLonelyReels(reelTiles)) {
             win = false;
             if (Hud.getLives() > 0) {
-                playState = PlayScreen.PlayStates.LEVEL_LOST;
+                playState = PlayStates.LEVEL_LOST;
             } else {
                 gameOver = true;
             }
@@ -866,9 +867,8 @@ public class MiniSlotMachineLevelFallingReels extends SPPrototypeTemplate {
         }
         tileMapRenderer.setView(orthographicCamera);
         hud.update(dt);
-        if (hud.getWorldTime() == 0) {
+        if (hud.getWorldTime() == 0)
             System.out.println("Level timed out");
-        }
     }
 
     @Override

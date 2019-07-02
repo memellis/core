@@ -31,6 +31,7 @@ import com.ellzone.slotpuzzle2d.SlotPuzzleConstants;
 import com.ellzone.slotpuzzle2d.effects.ReelAccessor;
 import com.ellzone.slotpuzzle2d.effects.ScoreAccessor;
 import com.ellzone.slotpuzzle2d.effects.SpriteAccessor;
+import com.ellzone.slotpuzzle2d.finitestatemachine.PlayStates;
 import com.ellzone.slotpuzzle2d.physics.PhysicsManagerCustomBodies;
 import com.ellzone.slotpuzzle2d.prototypes.minislotmachine.MiniSlotMachineLevelPrototypeWithLevelCreator;
 import com.ellzone.slotpuzzle2d.puzzlegrid.PuzzleGridType;
@@ -140,7 +141,7 @@ public class LevelCreator {
     private TextureAtlas carddeckAtlas;
     private PhysicsManagerCustomBodies physics;
     private int levelWidth, levelHeight, reelsSpinning;
-    private PlayScreen.PlayStates playState;
+    private PlayStates playState;
     private boolean win = false, gameOver = false;
     private Array<Score> scores;
     private boolean hitSinkBottom = false, dropReplacementReelBoxes = false;
@@ -151,7 +152,7 @@ public class LevelCreator {
     boolean matchedReels = false;
     boolean reelsAboveHaveFallen = false;
 
-    public LevelCreator(LevelDoor levelDoor, TiledMap level, AnnotationAssetManager annotationAssetManager, TextureAtlas carddeckAtlas, TweenManager tweenManager, PhysicsManagerCustomBodies physics, int levelWidth, int levelHeight, PlayScreen.PlayStates playState) {
+    public LevelCreator(LevelDoor levelDoor, TiledMap level, AnnotationAssetManager annotationAssetManager, TextureAtlas carddeckAtlas, TweenManager tweenManager, PhysicsManagerCustomBodies physics, int levelWidth, int levelHeight, PlayStates playState) {
         this.levelDoor = levelDoor;
         this.level = level;
         this.tweenManager = tweenManager;
@@ -295,20 +296,20 @@ public class LevelCreator {
         reelBoxes.add(reelTileBody);
     }
 
-    public void setPlayState(PlayScreen.PlayStates playState) {
+    public void setPlayState(PlayStates playState) {
         this.playState = playState;
         System.out.println("====="+playState+"====");
     }
 
-    public PlayScreen.PlayStates getPlayState() {
-        return this.playState;
+    public PlayStates getPlayState() {
+        return playState;
     }
 
     private void actionReelStoppedSpinning(ReelTileEvent event, ReelTile source) {
         source.stopSpinningSound();
 
         this.reelsSpinning--;
-        if ((this.playState == PlayScreen.PlayStates.PLAYING) | (this.playState == PlayScreen.PlayStates.INTRO_SPINNING)) {
+        if ((playState == PlayStates.PLAYING) | (playState == PlayStates.INTRO_SPINNING)) {
             if ((reelsSpinning <= -1) & (hitSinkBottom)) {
                 if (levelDoor.getLevelType().equals(HIDDEN_PATTERN_LEVEL_TYPE)) {
                     if (testForHiddenPatternRevealed(reelTiles, this.levelWidth, this.levelHeight)) {
@@ -338,11 +339,11 @@ public class LevelCreator {
     }
 
     private void actionReelStoppedFlashing(ReelTileEvent event, ReelTile reelTile) {
-        if (playState != PlayScreen.PlayStates.INTRO_SPINNING) {
+        if (playState != PlayStates.INTRO_SPINNING) {
             if (testForAnyLonelyReels(reelTiles, this.levelWidth, this.levelHeight)) {
                 win = false;
                 if (Hud.getLives() > 0) {
-                    setPlayState(PlayScreen.PlayStates.LEVEL_LOST);
+                    setPlayState(PlayStates.LEVEL_LOST);
                 } else {
                     gameOver = true;
                 }
@@ -353,9 +354,9 @@ public class LevelCreator {
     }
 
     private ReelTileGridValue[][] flashSlots(Array<ReelTile> reelTiles, int levelWidth, int levelHeight) {
-        if (playState == PlayScreen.PlayStates.INTRO_SPINNING) {
-            playState = PlayScreen.PlayStates.INTRO_FLASHING;
-        }
+        if (playState == PlayStates.INTRO_SPINNING)
+            playState = PlayStates.INTRO_FLASHING;
+
         ReelTileGridValue[][] puzzleGrid = puzzleGridTypeReelTile.populateMatchGrid(reelTiles,  levelWidth, levelHeight);
 
         System.out.println("flashSlots print puzzleGrid");
@@ -494,7 +495,7 @@ public class LevelCreator {
     private void iWonTheLevel() {
         gameOver = true;
         win = true;
-        playState = PlayScreen.PlayStates.WON_LEVEL;
+        playState = PlayStates.WON_LEVEL;
         //mapTile.getLevel().setLevelCompleted();
         //mapTile.getLevel().setScore(Hud.getScore());
     }
@@ -567,8 +568,8 @@ public class LevelCreator {
                     replacementReelBoxes.add(reelTilesIndex);
                     numberOfReelBoxesToDelete--;
                     if (numberOfReelBoxesToDelete <= 0) {
-                        if ((playState == PlayScreen.PlayStates.INTRO_FLASHING) |
-                            (playState == PlayScreen.PlayStates.REELS_FLASHING)) {
+                        if ((playState == PlayStates.INTRO_FLASHING) |
+                            (playState == PlayStates.REELS_FLASHING)) {
                             // Need to detect when all reelSprites have fallen
                             if (reelsAboveHaveFallen) {
                                 if (!matchedReels) {
@@ -710,9 +711,9 @@ public class LevelCreator {
         replacementReelBoxes.removeRange(0, replacementReelBoxes.size - 1);
         System.out.println("replacementReelBoxes.size="+replacementReelBoxes.size);
         dropReplacementReelBoxes = false;
-        if (playState == PlayScreen.PlayStates.INTRO_FLASHING) {
-            playState = PlayScreen.PlayStates.INTRO_SPINNING;
-        }
+        if (playState == PlayStates.INTRO_FLASHING)
+            playState = PlayStates.INTRO_SPINNING;
+
     }
 
     public void setHitSinkBottom(boolean hitSinkBottom) {

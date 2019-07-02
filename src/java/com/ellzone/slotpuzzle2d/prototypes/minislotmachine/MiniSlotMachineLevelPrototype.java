@@ -37,6 +37,7 @@ import com.ellzone.slotpuzzle2d.SlotPuzzleConstants;
 import com.ellzone.slotpuzzle2d.effects.ReelAccessor;
 import com.ellzone.slotpuzzle2d.effects.ScoreAccessor;
 import com.ellzone.slotpuzzle2d.effects.SpriteAccessor;
+import com.ellzone.slotpuzzle2d.finitestatemachine.PlayStates;
 import com.ellzone.slotpuzzle2d.level.Card;
 import com.ellzone.slotpuzzle2d.level.LevelDoor;
 import com.ellzone.slotpuzzle2d.level.Pip;
@@ -91,7 +92,7 @@ public class MiniSlotMachineLevelPrototype extends SPPrototypeTemplate {
     private MapProperties levelProperties;
     private TextureAtlas reelAtlas, tilesAtlas, carddeckAtlas;
     private Array<DampenedSineParticle> dampenedSines;
-    private PlayScreen.PlayStates playState;
+    private PlayStates playState;
     private ReelSprites reelSprites;
     private Array<ReelTile> reelTiles;
     private LevelDoor levelDoor;
@@ -132,7 +133,7 @@ public class MiniSlotMachineLevelPrototype extends SPPrototypeTemplate {
         reelsSpinning = reelTiles.size - 1;
         hud = new Hud(batch);
         hud.setLevelName(levelDoor.getLevelName());
-        playState = PlayScreen.PlayStates.PLAYING;
+        playState = PlayStates.PLAYING;
     }
 
     private void getAssets(AnnotationAssetManager annotationAssetManager) {
@@ -167,7 +168,7 @@ public class MiniSlotMachineLevelPrototype extends SPPrototypeTemplate {
     }
 
     private void createPlayScreen() {
-        this.playState = PlayScreen.PlayStates.INITIALISING;
+        this.playState = PlayStates.INITIALISING;
         initialisePlayScreen();
     }
 
@@ -378,7 +379,7 @@ public class MiniSlotMachineLevelPrototype extends SPPrototypeTemplate {
         this.reelStoppedSound.play();
 
         this.reelsSpinning--;
-        if (playState == PlayScreen.PlayStates.PLAYING) {
+        if (playState == PlayStates.PLAYING) {
             if (reelsSpinning <= -1) {
                 if (levelDoor.getLevelType().equals(HIDDEN_PATTERN_LEVEL_TYPE)) {
                     if (testForHiddenPatternRevealed(reelTiles)) {
@@ -407,7 +408,7 @@ public class MiniSlotMachineLevelPrototype extends SPPrototypeTemplate {
     private void iWonTheLevel() {
         gameOver = true;
         win = true;
-        playState = PlayScreen.PlayStates.WON_LEVEL;
+        playState = PlayStates.WON_LEVEL;
         mapTile.getLevel().setLevelCompleted();
         mapTile.getLevel().setScore(Hud.getScore());
     }
@@ -480,7 +481,7 @@ public class MiniSlotMachineLevelPrototype extends SPPrototypeTemplate {
         if (testForAnyLonelyReels(reelTiles)) {
             win = false;
             if (Hud.getLives() > 0) {
-                playState = PlayScreen.PlayStates.LEVEL_LOST;
+                playState = PlayStates.LEVEL_LOST;
             } else {
                 gameOver = true;
             }
@@ -827,7 +828,7 @@ public class MiniSlotMachineLevelPrototype extends SPPrototypeTemplate {
         if (hud.getWorldTime() == 0) {
             if ((Hud.getLives() > 0) & (!inRestartLevel)) {
                 inRestartLevel = true;
-                playState = PlayScreen.PlayStates.LEVEL_LOST;
+                playState = PlayStates.LEVEL_LOST;
             } else {
                 gameOver = true;
             }

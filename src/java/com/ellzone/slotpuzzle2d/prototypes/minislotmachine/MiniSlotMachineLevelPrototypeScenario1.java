@@ -37,6 +37,7 @@ import com.ellzone.slotpuzzle2d.camera.CameraHelper;
 import com.ellzone.slotpuzzle2d.effects.ReelAccessor;
 import com.ellzone.slotpuzzle2d.effects.ScoreAccessor;
 import com.ellzone.slotpuzzle2d.effects.SpriteAccessor;
+import com.ellzone.slotpuzzle2d.finitestatemachine.PlayStates;
 import com.ellzone.slotpuzzle2d.level.Card;
 import com.ellzone.slotpuzzle2d.level.LevelCreatorScenario1;
 import com.ellzone.slotpuzzle2d.level.LevelDoor;
@@ -131,13 +132,13 @@ public class MiniSlotMachineLevelPrototypeScenario1 extends SPPrototypeTemplate 
                                                  physics,
                                                  GAME_LEVEL_WIDTH,
                                                  GAME_LEVEL_HEIGHT,
-                                                 PlayScreen.PlayStates.INITIALISING);
-        levelCreator.setPlayState(PlayScreen.PlayStates.INITIALISING);
+                                                 PlayStates.INITIALISING);
+        levelCreator.setPlayState(PlayStates.INITIALISING);
         reelTiles = levelCreator.getReelTiles();
         animatedReels = levelCreator.getAnimatedReels();
         reelBoxes = levelCreator.getReelBoxes();
         initialiseHud();
-        levelCreator.setPlayState(PlayScreen.PlayStates.INTRO_SPINNING);
+        levelCreator.setPlayState(PlayStates.INTRO_SPINNING);
     }
 
     private void initialiseHud() {
@@ -218,12 +219,12 @@ public class MiniSlotMachineLevelPrototypeScenario1 extends SPPrototypeTemplate 
             touchY = Gdx.input.getY();
             Vector3 unprojTouch = new Vector3(touchX, touchY, 0);
             viewport.unproject(unprojTouch);
-            PlayScreen.PlayStates playState = levelCreator.getPlayState();
+            PlayStates playState = levelCreator.getPlayState();
             switchPlayState(playState);
         }
     }
 
-    private void switchPlayState(PlayScreen.PlayStates playState) {
+    private void switchPlayState(PlayStates playState) {
         switch (playState) {
             case CREATED_REELS_HAVE_FALLEN:
                 Gdx.app.debug(logTag, playState.toString());
@@ -351,15 +352,15 @@ public class MiniSlotMachineLevelPrototypeScenario1 extends SPPrototypeTemplate 
         if (hud.getWorldTime() == 0) {
             if ((Hud.getLives() > 0) & (!inRestartLevel)) {
                 inRestartLevel = true;
-                levelCreator.setPlayState(PlayScreen.PlayStates.LEVEL_LOST);
+                levelCreator.setPlayState(PlayStates.LEVEL_LOST);
             } else {
                 gameOver = true;
             }
         }
-        handlePlayState(this.levelCreator.getPlayState());
+        handlePlayState(levelCreator.getPlayState());
     }
 
-    private void handlePlayState(PlayScreen.PlayStates playState) {
+    private void handlePlayState(PlayStates playState) {
         switch (playState) {
             case INTRO_POPUP:
                 break;
@@ -440,16 +441,16 @@ public class MiniSlotMachineLevelPrototypeScenario1 extends SPPrototypeTemplate 
         SlotPuzzleTween.registerAccessor(Score.class, new ScoreAccessor());
     }
 
-    public PlayScreen.PlayStates getPlayState() {
+    public PlayStates getPlayState() {
         return levelCreator.getPlayState();
     }
 
     public void dealWithHitSinkBottom(ReelTile reelTile) {
-        if (getPlayState() == PlayScreen.PlayStates.INTRO_SPINNING) {
+        if (getPlayState() == PlayStates.INTRO_SPINNING)
             levelCreator.setHitSinkBottom(true);
-        }
-        if ((getPlayState() == PlayScreen.PlayStates.INTRO_FLASHING) |
-            (getPlayState() == PlayScreen.PlayStates.REELS_FLASHING)) {
+
+        if ((getPlayState() == PlayStates.INTRO_FLASHING) |
+            (getPlayState() == PlayStates.REELS_FLASHING)) {
 
             int r = PuzzleGridTypeReelTile.getRowFromLevel(reelTile.getDestinationY(), GAME_LEVEL_HEIGHT);
             int c = PuzzleGridTypeReelTile.getColumnFromLevel(reelTile.getDestinationX());
@@ -476,8 +477,8 @@ public class MiniSlotMachineLevelPrototypeScenario1 extends SPPrototypeTemplate 
         if ((Math.abs(rA - rB) == 1) & (cA == cB)) {
             processReelTileHit(reelTileB);
         }
-        if ((levelCreator.getPlayState() == PlayScreen.PlayStates.INTRO_FLASHING) |
-            (levelCreator.getPlayState() == PlayScreen.PlayStates.REELS_FLASHING)) {
+        if ((levelCreator.getPlayState() == PlayStates.INTRO_FLASHING) |
+            (levelCreator.getPlayState() == PlayStates.REELS_FLASHING)) {
             if  (cA == cB) {
                 if (Math.abs(rA - rB) > 1) {
                     processTileHittingTile(reelTileA, reelTileB, rA, cA, rB, cA);
@@ -496,7 +497,7 @@ public class MiniSlotMachineLevelPrototypeScenario1 extends SPPrototypeTemplate 
         reelTile.setY(reelTile.getDestinationY());
         Body reelbox = reelBoxes.get(reelTile.getIndex());
         if (PhysicsManagerCustomBodies.isStopped(reelbox)) {
-            if (levelCreator.getPlayState() == PlayScreen.PlayStates.INTRO_SPINNING) {
+            if (levelCreator.getPlayState() == PlayStates.INTRO_SPINNING) {
                 numberOfReelsAboveHitsIntroSpinning++;
             }
         }

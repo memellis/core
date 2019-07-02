@@ -46,6 +46,7 @@ import com.ellzone.slotpuzzle2d.SlotPuzzleConstants;
 import com.ellzone.slotpuzzle2d.effects.ReelAccessor;
 import com.ellzone.slotpuzzle2d.effects.ScoreAccessor;
 import com.ellzone.slotpuzzle2d.effects.SpriteAccessor;
+import com.ellzone.slotpuzzle2d.finitestatemachine.PlayStates;
 import com.ellzone.slotpuzzle2d.level.Card;
 import com.ellzone.slotpuzzle2d.level.LevelDoor;
 import com.ellzone.slotpuzzle2d.level.Pip;
@@ -97,7 +98,7 @@ public class PlayScreenPrototype implements Screen {
 
     private SlotPuzzle game;
     private LevelDoor levelDoor;
-    private PlayScreen.PlayStates playState;
+    private PlayStates playState;
     private Viewport viewport;
     private Stage stage;
     private OrthographicCamera camera;
@@ -145,7 +146,7 @@ public class PlayScreenPrototype implements Screen {
     }
 
     private void createPlayScreen() {
-        playState = PlayScreen.PlayStates.INITIALISING;
+        playState = PlayStates.INITIALISING;
         initialiseScreen();
         initialiseTweenEngine();
         getAssets(this.game.annotationAssetManager);
@@ -156,7 +157,7 @@ public class PlayScreenPrototype implements Screen {
         getMapProperties(this.level);
         hud = new Hud(this.game.batch);
         hud.setLevelName(levelDoor.getLevelName());
-        playState = PlayScreen.PlayStates.PLAYING;
+        playState = PlayStates.PLAYING;
     }
 
     private void initialiseScreen() {
@@ -284,7 +285,7 @@ public class PlayScreenPrototype implements Screen {
                                  if (event instanceof ReelStoppedSpinningEvent) {
                                      reelStoppedSound.play();
                                      reelsSpinning--;
-                                     if (playState == PlayScreen.PlayStates.PLAYING) {
+                                     if (playState == PlayStates.PLAYING) {
                                          if (reelsSpinning <= -1) {
                                              if (levelDoor.getLevelType().equals(HIDDEN_PATTERN_LEVEL_TYPE)) {
                                                  if (testForHiddenPatternRevealed(reelTiles)) {
@@ -303,11 +304,10 @@ public class PlayScreenPrototype implements Screen {
                                  if ((event instanceof ReelStoppedFlashingEvent)) {
                                      if (testForAnyLonelyReels(reelTiles)) {
                                          win = false;
-                                         if (Hud.getLives() > 0) {
-                                             playState = PlayScreen.PlayStates.LEVEL_LOST;
-                                        } else {
+                                         if (Hud.getLives() > 0)
+                                             playState = PlayStates.LEVEL_LOST;
+                                         else
                                              gameOver = true;
-                                         }
                                      }
                                      reelScoreAnimation(source);
                                      deleteReelAnimation(source);
@@ -784,7 +784,7 @@ public class PlayScreenPrototype implements Screen {
     private void iWonTheLevel() {
         gameOver = true;
         win = true;
-        playState = PlayScreen.PlayStates.WON_LEVEL;
+        playState = PlayStates.WON_LEVEL;
         mapTile.getLevel().setLevelCompleted();
         mapTile.getLevel().setScore(Hud.getScore());
      }
@@ -805,7 +805,7 @@ public class PlayScreenPrototype implements Screen {
         if (hud.getWorldTime() == 0) {
             if ((Hud.getLives() > 0) & (!inRestartLevel)) {
                 inRestartLevel = true;
-                playState = PlayScreen.PlayStates.LEVEL_LOST;
+                playState = PlayStates.LEVEL_LOST;
             } else {
                 gameOver = true;
             }

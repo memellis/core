@@ -38,6 +38,7 @@ import com.ellzone.slotpuzzle2d.camera.CameraHelper;
 import com.ellzone.slotpuzzle2d.effects.ReelAccessor;
 import com.ellzone.slotpuzzle2d.effects.ScoreAccessor;
 import com.ellzone.slotpuzzle2d.effects.SpriteAccessor;
+import com.ellzone.slotpuzzle2d.finitestatemachine.PlayStates;
 import com.ellzone.slotpuzzle2d.level.Card;
 import com.ellzone.slotpuzzle2d.level.LevelCreator;
 import com.ellzone.slotpuzzle2d.level.LevelDoor;
@@ -177,24 +178,33 @@ public class MiniSlotMachineLevelPrototypeWithLevelCreator extends SPPrototypeTe
         initialiseLevelDoor();
         createPlayScreen();
         initialisePhysics();
-        this.levelCreator = new LevelCreator(this.levelDoor, this.miniSlotMachineLevel, this.annotationAssetManager, this.carddeckAtlas, this.tweenManager, this.physics, GAME_LEVEL_WIDTH, GAME_LEVEL_HEIGHT, PlayScreen.PlayStates.INITIALISING);
-        this.levelCreator.setPlayState(PlayScreen.PlayStates.INITIALISING);
-        this.reelTiles = this.levelCreator.getReelTiles();
-        this.animatedReels = this.levelCreator.getAnimatedReels();
+        this.levelCreator = new LevelCreator(
+                levelDoor,
+                miniSlotMachineLevel,
+                annotationAssetManager,
+                carddeckAtlas,
+                tweenManager,
+                physics,
+                GAME_LEVEL_WIDTH,
+                GAME_LEVEL_HEIGHT,
+                PlayStates.INITIALISING);
+        levelCreator.setPlayState(PlayStates.INITIALISING);
+        reelTiles = this.levelCreator.getReelTiles();
+        animatedReels = this.levelCreator.getAnimatedReels();
         reelBoxes = this.levelCreator.getReelBoxes();
         hud = new Hud(batch);
         hud.setLevelName(levelDoor.getLevelName());
         hud.startWorldTimer();
-        levelCreator.setPlayState(PlayScreen.PlayStates.INTRO_SPINNING);
+        levelCreator.setPlayState(PlayStates.INTRO_SPINNING);
     }
 
     private void getAssets(AnnotationAssetManager annotationAssetManager) {
-        this.carddeckAtlas = annotationAssetManager.get(AssetsAnnotation.CARDDECK);
-        this.chaChingSound = annotationAssetManager.get(AssetsAnnotation.SOUND_CHA_CHING);
-        this.pullLeverSound = annotationAssetManager.get(AssetsAnnotation.SOUND_PULL_LEVER);
-        this.reelSpinningSound = annotationAssetManager.get(AssetsAnnotation.SOUND_REEL_SPINNING);
-        this.reelStoppedSound = annotationAssetManager.get(AssetsAnnotation.SOUND_REEL_STOPPED);
-        this.jackpotSound = annotationAssetManager.get(AssetsAnnotation.SOUND_JACKPOINT);
+        carddeckAtlas = annotationAssetManager.get(AssetsAnnotation.CARDDECK);
+        chaChingSound = annotationAssetManager.get(AssetsAnnotation.SOUND_CHA_CHING);
+        pullLeverSound = annotationAssetManager.get(AssetsAnnotation.SOUND_PULL_LEVER);
+        reelSpinningSound = annotationAssetManager.get(AssetsAnnotation.SOUND_REEL_SPINNING);
+        reelStoppedSound = annotationAssetManager.get(AssetsAnnotation.SOUND_REEL_STOPPED);
+        jackpotSound = annotationAssetManager.get(AssetsAnnotation.SOUND_JACKPOINT);
     }
 
     private void initialisePhysics() {
@@ -370,14 +380,14 @@ public class MiniSlotMachineLevelPrototypeWithLevelCreator extends SPPrototypeTe
 
     @Override
     protected void updateOverride(float dt) {
-        this.tweenManager.update(dt);
-        this.levelCreator.update(dt);
+        tweenManager.update(dt);
+        levelCreator.update(dt);
         tileMapRenderer.setView(orthographicCamera);
         hud.update(dt);
         if (hud.getWorldTime() == 0) {
             if ((Hud.getLives() > 0) & (!inRestartLevel)) {
                 inRestartLevel = true;
-                levelCreator.setPlayState(PlayScreen.PlayStates.LEVEL_LOST);
+                levelCreator.setPlayState(PlayStates.LEVEL_LOST);
             } else {
                 gameOver = true;
             }
@@ -385,7 +395,7 @@ public class MiniSlotMachineLevelPrototypeWithLevelCreator extends SPPrototypeTe
         handlePlayState(this.levelCreator.getPlayState());
     }
 
-    private void handlePlayState(PlayScreen.PlayStates playState) {
+    private void handlePlayState(PlayStates playState) {
         System.out.println("playState="+playState);
         switch (playState) {
             case INTRO_POPUP:
@@ -469,20 +479,20 @@ public class MiniSlotMachineLevelPrototypeWithLevelCreator extends SPPrototypeTe
         SlotPuzzleTween.registerAccessor(Score.class, new ScoreAccessor());
     }
 
-    public PlayScreen.PlayStates getPlayState() {
+    public PlayStates getPlayState() {
         return this.levelCreator.getPlayState();
     }
 
-    public void setPlayState(PlayScreen.PlayStates playState) {
+    public void setPlayState(PlayStates playState) {
         this.levelCreator.setPlayState(playState);
     }
 
     public void dealWithHitSinkBottom(ReelTile reelTile) {
-        if (this.getPlayState() == PlayScreen.PlayStates.INTRO_SPINNING) {
+        if (this.getPlayState() == PlayStates.INTRO_SPINNING) {
             levelCreator.setHitSinkBottom(true);
         }
-        if ((this.getPlayState() == PlayScreen.PlayStates.INTRO_FLASHING) |
-            (this.getPlayState() == PlayScreen.PlayStates.REELS_FLASHING)) {
+        if ((this.getPlayState() == PlayStates.INTRO_FLASHING) |
+            (this.getPlayState() == PlayStates.REELS_FLASHING)) {
             System.out.println("In dealWithHitSinkBottom + reelTile="+reelTile);
             System.out.println("reelTileA.destinationX="+reelTile.getDestinationX());
             System.out.println("reelTileA.destinationY="+reelTile.getDestinationY());
@@ -518,7 +528,7 @@ public class MiniSlotMachineLevelPrototypeWithLevelCreator extends SPPrototypeTe
             reelTileA.setY(reelTileA.getDestinationY());
             Body reelbox = reelBoxes.get(reelTileA.getIndex());
             if (PhysicsManagerCustomBodies.isStopped(reelbox)) {
-                if (levelCreator.getPlayState() == PlayScreen.PlayStates.INTRO_SPINNING) {
+                if (levelCreator.getPlayState() == PlayStates.INTRO_SPINNING) {
                     numberOfReelsAboveHitsIntroSpinning++;
                     System.out.println("numberOfReelsAboveHitsIntroSpinning="+numberOfReelsAboveHitsIntroSpinning);
                 }
@@ -531,8 +541,8 @@ public class MiniSlotMachineLevelPrototypeWithLevelCreator extends SPPrototypeTe
                 numberOfReelsAboveHitsIntroSpinning++;
             }
         }
-        if ((levelCreator.getPlayState() == PlayScreen.PlayStates.INTRO_FLASHING) |
-            (levelCreator.getPlayState() == PlayScreen.PlayStates.INTRO_FLASHING)) {
+        if ((levelCreator.getPlayState() == PlayStates.INTRO_FLASHING) |
+            (levelCreator.getPlayState() == PlayStates.INTRO_FLASHING)) {
                 if  (cA == cB) {
                     System.out.println("dealWithReelTileHittingReelTile INTRO_FLASHING...");
                     if (Math.abs(rA - rB) > 1) {

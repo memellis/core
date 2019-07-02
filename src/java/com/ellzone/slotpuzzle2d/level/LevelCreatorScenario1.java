@@ -31,6 +31,7 @@ import com.ellzone.slotpuzzle2d.SlotPuzzleConstants;
 import com.ellzone.slotpuzzle2d.effects.ReelAccessor;
 import com.ellzone.slotpuzzle2d.effects.ScoreAccessor;
 import com.ellzone.slotpuzzle2d.effects.SpriteAccessor;
+import com.ellzone.slotpuzzle2d.finitestatemachine.PlayStates;
 import com.ellzone.slotpuzzle2d.physics.PhysicsManagerCustomBodies;
 import com.ellzone.slotpuzzle2d.prototypes.minislotmachine.MiniSlotMachineLevelPrototypeWithLevelCreator;
 import com.ellzone.slotpuzzle2d.puzzlegrid.PuzzleGridType;
@@ -81,7 +82,7 @@ public class LevelCreatorScenario1 {
                 levelHeight,
                 reelsSpinning,
                 reelsFlashing;
-    private PlayScreen.PlayStates playState;
+    private PlayStates playState;
     private boolean win = false, gameOver = false;
     private Array<Score> scores;
     private boolean hitSinkBottom = false, dropReplacementReelBoxes = false;
@@ -95,7 +96,7 @@ public class LevelCreatorScenario1 {
     int scenario1Reels[] = {4, 6, 2, 5, 0, 1, 3, 1, 0, 4, 3, 4};
     Array<TupleValueIndex> reelsToFall;
 
-    public LevelCreatorScenario1(LevelDoor levelDoor, TiledMap level, AnnotationAssetManager annotationAssetManager, TextureAtlas carddeckAtlas, TweenManager tweenManager, PhysicsManagerCustomBodies physics, int levelWidth, int levelHeight, PlayScreen.PlayStates playState) {
+    public LevelCreatorScenario1(LevelDoor levelDoor, TiledMap level, AnnotationAssetManager annotationAssetManager, TextureAtlas carddeckAtlas, TweenManager tweenManager, PhysicsManagerCustomBodies physics, int levelWidth, int levelHeight, PlayStates playState) {
         this.levelDoor = levelDoor;
         this.level = level;
         this.tweenManager = tweenManager;
@@ -264,22 +265,21 @@ public class LevelCreatorScenario1 {
         });
     }
 
-    public void setPlayState(PlayScreen.PlayStates playState) {
+    public void setPlayState(PlayStates playState) {
         this.playState = playState;
     }
 
-    public PlayScreen.PlayStates getPlayState() {
+    public PlayStates getPlayState() {
         return this.playState;
     }
 
     private void actionReelStoppedSpinning(ReelTileEvent event, ReelTile source) {
         source.stopSpinningSound();
         reelsSpinning--;
-        if ((playState == PlayScreen.PlayStates.INTRO_SPINNING) |
-            (playState == PlayScreen.PlayStates.REELS_SPINNING) |
-            (playState == PlayScreen.PlayStates.PLAYING)) {
+        if ((playState == PlayStates.INTRO_SPINNING) |
+            (playState == PlayStates.REELS_SPINNING) |
+            (playState == PlayStates.PLAYING))
             allReelsHaveStoppedSpinning();
-        }
     }
 
     private void allReelsHaveStoppedSpinning() {
@@ -307,7 +307,7 @@ public class LevelCreatorScenario1 {
     }
 
     private void actionReelStoppedFlashing(ReelTileEvent event, ReelTile reelTile) {
-        if ((playState == PlayScreen.PlayStates.INTRO_FLASHING) | (playState != PlayScreen.PlayStates.REELS_FLASHING)) {
+        if ((playState == PlayStates.INTRO_FLASHING) | (playState != PlayStates.REELS_FLASHING)) {
             if (reelsFlashing <= 0) {
                 // When do I need to testForAnyLonelyReels?
                 //
@@ -326,12 +326,12 @@ public class LevelCreatorScenario1 {
     }
 
     private ReelTileGridValue[][] flashSlots(Array<ReelTile> reelTiles, int levelWidth, int levelHeight) {
-        if (playState == PlayScreen.PlayStates.INTRO_SPINNING) {
-            playState = PlayScreen.PlayStates.INTRO_FLASHING;
-        }
-        if (playState == PlayScreen.PlayStates.PLAYING) {
-            playState = PlayScreen.PlayStates.REELS_FLASHING;
-        }
+        if (playState == PlayStates.INTRO_SPINNING)
+            playState = PlayStates.INTRO_FLASHING;
+
+        if (playState == PlayStates.PLAYING)
+            playState = PlayStates.REELS_FLASHING;
+
         ReelTileGridValue[][] puzzleGrid = puzzleGridTypeReelTile.populateMatchGrid(reelTiles, levelWidth, levelHeight);
 
         Array<ReelTileGridValue> matchedSlots = puzzleGridTypeReelTile.matchGridSlots(puzzleGrid);
@@ -471,7 +471,7 @@ public class LevelCreatorScenario1 {
     private void iWonTheLevel() {
         gameOver = true;
         win = true;
-        playState = PlayScreen.PlayStates.WON_LEVEL;
+        playState = PlayStates.WON_LEVEL;
         //mapTile.getLevel().setLevelCompleted();
         //mapTile.getLevel().setScore(Hud.getScore());
     }
@@ -547,12 +547,12 @@ public class LevelCreatorScenario1 {
                     reelsFlashing--;
                     numberOfReelBoxesToDelete--;
                     if (numberOfReelBoxesToDelete < 0) {
-                        if ((playState == PlayScreen.PlayStates.INTRO_FLASHING) | (playState == PlayScreen.PlayStates.REELS_FLASHING)) {
+                        if ((playState == PlayStates.INTRO_FLASHING) | (playState == PlayStates.REELS_FLASHING)) {
                             findReelsAboveMe();
                             matchedReels = isThereMatchedSlots();
                             if (!matchedReels) {
                                 if (replacementReelBoxes.size == 0) {
-                                    playState = PlayScreen.PlayStates.PLAYING;
+                                    playState = PlayStates.PLAYING;
                                 } else {
                                     if (reelsToFall.size == 0) {
                                         createReplacementReelBoxes();
@@ -671,7 +671,7 @@ public class LevelCreatorScenario1 {
     }
 
     public void update(float dt) {
-       if ((playState == PlayScreen.PlayStates.INTRO_FLASHING) | (playState == PlayScreen.PlayStates.REELS_FLASHING)) {
+       if ((playState == PlayStates.INTRO_FLASHING) | (playState == PlayStates.REELS_FLASHING)) {
             if ((reelsAboveHaveFallen) & (reelsToFall.size==0) & (reelsFlashing == 0)) {
                 ReelTileGridValue[][] puzzleGrid = puzzleGridTypeReelTile.populateMatchGrid(reelTiles, levelWidth, levelHeight);
                 Array<ReelTileGridValue> matchedSlots = puzzleGridTypeReelTile.matchGridSlots(puzzleGrid);
@@ -680,7 +680,7 @@ public class LevelCreatorScenario1 {
                 matchedReels = isThereMatchedSlots();
                 if (!matchedReels) {
                     if (replacementReelBoxes.size == 0) {
-                        playState = PlayScreen.PlayStates.PLAYING;
+                        playState = PlayStates.PLAYING;
                     } else {
                         if (reelsToFall.size == 0) {
                             createReplacementReelBoxes();
@@ -689,7 +689,7 @@ public class LevelCreatorScenario1 {
                     reelsAboveHaveFallen = false;
                 }
             } else {
-                if ((playState == PlayScreen.PlayStates.INTRO_FLASHING) | (playState == PlayScreen.PlayStates.REELS_FLASHING) | playState == PlayScreen.PlayStates.PLAYING) {
+                if ((playState == PlayStates.INTRO_FLASHING) | (playState == PlayStates.REELS_FLASHING) | playState == PlayStates.PLAYING) {
                     if ((numberOfReelBoxesToDelete < 0) & (!matchedReels) & (reelsToFall.size == 0) & (replacementReelBoxes.size > 0) & (reelsFlashing == 0)) {
                         matchedReels = isThereMatchedSlots();
                         if (!matchedReels) {
@@ -699,17 +699,15 @@ public class LevelCreatorScenario1 {
                         }
                     } else {
                         if ((numberOfReelBoxesToDelete < 0) & (!matchedReels) & (reelsToFall.size == 0) & (replacementReelBoxes.size == 0)) {
-                            playState = PlayScreen.PlayStates.PLAYING;
+                            playState = PlayStates.PLAYING;
                         }
                     }
                 }
             }
         }
-        if ((playState == PlayScreen.PlayStates.INTRO_SPINNING) | (playState == PlayScreen.PlayStates.REELS_SPINNING)) {
-           if ((numberOfReelBoxesToDelete < 0) & (reelsToFall.size == 0) & (replacementReelBoxes.size == 0)) {
-               playState = PlayScreen.PlayStates.PLAYING;
-           }
-        }
+        if ((playState == PlayStates.INTRO_SPINNING) | (playState == PlayStates.REELS_SPINNING))
+           if ((numberOfReelBoxesToDelete < 0) & (reelsToFall.size == 0) & (replacementReelBoxes.size == 0))               playState = PlayStates.PLAYING;
+
         animatedReelHelper.update(dt);
         physics.update(dt);
         updateReelBoxes();
@@ -740,11 +738,11 @@ public class LevelCreatorScenario1 {
         MiniSlotMachineLevelPrototypeWithLevelCreator.numberOfReelsToHitSinkBottom = replacementReelBoxes.size;
         replacementReelBoxes.removeRange(0, replacementReelBoxes.size - 1);
         dropReplacementReelBoxes = false;
-        if (playState == PlayScreen.PlayStates.INTRO_FLASHING) {
-            playState = PlayScreen.PlayStates.INTRO_SPINNING;
+        if (playState == PlayStates.INTRO_FLASHING) {
+            playState = PlayStates.INTRO_SPINNING;
         }
-        if (playState == PlayScreen.PlayStates.REELS_FLASHING) {
-            playState = PlayScreen.PlayStates.REELS_SPINNING;
+        if (playState == PlayStates.REELS_FLASHING) {
+            playState = PlayStates.REELS_SPINNING;
         }
     }
 

@@ -45,6 +45,7 @@ import com.ellzone.slotpuzzle2d.effects.SpriteAccessor;
 import com.ellzone.slotpuzzle2d.finitestatemachine.PlayInterface;
 import com.ellzone.slotpuzzle2d.finitestatemachine.PlayState;
 import com.ellzone.slotpuzzle2d.finitestatemachine.PlayStateMachine;
+import com.ellzone.slotpuzzle2d.finitestatemachine.PlayStates;
 import com.ellzone.slotpuzzle2d.level.Card;
 import com.ellzone.slotpuzzle2d.level.FlashSlots;
 import com.ellzone.slotpuzzle2d.level.HiddenPattern;
@@ -91,20 +92,7 @@ public class PlayScreen implements Screen, PlayInterface {
     private LevelLoader levelLoader;
 	private PlayStateMachine playStateMachine;
 
-	public enum PlayStates {INITIALISING,
-                            INTRO_SEQUENCE,
-                            INTRO_POPUP,
-                            INTRO_SPINNING,
-                            HIT_SINK_BOTTOM,
-                            INTRO_FLASHING,
-                            CREATED_REELS_HAVE_FALLEN,
-                            PLAYING,
-                            LEVEL_TIMED_OUT,
-                            LEVEL_LOST,
-                            WON_LEVEL,
-                            RESTARTING_LEVEL,
-                            REELS_SPINNING,
-                            REELS_FLASHING}
+
 	private PlayStates playState;
 	private SlotPuzzle game;
 	private final OrthographicCamera camera = new OrthographicCamera();
@@ -259,7 +247,7 @@ public class PlayScreen implements Screen, PlayInterface {
             if (testForAnyLonelyReels(reelTiles)) {
               win = false;
               if (Hud.getLives() > 0) {
-                  playState = PlayScreen.PlayStates.LEVEL_LOST;
+                  playState = PlayStates.LEVEL_LOST;
                   playScreenPopUps.setLevelLostSpritePositions();
                   playScreenPopUps.getLevelLostPopUp().showLevelPopUp(null);
               } else {
@@ -317,7 +305,7 @@ public class PlayScreen implements Screen, PlayInterface {
     }
 
     private void createReelIntroSequence() {
-        playState = PlayScreen.PlayStates.INTRO_SEQUENCE;
+        playState = PlayStates.INTRO_SEQUENCE;
         playScreenIntroSequence = new PlayScreenIntroSequence(reelTiles, tweenManager);
         playScreenIntroSequence.createReelIntroSequence(introSequenceCallback);
     }
