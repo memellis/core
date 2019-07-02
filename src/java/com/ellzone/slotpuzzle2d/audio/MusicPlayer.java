@@ -15,17 +15,23 @@ import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Slider;
+import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import com.ellzone.slotpuzzle2d.messaging.MessageType;
 import com.ellzone.slotpuzzle2d.utils.AssetsAnnotation;
 
+import net.dermetfan.gdx.assets.AnnotationAssetManager;
+
 public class MusicPlayer implements Telegraph {
     public static final String MM_SS_TIME_FORMAT = "%02d:%02d";
     public static final int MINUTES_PER_HOUR = 60;
     public static final int SECONDS_PER_MINITE = 60;
-    public static final String PLAYBACK_PNG = "playback.png";
     public static final String UI_UISKIN = "ui/uiskin.json";
+    public static final String LOOP = "loop";
+    public static final String TOGGLE = "toggle";
+
+    private AnnotationAssetManager annotationAssetManager;
     private SpriteBatch batch;
     private Stage stage;
     private Viewport viewport;
@@ -44,8 +50,10 @@ public class MusicPlayer implements Telegraph {
     private float slidertimerCount = 0.0f;
     private float currentPosition;
     private boolean updateSlider;
+    private TextButton loopButton;
 
-    public MusicPlayer(SpriteBatch batch, Stage stage, Viewport viewport, float x, float y) {
+    public MusicPlayer(AnnotationAssetManager annotationAssetManager, SpriteBatch batch, Stage stage, Viewport viewport, float x, float y) {
+        this.annotationAssetManager = annotationAssetManager;
         this.batch = batch;
         this.stage = stage;
         this.viewport = viewport;
@@ -55,18 +63,19 @@ public class MusicPlayer implements Telegraph {
     }
 
     private void initialise(float x, float y) {
-        initialisePlaybackButtons(x, y);
+        Skin skin = new Skin(Gdx.files.internal(UI_UISKIN));
+        initialisePlaybackButtons(x, y, skin);
+        initialiseLoopButton(x, y, skin);
         visible = true;
         updateSlider = false;
     }
 
-    private void initialisePlaybackButtons(float x, float y) {
-        playBackButtons = new TextureRegion(new Texture(Gdx.files.internal(PLAYBACK_PNG)));
+    private void initialisePlaybackButtons(float x, float y, Skin skin) {
+        playBackButtons = new TextureRegion((Texture) annotationAssetManager.get(AssetsAnnotation.PLAYBACK_PNG));
         playButton = new Rectangle(x + 13,y + 60, 40,42);
         stopButton = new Rectangle(x + 79, y + 60, 40, 42);
         pauseButton = new Rectangle(x + 147, y + 60, 40, 42);
 
-        Skin skin = new Skin(Gdx.files.internal(UI_UISKIN));
         slider = new Slider(0, 100, 0.1f, false, skin);
         slider.setPosition(x + 30, y + 20);
         slider.addListener(new ChangeListener() {
@@ -78,6 +87,21 @@ public class MusicPlayer implements Telegraph {
         });
         slider.setVisible(visible);
         stage.addActor(slider);
+    }
+
+    private void initialiseLoopButton(float x, float y, Skin skin) {
+        loopButton = new TextButton(LOOP, skin, TOGGLE);
+        loopButton.setChecked(true);
+        loopButton.addListener(new ChangeListener() {
+            @Override
+            public void changed (ChangeEvent event, Actor actor) {
+                if(currentTrack != null)
+                    currentTrack.setLooping(loopButton.isChecked());
+            }
+        });
+        loopButton.setPosition(x + 130, y + 40);
+        loopButton.setVisible(visible);
+        stage.addActor(loopButton);
     }
 
     public void update(float delta) {
@@ -119,6 +143,7 @@ public class MusicPlayer implements Telegraph {
     public void setVisible(boolean visible) {
         this.visible = visible;
         slider.setVisible(visible);
+        loopButton.setVisible(visible);
     }
 
     public boolean isVisible() {

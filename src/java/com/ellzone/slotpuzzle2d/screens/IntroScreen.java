@@ -173,16 +173,24 @@ public class IntroScreen extends InputAdapter implements Screen {
         initialiseLaunchButton();
         initialiseIntroSequence();
         initialiseStarfield();
-        audioManager = new AudioManager(game.annotationAssetManager);
-        musicPlayer = new MusicPlayer(game.batch, stage, viewport, 0, 0);
-        musicPlayer.setVisible(false);
+        initisaliseAudio();
         messageManager = setUpMessages();
+        initialseInput();
         messageManager.dispatchMessage(MessageType.PlayMusic.index, AssetsAnnotation.MUSIC_INTRO_SCREEN);
+        isLoaded = true;
+    }
+
+    private void initialseInput() {
         inputMultiplexer = new InputMultiplexer();
         inputMultiplexer.addProcessor(this);
         inputMultiplexer.addProcessor(stage);
         Gdx.input.setInputProcessor(inputMultiplexer);
-        isLoaded = true;
+    }
+
+    private void initisaliseAudio() {
+        audioManager = new AudioManager(game.annotationAssetManager);
+        musicPlayer = new MusicPlayer(game.annotationAssetManager, game.batch, stage, viewport, 0, 0);
+        musicPlayer.setVisible(false);
     }
 
     private MessageManager setUpMessages() {
@@ -300,26 +308,18 @@ public class IntroScreen extends InputAdapter implements Screen {
         rayHandler.setAmbientLight(0.5f, 0.5f, 0.5f, 0.1f);
 
         signLights = new Array<PointLight>();
-        PointLight signLight1 = new PointLight(rayHandler, 32);
-        signLight1.setActive(true);
-        signLight1.setColor(Color.WHITE);
-        signLight1.setDistance(2.0f);
-        signLight1.setPosition(sceneWidth / 2, sceneHeight / 2);
-        signLights.add(signLight1);
+        signLights.add(getPointLight(sceneWidth / 2, sceneWidth / 2));
+        signLights.add(getPointLight(sceneWidth / 4, sceneHeight / 2));
+        signLights.add(getPointLight(sceneWidth / 2 + sceneWidth / 4, sceneHeight / 2));
+    }
 
-        PointLight signLight2 = new PointLight(rayHandler, 32);
-        signLight2.setActive(true);
-        signLight2.setColor(Color.WHITE);
-        signLight2.setDistance(2.0f);
-        signLight2.setPosition(sceneWidth / 4, sceneHeight / 2);
-        signLights.add(signLight2);
-
-        PointLight signLight3 = new PointLight(rayHandler, 32);
-        signLight1.setActive(true);
-        signLight1.setColor(Color.WHITE);
-        signLight1.setDistance(2.0f);
-        signLight1.setPosition(sceneWidth / 2 + sceneWidth / 4, sceneHeight / 2);
-        signLights.add(signLight3);
+    private PointLight getPointLight(float x, float y) {
+        PointLight signLight = new PointLight(rayHandler, 32);
+        signLight.setActive(true);
+        signLight.setColor(Color.WHITE);
+        signLight.setDistance(2.0f);
+        signLight.setPosition(x, y);
+        return signLight;
     }
 
     private void initialiseLaunchButton() {

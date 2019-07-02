@@ -57,7 +57,8 @@ public class AssetsAnnotation {
     public final static
         String
             PROGRESS_BAR = "loading_screen/progress_bar.png",
-            PROGRESS_BAR_BASE = "loading_screen/progress_bar_base.png";
+            PROGRESS_BAR_BASE = "loading_screen/progress_bar_base.png",
+            PLAYBACK_PNG = "playback.png";
 
     @AnnotationAssetManager.Asset(Sound.class)
     public final static
