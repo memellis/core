@@ -18,9 +18,9 @@ package com.ellzone.slotpuzzle2d.prototypes.minislotmachine;
 
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
+import com.ellzone.slotpuzzle2d.finitestatemachine.PlayStates;
 import com.ellzone.slotpuzzle2d.level.LevelCreatorScenario1;
 import com.ellzone.slotpuzzle2d.scene.Hud;
-import com.ellzone.slotpuzzle2d.screens.PlayScreen;
 import com.ellzone.slotpuzzle2d.tweenengine.TweenManager;
 
 import org.junit.After;
@@ -125,8 +125,8 @@ public class TestMiniSlotMachineLevelPrototypeScenario1UpdateOverride {
         hudMock.update(0.0f);
         expect(hudMock.getWorldTime()).andReturn(0);
         expect(Hud.getLives()).andReturn(1);
-        levelCreatorScenario1Mock.setPlayState(PlayScreen.PlayStates.LEVEL_LOST);
-        expect(levelCreatorScenario1Mock.getPlayState()).andReturn(PlayScreen.PlayStates.LEVEL_LOST);
+        levelCreatorScenario1Mock.setPlayState(PlayStates.LEVEL_LOST);
+        expect(levelCreatorScenario1Mock.getPlayState()).andReturn(PlayStates.LEVEL_LOST);
     }
 
     private void replayAll() {

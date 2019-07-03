@@ -18,10 +18,10 @@ package com.ellzone.slotpuzzle2d.prototypes.minislotmachine;
 
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.utils.Array;
+import com.ellzone.slotpuzzle2d.finitestatemachine.PlayStates;
 import com.ellzone.slotpuzzle2d.level.LevelCreatorScenario1;
 import com.ellzone.slotpuzzle2d.physics.PhysicsManagerCustomBodies;
 import com.ellzone.slotpuzzle2d.puzzlegrid.PuzzleGridTypeReelTile;
-import com.ellzone.slotpuzzle2d.screens.PlayScreen;
 import com.ellzone.slotpuzzle2d.sprites.ReelTile;
 
 import org.easymock.Capture;
@@ -184,11 +184,11 @@ public class TestMiniSlotMachineLevelPrototypeScenario1ReelHitsReel {
         expect(reelBoxesMock.get(0)).andReturn(reelBoxMock);
         expect(reelTileMock.getIndex()).andReturn(0);
         expect(PhysicsManagerCustomBodies.isStopped(reelBoxMock)).andReturn(true);
-        expect(levelCreatorMock.getPlayState()).andReturn(PlayScreen.PlayStates.INTRO_SPINNING);
+        expect(levelCreatorMock.getPlayState()).andReturn(PlayStates.INTRO_SPINNING);
     }
 
     private void setExpectsFlashing() throws Exception {
-        expect(levelCreatorMock.getPlayState()).andReturn(PlayScreen.PlayStates.INTRO_FLASHING).times(2);
+        expect(levelCreatorMock.getPlayState()).andReturn(PlayStates.INTRO_FLASHING).times(2);
         expectPrivate(partialMockMiniSlotMachineLevelPrototypeScenario1,
                 "processTileHittingTile",
                             capture(reelTileCaptureArg1),

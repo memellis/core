@@ -21,8 +21,8 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.viewport.FitViewport;
+import com.ellzone.slotpuzzle2d.finitestatemachine.PlayStates;
 import com.ellzone.slotpuzzle2d.level.LevelCreatorScenario1;
-import com.ellzone.slotpuzzle2d.screens.PlayScreen;
 
 import org.easymock.Capture;
 import org.easymock.EasyMock;
@@ -109,12 +109,12 @@ public class TestMiniSlotMachineLevelPrototypeScenario1HandleInput {
 
     @Test
     public void testHandleInput() throws Exception {
-        for (PlayScreen.PlayStates playState : PlayScreen.PlayStates.values()) {
+        for (PlayStates playState : PlayStates.values()) {
             testHandleInputPlayStates(playState);
         }
     }
 
-    private void testHandleInputPlayStates(PlayScreen.PlayStates playState) throws Exception {
+    private void testHandleInputPlayStates(PlayStates playState) throws Exception {
         setUp();
         expectations(playState);
         replayAll();
@@ -144,15 +144,14 @@ public class TestMiniSlotMachineLevelPrototypeScenario1HandleInput {
                partialMockMiniSlotMachineLevelPrototypeScenario1);
     }
 
-    private void expectations(PlayScreen.PlayStates playState) throws Exception {
+    private void expectations(PlayStates playState) throws Exception {
         expect(mockInput.justTouched()).andReturn(true);
         expect(mockInput.getX()).andReturn(10);
         expect(mockInput.getY()).andReturn(10);
         whenNew(Vector3.class).withArguments(10.0f, 10.0f, 0.0f).thenReturn(vector3Mock);
         expect(levelCreatorScenario1Mock.getPlayState()).andReturn(playState);
         mockApplication.debug(capture(logCaptureArgument1), capture(logCaptureArgument2));
-        if (playState == PlayScreen.PlayStates.PLAYING) {
+        if (playState == PlayStates.PLAYING)
             PowerMock.expectPrivate(partialMockMiniSlotMachineLevelPrototypeScenario1, "processIsTileClicked").atLeastOnce();
-        }
     }
 }

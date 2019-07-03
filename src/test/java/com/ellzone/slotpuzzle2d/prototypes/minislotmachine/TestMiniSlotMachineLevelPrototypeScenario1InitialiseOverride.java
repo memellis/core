@@ -23,6 +23,7 @@ import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.ellzone.slotpuzzle2d.SlotPuzzleConstants;
 import com.ellzone.slotpuzzle2d.camera.CameraHelper;
+import com.ellzone.slotpuzzle2d.finitestatemachine.PlayStates;
 import com.ellzone.slotpuzzle2d.level.LevelCreatorScenario1;
 import com.ellzone.slotpuzzle2d.level.LevelDoor;
 import com.ellzone.slotpuzzle2d.physics.PhysicsManagerCustomBodies;
@@ -78,7 +79,7 @@ public class TestMiniSlotMachineLevelPrototypeScenario1InitialiseOverride {
     private TweenManager tweenManagerMock;
     private PhysicsManagerCustomBodies physicsMock;
     private SpriteBatch spriteBatchMock;
-    private Capture<PlayScreen.PlayStates> playStatesCapture;
+    private Capture<PlayStates> playStatesCapture;
 
     @Before
     public void setUp() {
@@ -175,8 +176,8 @@ public class TestMiniSlotMachineLevelPrototypeScenario1InitialiseOverride {
                                                            physicsMock,
                                                            GAME_LEVEL_WIDTH,
                                                            GAME_LEVEL_HEIGHT,
-                                                           PlayScreen.PlayStates.INITIALISING).thenReturn(levelCreatorScenario1Mock);
-        levelCreatorScenario1Mock.setPlayState(PlayScreen.PlayStates.INITIALISING);
+                                                           PlayStates.INITIALISING).thenReturn(levelCreatorScenario1Mock);
+        levelCreatorScenario1Mock.setPlayState(PlayStates.INITIALISING);
         expect(levelCreatorScenario1Mock.getReelTiles()).andReturn(null);
         expect(levelCreatorScenario1Mock.getAnimatedReels()).andReturn(null);
         expect(levelCreatorScenario1Mock.getReelBoxes()).andReturn(null);
@@ -212,7 +213,7 @@ public class TestMiniSlotMachineLevelPrototypeScenario1InitialiseOverride {
         expectations();
         replayAll();
         partialMockMiniSlotMachineLevelPrototypeScenario1.initialiseOverride();
-        assertThat(playStatesCapture.getValue().toString(), CoreMatchers.equalTo(PlayScreen.PlayStates.INTRO_SPINNING.toString()));
+        assertThat(playStatesCapture.getValue().toString(), CoreMatchers.equalTo(PlayStates.INTRO_SPINNING.toString()));
         verifyAll();
    }
 }

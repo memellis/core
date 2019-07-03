@@ -50,8 +50,6 @@ public class TestMiniSlotMachineLevelPrototypeScenario1ReelsLeftToFall {
     private Array<TupleValueIndex>  reelsToFall;
     private Capture<Boolean> reelsAvoveHaveFallen;
 
-
-
     @Before
     public void setUp() {
         setUpPowerMocks();

@@ -7,6 +7,7 @@ import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Sprite;
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.maps.objects.RectangleMapObject;
@@ -23,11 +24,13 @@ import com.ellzone.slotpuzzle2d.effects.ReelAccessor;
 import com.ellzone.slotpuzzle2d.effects.SpriteAccessor;
 import com.ellzone.slotpuzzle2d.level.LevelCreatorInjectionInterface;
 import com.ellzone.slotpuzzle2d.level.LevelObjectCreator;
+import com.ellzone.slotpuzzle2d.level.LevelObjectCreatorEntityHolder;
 import com.ellzone.slotpuzzle2d.level.PlayScreenIntroSequence;
 import com.ellzone.slotpuzzle2d.physics.DampenedSineParticle;
 import com.ellzone.slotpuzzle2d.prototypes.SPPrototypeTemplate;
 import com.ellzone.slotpuzzle2d.puzzlegrid.PuzzleGridTypeReelTile;
 import com.ellzone.slotpuzzle2d.puzzlegrid.ReelTileGridValue;
+import com.ellzone.slotpuzzle2d.scene.Hud;
 import com.ellzone.slotpuzzle2d.sprites.AnimatedReel;
 import com.ellzone.slotpuzzle2d.sprites.LightButton;
 import com.ellzone.slotpuzzle2d.sprites.HoldLightButton;
@@ -57,6 +60,9 @@ import static com.ellzone.slotpuzzle2d.SlotPuzzleConstants.PIXELS_PER_METER;
 public class SpinningSlotsWithMatchesWinFlashesLoadedLevel
        extends SPPrototypeTemplate
        implements LevelCreatorInjectionInterface {
+    public static final String LEVELS_LEVEL_6 = "levels/level 6 - 40x40.tmx";
+    public static final String LEVEL_6_NAME = "1-6";
+
     private Random random;
     private Array<AnimatedReel> reels;
     private Sound pullLeverSound, reelSpinningSound, reelStoppingSound;
@@ -76,6 +82,8 @@ public class SpinningSlotsWithMatchesWinFlashesLoadedLevel
     private Array<Array<Vector2>> rowMacthesToDraw;
     private ShapeRenderer shapeRenderer;
     private Texture slotReelScrollTexture;
+    private Hud hud;
+    private int score = 0;
 
     @Override
     public AnnotationAssetManager getAnnotationAssetManager() {
@@ -120,8 +128,15 @@ public class SpinningSlotsWithMatchesWinFlashesLoadedLevel
         slotReelScrollTexture = new Texture(slotReelScrollPixmap);
         loadlevel();
         createPointLights();
+        hud = setUpHud(batch);
         createIntroSequence();
    }
+
+   private Hud setUpHud(SpriteBatch batch) {
+        Hud hud = new Hud(batch);
+        hud.setLevelName(LEVEL_6_NAME);
+        return hud;
+    }
 
     private void initialiseWorld() {
         world = new World(new Vector2(0, -9.8f), true);
@@ -132,7 +147,7 @@ public class SpinningSlotsWithMatchesWinFlashesLoadedLevel
     }
 
     private void loadlevel() {
-        LevelObjectCreator levelObjectCreator = new LevelObjectCreator(this, world, rayHandler);
+        LevelObjectCreator levelObjectCreator = new LevelObjectCreatorEntityHolder(this, world, rayHandler);
         TiledMap level = getLevelAssets(annotationAssetManager);
         Array<RectangleMapObject> extractedLevelRectangleMapObjects = extractLevelAssets(level);
         try {
@@ -198,7 +213,7 @@ public class SpinningSlotsWithMatchesWinFlashesLoadedLevel
     }
 
     private TiledMap getLevelAssets(AnnotationAssetManager annotationAssetManager) {
-        return annotationAssetManager.get("levels/level 6 - 40x40.tmx");
+        return annotationAssetManager.get(LEVELS_LEVEL_6);
     }
 
     private Array<RectangleMapObject> getRectangleMapObjectsFromLevel(TiledMap level) {
@@ -226,6 +241,7 @@ public class SpinningSlotsWithMatchesWinFlashesLoadedLevel
         for (AnimatedReel reel : reels) {
             reel.update(dt);
         }
+        hud.update(dt);
     }
 
     @Override
@@ -235,6 +251,7 @@ public class SpinningSlotsWithMatchesWinFlashesLoadedLevel
             renderMacthedRows();
         renderLightButtons();
         renderRayHandler();
+        renderHud(batch);
         renderWorld();
     }
 
@@ -280,6 +297,12 @@ public class SpinningSlotsWithMatchesWinFlashesLoadedLevel
         slotHandleSprite.draw(batch);
         batch.end();
     }
+
+    private void renderHud(SpriteBatch batch) {
+        batch.setProjectionMatrix(hud.stage.getCamera().combined);
+        hud.stage.draw();
+    }
+
 
     @Override
     protected void initialiseUniversalTweenEngineOverride() {
@@ -440,6 +463,7 @@ public class SpinningSlotsWithMatchesWinFlashesLoadedLevel
     private Array<Vector2> drawMatches(Array<ReelTileGridValue> depthSearchResults, int startX, int startY) {
         Array<Vector2> points = new Array<Vector2>();
         for (ReelTileGridValue cell : depthSearchResults) {
+            hud.addScore(cell.value);
             points.add(new Vector2(startX + cell.c * 65, startY - cell.r * 65 ));
         }
         return points;

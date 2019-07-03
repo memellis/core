@@ -16,9 +16,9 @@
 
 package com.ellzone.slotpuzzle2d.prototypes.minislotmachine;
 
+import com.ellzone.slotpuzzle2d.finitestatemachine.PlayStates;
 import com.ellzone.slotpuzzle2d.level.LevelCreatorScenario1;
 import com.ellzone.slotpuzzle2d.puzzlegrid.PuzzleGridTypeReelTile;
-import com.ellzone.slotpuzzle2d.screens.PlayScreen;
 import com.ellzone.slotpuzzle2d.sprites.ReelTile;
 
 import org.easymock.Capture;
@@ -109,7 +109,7 @@ public class TestMiniSlotMachineLevelPrototypeScenario1ReelTileCollisions {
     @Test
     public void testDealWithHitSinkBottomIntroSpinning() throws Exception {
         setFields();
-        setExpects(PlayScreen.PlayStates.INTRO_SPINNING);
+        setExpects(PlayStates.INTRO_SPINNING);
         replayAll();
         partialMockMiniSlotMachineLevelPrototypeScenario1.dealWithHitSinkBottom(reelTileMock);
         assertThat(captureLevelCreatorSetHitSinkBottomArgument.getValue(), is(true));
@@ -119,7 +119,7 @@ public class TestMiniSlotMachineLevelPrototypeScenario1ReelTileCollisions {
     @Test
     public void testDealWithHitSinkBottomReelsFlashing() throws Exception {
         setFields();
-        setExpects(PlayScreen.PlayStates.INTRO_FLASHING);
+        setExpects(PlayStates.INTRO_FLASHING);
         replayAll();
         partialMockMiniSlotMachineLevelPrototypeScenario1.dealWithHitSinkBottom(reelTileMock);
         assertThat(captureSwapReelsAboveArgument.getValue(), is(reelTileMock));
@@ -132,21 +132,20 @@ public class TestMiniSlotMachineLevelPrototypeScenario1ReelTileCollisions {
         Whitebox.setInternalState(partialMockMiniSlotMachineLevelPrototypeScenario1, LEVEL_CREATOR_FIELD_NAME, levelCreatorScenario1Mock);
     }
 
-    private void setExpects(PlayScreen.PlayStates playState) throws Exception {
+    private void setExpects(PlayStates playState) throws Exception {
         expect(levelCreatorScenario1Mock.getPlayState()).andReturn(playState);
-        if (playState == PlayScreen.PlayStates.INTRO_SPINNING) {
+        if (playState == PlayStates.INTRO_SPINNING)
             levelCreatorScenario1Mock.setHitSinkBottom(captureBoolean(captureLevelCreatorSetHitSinkBottomArgument));
-        }
+
         expect(levelCreatorScenario1Mock.getPlayState()).andReturn(playState);
         expect(levelCreatorScenario1Mock.getPlayState()).andReturn(playState);
         expectIsFlashing(playState);
     }
 
-    private void expectIsFlashing(PlayScreen.PlayStates playState) throws Exception {
-        if ((playState == PlayScreen.PlayStates.INTRO_FLASHING) |
-            (playState == PlayScreen.PlayStates.REELS_FLASHING))
+    private void expectIsFlashing(PlayStates playState) throws Exception {
+        if ((playState == PlayStates.INTRO_FLASHING) |
+            (playState == PlayStates.REELS_FLASHING))
             expectFlashing();
-
     }
 
     private void expectFlashing() throws Exception {
