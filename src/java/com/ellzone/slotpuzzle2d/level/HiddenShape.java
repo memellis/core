@@ -9,7 +9,7 @@ import com.ellzone.slotpuzzle2d.puzzlegrid.PuzzleGridTypeReelTile;
 import com.ellzone.slotpuzzle2d.puzzlegrid.TupleValueIndex;
 import com.ellzone.slotpuzzle2d.sprites.ReelTile;
 
-public class HiddenShape extends HiddenPattern{
+public class HiddenShape extends HiddenPattern {
     public HiddenShape(TiledMap level) {
         super(level);
     }

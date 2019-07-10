@@ -25,6 +25,7 @@ import com.ellzone.slotpuzzle2d.effects.SpriteAccessor;
 import com.ellzone.slotpuzzle2d.level.LevelCreatorInjectionInterface;
 import com.ellzone.slotpuzzle2d.level.LevelObjectCreator;
 import com.ellzone.slotpuzzle2d.level.LevelObjectCreatorEntityHolder;
+import com.ellzone.slotpuzzle2d.level.MapLevelNameComparator;
 import com.ellzone.slotpuzzle2d.level.PlayScreenIntroSequence;
 import com.ellzone.slotpuzzle2d.physics.DampenedSineParticle;
 import com.ellzone.slotpuzzle2d.prototypes.SPPrototypeTemplate;
@@ -110,13 +111,6 @@ public class SpinningSlotsWithMatchesWinFlashesLoadedLevel
         return slotHandleAtlas;
     }
 
-    public class MapLevelNameComparator implements Comparator<RectangleMapObject> {
-        @Override
-        public int compare(RectangleMapObject first, RectangleMapObject second) {
-            return first.getName().compareTo(second.getName());
-        }
-    }
-
     @Override
     protected void initialiseOverride() {
         touch = new Vector2();
@@ -124,15 +118,19 @@ public class SpinningSlotsWithMatchesWinFlashesLoadedLevel
         rowMacthesToDraw = new Array<Array<Vector2>>();
         initialiseWorld();
         random = new Random();
-        Pixmap slotReelScrollPixmap = PixmapProcessors.createPixmapToAnimate(sprites);
-        slotReelScrollTexture = new Texture(slotReelScrollPixmap);
+        slotReelScrollTexture = createSlotReelScrollTexture();
         loadlevel();
         createPointLights();
         hud = setUpHud(batch);
         createIntroSequence();
    }
 
-   private Hud setUpHud(SpriteBatch batch) {
+    private Texture createSlotReelScrollTexture() {
+        Pixmap slotReelScrollPixmap = PixmapProcessors.createPixmapToAnimate(sprites);
+        return new Texture(slotReelScrollPixmap);
+    }
+
+    private Hud setUpHud(SpriteBatch batch) {
         Hud hud = new Hud(batch);
         hud.setLevelName(LEVEL_6_NAME);
         return hud;

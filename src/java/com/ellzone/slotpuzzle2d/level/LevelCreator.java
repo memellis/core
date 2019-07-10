@@ -165,7 +165,7 @@ public class LevelCreator {
         this.puzzleGridTypeReelTile = new PuzzleGridTypeReelTile();
         this.reelBoxes = new Array<Body>();
         this.replacementReelBoxes = new Array<Integer>();
-        this.animatedReelHelper = new AnimatedReelHelper(this.annotationAssetManager, this.tweenManager, level.getLayers().get(REELS_LAYER_NAME).getObjects().getByType(RectangleMapObject.class).size);
+//        this.animatedReelHelper = new AnimatedReelHelper(this.annotationAssetManager, this.tweenManager, level.getLayers().get(REELS_LAYER_NAME).getObjects().getByType(RectangleMapObject.class).size);
         this.reelTiles = animatedReelHelper.getReelTiles();
         this.reelTiles = createLevel(this.levelDoor, this.level, this.reelTiles, this.levelWidth, this.levelHeight);
         printMatchGrid(reelTiles, levelWidth, levelHeight);
@@ -175,17 +175,15 @@ public class LevelCreator {
     }
 
     private Array<ReelTile> createLevel(LevelDoor levelDoor, TiledMap level, Array<ReelTile> reelTiles, int levelWidth, int levelHeight) {
-        if (levelDoor.getLevelType().equals(PLAYING_CARD_LEVEL_TYPE)) {
+        if (levelDoor.getLevelType().equals(PLAYING_CARD_LEVEL_TYPE))
             this.hiddenPlayingCard = new HiddenPlayingCard(level, carddeckAtlas);
-        }
+
         reelTiles = populateLevel(level, reelTiles, levelWidth, levelHeight);
         reelTiles = checkLevel(reelTiles, levelWidth, levelHeight);
         reelTiles = adjustForAnyLonelyReels(reelTiles, levelWidth, levelHeight);
         return reelTiles;
     }
 
-    /* This method needs to throw an exception if its to be of use
-     */
     private Array<ReelTile> checkLevel(Array<ReelTile> reelLevel, int levelWidth, int levelHeight) {
         ReelTileGridValue[][] grid = puzzleGridTypeReelTile.populateMatchGrid(reelLevel, levelWidth, levelHeight);
         int arraySizeR = grid.length;

@@ -117,10 +117,10 @@ public class SplashScreen implements Screen {
 		slot = atlas1.createSprite(AssetsAnnotation.SLOT);
 		puzzle = atlas1.createSprite(AssetsAnnotation.PUZZLE);
  
-				Sprite[] sprites = new Sprite[] {slot, puzzle, universal, tween, engine, logo, powered, gdx};
-		for (Sprite sp : sprites) {
-			sp.setSize(sp.getWidth()/PX_PER_METER, sp.getHeight()/PX_PER_METER);
-			sp.setOrigin(sp.getWidth()/2, sp.getHeight()/2);
+		Sprite[] sprites = new Sprite[] {slot, puzzle, universal, tween, engine, logo, powered, gdx};
+		for (Sprite sprite : sprites) {
+			sprite.setSize(sprite.getWidth()/PX_PER_METER, sprite.getHeight()/PX_PER_METER);
+			sprite.setOrigin(sprite.getWidth()/2, sprite.getHeight()/2);
 		}
 
 		slot.setPosition(-0.325f,  0.110f);

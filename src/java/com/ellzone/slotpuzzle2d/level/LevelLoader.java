@@ -16,19 +16,13 @@
 
 package com.ellzone.slotpuzzle2d.level;
 
-import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
-import com.badlogic.gdx.maps.MapObject;
-import com.badlogic.gdx.maps.objects.RectangleMapObject;
 import com.badlogic.gdx.maps.tiled.TiledMap;
-import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.utils.Array;
-import com.badlogic.gdx.utils.GdxRuntimeException;
-import com.ellzone.slotpuzzle2d.SlotPuzzleConstants;
 import com.ellzone.slotpuzzle2d.puzzlegrid.PuzzleGridTypeReelTile;
 import com.ellzone.slotpuzzle2d.puzzlegrid.TupleValueIndex;
 import com.ellzone.slotpuzzle2d.scene.MapTile;
-import com.ellzone.slotpuzzle2d.screens.PlayScreen;
+import com.ellzone.slotpuzzle2d.sprites.AnimatedReel;
 import com.ellzone.slotpuzzle2d.sprites.AnimatedReelHelper;
 import com.ellzone.slotpuzzle2d.sprites.ReelStoppedFlashingEvent;
 import com.ellzone.slotpuzzle2d.sprites.ReelStoppedSpinningEvent;
@@ -43,10 +37,6 @@ import net.dermetfan.gdx.assets.AnnotationAssetManager;
 import static com.ellzone.slotpuzzle2d.level.LevelCreator.PLAYING_CARD_LEVEL_TYPE;
 import static com.ellzone.slotpuzzle2d.level.LevelCreator.MINI_SLOT_MACHINE_TYPE;
 
-import static com.ellzone.slotpuzzle2d.screens.PlayScreen.GAME_LEVEL_HEIGHT;
-import static com.ellzone.slotpuzzle2d.screens.PlayScreen.GAME_LEVEL_WIDTH;
-import static com.ellzone.slotpuzzle2d.screens.PlayScreen.SLOT_REEL_OBJECT_LAYER;
-
 public class LevelLoader {
     private final AnnotationAssetManager annotationAssetManager;
     private LevelDoor levelDoor;
@@ -54,6 +44,7 @@ public class LevelLoader {
     private TiledMap tiledMapLevel;
     private AnimatedReelHelper animatedReelHelper;
     private Array<ReelTile> reelTiles;
+    private Array<AnimatedReel> animatedReels;
     private int levelWidth, levelHeight;
  	private Array<Card> cards;
     private Array<Integer> hiddenPlayingCards;
@@ -62,15 +53,15 @@ public class LevelLoader {
     private PuzzleGridTypeReelTile puzzleGridTypeReelTile;
     private int reelsFromLevel;
 
-    public LevelLoader(AnnotationAssetManager annotationAssetManager, LevelDoor levelDoor, MapTile mapTile, AnimatedReelHelper animatedReelHelper) {
+    public LevelLoader(AnnotationAssetManager annotationAssetManager, LevelDoor levelDoor, MapTile mapTile, Array<AnimatedReel> animatedReels) {
         this.annotationAssetManager = annotationAssetManager;
         this.levelDoor = levelDoor;
         this.mapTile = mapTile;
-        this.animatedReelHelper = animatedReelHelper;
-        this.reelTiles = animatedReelHelper.getReelTiles();
+        this.animatedReels = animatedReels;
+        reelTiles = new Array<>();
     }
 
-     public Array<ReelTile> createLevel(int levelWidth, int levelHeight) {
+    public Array<AnimatedReel> createLevel(int levelWidth, int levelHeight) {
         this.levelWidth = levelWidth;
         this.levelHeight = levelHeight;
         puzzleGridTypeReelTile = new PuzzleGridTypeReelTile();
@@ -79,12 +70,12 @@ public class LevelLoader {
             initialiseHiddenPlayingCards();
         else
             initialiseHiddenShape();
-        addReelsFromLevel();
+        initialiseReelTiles(animatedReels);
         if (!levelDoor.getLevelType().equals(MINI_SLOT_MACHINE_TYPE)) {
             reelTiles = checkLevel(reelTiles, levelWidth, levelHeight);
             reelTiles = adjustForAnyLonelyReels(reelTiles, levelWidth, levelHeight);
         }
-        return reelTiles;
+        return animatedReels;
     }
 
     public void setStoppedSpinningCallback(LevelCallback callback) {
@@ -99,28 +90,35 @@ public class LevelLoader {
         return annotationAssetManager.get("levels/level " + (this.levelDoor.getId() + 1) + " - 40x40.tmx");
     }
 
-    private void addReelsFromLevel() {
+    private void initialiseReelTiles(Array<AnimatedReel> animatedReels) {
         int index = 0;
-        for (MapObject mapObject : getReelsFromLevel()) {
-            Rectangle mapRectangle = ((RectangleMapObject) mapObject).getRectangle();
-            int c = (int) (mapRectangle.getX() - PlayScreen.PUZZLE_GRID_START_X) / PlayScreen.TILE_WIDTH;
-            int r = (int) (mapRectangle.getY() - PlayScreen.PUZZLE_GRID_START_Y) / PlayScreen.TILE_HEIGHT;
-            r = GAME_LEVEL_HEIGHT - r;
-            if ((r >= 0) & (r <= GAME_LEVEL_HEIGHT) & (c >= 0) & (c <= GAME_LEVEL_WIDTH)) {
-                addReel(mapRectangle, index);
-                index++;
-            } else {
-                Gdx.app.debug(SlotPuzzleConstants.SLOT_PUZZLE, "I don't respond to grid r="+r+" c="+c+". There it won't be added to the level! Sort it out in a level editor.");
-            }
-        }
+        for (AnimatedReel animatedReel : animatedReels)
+            initialiseReelTile(animatedReel, index++);
     }
 
-    private Array<MapObject> getReelsFromLevel() {
-        Array<MapObject> reelsFromLevel = new Array<>();
-        for (MapObject mapObject : tiledMapLevel.getLayers().get(SLOT_REEL_OBJECT_LAYER).getObjects().getByType(RectangleMapObject.class))
-            if (mapObject.getName().equalsIgnoreCase(LevelCreator.REELS_OBJECT_NAME))
-                reelsFromLevel.add(mapObject);
-        return reelsFromLevel;
+    private void initialiseReelTile(AnimatedReel animatedReel, int index) {
+        ReelTile reelTile = animatedReel.getReel();
+        reelTile.setEndReel(Random.getInstance().nextInt(reelTile.getNumberOfReelsInTexture()));
+        reelTile.setIndex(index);
+        reelTile.setDestinationX(reelTile.getX());
+        reelTile.setDestinationY(reelTile.getY());
+        reelTile.addListener(
+            new ReelTileListener() {
+                @Override
+                public void actionPerformed(ReelTileEvent event, ReelTile source) {
+                if (event instanceof ReelStoppedSpinningEvent)
+                    processReelHasStoppedSpinning(source);
+
+                if (event instanceof ReelStoppedFlashingEvent)
+                    processReelHasStoppedFlashing(source);
+                }
+            }
+        );
+        reelTile.unDeleteReelTile();
+        reelTile.startSpinning();
+        animatedReel.reinitialise();
+        reelTiles.add(reelTile);
+        System.out.println("reelTiles.size="+reelTiles.size);
     }
 
     private void initialiseHiddenPlayingCards() {
@@ -133,34 +131,6 @@ public class LevelLoader {
 
     private void initialiseHiddenShape() {
         hiddenPattern = new HiddenShape(tiledMapLevel);
-    }
-
-    private void addReel(Rectangle mapRectangle, int index) {
-        ReelTile reelTile = reelTiles.get(index);
-        reelTile.setIndex(index);
-        reelTile.setX(mapRectangle.getX());
-        reelTile.setY(mapRectangle.getY());
-        reelTile.setDestinationX(mapRectangle.getX());
-        reelTile.setDestinationY(mapRectangle.getY());
-        reelTile.setSx(0);
-
-        int startReel = Random.getInstance().nextInt(reelTile.getScrollTextureHeight());
-        startReel = (startReel / ((int) reelTile.getTileHeight())) * (int)reelTile.getTileHeight();
-        reelTile.setSy(startReel);
-        reelTile.addListener(new ReelTileListener() {
-                                 @Override
-                                 public void actionPerformed(ReelTileEvent event, ReelTile source) {
-                                     if (event instanceof ReelStoppedSpinningEvent)
-                                         processReelHasStoppedSpinning(source);
-
-                                     if (event instanceof ReelStoppedFlashingEvent)
-                                         processReelHasStoppedFlashing(source);
-                                 }
-                             }
-        );
-        reelTile.unDeleteReelTile();
-        reelTile.startSpinning();
-        animatedReelHelper.getAnimatedReels().get(reelTile.getIndex()).reinitialise();
     }
 
     private void processReelHasStoppedSpinning(ReelTile source) {
@@ -192,10 +162,4 @@ public class LevelLoader {
     }
 
     public HiddenPattern getHiddenPattern() {return hiddenPattern; }
-
-    public class LevelLoaderException extends GdxRuntimeException {
-        public LevelLoaderException(String message) {
-            super(message);
-        }
-    }
 }

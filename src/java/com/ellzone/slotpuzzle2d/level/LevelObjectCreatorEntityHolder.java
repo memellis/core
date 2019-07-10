@@ -22,10 +22,12 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.physics.box2d.World;
+import com.badlogic.gdx.utils.Array;
 import com.ellzone.slotpuzzle2d.sprites.AnimatedReel;
 import com.ellzone.slotpuzzle2d.sprites.HoldLightButton;
 import com.ellzone.slotpuzzle2d.sprites.ReelHelper;
 import com.ellzone.slotpuzzle2d.sprites.ReelSprites;
+import com.ellzone.slotpuzzle2d.sprites.ReelTile;
 import com.ellzone.slotpuzzle2d.sprites.SlotHandleSprite;
 import com.ellzone.slotpuzzle2d.tweenengine.TweenManager;
 import com.ellzone.slotpuzzle2d.utils.AssetsAnnotation;
@@ -41,6 +43,7 @@ public class LevelObjectCreatorEntityHolder extends LevelObjectCreator {
     private LevelSlotHandleSpriteCallback levelSlotHandleSpriteCallback;
     private LevelPointLightCallback levelPointLightCallback;
     private LevelReelHelperCallback levelReelHelperCallback;
+    private Array<ReelTile> reelTiles = new Array<>();
 
     public LevelObjectCreatorEntityHolder(LevelCreatorInjectionInterface injection, World world, RayHandler rayHandler) {
         super(injection, world, rayHandler);
@@ -62,7 +65,6 @@ public class LevelObjectCreatorEntityHolder extends LevelObjectCreator {
     @Override
     public TweenManager getTweenManager() {
         return super.getTweenManager();
-
     }
 
     @Override
@@ -92,6 +94,7 @@ public class LevelObjectCreatorEntityHolder extends LevelObjectCreator {
         return levelCreatorInjectionInterface.getReelSprites();
     }
 
+    public Array<ReelTile> getReelTiles() { return reelTiles; }
 
     public Color getReelPointLightColor() {
         return super.reelPointLightColor;
@@ -103,6 +106,7 @@ public class LevelObjectCreatorEntityHolder extends LevelObjectCreator {
 
     public void addTo(AnimatedReel reel) {
         reels.add(reel);
+        reelTiles.add(reel.getReel());
     }
 
     public void addTo(SlotHandleSprite handle) { this.handle = handle; }

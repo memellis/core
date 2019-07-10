@@ -80,7 +80,17 @@ public class AnimatedReel {
 	}
 	
 	private void initialiseAnimatedReel() {
-		reel = new ReelTile(this.texture, (int) (this.texture.getHeight() / this.tileWidth), this.x, this.y, this.tileWidth, this.tileHeight, this.reelDisplayWidth, this.reelDisplayHeight, this.endReel, this.spinningSound);
+		reel = new ReelTile(
+		        texture,
+                (int) (texture.getHeight() / tileWidth),
+                x,
+                y,
+                tileWidth,
+                tileHeight,
+                reelDisplayWidth,
+                reelDisplayHeight,
+                endReel,
+                spinningSound);
 		reelScrollHeight = this.texture.getHeight();
 		reel.setSpinning(false);
 		velocityY = 4.0f;
@@ -177,10 +187,9 @@ public class AnimatedReel {
 	public void update(float delta) {
 		reel.update(delta);
 		dampenedSine.update();
-		if (dampenedSine.getDSState() == DampenedSineParticle.DSState.UPDATING_DAMPENED_SINE) {
-     		reel.setSy(dampenedSine.position.y);
- 	    }
-	}
+		if (dampenedSine.getDSState() == DampenedSineParticle.DSState.UPDATING_DAMPENED_SINE)
+            reel.setSy(dampenedSine.position.y);
+   }
 	
 	public void draw(SpriteBatch spriteBatch) {
 		reel.draw(spriteBatch);
@@ -191,7 +200,7 @@ public class AnimatedReel {
 	}
 	
 	public void reinitialise() {
-        this.reel.setSpinning(true);
+        reel.setSpinning(true);
         dampenedSine.initialiseDampenedSine();
         dampenedSine.position.y = reel.getSy();
         dampenedSine.velocity = new Vector(0, velocityY);

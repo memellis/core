@@ -109,7 +109,7 @@ public class LevelCreatorScenario1 {
         puzzleGridTypeReelTile = new PuzzleGridTypeReelTile();
         reelBoxes = new Array<Body>();
         replacementReelBoxes = new Array<Integer>();
-        animatedReelHelper = new AnimatedReelHelper(this.annotationAssetManager, this.tweenManager, level.getLayers().get(REELS_LAYER_NAME).getObjects().getByType(RectangleMapObject.class).size);
+//        animatedReelHelper = new AnimatedReelHelper(this.annotationAssetManager, this.tweenManager, level.getLayers().get(REELS_LAYER_NAME).getObjects().getByType(RectangleMapObject.class).size);
         reelTiles = animatedReelHelper.getReelTiles();
         reelTiles = createLevel(this.levelDoor, this.level, this.reelTiles, this.levelWidth, this.levelHeight);
         reelsSpinning = reelBoxes.size - 1;

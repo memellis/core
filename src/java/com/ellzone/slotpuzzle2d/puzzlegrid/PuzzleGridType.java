@@ -241,6 +241,8 @@ public class PuzzleGridType {
 	
 		workingGrid = crossOffMatchSlots(matchedSlots, workingGrid);
 
+		printGrid(workingGrid);
+
 		matchedSlots = new Array<TupleValueIndex>();
 		for (int r = 0; r < workingGrid.length; r++) {
 			for (int c = 0; c < workingGrid[0].length; c++) {

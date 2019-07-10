@@ -41,10 +41,8 @@ public class PuzzleGridTypeReelTile {
 
         for(int r = 0; r < arraySizeR; r++) {
             for(int c = 0; c < arraySizeC; c++) {
-                if(grid[r][c] == null) {
-                    Gdx.app.debug(SlotPuzzleConstants.SLOT_PUZZLE, "Found null grid tile. r=" + r + " c= " + c + ". I will therefore create a deleted entry for the tile.");
-//                    throw new GdxRuntimeException("Level incorrect. Found null grid tile. r=" + r + " c= " + c);
-                }
+                if(grid[r][c] == null)
+                    throw new GdxRuntimeException("Level incorrect. Found null grid tile. r=" + r + " c= " + c);
             }
         }
         return reelLevel;
@@ -100,9 +98,8 @@ public class PuzzleGridTypeReelTile {
                                             workingGrid[r][co-1].setEReelTileGridValue(workingGrid[r][co]);
                                             workingGrid[r][co].setWReelTileGridValue(workingGrid[r][co-1]);
                                             co++;
-                                        } else {
+                                        } else
                                             match = false;
-                                        }
                                     } else {
                                         Gdx.app.debug(SlotPuzzleConstants.SLOT_PUZZLE, "r=" + r + " c=" + c + " is Null - ignoring this tile.");
                                         match = false;
@@ -113,9 +110,9 @@ public class PuzzleGridTypeReelTile {
                                 }
                             }
                         }
-                        for (int i = c; i < co; i++) {
+                        for (int i = c; i < co; i++)
                             workingGrid[r][i].value = co - c;
-                        }
+
                         c = co - 1;
                     }
                 }
@@ -152,9 +149,8 @@ public class PuzzleGridTypeReelTile {
                                             workingGrid[ro-1][c].setSReelTileGridValue(workingGrid[ro][c]);
                                             workingGrid[ro][c].setNReelTileGridValue(workingGrid[ro-1][c]);
                                             ro++;
-                                        } else {
+                                        } else
                                             match = false;
-                                        }
                                     } else {
                                         Gdx.app.debug(SlotPuzzleConstants.SLOT_PUZZLE, "r=" + r + " c=" + c + " is Null - ignoring this tile.");
                                         match = false;
@@ -165,9 +161,8 @@ public class PuzzleGridTypeReelTile {
                                 }
                             }
                         }
-                        for (int i = r; i < ro; i++) {
+                        for (int i = r; i < ro; i++)
                             workingGrid[i][c].value = ro - r;
-                        }
                         r = ro - 1;;
                     }
                 }
@@ -184,9 +179,8 @@ public class PuzzleGridTypeReelTile {
 
         for (int r = 0; r < arraySizeR; r++) {
             for (int c = 0; c < arraySizeC; c++) {
-                if (puzzleGrid[r][c].value > 1) {
+                if (puzzleGrid[r][c].value > 1)
                     matchedSlots.add(puzzleGrid[r][c]);
-                }
             }
         }
         return matchedSlots;
@@ -196,11 +190,10 @@ public class PuzzleGridTypeReelTile {
         int arraySizeR = puzzleGrid.length;
         int arraySizeC = puzzleGrid[0].length;
 
-        for(int c = 0; c < arraySizeC; c++) {
-            for(int r = 0; r < arraySizeR; r++) {
-                if(puzzleGrid[r][c].value > 1) {
+        for (int c = 0; c < arraySizeC; c++) {
+            for (int r = 0; r < arraySizeR; r++) {
+                if (puzzleGrid[r][c].value > 1)
                     matchedSlots.add(puzzleGrid[r][c]);
-                }
             }
         }
         return matchedSlots;
@@ -302,9 +295,8 @@ public class PuzzleGridTypeReelTile {
                                     if (puzzleGrid[r][co] != null) {
                                         if (puzzleGrid[r][co].value >=0) {
                                             co++;
-                                        } else {
+                                        } else
                                             match = false;
-                                        }
                                     } else {
                                         Gdx.app.debug(SlotPuzzleConstants.SLOT_PUZZLE, "r=" + r + " c=" + c + " is Null - ignoring this tile.");
                                         match = false;
@@ -315,9 +307,9 @@ public class PuzzleGridTypeReelTile {
                                 }
                             }
                         }
-                        for (int i = c; i < co; i++) {
+                        for (int i = c; i < co; i++)
                             workingGrid[r][i].value = co - c;
-                        }
+
                         c = co - 1;
                     }
                 }
@@ -350,9 +342,8 @@ public class PuzzleGridTypeReelTile {
                                     if (puzzleGrid[r][co] != null) {
                                         if (puzzleGrid[co][c].value >=0) {
                                             co++;
-                                        } else {
+                                        } else
                                             match = false;
-                                        }
                                     } else {
                                         Gdx.app.debug(SlotPuzzleConstants.SLOT_PUZZLE, "r=" + r + " c=" + c + " is Null - ignoring this tile.");
                                         match = false;
@@ -363,9 +354,9 @@ public class PuzzleGridTypeReelTile {
                                 }
                             }
                         }
-                        for (int i = r; i < co; i++) {
+                        for (int i = r; i < co; i++)
                             workingGrid[i][c].value = co - r;
-                        }
+
                         r = co - 1;;
                     }
                 }
@@ -378,15 +369,15 @@ public class PuzzleGridTypeReelTile {
 
     private ReelTileGridValue[][] crossOffMatchSlots(Array<ReelTileGridValue> matchedSlots, ReelTileGridValue[][] puzzleGrid) {
         ReelTileGridValue[][] workingGrid = copyGrid(puzzleGrid);
-        for (TupleValueIndex matchSlot : matchedSlots) {
+        for (TupleValueIndex matchSlot : matchedSlots)
             workingGrid[matchSlot.r][matchSlot.c].value = -1;
-        }
         return workingGrid;
     }
 
     public Array<ReelTile> adjustForAnyLonelyReels(Array<ReelTile> levelReel, int levelWidth, int levelHeight) {
         PuzzleGridType puzzleGrid = new PuzzleGridType();
         TupleValueIndex[][] grid = populateMatchGrid(levelReel, levelWidth, levelHeight);
+        PuzzleGridType.printGrid(grid);
         Array<TupleValueIndex> lonelyTiles = puzzleGrid.getLonelyTiles(grid);
         for (TupleValueIndex lonelyTile : lonelyTiles) {
             if (lonelyTile.r == 0) {
@@ -413,14 +404,13 @@ public class PuzzleGridTypeReelTile {
     public static void printGrid(ReelTileGridValue[][] puzzleGrid){
         for(int r = 0; r < puzzleGrid.length; r++){
             for (int c = 0; c < puzzleGrid[r].length; c++) {
-                if (puzzleGrid[r][c] == null) {
+                if (puzzleGrid[r][c] == null)
                     System.out.print(" ! ");
-                } else {
-                    if (puzzleGrid[r][c].value == -1) {
+                else {
+                    if (puzzleGrid[r][c].value == -1)
                         System.out.print(puzzleGrid[r][c].value + " ");
-                    } else {
+                    else
                         System.out.print(" " + puzzleGrid[r][c].value + " ");
-                    }
                 }
             }
             System.out.println();
@@ -570,20 +560,19 @@ public class PuzzleGridTypeReelTile {
             c = getColumnFromLevel(reelLevel.get(i).getDestinationX());
             r = getRowFromLevel(reelLevel.get(i).getDestinationY(), gridHeight);
             if ((r >= 0) & (r <= gridHeight) & (c >= 0) & (c <= gridWidth)) {
-                if (reelLevel.get(i).isReelTileDeleted()) {
+                if (reelLevel.get(i).isReelTileDeleted())
                     matchGrid[r][c] = new ReelTileGridValue(r, c, i, -1);
-                } else {
+                else
                     matchGrid[r][c] = new ReelTileGridValue(reelLevel.get(i), r, c, i, reelLevel.get(i).getEndReel());
-                }
+
                 Gdx.app.debug(SlotPuzzleConstants.SLOT_PUZZLE, MessageFormat.format("r={0} c={1} x={2} y={3} dx={4} dy={5} i={6} v={7}",
                               r, c,
                               reelLevel.get(i).getX(), reelLevel.get(i).getY(),
                               reelLevel.get(i).getDestinationX(), reelLevel.get(i).getDestinationY(),
                               i,
                               reelLevel.get(i).getEndReel()));
-            } else {
+            } else
                 Gdx.app.debug(SlotPuzzleConstants.SLOT_PUZZLE, "I don't respond to r="+r+" c="+c);
-            }
         }
         return matchGrid;
     }

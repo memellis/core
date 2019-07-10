@@ -103,12 +103,10 @@ public class ReelTile extends ReelSprite {
 
 	@Override
     public void update(float delta) {
-        if (super.isSpinning()) {
-        	processSpinningState();
-        }
-        if (reelFlashTween) {
+        if (super.isSpinning())
+            processSpinningState();
+        if (reelFlashTween)
         	processFlashTweenState(delta);
-        }
     }
 	
 	private void processSpinningState() {
@@ -200,9 +198,8 @@ public class ReelTile extends ReelSprite {
 	
 	public void stopSpinning() {
 		super.setSpinning(false);
-		if (this.spinningSound != null) {
+		if (this.spinningSound != null)
 			stopSpinningSound();
-		}
 	}
 
 	public void stopSpinningSound() {
@@ -249,9 +246,9 @@ public class ReelTile extends ReelSprite {
 	}
 	
 	private TextureRegion drawFlashOn(TextureRegion reel) {
-		if (flashOnReelPixmap == null) {
+		if (flashOnReelPixmap == null)
             flashOnReelPixmap = PixmapProcessors.getPixmapFromTextureRegion(reel);
-        }
+
         flashOnReelPixmap.setColor(flashColor);
 		flashOnReelPixmap.drawRectangle(0, 0, (int)tileWidth    , (int)tileHeight);
 		flashOnReelPixmap.drawRectangle(1, 1, (int)tileWidth - 2, (int)tileHeight - 2);

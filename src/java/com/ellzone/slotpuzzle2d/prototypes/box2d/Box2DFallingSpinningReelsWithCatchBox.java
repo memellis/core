@@ -69,7 +69,7 @@ public class Box2DFallingSpinningReelsWithCatchBox extends SPPrototype {
 
         this.annotationAssetManager = loadAssets();
         initialiseUniversalTweenEngine();
-        animatedReelHelper = new AnimatedReelHelper(this.annotationAssetManager, this.tweenManager, 7 * 4);
+//        animatedReelHelper = new AnimatedReelHelper(this.annotationAssetManager, this.tweenManager, 7 * 4);
         animatedReels = animatedReelHelper.getAnimatedReels();
 
         physics = new PhysicsManagerCustomBodies(camera);

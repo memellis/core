@@ -27,6 +27,8 @@ import com.badlogic.gdx.maps.tiled.TmxMapLoader;
 import com.ellzone.slotpuzzle2d.utils.AssetsAnnotation;
 import net.dermetfan.gdx.assets.AnnotationAssetManager;
 
+import java.util.Properties;
+
 public class SlotPuzzle extends Game {
 	public SpriteBatch batch;
 	public AnnotationAssetManager annotationAssetManager;
@@ -43,23 +45,21 @@ public class SlotPuzzle extends Game {
 	private void setLogLevel() {
 		String logLevel = System.getProperty(SlotPuzzleConstants.LIBGDX_LOGLEVEL_PROPERTY);
 		if (logLevel != null) {
-			if (logLevel.equals(SlotPuzzleConstants.DEBUG)) {
+			if (logLevel.equals(SlotPuzzleConstants.DEBUG))
 				Gdx.app.setLogLevel(Application.LOG_DEBUG);
-			} else if (logLevel.equals(SlotPuzzleConstants.INFO)) {
+			else if (logLevel.equals(SlotPuzzleConstants.INFO))
 				Gdx.app.setLogLevel(Application.LOG_INFO);				
-			} else if (logLevel.equals(SlotPuzzleConstants.ERROR) ) {
-				Gdx.app.setLogLevel(Application.LOG_ERROR);								
-			}
+			else if (logLevel.equals(SlotPuzzleConstants.ERROR) )
+				Gdx.app.setLogLevel(Application.LOG_ERROR);
 		} else {
 			logLevel= System.getenv(SlotPuzzleConstants.LIBGDX_LOGLEVEL);
 			if ((logLevel != null) && (logLevel != "")) {
-				if (logLevel.equals(SlotPuzzleConstants.DEBUG)) {
+				if (logLevel.equals(SlotPuzzleConstants.DEBUG))
 					Gdx.app.setLogLevel(Application.LOG_DEBUG);	
-				} else if (logLevel.equals(SlotPuzzleConstants.INFO)) {
+				else if (logLevel.equals(SlotPuzzleConstants.INFO))
 					Gdx.app.setLogLevel(Application.LOG_INFO);				
-				} else if (logLevel.equals(SlotPuzzleConstants.ERROR) ) {
-					Gdx.app.setLogLevel(Application.LOG_ERROR);								
-				}
+				else if (logLevel.equals(SlotPuzzleConstants.ERROR))
+					Gdx.app.setLogLevel(Application.LOG_ERROR);
 			}
 		}
 	}
