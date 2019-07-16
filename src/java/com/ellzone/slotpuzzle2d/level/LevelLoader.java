@@ -35,7 +35,7 @@ import com.ellzone.slotpuzzle2d.utils.Random;
 import net.dermetfan.gdx.assets.AnnotationAssetManager;
 
 import static com.ellzone.slotpuzzle2d.level.LevelCreator.PLAYING_CARD_LEVEL_TYPE;
-import static com.ellzone.slotpuzzle2d.level.LevelCreator.MINI_SLOT_MACHINE_TYPE;
+import static com.ellzone.slotpuzzle2d.level.LevelCreator.MINI_SLOT_MACHINE_LEVEL_TYPE;
 
 public class LevelLoader {
     private final AnnotationAssetManager annotationAssetManager;
@@ -71,7 +71,7 @@ public class LevelLoader {
         else
             initialiseHiddenShape();
         initialiseReelTiles(animatedReels);
-        if (!levelDoor.getLevelType().equals(MINI_SLOT_MACHINE_TYPE)) {
+        if (!levelDoor.getLevelType().equals(MINI_SLOT_MACHINE_LEVEL_TYPE)) {
             reelTiles = checkLevel(reelTiles, levelWidth, levelHeight);
             reelTiles = adjustForAnyLonelyReels(reelTiles, levelWidth, levelHeight);
         }

@@ -70,6 +70,10 @@ import com.badlogic.gdx.maps.tiled.*;
 
 import net.dermetfan.gdx.assets.AnnotationAssetManager;
 
+import static com.ellzone.slotpuzzle2d.level.LevelCreator.HIDDEN_PATTERN_LEVEL_TYPE;
+import static com.ellzone.slotpuzzle2d.level.LevelCreator.MINI_SLOT_MACHINE_LEVEL_TYPE;
+import static com.ellzone.slotpuzzle2d.level.LevelCreator.PLAYING_CARD_LEVEL_TYPE;
+
 public class WorldScreen implements Screen {
 	
     public static final String LOG_TAG = "SlotPuzzle_WorldScreen";
@@ -340,8 +344,14 @@ public class WorldScreen implements Screen {
 		levelDoors.get(levelNumber).setId(levelNumber);
 		inPlayScreen = true;
 		Gdx.input.setInputProcessor(null);
-		game.setScreen(new PlayScreen(game, levelDoors.get(levelNumber), selectedTile));
-		tweenManager.killAll();
+		if (levelDoors.get(levelNumber).getLevelType().equals(HIDDEN_PATTERN_LEVEL_TYPE))
+			game.setScreen(new PlayScreenHiddenPattern(game, levelDoors.get(levelNumber), selectedTile));
+		if (levelDoors.get(levelNumber).getLevelType().equals(PLAYING_CARD_LEVEL_TYPE))
+			game.setScreen(new PlayScreenHiddenPattern(game, levelDoors.get(levelNumber), selectedTile));
+		if (levelDoors.get(levelNumber).getLevelType().equals(MINI_SLOT_MACHINE_LEVEL_TYPE))
+			game.setScreen(new PlayScreenMiniSlotMachine(game, levelDoors.get(levelNumber), selectedTile));
+
+			tweenManager.killAll();
 		}
 	};
 

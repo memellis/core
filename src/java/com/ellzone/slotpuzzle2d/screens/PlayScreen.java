@@ -65,7 +65,6 @@ import com.ellzone.slotpuzzle2d.level.MapLevelNameComparator;
 import com.ellzone.slotpuzzle2d.level.PlayScreenIntroSequence;
 import com.ellzone.slotpuzzle2d.level.PlayScreenPopUps;
 import com.ellzone.slotpuzzle2d.physics.DampenedSineParticle;
-import com.ellzone.slotpuzzle2d.prototypes.minislotmachine.SpinningSlotsWithMatchesWinFlashesLoadedLevel;
 import com.ellzone.slotpuzzle2d.puzzlegrid.PuzzleGridType;
 import com.ellzone.slotpuzzle2d.puzzlegrid.PuzzleGridTypeReelTile;
 import com.ellzone.slotpuzzle2d.puzzlegrid.ReelTileGridValue;
@@ -93,13 +92,12 @@ import com.ellzone.slotpuzzle2d.utils.PixmapProcessors;
 import net.dermetfan.gdx.assets.AnnotationAssetManager;
 import aurelienribon.tweenengine.equations.Quad;
 import box2dLight.RayHandler;
-import jdk.nashorn.internal.codegen.ClassEmitter;
 
 import static com.ellzone.slotpuzzle2d.SlotPuzzleConstants.PIXELS_PER_METER;
 import static com.ellzone.slotpuzzle2d.SlotPuzzleConstants.VIRTUAL_HEIGHT;
 import static com.ellzone.slotpuzzle2d.SlotPuzzleConstants.VIRTUAL_WIDTH;
 import static com.ellzone.slotpuzzle2d.level.LevelCreator.HIDDEN_PATTERN_LEVEL_TYPE;
-import static com.ellzone.slotpuzzle2d.level.LevelCreator.MINI_SLOT_MACHINE_TYPE;
+import static com.ellzone.slotpuzzle2d.level.LevelCreator.MINI_SLOT_MACHINE_LEVEL_TYPE;
 import static com.ellzone.slotpuzzle2d.level.LevelCreator.PLAYING_CARD_LEVEL_TYPE;
 import static com.ellzone.slotpuzzle2d.scene.Hud.addScore;
 
@@ -111,7 +109,6 @@ public class PlayScreen implements Screen, PlayInterface, LevelCreatorInjectionI
     public static final int SLOT_REEL_OBJECT_LAYER = 2;
     public static final float PUZZLE_GRID_START_X = 160.0f;
     public static final float PUZZLE_GRID_START_Y = 40.0f;
-    private static final String REELS_LAYER_NAME = "ReelSprites";
     private static final String SLOTPUZZLE_SCREEN = "PlayScreen";
     private LevelLoader levelLoader;
     private PlayStateMachine playStateMachine;
@@ -289,7 +286,7 @@ public class PlayScreen implements Screen, PlayInterface, LevelCreatorInjectionI
                             iWonTheLevel();
                 }
             }
-            if (levelDoor.getLevelType().equals(LevelCreator.MINI_SLOT_MACHINE_TYPE))
+            if (levelDoor.getLevelType().equals(LevelCreator.MINI_SLOT_MACHINE_LEVEL_TYPE))
                 addReelStoppedListener(source);
 
         }
@@ -553,7 +550,7 @@ public class PlayScreen implements Screen, PlayInterface, LevelCreatorInjectionI
                 Gdx.app.debug(SLOTPUZZLE_SCREEN, "Play");
                 if (levelDoor.getLevelType().equals(HIDDEN_PATTERN_LEVEL_TYPE))
                     processIsTileClicked(unprojTouch.x, unprojTouch.y);
-                if (levelDoor.getLevelType().equals(MINI_SLOT_MACHINE_TYPE)) {
+                if (levelDoor.getLevelType().equals(MINI_SLOT_MACHINE_LEVEL_TYPE)) {
                     handleReelsTouchedSlotMachine(unprojTouch.x, unprojTouch.y);
                     handleSlotHandleIsTouch(unprojTouch.x, unprojTouch.y);
                 }
@@ -795,7 +792,7 @@ public class PlayScreen implements Screen, PlayInterface, LevelCreatorInjectionI
 
     @Override
     public boolean areReelsDeleted() {
-        return (levelDoor.getLevelType().equals(LevelCreator.MINI_SLOT_MACHINE_TYPE)) ?
+        return (levelDoor.getLevelType().equals(LevelCreator.MINI_SLOT_MACHINE_LEVEL_TYPE)) ?
                 false : flashSlots.areReelsDeleted();
     }
 
