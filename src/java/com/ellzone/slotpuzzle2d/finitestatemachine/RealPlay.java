@@ -65,6 +65,11 @@ public class RealPlay implements PlayInterface {
     }
 
     @Override
+    public boolean isFinishedMatchingSlots() {
+        return false;
+    }
+
+    @Override
     public boolean areReelsDeleted() {
         return false;
     }

@@ -26,6 +26,7 @@ public interface PlayInterface {
     public boolean areReelsSpinning();
     public boolean areReelsFlashing();
     public boolean areReelsStartedFlashing();
+    public boolean isFinishedMatchingSlots();
     public boolean areReelsDeleted();
     public void setReelsAreFlashing(boolean reelsAreFlashing);
     public void updateState(float delta);

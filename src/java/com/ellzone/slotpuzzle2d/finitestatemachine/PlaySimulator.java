@@ -111,6 +111,11 @@ public class PlaySimulator implements PlayInterface {
     }
 
     @Override
+    public boolean isFinishedMatchingSlots() {
+        return false;
+    }
+
+    @Override
     public boolean areReelsDeleted() {
         return numberOfReelsToDelete > 0;
     }

@@ -1,3 +1,19 @@
+/*
+ Copyright 2011 See AUTHORS file.
+
+ Licensed under the Apache License, Version 2.0 (the "License");
+ you may not use this file except in compliance with the License.
+ You may obtain a copy of the License at
+
+ http://www.apache.org/licenses/LICENSE-2.0
+
+ Unless required by applicable law or agreed to in writing, software
+ distributed under the License is distributed on an "AS IS" BASIS,
+ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ See the License for the specific language governing permissions and
+ limitations under the License.
+ */
+
 package com.ellzone.slotpuzzle2d.level;
 
 import com.badlogic.gdx.graphics.Color;
@@ -25,6 +41,7 @@ public class FlashSlots {
     private Array<ReelTile> reelTiles;
     private int numberOfReelsFlashing, numberOfReelsToDelete;
     private boolean startedFlashing, reelsAreFlashing, reelsAreDeleted;
+    private boolean finishedMatchingSlots;
 
     public FlashSlots(TweenManager tweenManager, int mapWidth, int mapHeight, Array<ReelTile> reelTiles) {
         this.tweenManager = tweenManager;
@@ -37,6 +54,7 @@ public class FlashSlots {
     private void initialiseFlashSlots() {
         reelsAreFlashing = false;
         startedFlashing = false;
+        finishedMatchingSlots = false;
         numberOfReelsFlashing = 0;
         numberOfReelsToDelete = 0;
     }
@@ -83,6 +101,7 @@ public class FlashSlots {
             pushPause += 2.0f;
             matchSlotsBatch.clear();
         }
+        finishedMatchingSlots = true;
     }
 
     private void flashMatchedSlotsBatch(Array<ReelTileGridValue> matchedSlots, float pushPause) {
@@ -143,11 +162,11 @@ public class FlashSlots {
     private TweenCallback reelFlashCallback = new TweenCallback() {
         @Override
         public void onEvent(int type, BaseTween<?> source) {
-            switch (type) {
-                case TweenCallback.COMPLETE:
-                    delegateReelFlashCallback(source);
-            }
+        switch (type) {
+            case TweenCallback.COMPLETE:
+                delegateReelFlashCallback(source);
         }
+    }
     };
 
     private void delegateReelFlashCallback(BaseTween<?> source) {
@@ -183,6 +202,8 @@ public class FlashSlots {
     public boolean areReelsStartedFlashing() {
         return startedFlashing;
     }
+
+    public boolean isFinishedMatchingSlots() { return finishedMatchingSlots; }
 
     public void setReelsAreFlashing(boolean reelsAreFlashing) {
         this.reelsAreFlashing = reelsAreFlashing;

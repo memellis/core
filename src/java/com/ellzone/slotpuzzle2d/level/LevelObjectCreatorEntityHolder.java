@@ -34,6 +34,7 @@ import com.ellzone.slotpuzzle2d.utils.AssetsAnnotation;
 
 import net.dermetfan.gdx.assets.AnnotationAssetManager;
 
+import box2dLight.ConeLight;
 import box2dLight.PointLight;
 import box2dLight.RayHandler;
 
@@ -42,8 +43,15 @@ public class LevelObjectCreatorEntityHolder extends LevelObjectCreator {
     private LevelAnimatedReelCallback levelAnimatedReelCallback;
     private LevelSlotHandleSpriteCallback levelSlotHandleSpriteCallback;
     private LevelPointLightCallback levelPointLightCallback;
+    private LevelConeLightCallback levelConeLightCallback;
     private LevelReelHelperCallback levelReelHelperCallback;
     private Array<ReelTile> reelTiles = new Array<>();
+    private Array<HoldLightButton> lightButtons = new Array<>();
+    private Array<AnimatedReel> reels = new Array<>();
+    private Array<PointLight> pointLights = new Array<>();
+    private Array<ConeLight> coneLights = new Array<>();
+    private Array<SlotHandleSprite> handles = new Array<>();
+    private ReelHelper reelHelper;
 
     public LevelObjectCreatorEntityHolder(LevelCreatorInjectionInterface injection, World world, RayHandler rayHandler) {
         super(injection, world, rayHandler);
@@ -100,6 +108,10 @@ public class LevelObjectCreatorEntityHolder extends LevelObjectCreator {
         return super.reelPointLightColor;
     }
 
+    public Color getConeLightColor() {
+        return new Color(Color.RED);
+    }
+
     public void addTo(HoldLightButton holdLightButton) {
         lightButtons.add(holdLightButton);
     }
@@ -109,9 +121,11 @@ public class LevelObjectCreatorEntityHolder extends LevelObjectCreator {
         reelTiles.add(reel.getReel());
     }
 
-    public void addTo(SlotHandleSprite handle) { this.handle = handle; }
+    public void addTo(SlotHandleSprite handle) { handles.add(handle); }
 
     public void addTo(PointLight pointLight) { pointLights.add(pointLight); }
+
+    public void addTo(ConeLight coneLight) { coneLights.add(coneLight); }
 
     public void addTo(ReelHelper reelHelper) { this.reelHelper = reelHelper; }
 
@@ -129,6 +143,10 @@ public class LevelObjectCreatorEntityHolder extends LevelObjectCreator {
 
     public void addPointLightCallback(LevelPointLightCallback callback) {
         this.levelPointLightCallback = callback;
+    }
+
+    public void addConeLightCallback(LevelConeLightCallback callback) {
+        this.levelConeLightCallback = callback;
     }
 
     public void addReelHelperCallback(LevelReelHelperCallback callback) {
@@ -170,8 +188,24 @@ public class LevelObjectCreatorEntityHolder extends LevelObjectCreator {
             levelPointLightCallback.onEvent(pointLight);
     }
 
+    public void delegateToCallback(ConeLight coneLight) {
+        if (levelConeLightCallback != null)
+            levelConeLightCallback.onEvent(coneLight);
+    }
+
     public void delegateToCallback(ReelHelper reelHelper) {
         if (levelReelHelperCallback != null)
             levelReelHelperCallback.onEvent(reelHelper);
     }
+
+    public Array<HoldLightButton> getHoldLightButtons() {
+        return lightButtons;
+    }
+
+    public Array<AnimatedReel> getAnimatedReels() {
+        return reels;
+    }
+
+    public Array<SlotHandleSprite> getHandles() { return handles; }
+
 }

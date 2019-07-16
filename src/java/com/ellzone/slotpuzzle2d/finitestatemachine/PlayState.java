@@ -121,11 +121,10 @@ public enum PlayState implements State<PlayStateMachine> {
 
         @Override
         public void update(PlayStateMachine playStateMachine) {
-            if (playStateMachine.getConcretePlay().areReelsStartedFlashing()) {
-                if (!playStateMachine.getConcretePlay().areReelsFlashing()) {
+            if (playStateMachine.getConcretePlay().areReelsStartedFlashing() ||
+                playStateMachine.getConcretePlay().isFinishedMatchingSlots())
+                if (!playStateMachine.getConcretePlay().areReelsFlashing())
                     playStateMachine.getStateMachine().changeState(INTRO_ENDING_SEQUENCE);
-                }
-            }
         }
 
         @Override

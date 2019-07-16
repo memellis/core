@@ -81,11 +81,6 @@ public class LevelObjectCreator {
     public static final String COULD_NOT_EXTRACT_OBJECT_FROM_MESSAGE = "Could not extract object from <{0}>";
     public static final String EXPECTED_NUMBER_OF_PROPERTY_PARTS_TO_BE_MESSAGE = "Expected number of property parts to be {0} actually found {1}";
 
-    protected Array<HoldLightButton> lightButtons = new Array<>();
-    protected Array<AnimatedReel> reels = new Array<>();
-    protected Array<PointLight> pointLights = new Array<>();
-    protected SlotHandleSprite handle;
-    protected ReelHelper reelHelper;
     protected LevelCreatorInjectionInterface levelCreatorInjectionInterface;
     protected World world;
     protected RayHandler rayHandler;
@@ -114,22 +109,13 @@ public class LevelObjectCreator {
         }
     }
 
-    public Array<HoldLightButton> getHoldLightButtons() {
-        return lightButtons;
-    }
 
-    public Array<AnimatedReel> getAnimatedReels() {
-        return reels;
+    public AnnotationAssetManager annotationAssetManager() {
+        return levelCreatorInjectionInterface.getAnnotationAssetManager();
     }
 
     public ReelSprites getReelSprites() {
         return levelCreatorInjectionInterface.getReelSprites();
-    }
-
-    public SlotHandleSprite getHandle() { return handle; }
-
-    public AnnotationAssetManager annotationAssetManager() {
-        return levelCreatorInjectionInterface.getAnnotationAssetManager();
     }
 
     public Texture getSlotReelScrollTexture() {
