@@ -143,7 +143,6 @@ public class AnimatedReel {
 		}
 	};
 	
-	
 	private void delegateSlowingSpinning(int type, BaseTween<?> source) {
 		ReelTile reel = (ReelTile)source.getUserData();
 		if (type == TweenCallback.END) {

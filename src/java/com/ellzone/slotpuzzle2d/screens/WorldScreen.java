@@ -344,16 +344,19 @@ public class WorldScreen implements Screen {
 		levelDoors.get(levelNumber).setId(levelNumber);
 		inPlayScreen = true;
 		Gdx.input.setInputProcessor(null);
+		setNextPlayScreen(levelNumber);
+		tweenManager.killAll();
+		}
+	};
+
+	private void setNextPlayScreen(int levelNumber) {
 		if (levelDoors.get(levelNumber).getLevelType().equals(HIDDEN_PATTERN_LEVEL_TYPE))
 			game.setScreen(new PlayScreenHiddenPattern(game, levelDoors.get(levelNumber), selectedTile));
 		if (levelDoors.get(levelNumber).getLevelType().equals(PLAYING_CARD_LEVEL_TYPE))
 			game.setScreen(new PlayScreenHiddenPattern(game, levelDoors.get(levelNumber), selectedTile));
 		if (levelDoors.get(levelNumber).getLevelType().equals(MINI_SLOT_MACHINE_LEVEL_TYPE))
 			game.setScreen(new PlayScreenMiniSlotMachine(game, levelDoors.get(levelNumber), selectedTile));
-
-			tweenManager.killAll();
-		}
-	};
+	}
 
 	@Override
 	public void show() {

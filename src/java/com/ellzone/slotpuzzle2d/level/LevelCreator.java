@@ -152,7 +152,15 @@ public class LevelCreator {
     boolean matchedReels = false;
     boolean reelsAboveHaveFallen = false;
 
-    public LevelCreator(LevelDoor levelDoor, TiledMap level, AnnotationAssetManager annotationAssetManager, TextureAtlas carddeckAtlas, TweenManager tweenManager, PhysicsManagerCustomBodies physics, int levelWidth, int levelHeight, PlayStates playState) {
+    public LevelCreator(LevelDoor levelDoor,
+                        TiledMap level,
+                        AnnotationAssetManager annotationAssetManager,
+                        TextureAtlas carddeckAtlas,
+                        TweenManager tweenManager,
+                        PhysicsManagerCustomBodies physics,
+                        int levelWidth,
+                        int levelHeight,
+                        PlayStates playState) {
         this.levelDoor = levelDoor;
         this.level = level;
         this.tweenManager = tweenManager;

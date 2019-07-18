@@ -67,18 +67,13 @@ import com.ellzone.slotpuzzle2d.level.PlayScreenPopUps;
 import com.ellzone.slotpuzzle2d.physics.DampenedSineParticle;
 import com.ellzone.slotpuzzle2d.puzzlegrid.PuzzleGridType;
 import com.ellzone.slotpuzzle2d.puzzlegrid.PuzzleGridTypeReelTile;
-import com.ellzone.slotpuzzle2d.puzzlegrid.ReelTileGridValue;
 import com.ellzone.slotpuzzle2d.puzzlegrid.TupleValueIndex;
 import com.ellzone.slotpuzzle2d.scene.Hud;
 import com.ellzone.slotpuzzle2d.scene.MapTile;
 import com.ellzone.slotpuzzle2d.sprites.AnimatedReel;
 import com.ellzone.slotpuzzle2d.sprites.HoldLightButton;
-import com.ellzone.slotpuzzle2d.sprites.LightButton;
 import com.ellzone.slotpuzzle2d.sprites.ReelSprites;
-import com.ellzone.slotpuzzle2d.sprites.ReelStoppedSpinningEvent;
 import com.ellzone.slotpuzzle2d.sprites.ReelTile;
-import com.ellzone.slotpuzzle2d.sprites.ReelTileEvent;
-import com.ellzone.slotpuzzle2d.sprites.ReelTileListener;
 import com.ellzone.slotpuzzle2d.sprites.Score;
 import com.ellzone.slotpuzzle2d.sprites.SlotHandleSprite;
 import com.ellzone.slotpuzzle2d.utils.AssetsAnnotation;
@@ -97,7 +92,6 @@ import static com.ellzone.slotpuzzle2d.SlotPuzzleConstants.PIXELS_PER_METER;
 import static com.ellzone.slotpuzzle2d.SlotPuzzleConstants.VIRTUAL_HEIGHT;
 import static com.ellzone.slotpuzzle2d.SlotPuzzleConstants.VIRTUAL_WIDTH;
 import static com.ellzone.slotpuzzle2d.level.LevelCreator.HIDDEN_PATTERN_LEVEL_TYPE;
-import static com.ellzone.slotpuzzle2d.level.LevelCreator.MINI_SLOT_MACHINE_LEVEL_TYPE;
 import static com.ellzone.slotpuzzle2d.level.LevelCreator.PLAYING_CARD_LEVEL_TYPE;
 import static com.ellzone.slotpuzzle2d.scene.Hud.addScore;
 
@@ -109,26 +103,35 @@ public class PlayScreen implements Screen, PlayInterface, LevelCreatorInjectionI
     public static final int SLOT_REEL_OBJECT_LAYER = 2;
     public static final float PUZZLE_GRID_START_X = 160.0f;
     public static final float PUZZLE_GRID_START_Y = 40.0f;
-    private static final String SLOTPUZZLE_SCREEN = "PlayScreen";
+    public static final String SLOTPUZZLE_SCREEN = "PlayScreen";
+
+    protected SlotPuzzle game;
+    protected Viewport viewport, lightViewport;
+    protected LevelDoor levelDoor;
+    protected Sprite[] sprites;
+    protected Array<AnimatedReel> animatedReels;
+    protected Array<ReelTile> reelTiles;
+    protected int reelsSpinning;
+    protected MapTile mapTile;
+    protected Hud hud;
+    protected Random random;
+    protected PlayStates playState;
+    protected PlayStateMachine playStateMachine;
+    protected PlayScreenPopUps playScreenPopUps;
+    protected Sound chaChingSound,
+                    pullLeverSound,
+                    reelSpinningSound,
+                    reelStoppedSound;
+
     private LevelLoader levelLoader;
-    private PlayStateMachine playStateMachine;
-    private PlayStates playState;
-    private SlotPuzzle game;
-    private final OrthographicCamera camera = new OrthographicCamera();
-    private Viewport viewport;
+    private OrthographicCamera camera = new OrthographicCamera();
     private Stage stage;
     private float sW, sH;
     private final TweenManager tweenManager = new TweenManager();
     private FlashSlots flashSlots;
     private TextureAtlas tilesAtlas;
-    private Sound chaChingSound,
-                  pullLeverSound,
-                  reelSpinningSound,
-                  reelStoppedSound;
     private boolean isLoaded = false;
-    private int reelsSpinning;
     private TiledMap level;
-    private Random random;
     private OrthogonalTiledMapRenderer renderer;
     private boolean gameOver = false;
     private boolean inRestartLevel = false;
@@ -136,28 +139,20 @@ public class PlayScreen implements Screen, PlayInterface, LevelCreatorInjectionI
     private int touchX, touchY;
     private boolean displaySpinHelp;
     private int displaySpinHelpSprite;
-    private Sprite[] sprites;
-    private Hud hud;
     private Array<Score> scores;
     private BitmapFont font;
-    private LevelDoor levelDoor;
     private HiddenPattern hiddenPattern;
-    private MapTile mapTile;
     private int mapWidth;
     private int mapHeight;
     private boolean show = false;
     private PlayScreenIntroSequence playScreenIntroSequence;
-    private PlayScreenPopUps playScreenPopUps;
     private World world;
     private Box2DDebugRenderer debugRenderer;
     private RayHandler rayHandler;
-    private Array<AnimatedReel> animatedReels;
-    private Array<ReelTile> reelTiles;
     private Array<HoldLightButton> holdLightButtons;
     private Array<SlotHandleSprite> slotHandles;
     private Texture slotReelScrollTexture;
     private ReelSprites reelSprites;
-    private Viewport lightViewport;
     private int[][] reelGrid = new int[3][3];
     private Array<Array<Vector2>> rowMacthesToDraw;
     private ShapeRenderer shapeRenderer;
@@ -244,7 +239,7 @@ public class PlayScreen implements Screen, PlayInterface, LevelCreatorInjectionI
         flashSlots = new FlashSlots(tweenManager, mapWidth, mapHeight, reelTiles);
     }
 
-    private void getLevelEntities(LevelObjectCreatorEntityHolder levelObjectCreator) {
+    protected void getLevelEntities(LevelObjectCreatorEntityHolder levelObjectCreator) {
         animatedReels = levelObjectCreator.getAnimatedReels();
         reelTiles = levelObjectCreator.getReelTiles();
         holdLightButtons = levelObjectCreator.getHoldLightButtons();
@@ -262,7 +257,7 @@ public class PlayScreen implements Screen, PlayInterface, LevelCreatorInjectionI
         return level.getLayers().get(SLOT_REEL_OBJECT_LAYER).getObjects().getByType(RectangleMapObject.class);
     }
 
-    private LevelLoader getLevelLoader() {
+    protected LevelLoader getLevelLoader() {
         LevelLoader levelLoader = new LevelLoader(game.annotationAssetManager, levelDoor, mapTile, animatedReels);
         levelLoader.setStoppedSpinningCallback(stoppedSpinningCallback);
         levelLoader.setStoppedFlashingCallback(stoppedFlashingCallback);
@@ -272,10 +267,8 @@ public class PlayScreen implements Screen, PlayInterface, LevelCreatorInjectionI
     private LevelCallback stoppedSpinningCallback = new LevelCallback() {
         @Override
         public void onEvent (ReelTile source) {
-
             reelStoppedSound.play();
             reelsSpinning--;
-
             if (playStateMachine.getStateMachine().getCurrentState() == PlayState.PLAY) {
                 if (reelsSpinning <= -1) {
                     if (levelDoor.getLevelType().equals(LevelCreator.HIDDEN_PATTERN_LEVEL_TYPE))
@@ -286,72 +279,10 @@ public class PlayScreen implements Screen, PlayInterface, LevelCreatorInjectionI
                             iWonTheLevel();
                 }
             }
-            if (levelDoor.getLevelType().equals(LevelCreator.MINI_SLOT_MACHINE_LEVEL_TYPE))
-                addReelStoppedListener(source);
-
         }
     };
 
-    private void addReelStoppedListener(ReelTile reel) {
-        reel.addListener(new ReelStoppedListener().invoke());
-    }
-
-    private class ReelStoppedListener {
-        public ReelTileListener invoke() {
-            return new ReelTileListener() {
-                @Override
-                public void actionPerformed(ReelTileEvent event, ReelTile source) {
-                    if (event instanceof ReelStoppedSpinningEvent)
-                        matchReels();
-                }
-            };
-        }
-    }
-
-    private void matchReels() {
-        captureReelPositions();
-        PuzzleGridTypeReelTile puzzleGrid = new PuzzleGridTypeReelTile();
-        ReelTileGridValue[][] matchGrid = puzzleGrid.populateMatchGrid(reelGrid);
-        PuzzleGridTypeReelTile puzzleGridTypeReelTile = new PuzzleGridTypeReelTile();
-        matchGrid = puzzleGridTypeReelTile.createGridLinks(matchGrid);
-        matchRowsToDraw(matchGrid, puzzleGridTypeReelTile);
-    }
-
-    private void matchRowsToDraw(ReelTileGridValue[][] matchGrid, PuzzleGridTypeReelTile puzzleGridTypeReelTile) {
-        rowMacthesToDraw = new Array<Array<Vector2>>();
-        for (int row = 0; row < matchGrid.length; row++) {
-            Array<ReelTileGridValue> depthSearchResults = puzzleGridTypeReelTile.depthFirstSearchIncludeDiagonals(matchGrid[row][0]);
-            if (puzzleGridTypeReelTile.isRow(depthSearchResults, matchGrid))
-                rowMacthesToDraw.add(drawMatches(depthSearchResults, 340, 300));
-        }
-    }
-
-    private Array<Vector2> drawMatches(Array<ReelTileGridValue> depthSearchResults, int startX, int startY) {
-        Array<Vector2> points = new Array<Vector2>();
-        for (ReelTileGridValue cell : depthSearchResults) {
-            hud.addScore(cell.value);
-            points.add(new Vector2(startX + cell.c * 40, startY - cell.r * 40));
-        }
-        return points;
-    }
-
-    private void captureReelPositions() {
-        for (int r = 0; r < reelGrid.length; r++)
-            for (int c = 0; c < reelGrid[0].length; c++)
-                reelGrid[r][c] = getReelPosition(r, c);
-    }
-
-    private int getReelPosition(int r, int c) {
-        int reelPosition = reelTiles.get(c).getEndReel() + r;
-        if (reelPosition < 0)
-            reelPosition = sprites.length - 1;
-        else
-        if(reelPosition > sprites.length - 1)
-            reelPosition = 0;
-        return reelPosition;
-    }
-
-    private LevelCallback stoppedFlashingCallback = new LevelCallback() {
+    protected LevelCallback stoppedFlashingCallback = new LevelCallback() {
         @Override
         public void onEvent(ReelTile source) {
             if ((levelDoor.getLevelType().equals(LevelCreator.HIDDEN_PATTERN_LEVEL_TYPE)) ||
@@ -523,7 +454,7 @@ public class PlayScreen implements Screen, PlayInterface, LevelCreatorInjectionI
         }
     };
 
-    public void handleInput() {
+    protected void handleInput() {
         if (Gdx.input.justTouched()) {
             touchX = Gdx.input.getX();
             touchY = Gdx.input.getY();
@@ -550,16 +481,11 @@ public class PlayScreen implements Screen, PlayInterface, LevelCreatorInjectionI
                 Gdx.app.debug(SLOTPUZZLE_SCREEN, "Play");
                 if (levelDoor.getLevelType().equals(HIDDEN_PATTERN_LEVEL_TYPE))
                     processIsTileClicked(unprojTouch.x, unprojTouch.y);
-                if (levelDoor.getLevelType().equals(MINI_SLOT_MACHINE_LEVEL_TYPE)) {
-                    handleReelsTouchedSlotMachine(unprojTouch.x, unprojTouch.y);
-                    handleSlotHandleIsTouch(unprojTouch.x, unprojTouch.y);
-                }
             }
-            handleLightButtonTouched();
         }
     }
 
-    private boolean isOver(Sprite sprite, float x, float y) {
+    protected boolean isOver(Sprite sprite, float x, float y) {
         return sprite.getX() <= x && x <= sprite.getX() + sprite.getWidth()
             && sprite.getY() <= y && y <= sprite.getY() + sprite.getHeight();
     }
@@ -581,71 +507,6 @@ public class PlayScreen implements Screen, PlayInterface, LevelCreatorInjectionI
             }
         } else
             Gdx.app.debug(SlotPuzzleConstants.SLOT_PUZZLE, "I don't respond to r="+r+"c="+c);
-    }
-
-    private void handleReelsTouchedSlotMachine(float touchX, float touchY) {
-        for (AnimatedReel animatedReel : animatedReels) {
-            if (animatedReel.getReel().getBoundingRectangle().contains(touchX, touchY)) {
-                clearRowMatchesToDraw();
-                if (animatedReel.getReel().isSpinning()) {
-                    if (animatedReel.getDampenedSineState() == DampenedSineParticle.DSState.UPDATING_DAMPENED_SINE)
-                        processReelTouchedWhileSpinning(animatedReel.getReel());
-                } else {
-                    animatedReel.setEndReel(random.nextInt(sprites.length - 1));
-                    animatedReel.reinitialise();
-                    animatedReel.getReel().startSpinning();
-                }
-            }
-        }
-    }
-
-    private void clearRowMatchesToDraw() {
-        if (rowMacthesToDraw.size > 0)
-            rowMacthesToDraw.removeRange(0, rowMacthesToDraw.size - 1);
-    }
-
-    private void handleLightButtonTouched() {
-        Vector2 touch = new Vector2(Gdx.input.getX(), Gdx.input.getY());
-        touch = lightViewport.unproject(touch);
-        for (LightButton lightButton : holdLightButtons)
-            if (lightButton.getSprite().getBoundingRectangle().contains(touch.x, touch.y))
-                if (lightButton.getLight().isActive())
-                    lightButton.getLight().setActive(false);
-                else
-                    lightButton.getLight().setActive(true);
-    }
-
-    private void handleSlotHandleIsTouch(float touchX, float touchY) {
-        for (SlotHandleSprite slotHandle : slotHandles)
-            if (slotHandle.getBoundingRectangle().contains(touchX, touchY))
-                if (isReelsNotSpinning())
-                    slotHandlePulled(slotHandle);
-                else
-                    reelStoppedSound.play();
-    }
-
-    private boolean isReelsNotSpinning() {
-        boolean reelsNotSpinning = true;
-        for (AnimatedReel animatedReel : animatedReels)
-            if (animatedReel.getReel().isSpinning())
-                reelsNotSpinning = false;
-
-        return reelsNotSpinning;
-    }
-
-    private void slotHandlePulled(SlotHandleSprite slotHandle) {
-        slotHandle.pullSlotHandle();
-        pullLeverSound.play();
-        clearRowMatchesToDraw();
-        int i = 0;
-        for (AnimatedReel animatedReel : animatedReels) {
-            if (!holdLightButtons.get(i).getLight().isActive()) {
-                animatedReel.setEndReel(random.nextInt(sprites.length - 1));
-                animatedReel.reinitialise();
-                animatedReel.getReel().startSpinning();
-            }
-            i++;
-        }
     }
 
     private void testPlayingCardLevelWon() {
@@ -674,20 +535,20 @@ public class PlayScreen implements Screen, PlayInterface, LevelCreatorInjectionI
         playScreenPopUps.getLevelWonPopUp().showLevelPopUp(null);
     }
 
-    private TweenCallback hideLevelPopUpCallback = new TweenCallback() {
+    protected TweenCallback hideLevelPopUpCallback = new TweenCallback() {
         @Override
         public void onEvent(int type, BaseTween<?> source) {
-        switch (type) {
-            case TweenCallback.END:
-                playState = PlayStates.PLAYING;
-                hud.resetWorldTime(300);
-                hud.startWorldTimer();
-                testForHiddenPatternRevealed(reelTiles);
+            switch (type) {
+                case TweenCallback.END:
+                    playState = PlayStates.PLAYING;
+                    hud.resetWorldTime(300);
+                    hud.startWorldTimer();
+                    testForHiddenPatternRevealed(reelTiles);
+            }
         }
-    }
     };
 
-    private TweenCallback levelWonCallback = new TweenCallback() {
+    protected TweenCallback levelWonCallback = new TweenCallback() {
         @Override
         public void onEvent(int type, BaseTween<?> source) {
             dispose();
@@ -695,7 +556,6 @@ public class PlayScreen implements Screen, PlayInterface, LevelCreatorInjectionI
             game.setScreen(game.getWorldScreen());
         }
     };
-
 
     private void startReelSpinning(ReelTile reel, AnimatedReel animatedReel) {
         reel.setEndReel(random.nextInt(sprites.length - 1));
@@ -707,7 +567,7 @@ public class PlayScreen implements Screen, PlayInterface, LevelCreatorInjectionI
         pullLeverSound.play();
     }
 
-    private void processReelTouchedWhileSpinning(ReelTile reel) {
+    protected void processReelTouchedWhileSpinning(ReelTile reel) {
         reel.setEndReel(reel.getCurrentReel());
         displaySpinHelp = true;
         displaySpinHelpSprite = reel.getCurrentReel();
@@ -716,13 +576,13 @@ public class PlayScreen implements Screen, PlayInterface, LevelCreatorInjectionI
         reelSpinningSound.play();
     }
 
-    private TweenCallback levelOverCallback = new TweenCallback() {
+    protected TweenCallback levelOverCallback = new TweenCallback() {
         @Override
         public void onEvent(int type, BaseTween<?> source) {
-        switch (type) {
-            case TweenCallback.END:
-                delegateLevelOverCallback();
-        }
+            switch (type) {
+                case TweenCallback.END:
+                    delegateLevelOverCallback();
+            }
         }
     };
 
@@ -810,19 +670,26 @@ public class PlayScreen implements Screen, PlayInterface, LevelCreatorInjectionI
         renderer.setView(camera);
         updateAnimatedReels(delta);
         hud.update(delta);
-        if (hud.getWorldTime() == 0) {
-            if ((Hud.getLives() > 0) & (!inRestartLevel)) {
-                inRestartLevel = true;
-                playState = PlayStates.LEVEL_LOST;
-                playScreenPopUps.setLevelLostSpritePositions();
-                playScreenPopUps.getLevelLostPopUp().showLevelPopUp(null);
-            } else
-                gameOver = true;
-        }
+        if (hud.getWorldTime() == 0)
+            weAreOutOfTime();
+        checkForGameOverCondition();
+    }
+
+    private void checkForGameOverCondition() {
         if ((gameOver) & (!win) & (Hud.getLives() == 0)) {
             dispose();
             game.setScreen(new EndOfGameScreen(game));
         }
+    }
+
+    private void weAreOutOfTime() {
+        if ((Hud.getLives() > 0) & (!inRestartLevel)) {
+            inRestartLevel = true;
+            playState = PlayStates.LEVEL_LOST;
+            playScreenPopUps.setLevelLostSpritePositions();
+            playScreenPopUps.getLevelLostPopUp().showLevelPopUp(null);
+        } else
+            gameOver = true;
     }
 
     private void updateAnimatedReels(float delta) {
@@ -869,37 +736,18 @@ public class PlayScreen implements Screen, PlayInterface, LevelCreatorInjectionI
             return true;
     }
 
-    private void renderMainGameElements() {
+    protected void renderMainGameElements() {
         game.batch.begin();
         renderHiddenPattern();
         renderAnimatedReels();
-        renderSlotHandle();
         renderScore();
         renderSpinHelper();
         game.batch.end();
-        game.batch.begin();
-        renderMacthedRows();
-        game.batch.end();
         renderWorld();
         renderRayHandler();
-        renderLightButtons();
     }
 
-    private void renderMacthedRows() {
-        shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
-        shapeRenderer.setColor(Color.RED);
-        for (Array<Vector2> matchedRow : rowMacthesToDraw) {
-            if (matchedRow.size >= 2) {
-                for (int i = 0; i < matchedRow.size - 1; i++)
-                    shapeRenderer.rectLine(matchedRow.get(i    ).x, matchedRow.get(i    ).y,
-                                           matchedRow.get(i + 1).x, matchedRow.get(i + 1).y,
-                                    2);
-            }
-        }
-        shapeRenderer.end();
-    }
-
-    private void renderHud() {
+    protected void renderHud() {
         game.batch.setProjectionMatrix(hud.stage.getCamera().combined);
         hud.stage.draw();
     }
@@ -909,45 +757,32 @@ public class PlayScreen implements Screen, PlayInterface, LevelCreatorInjectionI
             drawPlayingCards(game.batch);
     }
 
-    private void renderWorld() {
+    protected void renderWorld() {
         debugRenderer.render(world, lightViewport.getCamera().combined);
     }
 
-    private void renderRayHandler() {
+    protected void renderRayHandler() {
         rayHandler.setCombinedMatrix((OrthographicCamera) lightViewport.getCamera());
         rayHandler.updateAndRender();
     }
 
-    private void renderLightButtons() {
-        game.batch.setProjectionMatrix(lightViewport.getCamera().combined);
-        game.batch.begin();
-        for (HoldLightButton lightButton : holdLightButtons)
-            lightButton.getSprite().draw(game.batch);
-        game.batch.end();
-    }
-
-    private void renderAnimatedReels() {
+    protected void renderAnimatedReels() {
         for (AnimatedReel animatedReel : animatedReels)
             if (!animatedReel.getReel().isReelTileDeleted())
                 animatedReel.draw(game.batch);
     }
 
-    private void renderSlotHandle() {
-        for (SlotHandleSprite slotHandle : slotHandles)
-            slotHandle.draw(game.batch);
-    }
-
-    private void renderSpinHelper() {
+    protected void renderSpinHelper() {
         if (displaySpinHelp)
             sprites[displaySpinHelpSprite].draw(game.batch);
     }
 
-    private void renderScore() {
+    protected void renderScore() {
         for (Score score : scores)
             score.render(game.batch);
     }
 
-    private void drawCurrentPlayState() {
+    protected void drawCurrentPlayState() {
         game.batch.setProjectionMatrix(camera.combined);
         switch (playState) {
             case INTRO_POPUP:
