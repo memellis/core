@@ -451,13 +451,17 @@ public class IntroScreen extends InputAdapter implements Screen {
             if (launchButton.getSprite().getBoundingRectangle().contains(point.x, point.y)) {
                 launchButton.getLight().setActive(true);
                 endOfIntroScreen = true;
-                messageManager.dispatchMessage(MessageType.StopMusic.index, AssetsAnnotation.MUSIC_INTRO_SCREEN);
+                stopBackgroundMusic();
             }
         }
         if (button == Input.Buttons.RIGHT) {
             musicPlayer.setVisible(!musicPlayer.isVisible());
         }
         return false;
+    }
+
+    private void stopBackgroundMusic() {
+        messageManager.dispatchMessage(MessageType.StopMusic.index, AssetsAnnotation.MUSIC_INTRO_SCREEN);
     }
 
     private void updateTimer(float delta) {
@@ -479,6 +483,7 @@ public class IntroScreen extends InputAdapter implements Screen {
         reelTile.update(delta);
         if (endOfIntroScreen) {
             if (nextScreenTimer < 1) {
+                stopBackgroundMusic();
                 game.setScreen(new WorldScreen(game));
                 dispose();
             }
@@ -560,11 +565,4 @@ public class IntroScreen extends InputAdapter implements Screen {
     public SlotPuzzle getGame() {
         return this.game;
     }
-
-//    @Override
-//    public boolean handleMessage(Telegram message) {
-//        if (message.message == MessageType.GetCurrentMusicTrack.index)
-//            currentTrack = (Music) message.extraInfo;
-//        return false;
-//    }
 }
