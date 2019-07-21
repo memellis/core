@@ -115,7 +115,7 @@ public class SpinningSlotsWithMatchesWinFlashesLoadedLevel
         random = new Random();
         slotReelScrollTexture = createSlotReelScrollTexture();
         loadlevel();
-        createPointLights();
+        createViewPorts();
         hud = setUpHud(batch);
         createIntroSequence();
    }
@@ -158,36 +158,14 @@ public class SpinningSlotsWithMatchesWinFlashesLoadedLevel
     protected void initialiseScreenOverride() {
     }
 
-    private void createPointLights() {
+    private void createViewPorts() {
         lightViewport = new FitViewport((float) VIRTUAL_WIDTH / PIXELS_PER_METER, (float) VIRTUAL_HEIGHT / PIXELS_PER_METER);
         lightViewport.getCamera().position.set( (float) VIRTUAL_WIDTH / PIXELS_PER_METER * 0.5f,
                                                 (float) VIRTUAL_HEIGHT / PIXELS_PER_METER * 0.5f,
-                                                 0);
+                                                0);
         lightViewport.getCamera().update();
         lightViewport.update(VIRTUAL_WIDTH, VIRTUAL_HEIGHT);
-
         hudViewport = new FitViewport(VIRTUAL_WIDTH, VIRTUAL_HEIGHT, new OrthographicCamera());
-
-//        PointLight reelLight = new PointLight(rayHandler, 32);
-//        reelLight.setActive(true);
-//        reelLight.setColor(Color.WHITE);
-//        reelLight.setDistance(2.0f);
-//        reelLight.setPosition(VIRTUAL_WIDTH / ( PIXELS_PER_METER * 2), (VIRTUAL_HEIGHT + 96) / (PIXELS_PER_METER * 2));
-//
-//        PointLight handleLight = new PointLight(rayHandler, 32);
-//        handleLight.setActive(true);
-//        handleLight.setColor(Color.WHITE);
-//        handleLight.setDistance(1.5f);
-//        Rectangle slotHandleSprintBoundingRectangle = slotHandles.get(0).getBoundingRectangle();
-//        float slotHandleSpriteCenterX = slotHandleSprintBoundingRectangle.getX() + slotHandleSprintBoundingRectangle.getWidth() / 2;
-//        float slotHandleSpriteCenterY = slotHandleSprintBoundingRectangle.getY() + slotHandleSprintBoundingRectangle.getHeight() / 2;
-//        handleLight.setPosition(slotHandleSpriteCenterX / PIXELS_PER_METER, slotHandleSpriteCenterY / PIXELS_PER_METER);
-//
-//        PointLight reelHelperLight = new PointLight(rayHandler, 32);
-//        reelHelperLight.setActive(true);
-//        reelHelperLight.setColor(Color.RED);
-//        reelHelperLight.setDistance(1.0f);
-//        reelHelperLight.setPosition(48 / PIXELS_PER_METER,  (sprites[0].getY() + 16) / PIXELS_PER_METER);
     }
 
     @Override
@@ -231,9 +209,8 @@ public class SpinningSlotsWithMatchesWinFlashesLoadedLevel
     protected void updateOverride(float dt) {
         handleInput();
         tweenManager.update(dt);
-        for (AnimatedReel reel : reels) {
+        for (AnimatedReel reel : reels)
             reel.update(dt);
-        }
         hud.update(dt);
     }
 
@@ -252,12 +229,13 @@ public class SpinningSlotsWithMatchesWinFlashesLoadedLevel
         batch.begin();
         shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
         shapeRenderer.setColor(Color.RED);
-
         for (Array<Vector2> matchedRow : rowMatchesToDraw) {
             if (matchedRow.size >= 2)
-                for (int i = 0; i < matchedRow.size - 1; i++) {
-                    shapeRenderer.rectLine(matchedRow.get(i).x, matchedRow.get(i).y, matchedRow.get(i + 1).x, matchedRow.get(i + 1).y, 2);
-                }
+                for (int i = 0; i < matchedRow.size - 1; i++)
+                    shapeRenderer.rectLine(matchedRow.get(i).x,
+                                           matchedRow.get(i).y,
+                                           matchedRow.get(i + 1).x,
+                                           matchedRow.get(i + 1).y, 2);
         }
         shapeRenderer.end();
         batch.end();
@@ -353,13 +331,11 @@ public class SpinningSlotsWithMatchesWinFlashesLoadedLevel
 
     private void handleLightButtonTouched() {
         for (LightButton lightButton : lightButtons) {
-            if (lightButton.getSprite().getBoundingRectangle().contains(touch.x, touch.y)) {
-                if (lightButton.getLight().isActive()) {
+            if (lightButton.getSprite().getBoundingRectangle().contains(touch.x, touch.y))
+                if (lightButton.getLight().isActive())
                     lightButton.getLight().setActive(false);
-                } else {
+                else
                     lightButton.getLight().setActive(true);
-                }
-            }
         }
     }
 
@@ -394,11 +370,9 @@ public class SpinningSlotsWithMatchesWinFlashesLoadedLevel
 
     private boolean isReelsNotSpinning() {
         boolean reelsNotSpinning = true;
-        for (AnimatedReel animatedReel : reels) {
-            if (animatedReel.getReel().isSpinning()) {
+        for (AnimatedReel animatedReel : reels)
+            if (animatedReel.getReel().isSpinning())
                 reelsNotSpinning = false;
-            }
-        }
         return reelsNotSpinning;
     }
 
@@ -425,9 +399,8 @@ public class SpinningSlotsWithMatchesWinFlashesLoadedLevel
             return new ReelTileListener() {
                 @Override
                 public void actionPerformed(ReelTileEvent event, ReelTile source) {
-                    if (event instanceof ReelStoppedSpinningEvent) {
+                    if (event instanceof ReelStoppedSpinningEvent)
                         matchReels();
-                    }
                 }
             };
         }
@@ -446,9 +419,8 @@ public class SpinningSlotsWithMatchesWinFlashesLoadedLevel
         rowMatchesToDraw = new Array<Array<Vector2>>();
         for (int row = 0; row < matchGrid.length; row++) {
             Array<ReelTileGridValue> depthSearchResults = puzzleGridTypeReelTile.depthFirstSearchIncludeDiagonals(matchGrid[row][0]);
-            if (puzzleGridTypeReelTile.isRow(depthSearchResults, matchGrid)) {
+            if (puzzleGridTypeReelTile.isRow(depthSearchResults, matchGrid))
                 rowMatchesToDraw.add(drawMatches(depthSearchResults, 545, 450));
-            };
         }
     }
 
@@ -463,9 +435,8 @@ public class SpinningSlotsWithMatchesWinFlashesLoadedLevel
 
     private void captureReelPositions() {
         for (int r = 0; r < reelGrid.length; r++) {
-            for (int c = 0; c < reelGrid[0].length; c++) {
+            for (int c = 0; c < reelGrid[0].length; c++)
                 reelGrid[r][c] = getReelPosition(r, c);
-            }
         }
     }
 

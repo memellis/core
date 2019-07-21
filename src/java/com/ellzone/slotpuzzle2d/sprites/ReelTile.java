@@ -21,6 +21,9 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
+import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.utils.Array;
 import com.ellzone.slotpuzzle2d.utils.PixmapProcessors;
 import com.ellzone.slotpuzzle2d.utils.Random;
 
@@ -42,8 +45,9 @@ public class ReelTile extends ReelSprite {
 	private boolean reelFlash;
 	private boolean reelFlashTween;
 	public enum FlashState {FLASH_OFF, FLASH_ON};
-	private FlashState reelFlashState, flashingState;
+	private FlashState reelFlashState;
 	private Color flashColor;
+	private Array<Vector2> reelFlashSegments = new Array<>();
 	private int score;
 	private Sound spinningSound;
 	private long spinningSoundId;
@@ -96,8 +100,7 @@ public class ReelTile extends ReelSprite {
         reelFlash = false;
 		reelFlashTween = false;
 		reelFlashState = FlashState.FLASH_OFF;
-        flashingState = FlashState.FLASH_OFF;
-		flashColor = Color.RED;
+  		flashColor = Color.RED;
         tileDeleted = false;
     }
 
@@ -120,7 +123,7 @@ public class ReelTile extends ReelSprite {
  	}
 		
 	private void processFlashTweenState(float delta) {
-         this.setFlashOn();
+         setFlashOn();
 	}
 
 	public float getDestinationX() {
@@ -185,9 +188,8 @@ public class ReelTile extends ReelSprite {
 	
 	public void startSpinning() {
 		super.setSpinning(true);
-		if (this.spinningSound != null) {
+		if (this.spinningSound != null)
 			startSpinningSound();
-		}
 	}
 
 	private void startSpinningSound() {
@@ -203,17 +205,16 @@ public class ReelTile extends ReelSprite {
 	}
 
 	public void stopSpinningSound() {
-        if (this.spinningSound != null) {
+        if (this.spinningSound != null)
             this.spinningSound.stop(this.spinningSoundId);
-        }
 	}
 	
 	public FlashState getFlashState() {
-        return this.reelFlashState;
+        return reelFlashState;
 	}
 	
 	public boolean isFlashing() {
-        return this.reelFlash;
+        return reelFlash;
 	}
 	
 	public void setFlashMode(boolean reelFlash) {
@@ -237,25 +238,13 @@ public class ReelTile extends ReelSprite {
 	}
 	
 	public void setFlashOn() {
-        flashReel = drawFlashOn(this.region);
-		this.setRegion(flashReel);
+        reelFlashState = FlashState.FLASH_ON;
 	}
-	
-	public void setFlashOff() {
-        this.setRegion(region);
-	}
-	
-	private TextureRegion drawFlashOn(TextureRegion reel) {
-		if (flashOnReelPixmap == null)
-            flashOnReelPixmap = PixmapProcessors.getPixmapFromTextureRegion(reel);
 
-        flashOnReelPixmap.setColor(flashColor);
-		flashOnReelPixmap.drawRectangle(0, 0, (int)tileWidth    , (int)tileHeight);
-		flashOnReelPixmap.drawRectangle(1, 1, (int)tileWidth - 2, (int)tileHeight - 2);
-		flashOnReelPixmap.drawRectangle(2, 2, (int)tileWidth - 4, (int)tileHeight - 4);
-		return new TextureRegion(new Texture(flashOnReelPixmap));
+    public void setFlashOff() {
+        reelFlashState = FlashState.FLASH_OFF;
 	}
-	
+
 	public void setScore(int score) {
         this.score = score;
 	}
@@ -270,9 +259,8 @@ public class ReelTile extends ReelSprite {
 
 	@Override
 	public void dispose() {
-		if (flashOnReelPixmap != null) {
+		if (flashOnReelPixmap != null)
             flashOnReelPixmap.dispose();
-        }
 	}
 
 	public void setIndex(int index) { this.index = index; }
@@ -280,15 +268,13 @@ public class ReelTile extends ReelSprite {
 	public int getIndex() { return this.index; }
 
 	public void saveRegion() {
-        if (region != null) {
+        if (region != null)
             PixmapProcessors.saveTextureRegion(region);
-        }
     }
 
     public void saveFlashRegion() {
-        if(flashReel != null) {
+        if(flashReel != null)
             PixmapProcessors.saveTextureRegion(flashReel);
-        }
     }
 
     public void resetReel() {
@@ -306,4 +292,25 @@ public class ReelTile extends ReelSprite {
         return numberOfReelsInTexture;
     }
 
+    public void drawFlashSegments(ShapeRenderer shapeRenderer) {
+        shapeRenderer.begin(ShapeRenderer.ShapeType.Line);
+        shapeRenderer.setColor(flashColor);
+        for (Vector2 reelFlashSegment : reelFlashSegments)
+            drawFlashSegmemnt(shapeRenderer, reelFlashSegment);
+        shapeRenderer.end();
+    }
+
+    private void drawFlashSegmemnt(ShapeRenderer shapeRenderer, Vector2 reelFlashSegment) {
+        shapeRenderer.rect(reelFlashSegment.x + 0, reelFlashSegment.y + 0, tileWidth - 0, tileHeight - 0);
+        shapeRenderer.rect(reelFlashSegment.x + 1, reelFlashSegment.y + 1, tileWidth - 2, tileHeight - 2);
+        shapeRenderer.rect(reelFlashSegment.x + 2, reelFlashSegment.y + 2, tileWidth - 4, tileHeight - 4);
+    }
+
+    public void addReelFlashSegment(float x, float y) {
+        reelFlashSegments.add(new Vector2(x, y));
+    }
+
+    public void clearReelFlashSegments() {
+        reelFlashSegments.clear();
+    }
 }

@@ -17,6 +17,7 @@
 package com.ellzone.slotpuzzle2d.level;
 
 import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Array;
 import com.ellzone.slotpuzzle2d.effects.ReelAccessor;
 import com.ellzone.slotpuzzle2d.puzzlegrid.PuzzleGridTypeReelTile;
@@ -68,9 +69,9 @@ public class FlashSlots {
 
         matchedSlots = PuzzleGridTypeReelTile.adjustMatchSlotDuplicates(matchedSlots, duplicateMatchedSlots);
         matchedSlots = PuzzleGridTypeReelTile.removeDuplicateMatches(duplicateMatchedSlots, matchedSlots);
-        for (TupleValueIndex matchedSlot : matchedSlots) {
+        for (TupleValueIndex matchedSlot : matchedSlots)
             reelTiles.get(matchedSlot.index).setScore(matchedSlot.value);
-        }
+
         flashMatchedSlots(matchedSlots, puzzleGridTypeReelTile);
         return puzzleGrid;
     }
@@ -104,6 +105,17 @@ public class FlashSlots {
         finishedMatchingSlots = true;
     }
 
+    public void flashSlotsForMiniSlotMachine(Array<ReelTileGridValue> miniSlotMachineReelsToFlash) {
+        for (ReelTileGridValue reelTileGridValue : miniSlotMachineReelsToFlash) {
+            ReelTile reelTile = reelTiles.get(reelTileGridValue.c);
+            reelTile.setFlashMode(true);
+            reelTile.addReelFlashSegment(  reelTile.getX(),
+                                        reelTile.getY() + (2 - reelTileGridValue.r) * reelTile.getWidth());
+            reelTile.setFlashColor(new Color(Color.WHITE));
+            initialiseReelFlash(reelTile, 2.0f);
+        }
+    }
+
     private void flashMatchedSlotsBatch(Array<ReelTileGridValue> matchedSlots, float pushPause) {
         int index;
         for (int i = 0; i < matchedSlots.size; i++) {
@@ -112,8 +124,7 @@ public class FlashSlots {
                 ReelTile reel = reelTiles.get(index);
                 if (!reel.getFlashTween()) {
                     reel.setFlashMode(true);
-                    Color flashColor = new Color(Color.WHITE);
-                    reel.setFlashColor(flashColor);
+                    reel.setFlashColor(new Color(Color.WHITE));
                     initialiseReelFlash(reel, pushPause);
                 }
             }
@@ -123,6 +134,7 @@ public class FlashSlots {
     private void initialiseReelFlash(ReelTile reel, float pushPause) {
         Array<Object> userData = new Array<>();
         reel.setFlashTween(true);
+        reel.addReelFlashSegment(reel.getX(), reel.getY());
         reelFlashSeq = Timeline.createSequence();
         reelFlashSeq = reelFlashSeq.pushPause(pushPause);
 
@@ -212,4 +224,5 @@ public class FlashSlots {
     public void deleteAReel() {
         numberOfReelsToDelete--;
     }
+
 }

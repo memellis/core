@@ -20,7 +20,6 @@ import java.util.Random;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.audio.Sound;
-import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Pixmap;
@@ -104,6 +103,7 @@ public class PlayScreen implements Screen, PlayInterface, LevelCreatorInjectionI
     public static final float PUZZLE_GRID_START_X = 160.0f;
     public static final float PUZZLE_GRID_START_Y = 40.0f;
     public static final String SLOTPUZZLE_SCREEN = "PlayScreen";
+    public static final int LEVEL_TIME_LENGTH_IN_SECONDS = 300;
 
     protected SlotPuzzle game;
     protected Viewport viewport, lightViewport;
@@ -118,6 +118,7 @@ public class PlayScreen implements Screen, PlayInterface, LevelCreatorInjectionI
     protected PlayStates playState;
     protected PlayStateMachine playStateMachine;
     protected PlayScreenPopUps playScreenPopUps;
+    protected FlashSlots flashSlots;
     protected Sound chaChingSound,
                     pullLeverSound,
                     reelSpinningSound,
@@ -128,7 +129,6 @@ public class PlayScreen implements Screen, PlayInterface, LevelCreatorInjectionI
     private Stage stage;
     private float sW, sH;
     private final TweenManager tweenManager = new TweenManager();
-    private FlashSlots flashSlots;
     private TextureAtlas tilesAtlas;
     private boolean isLoaded = false;
     private TiledMap level;
@@ -233,7 +233,7 @@ public class PlayScreen implements Screen, PlayInterface, LevelCreatorInjectionI
         getLevelEntities(levelObjectCreator);
         levelLoader = getLevelLoader();
         levelLoader.createLevel(GAME_LEVEL_WIDTH, GAME_LEVEL_HEIGHT);
-        reelsSpinning = reelTiles.size - 1;
+        reelsSpinning = reelTiles.size;
         hiddenPattern = levelLoader.getHiddenPattern();
         getMapProperties(level);
         flashSlots = new FlashSlots(tweenManager, mapWidth, mapHeight, reelTiles);
@@ -270,12 +270,12 @@ public class PlayScreen implements Screen, PlayInterface, LevelCreatorInjectionI
             reelStoppedSound.play();
             reelsSpinning--;
             if (playStateMachine.getStateMachine().getCurrentState() == PlayState.PLAY) {
-                if (reelsSpinning <= -1) {
+                if (reelsSpinning < 1) {
                     if (levelDoor.getLevelType().equals(LevelCreator.HIDDEN_PATTERN_LEVEL_TYPE))
-                        if (testForHiddenPatternRevealed(reelTiles))
+                        if (isHiddenPatternRevealed(reelTiles))
                             iWonTheLevel();
                     if (levelDoor.getLevelType().equals(LevelCreator.PLAYING_CARD_LEVEL_TYPE))
-                        if (testForHiddenPlayingCardsRevealed(reelTiles))
+                        if (isHiddenPlayingCardsRevealed(reelTiles))
                             iWonTheLevel();
                 }
             }
@@ -377,12 +377,12 @@ public class PlayScreen implements Screen, PlayInterface, LevelCreatorInjectionI
         }
     }
 
-    private boolean testForHiddenPatternRevealed(Array<ReelTile> reelTiles) {
+    private boolean isHiddenPatternRevealed(Array<ReelTile> reelTiles) {
         TupleValueIndex[][] matchGrid = flashSlots.flashSlots(reelTiles);
         return hiddenPattern.isHiddenPatternRevealed(matchGrid, this.reelTiles, GAME_LEVEL_WIDTH, GAME_LEVEL_HEIGHT);
     }
 
-    private boolean testForHiddenPlayingCardsRevealed(Array<ReelTile> reelTiles) {
+    private boolean isHiddenPlayingCardsRevealed(Array<ReelTile> reelTiles) {
         TupleValueIndex[][] matchGrid = flashSlots.flashSlots(reelTiles);
         return hiddenPattern.isHiddenPatternRevealed(matchGrid, this.reelTiles, GAME_LEVEL_WIDTH, GAME_LEVEL_HEIGHT);
     }
@@ -429,7 +429,7 @@ public class PlayScreen implements Screen, PlayInterface, LevelCreatorInjectionI
                 testForHiddenPlatternLevelWon();
     }
 
-    private void reelScoreAnimation(ReelTile source) {
+    protected void reelScoreAnimation(ReelTile source) {
         Score score = new Score(source.getX(), source.getY(), (source.getEndReel() + 1) * source.getScore());
         scores.add(score);
         Timeline.createSequence()
@@ -456,6 +456,7 @@ public class PlayScreen implements Screen, PlayInterface, LevelCreatorInjectionI
 
     protected void handleInput() {
         if (Gdx.input.justTouched()) {
+            System.out.println(playStateMachine.getStateMachine().getCurrentState());
             touchX = Gdx.input.getX();
             touchY = Gdx.input.getY();
             Vector3 unprojTouch = new Vector3(touchX, touchY, 0);
@@ -500,7 +501,7 @@ public class PlayScreen implements Screen, PlayInterface, LevelCreatorInjectionI
             if (!reelTile.isReelTileDeleted()) {
                 if (reelTile.isSpinning()) {
                     if (animatedReel.getDampenedSineState() == DampenedSineParticle.DSState.UPDATING_DAMPENED_SINE)
-                        processReelTouchedWhileSpinning(reelTile);
+                        processReelTouchedWhileSpinning(reelTile, reelTile.getCurrentReel());
                 } else
                 if (!reelTile.getFlashTween())
                     startReelSpinning(reelTile, animatedReel);
@@ -543,7 +544,7 @@ public class PlayScreen implements Screen, PlayInterface, LevelCreatorInjectionI
                     playState = PlayStates.PLAYING;
                     hud.resetWorldTime(300);
                     hud.startWorldTimer();
-                    testForHiddenPatternRevealed(reelTiles);
+                    isHiddenPatternRevealed(reelTiles);
             }
         }
     };
@@ -567,10 +568,10 @@ public class PlayScreen implements Screen, PlayInterface, LevelCreatorInjectionI
         pullLeverSound.play();
     }
 
-    protected void processReelTouchedWhileSpinning(ReelTile reel) {
-        reel.setEndReel(reel.getCurrentReel());
+    protected void processReelTouchedWhileSpinning(ReelTile reel, int currentReel) {
+        reel.setEndReel(currentReel);
         displaySpinHelp = true;
-        displaySpinHelpSprite = reel.getCurrentReel();
+        displaySpinHelpSprite = currentReel;
         addScore(-1);
         pullLeverSound.play();
         reelSpinningSound.play();
@@ -590,7 +591,7 @@ public class PlayScreen implements Screen, PlayInterface, LevelCreatorInjectionI
         tweenManager.killAll();
         Hud.resetScore();
         Hud.loseLife();
-        hud.resetWorldTime(300);
+        hud.resetWorldTime(LEVEL_TIME_LENGTH_IN_SECONDS);
         hud.stopWorldTimer();
         renderer = new OrthogonalTiledMapRenderer(level);
         displaySpinHelp = false;
@@ -652,8 +653,7 @@ public class PlayScreen implements Screen, PlayInterface, LevelCreatorInjectionI
 
     @Override
     public boolean areReelsDeleted() {
-        return (levelDoor.getLevelType().equals(LevelCreator.MINI_SLOT_MACHINE_LEVEL_TYPE)) ?
-                false : flashSlots.areReelsDeleted();
+        return levelDoor.getLevelType().equals(LevelCreator.MINI_SLOT_MACHINE_LEVEL_TYPE) ? false : flashSlots.areReelsDeleted();
     }
 
     @Override
@@ -743,6 +743,9 @@ public class PlayScreen implements Screen, PlayInterface, LevelCreatorInjectionI
         renderScore();
         renderSpinHelper();
         game.batch.end();
+        game.batch.begin();
+        renderAnimatedReelsFlash();
+        game.batch.end();
         renderWorld();
         renderRayHandler();
     }
@@ -771,6 +774,14 @@ public class PlayScreen implements Screen, PlayInterface, LevelCreatorInjectionI
             if (!animatedReel.getReel().isReelTileDeleted())
                 animatedReel.draw(game.batch);
     }
+
+    protected void renderAnimatedReelsFlash() {
+        for (AnimatedReel animatedReel : animatedReels)
+            if (!animatedReel.getReel().isReelTileDeleted())
+                if (animatedReel.getReel().getFlashState() == ReelTile.FlashState.FLASH_ON)
+                    animatedReel.draw(shapeRenderer);
+    }
+
 
     protected void renderSpinHelper() {
         if (displaySpinHelp)

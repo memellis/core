@@ -19,6 +19,7 @@ package com.ellzone.slotpuzzle2d.sprites;
 import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.ellzone.slotpuzzle2d.effects.ReelAccessor;
 import com.ellzone.slotpuzzle2d.physics.DampenedSineParticle;
 import com.ellzone.slotpuzzle2d.physics.SPPhysicsCallback;
@@ -193,6 +194,10 @@ public class AnimatedReel {
 	public void draw(SpriteBatch spriteBatch) {
 		reel.draw(spriteBatch);
 	}
+
+	public void draw(ShapeRenderer shapeRenderer) {
+	    reel.drawFlashSegments(shapeRenderer);
+    }
 	
 	public ReelTile getReel() {
 		return reel;
@@ -200,6 +205,7 @@ public class AnimatedReel {
 	
 	public void reinitialise() {
         reel.setSpinning(true);
+        reel.clearReelFlashSegments();
         dampenedSine.initialiseDampenedSine();
         dampenedSine.position.y = reel.getSy();
         dampenedSine.velocity = new Vector(0, velocityY);

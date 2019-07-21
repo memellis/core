@@ -173,7 +173,6 @@ public class LevelCreator {
         this.puzzleGridTypeReelTile = new PuzzleGridTypeReelTile();
         this.reelBoxes = new Array<Body>();
         this.replacementReelBoxes = new Array<Integer>();
-//        this.animatedReelHelper = new AnimatedReelHelper(this.annotationAssetManager, this.tweenManager, level.getLayers().get(REELS_LAYER_NAME).getObjects().getByType(RectangleMapObject.class).size);
         this.reelTiles = animatedReelHelper.getReelTiles();
         this.reelTiles = createLevel(this.levelDoor, this.level, this.reelTiles, this.levelWidth, this.levelHeight);
         printMatchGrid(reelTiles, levelWidth, levelHeight);
@@ -269,8 +268,7 @@ public class LevelCreator {
     }
 
     private int getColumnFromLevel(float x) {
-        int column = (int) (x + PuzzleGridTypeReelTile.FLOAT_ROUNDING_DELTA_FOR_BOX2D - PlayScreen.PUZZLE_GRID_START_X) / PlayScreen.TILE_WIDTH;
-        return column;
+        return (int) (x + PuzzleGridTypeReelTile.FLOAT_ROUNDING_DELTA_FOR_BOX2D - PlayScreen.PUZZLE_GRID_START_X) / PlayScreen.TILE_WIDTH;
     }
 
     private void addReel(Rectangle mapRectangle, Array<ReelTile> reelTiles, int index) {
@@ -304,7 +302,6 @@ public class LevelCreator {
 
     public void setPlayState(PlayStates playState) {
         this.playState = playState;
-        System.out.println("====="+playState+"====");
     }
 
     public PlayStates getPlayState() {
@@ -328,18 +325,14 @@ public class LevelCreator {
                     }
                 }
                 if (levelDoor.getLevelType().equals(BONUS_LEVEL_TYPE)) {
-                    System.out.println("Testing for jackpot");
                     printReelTiles();
                     if (testForJackpot(reelTiles, this.levelWidth, this.levelHeight)) {
                         iWonABonus();
                     }
                 }
             } else {
-                System.out.println(reelsSpinning+" reelSprites not spinning and notHitSinkBottom");
-                printReelTiles();
-                if (testForJackpot(reelTiles, this.levelWidth, this.levelHeight)) {
+                if (testForJackpot(reelTiles, this.levelWidth, this.levelHeight))
                     iWonABonus();
-                }
             }
         }
     }
@@ -364,9 +357,6 @@ public class LevelCreator {
             playState = PlayStates.INTRO_FLASHING;
 
         ReelTileGridValue[][] puzzleGrid = puzzleGridTypeReelTile.populateMatchGrid(reelTiles,  levelWidth, levelHeight);
-
-        System.out.println("flashSlots print puzzleGrid");
-        puzzleGridTypeReelTile.printGrid(puzzleGrid);
 
         Array<ReelTileGridValue> matchedSlots = puzzleGridTypeReelTile.matchGridSlots(puzzleGrid);
         Array<ReelTileGridValue> duplicateMatchedSlots = PuzzleGridTypeReelTile.findDuplicateMatches(matchedSlots);
@@ -502,8 +492,6 @@ public class LevelCreator {
         gameOver = true;
         win = true;
         playState = PlayStates.WON_LEVEL;
-        //mapTile.getLevel().setLevelCompleted();
-        //mapTile.getLevel().setScore(Hud.getScore());
     }
 
     private void iWonABonus() {
@@ -566,8 +554,6 @@ public class LevelCreator {
                     ReelTile reel = (ReelTile) source.getUserData();
                     int reelTilesIndex = reelTiles.indexOf(reel, true);
                     Hud.addScore((reel.getEndReel() + 1) * reel.getScore());
-                    //playSound(reelStoppedSound);
-                    //playSound(chaChingSound);
 
                     reel.deleteReelTile();
                     physics.deleteBody(reelBoxes.get(reelTilesIndex));
@@ -576,14 +562,11 @@ public class LevelCreator {
                     if (numberOfReelBoxesToDelete <= 0) {
                         if ((playState == PlayStates.INTRO_FLASHING) |
                             (playState == PlayStates.REELS_FLASHING)) {
-                            // Need to detect when all reelSprites have fallen
                             if (reelsAboveHaveFallen) {
-                                if (!matchedReels) {
+                                if (!matchedReels)
                                     dropReplacementReelBoxes = true;
-                                    System.out.println("================Drop Replacementment boxes");
-                                } else {
+                                else
                                     flashSlots(reelTiles, levelWidth, levelHeight);
-                                }
                             }
                         }
                     }
@@ -715,7 +698,6 @@ public class LevelCreator {
         }
         MiniSlotMachineLevelPrototypeWithLevelCreator.numberOfReelsToHitSinkBottom = replacementReelBoxes.size;
         replacementReelBoxes.removeRange(0, replacementReelBoxes.size - 1);
-        System.out.println("replacementReelBoxes.size="+replacementReelBoxes.size);
         dropReplacementReelBoxes = false;
         if (playState == PlayStates.INTRO_FLASHING)
             playState = PlayStates.INTRO_SPINNING;
