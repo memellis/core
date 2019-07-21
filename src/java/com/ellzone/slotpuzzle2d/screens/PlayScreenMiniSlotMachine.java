@@ -40,6 +40,7 @@ import com.ellzone.slotpuzzle2d.sprites.ReelTile;
 import com.ellzone.slotpuzzle2d.sprites.SlotHandleSprite;
 
 import static com.ellzone.slotpuzzle2d.level.LevelCreator.MINI_SLOT_MACHINE_LEVEL_TYPE;
+import static com.ellzone.slotpuzzle2d.scene.Hud.addScore;
 
 public class PlayScreenMiniSlotMachine extends PlayScreen {
 
@@ -151,7 +152,11 @@ public class PlayScreenMiniSlotMachine extends PlayScreen {
                 if (animatedReel.getReel().isSpinning()) {
                     if (animatedReel.getDampenedSineState() == DampenedSineParticle.DSState.UPDATING_DAMPENED_SINE) {
                         int currentReel = animatedReel.getReel().getCurrentReel();
-                        processReelTouchedWhileSpinning(animatedReel.getReel(), currentReel - 1 < 0 ? 0 : currentReel - 1);
+                        processReelTouchedWhileSpinning(
+                                animatedReel.getReel(),
+                                currentReel,
+                                currentReel + 1 == animatedReel.getReel().getNumberOfReelsInTexture() ?
+                                                   0 : currentReel + 1);
                     }
                 } else {
                     animatedReel.setEndReel(random.nextInt(sprites.length - 1));
@@ -170,7 +175,6 @@ public class PlayScreenMiniSlotMachine extends PlayScreen {
 
     protected void handleInput() {
         if (Gdx.input.justTouched()) {
-            System.out.println(playStateMachine.getStateMachine().getCurrentState());
             float touchX = Gdx.input.getX();
             float touchY = Gdx.input.getY();
             Vector3 unprojectTouch = new Vector3(touchX, touchY, 0);

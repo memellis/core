@@ -119,6 +119,8 @@ public class PlayScreen implements Screen, PlayInterface, LevelCreatorInjectionI
     protected PlayStateMachine playStateMachine;
     protected PlayScreenPopUps playScreenPopUps;
     protected FlashSlots flashSlots;
+    protected boolean displaySpinHelp;
+    protected int displaySpinHelpSprite;
     protected Sound chaChingSound,
                     pullLeverSound,
                     reelSpinningSound,
@@ -137,8 +139,6 @@ public class PlayScreen implements Screen, PlayInterface, LevelCreatorInjectionI
     private boolean inRestartLevel = false;
     private boolean win = false;
     private int touchX, touchY;
-    private boolean displaySpinHelp;
-    private int displaySpinHelpSprite;
     private Array<Score> scores;
     private BitmapFont font;
     private HiddenPattern hiddenPattern;
@@ -501,7 +501,7 @@ public class PlayScreen implements Screen, PlayInterface, LevelCreatorInjectionI
             if (!reelTile.isReelTileDeleted()) {
                 if (reelTile.isSpinning()) {
                     if (animatedReel.getDampenedSineState() == DampenedSineParticle.DSState.UPDATING_DAMPENED_SINE)
-                        processReelTouchedWhileSpinning(reelTile, reelTile.getCurrentReel());
+                        processReelTouchedWhileSpinning(reelTile, reelTile.getCurrentReel(), reelTile.getCurrentReel());
                 } else
                 if (!reelTile.getFlashTween())
                     startReelSpinning(reelTile, animatedReel);
@@ -568,10 +568,10 @@ public class PlayScreen implements Screen, PlayInterface, LevelCreatorInjectionI
         pullLeverSound.play();
     }
 
-    protected void processReelTouchedWhileSpinning(ReelTile reel, int currentReel) {
+    protected void processReelTouchedWhileSpinning(ReelTile reel, int currentReel, int spinHelpSprite) {
         reel.setEndReel(currentReel);
         displaySpinHelp = true;
-        displaySpinHelpSprite = currentReel;
+        displaySpinHelpSprite = spinHelpSprite;
         addScore(-1);
         pullLeverSound.play();
         reelSpinningSound.play();
