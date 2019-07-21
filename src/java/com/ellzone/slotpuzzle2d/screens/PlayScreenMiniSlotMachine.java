@@ -40,7 +40,6 @@ import com.ellzone.slotpuzzle2d.sprites.ReelTile;
 import com.ellzone.slotpuzzle2d.sprites.SlotHandleSprite;
 
 import static com.ellzone.slotpuzzle2d.level.LevelCreator.MINI_SLOT_MACHINE_LEVEL_TYPE;
-import static com.ellzone.slotpuzzle2d.scene.Hud.addScore;
 
 public class PlayScreenMiniSlotMachine extends PlayScreen {
 

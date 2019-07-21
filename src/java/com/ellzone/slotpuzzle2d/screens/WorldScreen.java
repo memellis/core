@@ -49,6 +49,7 @@ import com.ellzone.slotpuzzle2d.level.MapLevel5;
 import com.ellzone.slotpuzzle2d.level.MapLevel6;
 import com.ellzone.slotpuzzle2d.level.MapLevel7;
 import com.ellzone.slotpuzzle2d.pixmap.PixmapDrawAction;
+import com.ellzone.slotpuzzle2d.scene.Hud;
 import com.ellzone.slotpuzzle2d.scene.MapTile;
 import com.ellzone.slotpuzzle2d.tweenengine.BaseTween;
 import com.ellzone.slotpuzzle2d.tweenengine.SlotPuzzleTween;
@@ -120,8 +121,9 @@ public class WorldScreen implements Screen {
     private InputMultiplexer inputMultiplexer;
 	private boolean inPlayScreen = false;
     private boolean show = false;
-	   
-    public WorldScreen(SlotPuzzle game) {
+	private Hud hud	;
+
+	public WorldScreen(SlotPuzzle game) {
 		this.game = game;
 		this.game.setWorldScreen(this);
 		createWorldScreen();
@@ -139,6 +141,7 @@ public class WorldScreen implements Screen {
 		createLevelEntrances();
 		initialiseMap();
 		createPopUps();
+		hud = new Hud(game.batch);
 	}
     
 	private void getAssets(AnnotationAssetManager annotationAssetManager) {
@@ -422,14 +425,20 @@ public class WorldScreen implements Screen {
                 renderer.setView(this.camera);
                 this.camera.update();
                 game.batch.begin();
-                for (MapTile mapTile : mapTiles) {
+                for (MapTile mapTile : mapTiles)
                     mapTile.draw(game.batch);
-                }
                 font.draw(game.batch, message, 80, 100);
                 game.batch.end();
+				renderHud();
             }
         }
 	}
+
+	private void renderHud() {
+		game.batch.setProjectionMatrix(hud.stage.getCamera().combined);
+		hud.stage.draw();
+	}
+
 
 	@Override
 	public void resize(int width, int height) {
