@@ -85,7 +85,7 @@ public class WorldScreen implements Screen {
     public static final int SIGN_WIDTH = 96;
     public static final int SIGN_HEIGHT = 32;
 
-    private static final String WORLD_MAP = "levels/WorldMap.tmx";
+	private static final String WORLD_MAP = "levels/WorldMap.tmx";
     private static final String TILE_PACK_ATLAS = "tiles/tiles.pack.atlas";
     private static final String WORLD_MAP_LEVEL_DOORS = "Level Doors";
 	public static final String LEVEL_TEXT = "Level";
@@ -94,8 +94,9 @@ public class WorldScreen implements Screen {
     public static final int ORTHO_VIEWPORT_WIDTH = 10;
     public static final int ORTHO_VIEWPORT_HEIGHT = 10;
     public static final String LEVEL_DELIMETER = "-";
+	public static final String WORLD_LEVEL = "World Level";
 
-    private SlotPuzzle game;
+	private SlotPuzzle game;
 	private Viewport viewport;
 	private OrthographicCamera camera;
 	private TiledMap worldMap;
@@ -141,9 +142,9 @@ public class WorldScreen implements Screen {
 		createLevelEntrances();
 		initialiseMap();
 		createPopUps();
-		hud = new Hud(game.batch);
+		createHud();
 	}
-    
+
 	private void getAssets(AnnotationAssetManager annotationAssetManager) {
 		worldMap = annotationAssetManager.get(WORLD_MAP);
 		tilesAtlas = annotationAssetManager.get(TILE_PACK_ATLAS, TextureAtlas.class);
@@ -337,6 +338,12 @@ public class WorldScreen implements Screen {
 		mapTiles.add(new MapTile(20, 20, 200, 200, SlotPuzzleConstants.VIRTUAL_WIDTH, SlotPuzzleConstants.VIRTUAL_HEIGHT, new MapLevel7(), tilesAtlas, this.camera, font, tweenManager, new Sprite(levelEntrances.get(6).getLevelEntrance())));
 	}
 
+	private void createHud() {
+		hud = new Hud(game.batch);
+		hud.setCountDownVisible(false);
+		hud.setLevelName(WORLD_LEVEL);
+	}
+
 	private final TweenCallback maximizeCallback = new TweenCallback() {
 		@Override
 		public void onEvent(int type, BaseTween<?> source) {
@@ -438,7 +445,6 @@ public class WorldScreen implements Screen {
 		game.batch.setProjectionMatrix(hud.stage.getCamera().combined);
 		hud.stage.draw();
 	}
-
 
 	@Override
 	public void resize(int width, int height) {

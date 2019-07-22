@@ -40,7 +40,7 @@ public class Hud implements Disposable {
     private static Integer lives;
     private static String levelName;
     private static Label scoreLabel, livesLeftLabel;
-    private Label countdownLabel, livesLabel, timeLabel, levelLabel, worldLabel, slotPuzzle;
+    private Label countdownLabel, livesLabel, timeLabel, levelLabel, worldLabel, scoreLabelHeading;
 
     public Hud(SpriteBatch batch){
         worldTimer = 300;
@@ -63,11 +63,11 @@ public class Hud implements Disposable {
         livesLeftLabel = new Label(String.format("%03d", lives), new Label.LabelStyle(new BitmapFont(), Color.WHITE));        
         timeLabel = new Label("TIME", new Label.LabelStyle(new BitmapFont(), Color.WHITE));
         levelLabel = new Label(levelName, new Label.LabelStyle(new BitmapFont(), Color.WHITE));
-        worldLabel = new Label("WORLD", new Label.LabelStyle(new BitmapFont(), Color.WHITE));
-        slotPuzzle = new Label("Slot Puzzle", new Label.LabelStyle(new BitmapFont(), Color.WHITE));
+        worldLabel = new Label("LEVEL", new Label.LabelStyle(new BitmapFont(), Color.WHITE));
+        scoreLabelHeading = new Label("SCORE", new Label.LabelStyle(new BitmapFont(), Color.WHITE));
         livesLabel = new Label("LIVES", new Label.LabelStyle(new BitmapFont(), Color.WHITE));
 
-        table.add(slotPuzzle).expandX().padTop(10);
+        table.add(scoreLabelHeading).expandX().padTop(10);
         table.add(livesLabel).expandX().padTop(10);
         table.add(worldLabel).expandX().padTop(10);
         table.add(timeLabel).expandX().padTop(10);
@@ -84,11 +84,10 @@ public class Hud implements Disposable {
         if (startWorldTimer) {
     	    timeCount += dt;
             if(timeCount >= 1){
-                if (worldTimer > 0) {
+                if (worldTimer > 0)
                     worldTimer--;
-                } else {
+                else
                     timeUp = true;
-                }
                 timeCount = 0;
             }
         }
@@ -111,9 +110,8 @@ public class Hud implements Disposable {
     
     public void setLevelName(String name) {
     	levelName = name;
-    	if (levelLabel != null) {
+    	if (levelLabel != null)
     	    levelLabel.setText(levelName);
-    	}
     }
 
     public boolean isTimeUp() { 
@@ -127,6 +125,11 @@ public class Hud implements Disposable {
     public void resetWorldTime(int time) {
     	worldTimer = time;
     }
+
+    public void setCountDownVisible(boolean visible) {
+        countdownLabel.setVisible(visible);
+        timeLabel.setVisible(visible);
+    }
     
     public void startWorldTimer() {
     	startWorldTimer = true;
@@ -137,9 +140,8 @@ public class Hud implements Disposable {
     }
     
     public static void loseLife() {
-    	if (lives > 0) {
+    	if (lives > 0)
     		lives--;
-    	}
     	livesLeftLabel.setText(String.format("%03d", lives));
     }
     
