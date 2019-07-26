@@ -14,7 +14,7 @@
  limitations under the License.
  */
 
-package com.ellzone.slotpuzzle2d.level;
+package com.ellzone.slotpuzzle2d.level.popups;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;

@@ -24,6 +24,7 @@ import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.Array;
 import com.ellzone.slotpuzzle2d.SlotPuzzle;
 import com.ellzone.slotpuzzle2d.finitestatemachine.PlayState;
+import com.ellzone.slotpuzzle2d.finitestatemachine.PlayStates;
 import com.ellzone.slotpuzzle2d.level.LevelCallback;
 import com.ellzone.slotpuzzle2d.level.LevelCreator;
 import com.ellzone.slotpuzzle2d.level.LevelDoor;
@@ -32,6 +33,7 @@ import com.ellzone.slotpuzzle2d.level.LevelObjectCreatorEntityHolder;
 import com.ellzone.slotpuzzle2d.physics.DampenedSineParticle;
 import com.ellzone.slotpuzzle2d.puzzlegrid.PuzzleGridTypeReelTile;
 import com.ellzone.slotpuzzle2d.puzzlegrid.ReelTileGridValue;
+import com.ellzone.slotpuzzle2d.scene.Hud;
 import com.ellzone.slotpuzzle2d.scene.MapTile;
 import com.ellzone.slotpuzzle2d.sprites.AnimatedReel;
 import com.ellzone.slotpuzzle2d.sprites.HoldLightButton;
@@ -71,7 +73,7 @@ public class PlayScreenMiniSlotMachine extends PlayScreen {
         LevelLoader levelLoader = new LevelLoader(game.annotationAssetManager, levelDoor, super.mapTile, animatedReels);
         levelLoader.setStoppedSpinningCallback(new LevelCallback() {
             @Override
-            public void onEvent (ReelTile source) {
+            public void onEvent(ReelTile source) {
                 if (levelDoor.getLevelType().equals(LevelCreator.MINI_SLOT_MACHINE_LEVEL_TYPE))
                     processReelStopped(source);
             }
@@ -138,8 +140,7 @@ public class PlayScreenMiniSlotMachine extends PlayScreen {
         int reelPosition = reelTiles.get(c).getEndReel() + r;
         if (reelPosition < 0)
             reelPosition = sprites.length - 1;
-        else
-        if(reelPosition > sprites.length - 1)
+        else if (reelPosition > sprites.length - 1)
             reelPosition = 0;
         return reelPosition;
     }
@@ -155,7 +156,7 @@ public class PlayScreenMiniSlotMachine extends PlayScreen {
                                 animatedReel.getReel(),
                                 currentReel,
                                 currentReel + 1 == animatedReel.getReel().getNumberOfReelsInTexture() ?
-                                                   0 : currentReel + 1);
+                                        0 : currentReel + 1);
                     }
                 } else {
                     animatedReel.setEndReel(random.nextInt(sprites.length - 1));
@@ -183,17 +184,13 @@ public class PlayScreenMiniSlotMachine extends PlayScreen {
                     if (isOver(playScreenPopUps.getLevelPopUpSprites().get(0), unprojectTouch.x, unprojectTouch.y))
                         playScreenPopUps.getLevelPopUp().hideLevelPopUp(hideLevelPopUpCallback);
                     break;
-                case LEVEL_LOST:
-                    Gdx.app.debug(PlayScreen.SLOTPUZZLE_SCREEN, "Lost Level");
-                    if (isOver(playScreenPopUps.getLevelLostSprites().get(0), unprojectTouch.x, unprojectTouch.y))
-                        playScreenPopUps.getLevelLostPopUp().hideLevelPopUp(levelOverCallback);
-                    break;
-                case WON_LEVEL:
-                    Gdx.app.debug(SLOTPUZZLE_SCREEN, "Won Level");
-                    if(isOver(playScreenPopUps.getLevelWonSprites().get(0), unprojectTouch.x, unprojectTouch.y))
+                case BONUS_LEVEL_ENDED:
+                    Gdx.app.debug(SLOTPUZZLE_SCREEN, "Bonus Level");
+                    if (isOver(playScreenPopUps.getLevelBonusSprites().get(0), unprojectTouch.x, unprojectTouch.y))
                         playScreenPopUps.getLevelWonPopUp().hideLevelPopUp(levelWonCallback);
                     break;
-                default: break;
+                default:
+                    break;
             }
             if (playStateMachine.getStateMachine().getCurrentState() == PlayState.PLAY) {
                 Gdx.app.debug(SLOTPUZZLE_SCREEN, "Play");
@@ -250,6 +247,15 @@ public class PlayScreenMiniSlotMachine extends PlayScreen {
         }
     }
 
+    protected void weAreOutOfTime() {
+        playState = PlayStates.BONUS_LEVEL_ENDED;
+        gameOver = true;
+        mapTile.getLevel().setLevelCompleted();
+        mapTile.getLevel().setScore(Hud.getScore());
+        playScreenPopUps.setLevelBonusSpritePositions();
+        playScreenPopUps.getLevelBonusCompletedPopUp().showLevelPopUp(null);
+    }
+
     protected void renderMainGameElements() {
         game.batch.begin();
         renderAnimatedReels();
@@ -285,15 +291,15 @@ public class PlayScreenMiniSlotMachine extends PlayScreen {
         for (Array<Vector2> matchedRow : rowMacthesToDraw)
             if (matchedRow.size >= 2)
                 for (int i = 0; i < matchedRow.size - 1; i++)
-                    shapeRenderer.rectLine(matchedRow.get(i    ).x, matchedRow.get(i    ).y,
-                                           matchedRow.get(i + 1).x, matchedRow.get(i + 1).y,
-                                    2);
+                    shapeRenderer.rectLine(matchedRow.get(i).x, matchedRow.get(i).y,
+                            matchedRow.get(i + 1).x, matchedRow.get(i + 1).y,
+                            2);
         shapeRenderer.end();
     }
 
     protected void renderSlotHandle() {
-       for (SlotHandleSprite slotHandle : slotHandles)
-           slotHandle.draw(game.batch);
+        for (SlotHandleSprite slotHandle : slotHandles)
+            slotHandle.draw(game.batch);
     }
 
     protected void renderLightButtons() {
@@ -303,4 +309,4 @@ public class PlayScreenMiniSlotMachine extends PlayScreen {
             lightButton.getSprite().draw(game.batch);
         game.batch.end();
     }
-}
+ }

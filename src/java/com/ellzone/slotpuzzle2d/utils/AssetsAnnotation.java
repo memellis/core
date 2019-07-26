@@ -94,6 +94,7 @@ public class AssetsAnnotation {
             TOMATO40x40 = "tomato 40x40",
             GAME_POPUP = "GamePopUp",
             LEVEL_SPRITE = "level",
+            BONUS = "Bonus",
             OVER = "over",
             COMPLETE = "complete",
             UNIVERSAL = "universal",
