@@ -17,8 +17,8 @@
 package com.ellzone.slotpuzzle2d.level.fixtures;
 
 import com.badlogic.gdx.physics.box2d.World;
-import com.ellzone.slotpuzzle2d.level.LevelCreatorInjectionInterface;
-import com.ellzone.slotpuzzle2d.level.LevelObjectCreator;
+import com.ellzone.slotpuzzle2d.level.creator.LevelCreatorInjectionInterface;
+import com.ellzone.slotpuzzle2d.level.creator.LevelObjectCreator;
 
 import box2dLight.RayHandler;
 

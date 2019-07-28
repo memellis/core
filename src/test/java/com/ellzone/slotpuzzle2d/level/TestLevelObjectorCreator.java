@@ -21,6 +21,8 @@ import com.badlogic.gdx.maps.objects.RectangleMapObject;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.GdxRuntimeException;
+import com.ellzone.slotpuzzle2d.level.creator.LevelCreatorInjectionInterface;
+import com.ellzone.slotpuzzle2d.level.creator.LevelObjectCreator;
 import com.ellzone.slotpuzzle2d.level.fixtures.LevelObjectCreatorForTest;
 import com.ellzone.slotpuzzle2d.level.fixtures.LevelObjectCreatorForTestWithNoAddToComponentMethod;
 import com.ellzone.slotpuzzle2d.level.fixtures.LevelObjectCreatorForTestWithNoDelegateToMethod;

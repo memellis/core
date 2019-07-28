@@ -106,6 +106,7 @@ public class FlashSlots {
     }
 
     public void flashSlotsForMiniSlotMachine(Array<ReelTileGridValue> miniSlotMachineReelsToFlash) {
+        startedFlashing = true;
         for (ReelTileGridValue reelTileGridValue : miniSlotMachineReelsToFlash) {
             ReelTile reelTile = reelTiles.get(reelTileGridValue.c);
             reelTile.setFlashMode(true);
@@ -114,6 +115,7 @@ public class FlashSlots {
             reelTile.setFlashColor(new Color(Color.WHITE));
             initialiseReelFlash(reelTile, 2.0f);
         }
+        finishedMatchingSlots = true;
     }
 
     private void flashMatchedSlotsBatch(Array<ReelTileGridValue> matchedSlots, float pushPause) {
@@ -219,6 +221,14 @@ public class FlashSlots {
 
     public void setReelsAreFlashing(boolean reelsAreFlashing) {
         this.reelsAreFlashing = reelsAreFlashing;
+    }
+
+    public void setReesStartedFlashing(boolean startedFlashing) {
+        this.startedFlashing = startedFlashing;
+    }
+
+    public void setFinishedMatchingSlots(boolean finishedMatchingSlots) {
+        this.finishedMatchingSlots = finishedMatchingSlots;
     }
 
     public void deleteAReel() {

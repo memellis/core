@@ -82,7 +82,6 @@ public enum PlayState implements State<PlayStateMachine> {
 
         @Override
         public void exit(PlayStateMachine playStateMachine) {
-
         }
 
         @Override
@@ -121,6 +120,10 @@ public enum PlayState implements State<PlayStateMachine> {
 
         @Override
         public void update(PlayStateMachine playStateMachine) {
+            System.out.println("Intro flashing sequence");
+            System.out.println("playStateMachine.getConcretePlay().areReelsStartedFlashing()="+playStateMachine.getConcretePlay().areReelsStartedFlashing());
+            System.out.println("playStateMachine.getConcretePlay().isFinishedMatchingSlots()="+playStateMachine.getConcretePlay().isFinishedMatchingSlots());
+            System.out.println("playStateMachine.getConcretePlay().areReelsFlashing()="+playStateMachine.getConcretePlay().areReelsFlashing());
             if (playStateMachine.getConcretePlay().areReelsStartedFlashing() ||
                 playStateMachine.getConcretePlay().isFinishedMatchingSlots())
                 if (!playStateMachine.getConcretePlay().areReelsFlashing())

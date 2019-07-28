@@ -41,13 +41,13 @@ import com.badlogic.gdx.utils.viewport.Viewport;
 import com.ellzone.slotpuzzle2d.SlotPuzzle;
 import com.ellzone.slotpuzzle2d.effects.SpriteAccessor;
 import com.ellzone.slotpuzzle2d.level.LevelDoor;
-import com.ellzone.slotpuzzle2d.level.MapLevel1;
-import com.ellzone.slotpuzzle2d.level.MapLevel2;
-import com.ellzone.slotpuzzle2d.level.MapLevel3;
-import com.ellzone.slotpuzzle2d.level.MapLevel4;
-import com.ellzone.slotpuzzle2d.level.MapLevel5;
-import com.ellzone.slotpuzzle2d.level.MapLevel6;
-import com.ellzone.slotpuzzle2d.level.MapLevel7;
+import com.ellzone.slotpuzzle2d.level.map.MapLevel1;
+import com.ellzone.slotpuzzle2d.level.map.MapLevel2;
+import com.ellzone.slotpuzzle2d.level.map.MapLevel3;
+import com.ellzone.slotpuzzle2d.level.map.MapLevel4;
+import com.ellzone.slotpuzzle2d.level.map.MapLevel5;
+import com.ellzone.slotpuzzle2d.level.map.MapLevel6;
+import com.ellzone.slotpuzzle2d.level.map.MapLevel7;
 import com.ellzone.slotpuzzle2d.pixmap.PixmapDrawAction;
 import com.ellzone.slotpuzzle2d.scene.Hud;
 import com.ellzone.slotpuzzle2d.scene.MapTile;
@@ -71,9 +71,9 @@ import com.badlogic.gdx.maps.tiled.*;
 
 import net.dermetfan.gdx.assets.AnnotationAssetManager;
 
-import static com.ellzone.slotpuzzle2d.level.LevelCreator.HIDDEN_PATTERN_LEVEL_TYPE;
-import static com.ellzone.slotpuzzle2d.level.LevelCreator.MINI_SLOT_MACHINE_LEVEL_TYPE;
-import static com.ellzone.slotpuzzle2d.level.LevelCreator.PLAYING_CARD_LEVEL_TYPE;
+import static com.ellzone.slotpuzzle2d.level.creator.LevelCreator.HIDDEN_PATTERN_LEVEL_TYPE;
+import static com.ellzone.slotpuzzle2d.level.creator.LevelCreator.MINI_SLOT_MACHINE_LEVEL_TYPE;
+import static com.ellzone.slotpuzzle2d.level.creator.LevelCreator.PLAYING_CARD_LEVEL_TYPE;
 
 public class WorldScreen implements Screen {
 	

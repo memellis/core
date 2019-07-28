@@ -25,11 +25,11 @@ import com.badlogic.gdx.utils.Array;
 import com.ellzone.slotpuzzle2d.SlotPuzzle;
 import com.ellzone.slotpuzzle2d.finitestatemachine.PlayState;
 import com.ellzone.slotpuzzle2d.finitestatemachine.PlayStates;
-import com.ellzone.slotpuzzle2d.level.LevelCallback;
-import com.ellzone.slotpuzzle2d.level.LevelCreator;
+import com.ellzone.slotpuzzle2d.level.creator.LevelCallback;
+import com.ellzone.slotpuzzle2d.level.creator.LevelCreator;
 import com.ellzone.slotpuzzle2d.level.LevelDoor;
-import com.ellzone.slotpuzzle2d.level.LevelLoader;
-import com.ellzone.slotpuzzle2d.level.LevelObjectCreatorEntityHolder;
+import com.ellzone.slotpuzzle2d.level.creator.LevelLoader;
+import com.ellzone.slotpuzzle2d.level.creator.LevelObjectCreatorEntityHolder;
 import com.ellzone.slotpuzzle2d.physics.DampenedSineParticle;
 import com.ellzone.slotpuzzle2d.puzzlegrid.PuzzleGridTypeReelTile;
 import com.ellzone.slotpuzzle2d.puzzlegrid.ReelTileGridValue;
@@ -40,8 +40,10 @@ import com.ellzone.slotpuzzle2d.sprites.HoldLightButton;
 import com.ellzone.slotpuzzle2d.sprites.LightButton;
 import com.ellzone.slotpuzzle2d.sprites.ReelTile;
 import com.ellzone.slotpuzzle2d.sprites.SlotHandleSprite;
+import com.ellzone.slotpuzzle2d.tweenengine.BaseTween;
+import com.ellzone.slotpuzzle2d.tweenengine.TweenCallback;
 
-import static com.ellzone.slotpuzzle2d.level.LevelCreator.MINI_SLOT_MACHINE_LEVEL_TYPE;
+import static com.ellzone.slotpuzzle2d.level.creator.LevelCreator.MINI_SLOT_MACHINE_LEVEL_TYPE;
 
 public class PlayScreenMiniSlotMachine extends PlayScreen {
 
@@ -69,6 +71,20 @@ public class PlayScreenMiniSlotMachine extends PlayScreen {
         slotHandles = levelObjectCreator.getHandles();
     }
 
+    protected TweenCallback hideLevelPopUpCallback = new TweenCallback() {
+        @Override
+        public void onEvent(int type, BaseTween<?> source) {
+            switch (type) {
+                case TweenCallback.END:
+                    playState = PlayStates.PLAYING;
+                    hud.resetWorldTime(LEVEL_TIME_LENGTH_IN_SECONDS);
+                    hud.startWorldTimer();
+                    if (levelDoor.getLevelType().equals(LevelCreator.BONUS_LEVEL_TYPE))
+                        matchReels();
+            }
+        }
+    };
+
     protected LevelLoader getLevelLoader() {
         LevelLoader levelLoader = new LevelLoader(game.annotationAssetManager, levelDoor, super.mapTile, animatedReels);
         levelLoader.setStoppedSpinningCallback(new LevelCallback() {
@@ -91,7 +107,8 @@ public class PlayScreenMiniSlotMachine extends PlayScreen {
     private void processReelStopped(ReelTile source) {
         reelsSpinning--;
         if (reelsSpinning < 1)
-            if (playStateMachine.getStateMachine().getCurrentState() == PlayState.PLAY)
+            if (playStateMachine.getStateMachine().getCurrentState() == PlayState.PLAY ||
+                playStateMachine.getStateMachine().getCurrentState() == PlayState.INTRO_SPINNING_SEQUENCE)
                 matchReels();
     }
 
@@ -100,6 +117,9 @@ public class PlayScreenMiniSlotMachine extends PlayScreen {
     }
 
     private void matchReels() {
+        if (playStateMachine.getStateMachine().getCurrentState() == PlayState.INTRO_SPINNING_SEQUENCE)
+            flashSlots.setReesStartedFlashing(true);
+
         captureReelPositions();
         PuzzleGridTypeReelTile puzzleGrid = new PuzzleGridTypeReelTile();
         ReelTileGridValue[][] matchGrid = puzzleGrid.populateMatchGrid(reelGrid);
@@ -107,6 +127,9 @@ public class PlayScreenMiniSlotMachine extends PlayScreen {
         matchGrid = puzzleGridTypeReelTile.createGridLinks(matchGrid);
         PuzzleGridTypeReelTile.printGrid(matchGrid);
         matchRowsToDraw(matchGrid, puzzleGridTypeReelTile);
+
+        if (playStateMachine.getStateMachine().getCurrentState() == PlayState.INTRO_SPINNING_SEQUENCE)
+            flashSlots.setFinishedMatchingSlots(true);
     }
 
     private void matchRowsToDraw(ReelTileGridValue[][] matchGrid, PuzzleGridTypeReelTile puzzleGridTypeReelTile) {
@@ -182,7 +205,12 @@ public class PlayScreenMiniSlotMachine extends PlayScreen {
             switch (super.playState) {
                 case INTRO_POPUP:
                     if (isOver(playScreenPopUps.getLevelPopUpSprites().get(0), unprojectTouch.x, unprojectTouch.y))
-                        playScreenPopUps.getLevelPopUp().hideLevelPopUp(hideLevelPopUpCallback);
+                        playScreenPopUps.getLevelPopUp().hideLevelPopUp(new TweenCallback() {
+                            @Override
+                            public void onEvent(int type, BaseTween<?> source) {
+                                processHideLevelPopUp(type, source);
+                            }
+                        });
                     break;
                 case BONUS_LEVEL_ENDED:
                     Gdx.app.debug(SLOTPUZZLE_SCREEN, "Bonus Level");
@@ -202,6 +230,17 @@ public class PlayScreenMiniSlotMachine extends PlayScreen {
                     handleLightButtonTouched(unprojectTouch.x, unprojectTouch.y);
                 }
             }
+        }
+    }
+
+    private void processHideLevelPopUp(int type, BaseTween<?> source) {
+        switch (type) {
+            case TweenCallback.END:
+                playState = PlayStates.PLAYING;
+                hud.resetWorldTime(LEVEL_TIME_LENGTH_IN_SECONDS);
+                hud.startWorldTimer();
+                if (levelDoor.getLevelType().equals(MINI_SLOT_MACHINE_LEVEL_TYPE))
+                    matchReels();
         }
     }
 

@@ -50,18 +50,18 @@ import com.ellzone.slotpuzzle2d.finitestatemachine.PlayInterface;
 import com.ellzone.slotpuzzle2d.finitestatemachine.PlayState;
 import com.ellzone.slotpuzzle2d.finitestatemachine.PlayStateMachine;
 import com.ellzone.slotpuzzle2d.finitestatemachine.PlayStates;
-import com.ellzone.slotpuzzle2d.level.Card;
+import com.ellzone.slotpuzzle2d.level.card.Card;
 import com.ellzone.slotpuzzle2d.level.FlashSlots;
-import com.ellzone.slotpuzzle2d.level.HiddenPattern;
-import com.ellzone.slotpuzzle2d.level.HiddenPlayingCard;
-import com.ellzone.slotpuzzle2d.level.LevelCallback;
-import com.ellzone.slotpuzzle2d.level.LevelCreator;
-import com.ellzone.slotpuzzle2d.level.LevelCreatorInjectionInterface;
+import com.ellzone.slotpuzzle2d.level.hidden.HiddenPattern;
+import com.ellzone.slotpuzzle2d.level.hidden.HiddenPlayingCard;
+import com.ellzone.slotpuzzle2d.level.creator.LevelCallback;
+import com.ellzone.slotpuzzle2d.level.creator.LevelCreator;
+import com.ellzone.slotpuzzle2d.level.creator.LevelCreatorInjectionInterface;
 import com.ellzone.slotpuzzle2d.level.LevelDoor;
-import com.ellzone.slotpuzzle2d.level.LevelLoader;
-import com.ellzone.slotpuzzle2d.level.LevelObjectCreatorEntityHolder;
-import com.ellzone.slotpuzzle2d.level.MapLevelNameComparator;
-import com.ellzone.slotpuzzle2d.level.PlayScreenIntroSequence;
+import com.ellzone.slotpuzzle2d.level.creator.LevelLoader;
+import com.ellzone.slotpuzzle2d.level.creator.LevelObjectCreatorEntityHolder;
+import com.ellzone.slotpuzzle2d.level.map.MapLevelNameComparator;
+import com.ellzone.slotpuzzle2d.level.sequence.PlayScreenIntroSequence;
 import com.ellzone.slotpuzzle2d.level.popups.PlayScreenPopUps;
 import com.ellzone.slotpuzzle2d.physics.DampenedSineParticle;
 import com.ellzone.slotpuzzle2d.puzzlegrid.PuzzleGridType;
@@ -90,8 +90,8 @@ import box2dLight.RayHandler;
 import static com.ellzone.slotpuzzle2d.SlotPuzzleConstants.PIXELS_PER_METER;
 import static com.ellzone.slotpuzzle2d.SlotPuzzleConstants.VIRTUAL_HEIGHT;
 import static com.ellzone.slotpuzzle2d.SlotPuzzleConstants.VIRTUAL_WIDTH;
-import static com.ellzone.slotpuzzle2d.level.LevelCreator.HIDDEN_PATTERN_LEVEL_TYPE;
-import static com.ellzone.slotpuzzle2d.level.LevelCreator.PLAYING_CARD_LEVEL_TYPE;
+import static com.ellzone.slotpuzzle2d.level.creator.LevelCreator.HIDDEN_PATTERN_LEVEL_TYPE;
+import static com.ellzone.slotpuzzle2d.level.creator.LevelCreator.PLAYING_CARD_LEVEL_TYPE;
 import static com.ellzone.slotpuzzle2d.scene.Hud.addScore;
 
 public class PlayScreen implements Screen, PlayInterface, LevelCreatorInjectionInterface {
@@ -104,6 +104,8 @@ public class PlayScreen implements Screen, PlayInterface, LevelCreatorInjectionI
     public static final float PUZZLE_GRID_START_Y = 40.0f;
     public static final String SLOTPUZZLE_SCREEN = "PlayScreen";
     public static final int LEVEL_TIME_LENGTH_IN_SECONDS = 300;
+    public static final String WIDTH_KEY = "width";
+    public static final String HEIGHT_KEY = "height";
 
     protected SlotPuzzle game;
     protected Viewport viewport, lightViewport;
@@ -350,8 +352,8 @@ public class PlayScreen implements Screen, PlayInterface, LevelCreatorInjectionI
 
     private void getMapProperties(TiledMap level) {
         MapProperties mapProperties = level.getProperties();
-        mapWidth = mapProperties.get("width", Integer.class);
-        mapHeight = mapProperties.get("height", Integer.class);
+        mapWidth = mapProperties.get(WIDTH_KEY, Integer.class);
+        mapHeight = mapProperties.get(HEIGHT_KEY, Integer.class);
     }
 
     private void createReelIntroSequence() {
@@ -454,38 +456,6 @@ public class PlayScreen implements Screen, PlayInterface, LevelCreatorInjectionI
         }
     };
 
-    protected void handleInput() {
-        if (Gdx.input.justTouched()) {
-            System.out.println(playStateMachine.getStateMachine().getCurrentState());
-            touchX = Gdx.input.getX();
-            touchY = Gdx.input.getY();
-            Vector3 unprojTouch = new Vector3(touchX, touchY, 0);
-            viewport.unproject(unprojTouch);
-            switch (playState) {
-                case INTRO_POPUP:
-                    if (isOver(playScreenPopUps.getLevelPopUpSprites().get(0), unprojTouch.x, unprojTouch.y))
-                        playScreenPopUps.getLevelPopUp().hideLevelPopUp(hideLevelPopUpCallback);
-                    break;
-                case LEVEL_LOST:
-                    Gdx.app.debug(SLOTPUZZLE_SCREEN, "Lost Level");
-                    if (isOver(playScreenPopUps.getLevelLostSprites().get(0), unprojTouch.x, unprojTouch.y))
-                        playScreenPopUps.getLevelLostPopUp().hideLevelPopUp(levelOverCallback);
-                    break;
-                case WON_LEVEL:
-                    Gdx.app.debug(SLOTPUZZLE_SCREEN, "Won Level");
-                    if(isOver(playScreenPopUps.getLevelWonSprites().get(0), unprojTouch.x, unprojTouch.y))
-                        playScreenPopUps.getLevelWonPopUp().hideLevelPopUp(levelWonCallback);
-                    break;
-                default: break;
-            }
-            if (playStateMachine.getStateMachine().getCurrentState() == PlayState.PLAY) {
-                Gdx.app.debug(SLOTPUZZLE_SCREEN, "Play");
-                if (levelDoor.getLevelType().equals(HIDDEN_PATTERN_LEVEL_TYPE))
-                    processIsTileClicked(unprojTouch.x, unprojTouch.y);
-            }
-        }
-    }
-
     protected boolean isOver(Sprite sprite, float x, float y) {
         return sprite.getX() <= x && x <= sprite.getX() + sprite.getWidth()
             && sprite.getY() <= y && y <= sprite.getY() + sprite.getHeight();
@@ -544,7 +514,9 @@ public class PlayScreen implements Screen, PlayInterface, LevelCreatorInjectionI
                     playState = PlayStates.PLAYING;
                     hud.resetWorldTime(LEVEL_TIME_LENGTH_IN_SECONDS);
                     hud.startWorldTimer();
-                    isHiddenPatternRevealed(reelTiles);
+                    if (levelDoor.getLevelType().equals(LevelCreator.HIDDEN_PATTERN_LEVEL_TYPE))
+                        isHiddenPatternRevealed(reelTiles);
+                    System.out.println(playState);
             }
         }
     };
@@ -726,6 +698,38 @@ public class PlayScreen implements Screen, PlayInterface, LevelCreatorInjectionI
         drawCurrentPlayState();
         renderHud();
         stage.draw();
+    }
+
+    protected void handleInput() {
+        if (Gdx.input.justTouched()) {
+            System.out.println(playStateMachine.getStateMachine().getCurrentState());
+            touchX = Gdx.input.getX();
+            touchY = Gdx.input.getY();
+            Vector3 unprojTouch = new Vector3(touchX, touchY, 0);
+            viewport.unproject(unprojTouch);
+            switch (playState) {
+                case INTRO_POPUP:
+                    if (isOver(playScreenPopUps.getLevelPopUpSprites().get(0), unprojTouch.x, unprojTouch.y))
+                        playScreenPopUps.getLevelPopUp().hideLevelPopUp(hideLevelPopUpCallback);
+                    break;
+                case LEVEL_LOST:
+                    Gdx.app.debug(SLOTPUZZLE_SCREEN, "Lost Level");
+                    if (isOver(playScreenPopUps.getLevelLostSprites().get(0), unprojTouch.x, unprojTouch.y))
+                        playScreenPopUps.getLevelLostPopUp().hideLevelPopUp(levelOverCallback);
+                    break;
+                case WON_LEVEL:
+                    Gdx.app.debug(SLOTPUZZLE_SCREEN, "Won Level");
+                    if(isOver(playScreenPopUps.getLevelWonSprites().get(0), unprojTouch.x, unprojTouch.y))
+                        playScreenPopUps.getLevelWonPopUp().hideLevelPopUp(levelWonCallback);
+                    break;
+                default: break;
+            }
+            if (playStateMachine.getStateMachine().getCurrentState() == PlayState.PLAY) {
+                Gdx.app.debug(SLOTPUZZLE_SCREEN, "Play");
+                if (levelDoor.getLevelType().equals(HIDDEN_PATTERN_LEVEL_TYPE))
+                    processIsTileClicked(unprojTouch.x, unprojTouch.y);
+            }
+        }
     }
 
     private boolean isAssetsLoaded() {

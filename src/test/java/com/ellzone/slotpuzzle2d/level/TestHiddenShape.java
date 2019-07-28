@@ -8,10 +8,10 @@ import com.badlogic.gdx.maps.MapProperties;
 import com.badlogic.gdx.maps.objects.RectangleMapObject;
 import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.utils.Array;
-import com.ellzone.slotpuzzle2d.level.HiddenPattern;
-import com.ellzone.slotpuzzle2d.level.HiddenPlayingCard;
-import com.ellzone.slotpuzzle2d.level.HiddenShape;
-import com.ellzone.slotpuzzle2d.level.LevelCreator;
+import com.ellzone.slotpuzzle2d.level.creator.LevelCreator;
+import com.ellzone.slotpuzzle2d.level.hidden.HiddenPattern;
+import com.ellzone.slotpuzzle2d.level.hidden.HiddenPlayingCard;
+import com.ellzone.slotpuzzle2d.level.hidden.HiddenShape;
 import com.ellzone.slotpuzzle2d.puzzlegrid.TupleValueIndex;
 import com.ellzone.slotpuzzle2d.screens.PlayScreen;
 import com.ellzone.slotpuzzle2d.sprites.ReelTile;
@@ -25,8 +25,6 @@ import org.powermock.api.easymock.PowerMock;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
 import org.powermock.reflect.Whitebox;
-
-import java.util.Iterator;
 
 import static org.easymock.EasyMock.expect;
 import static org.easymock.EasyMock.verify;
