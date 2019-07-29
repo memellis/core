@@ -310,6 +310,10 @@ public class ReelTile extends ReelSprite {
         reelFlashSegments.add(new Vector2(x, y));
     }
 
+    public Array<Vector2> getReelFlashSegments() {
+        return reelFlashSegments;
+    }
+
     public void clearReelFlashSegments() {
         reelFlashSegments.clear();
     }

@@ -111,6 +111,7 @@ public class PlayScreen implements Screen, PlayInterface, LevelCreatorInjectionI
     protected Viewport viewport, lightViewport;
     protected OrthographicCamera camera = new OrthographicCamera();
     protected LevelDoor levelDoor;
+    protected TweenManager tweenManager = new TweenManager();
     protected Sprite[] sprites;
     protected Array<AnimatedReel> animatedReels;
     protected Array<ReelTile> reelTiles;
@@ -125,6 +126,7 @@ public class PlayScreen implements Screen, PlayInterface, LevelCreatorInjectionI
     protected boolean displaySpinHelp;
     protected int displaySpinHelpSprite;
     protected boolean gameOver = false;
+    protected Array<Score> scores;
     protected Sound chaChingSound,
                     pullLeverSound,
                     reelSpinningSound,
@@ -133,7 +135,6 @@ public class PlayScreen implements Screen, PlayInterface, LevelCreatorInjectionI
     private LevelLoader levelLoader;
     private Stage stage;
     private float sW, sH;
-    private final TweenManager tweenManager = new TweenManager();
     private TextureAtlas tilesAtlas;
     private boolean isLoaded = false;
     private TiledMap level;
@@ -141,7 +142,6 @@ public class PlayScreen implements Screen, PlayInterface, LevelCreatorInjectionI
     private boolean inRestartLevel = false;
     private boolean win = false;
     private int touchX, touchY;
-    private Array<Score> scores;
     private BitmapFont font;
     private HiddenPattern hiddenPattern;
     private int mapWidth;
@@ -516,7 +516,6 @@ public class PlayScreen implements Screen, PlayInterface, LevelCreatorInjectionI
                     hud.startWorldTimer();
                     if (levelDoor.getLevelType().equals(LevelCreator.HIDDEN_PATTERN_LEVEL_TYPE))
                         isHiddenPatternRevealed(reelTiles);
-                    System.out.println(playState);
             }
         }
     };
@@ -702,7 +701,6 @@ public class PlayScreen implements Screen, PlayInterface, LevelCreatorInjectionI
 
     protected void handleInput() {
         if (Gdx.input.justTouched()) {
-            System.out.println(playStateMachine.getStateMachine().getCurrentState());
             touchX = Gdx.input.getX();
             touchY = Gdx.input.getY();
             Vector3 unprojTouch = new Vector3(touchX, touchY, 0);

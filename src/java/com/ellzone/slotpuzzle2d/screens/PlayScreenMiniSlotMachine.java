@@ -23,6 +23,7 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.Array;
 import com.ellzone.slotpuzzle2d.SlotPuzzle;
+import com.ellzone.slotpuzzle2d.effects.ScoreAccessor;
 import com.ellzone.slotpuzzle2d.finitestatemachine.PlayState;
 import com.ellzone.slotpuzzle2d.finitestatemachine.PlayStates;
 import com.ellzone.slotpuzzle2d.level.creator.LevelCallback;
@@ -39,9 +40,16 @@ import com.ellzone.slotpuzzle2d.sprites.AnimatedReel;
 import com.ellzone.slotpuzzle2d.sprites.HoldLightButton;
 import com.ellzone.slotpuzzle2d.sprites.LightButton;
 import com.ellzone.slotpuzzle2d.sprites.ReelTile;
+import com.ellzone.slotpuzzle2d.sprites.Score;
 import com.ellzone.slotpuzzle2d.sprites.SlotHandleSprite;
 import com.ellzone.slotpuzzle2d.tweenengine.BaseTween;
+import com.ellzone.slotpuzzle2d.tweenengine.SlotPuzzleTween;
+import com.ellzone.slotpuzzle2d.tweenengine.Timeline;
 import com.ellzone.slotpuzzle2d.tweenengine.TweenCallback;
+
+import java.util.Comparator;
+
+import aurelienribon.tweenengine.equations.Quad;
 
 import static com.ellzone.slotpuzzle2d.level.creator.LevelCreator.MINI_SLOT_MACHINE_LEVEL_TYPE;
 
@@ -116,6 +124,48 @@ public class PlayScreenMiniSlotMachine extends PlayScreen {
         reelScoreAnimation(reelTile);
     }
 
+    protected void reelScoreAnimation(ReelTile source) {
+        source.getReelFlashSegments().sort(new Comparator<Vector2>() {
+            @Override
+            public int compare(Vector2 v1, Vector2 v2) {
+                if (v1.y == v2.y) return 0;
+                if (v1.y < v2.y) return -1;
+                return 1;
+            }
+        });
+        if (source.getReelFlashSegments().size > 0) {
+            float baseFlashSegmentY = source.getReelFlashSegments().get(0).y;
+            for (Vector2 reelFlashSegment : source.getReelFlashSegments()) {
+                Score score = new Score(reelFlashSegment.x, reelFlashSegment.y, (int) (source.getEndReel() + (reelFlashSegment.y - baseFlashSegmentY) / source.getWidth() + 1));
+                scores.add(score);
+                Timeline.createSequence()
+                        .beginParallel()
+                        .push(SlotPuzzleTween.to(score, ScoreAccessor.POS_XY, 2.0f).targetRelative(random.nextInt(20), random.nextInt(160)).ease(Quad.IN))
+                        .push(SlotPuzzleTween.to(score, ScoreAccessor.SCALE_XY, 2.0f).target(2.0f, 2.0f).ease(Quad.IN))
+                        .end()
+                        .setUserData(score)
+                        .setCallback(new TweenCallback() {
+                            @Override
+                            public void onEvent(int type, BaseTween<?> source) {
+                                processDeleteScore(type, source);
+                            }
+                        })
+                        .setCallbackTriggers(TweenCallback.COMPLETE)
+                        .start(tweenManager);
+            }
+            source.clearReelFlashSegments();
+        }
+    }
+    
+    private void processDeleteScore(int type, BaseTween<?> source) {
+        switch (type) {
+            case TweenCallback.COMPLETE:
+                Score score = (Score) source.getUserData();
+                scores.removeValue(score, false);
+        }
+    }
+
+
     private void matchReels() {
         if (playStateMachine.getStateMachine().getCurrentState() == PlayState.INTRO_SPINNING_SEQUENCE)
             flashSlots.setReesStartedFlashing(true);
@@ -147,7 +197,7 @@ public class PlayScreenMiniSlotMachine extends PlayScreen {
     private Array<Vector2> drawMatches(Array<ReelTileGridValue> depthSearchResults, int startX, int startY) {
         Array<Vector2> points = new Array<Vector2>();
         for (ReelTileGridValue cell : depthSearchResults) {
-            hud.addScore(cell.value);
+            hud.addScore((reelGrid[cell.r][cell.c] + 1));
             points.add(new Vector2(startX + cell.c * 40, startY - cell.r * 40));
         }
         return points;
