@@ -36,13 +36,13 @@ public class Hud implements Disposable {
     private Integer worldTimer;
     private boolean timeUp, startWorldTimer; 
     private float timeCount;
-    private static Integer score;
-    private static Integer lives;
-    private static String levelName;
-    private static Label scoreLabel, livesLeftLabel;
+    private Integer score;
+    private Integer lives;
+    private String levelName;
+    private Label scoreLabel, livesLeftLabel;
     private Label countdownLabel, livesLabel, timeLabel, levelLabel, worldLabel, scoreLabelHeading;
 
-    public Hud(SpriteBatch batch){
+    public Hud(SpriteBatch batch) {
         worldTimer = 300;
         timeCount = 0;
         score = 0;
@@ -94,13 +94,13 @@ public class Hud implements Disposable {
         countdownLabel.setText(String.format("%03d", worldTimer));
     }
 
-    public static void addScore(int value) {
+    public void addScore(int value) {
         score += value;
         scoreLabel.setText(String.format("%06d", score));
     }
-    
-    public static void resetScore() {
-    	score = 0;
+
+    public void resetScore() {
+        score = 0;
     }
 
     @Override
@@ -138,16 +138,16 @@ public class Hud implements Disposable {
     public void stopWorldTimer() {
     	startWorldTimer = false;
     }
-    
-    public static void loseLife() {
-    	if (lives > 0)
-    		lives--;
-    	livesLeftLabel.setText(String.format("%03d", lives));
-    }
-    
-    public static int getLives() {
-    	return lives;
+
+    public void loseLife() {
+        if (lives > 0)
+            lives--;
+        livesLeftLabel.setText(String.format("%03d", lives));
     }
 
-    public static int getScore() { return score; }
+    public int getLives() {
+        return lives;
+    }
+
+    public int getScore() { return score; }
 }

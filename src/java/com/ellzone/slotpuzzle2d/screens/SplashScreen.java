@@ -45,292 +45,292 @@ import aurelienribon.tweenengine.equations.Quart;
 import aurelienribon.tweenengine.equations.Quint;
 
 public class SplashScreen implements Screen {
-	private static final int PX_PER_METER = 400;
-	private SlotPuzzle game;
-	private final OrthographicCamera camera = new OrthographicCamera();
-	private float wpw;
-	private float wph;
-	boolean isLoaded;
- 	private final TweenManager tweenManager = new TweenManager();
- 	private Sprite slot;
- 	private Sprite puzzle;
-	private Sprite universal;
-	private Sprite tween;
-	private Sprite engine;
-	private Sprite logo;
-	private Sprite strip;
-	private Sprite powered;
-	private Sprite gdx;
-	private Sprite veil;
-	private TextureRegion gdxTex;
-	private boolean endOfSplashScreen = false;
-	private enum NextScreen {LOADINGSCREEN, SPLASHSCREEN, INTROSCREEN, PLAYSCREEN, ENDOFGAMESCREEN, CREDITSSCREEN};
-	private NextScreen nextScreen;
-	
-	public SplashScreen(SlotPuzzle game) {
-		this.game = game;			
-		defineSplashScreen();
-	}
+    private static final int PX_PER_METER = 400;
+    private SlotPuzzle game;
+    private final OrthographicCamera camera = new OrthographicCamera();
+    private float wpw;
+    private float wph;
+    boolean isLoaded;
+    private final TweenManager tweenManager = new TweenManager();
+    private Sprite slot;
+    private Sprite puzzle;
+    private Sprite universal;
+    private Sprite tween;
+    private Sprite engine;
+    private Sprite logo;
+    private Sprite strip;
+    private Sprite powered;
+    private Sprite gdx;
+    private Sprite veil;
+    private TextureRegion gdxTex;
+    private boolean endOfSplashScreen = false;
+    private enum NextScreen {LOADINGSCREEN, SPLASHSCREEN, INTROSCREEN, PLAYSCREEN, ENDOFGAMESCREEN, CREDITSSCREEN};
+    private NextScreen nextScreen;
 
-	private void defineSplashScreen() {
-		initialiseSplashScreen();
-		initialiseTweenEngine();
-		initialiseCamera();
-		createSprites(game.annotationAssetManager);
-		createSplashScreenSequence();
-	}
-	
-	private void initialiseSplashScreen() {
-		endOfSplashScreen = false;
-		nextScreen = NextScreen.INTROSCREEN;
-		Gdx.input.setInputProcessor(splashScreenInputProcessor);
-	}
+    public SplashScreen(SlotPuzzle game) {
+        this.game = game;
+        defineSplashScreen();
+    }
 
-	private void initialiseTweenEngine() {
-		Tween.setWaypointsLimit(10);
-		Tween.setCombinedAttributesLimit(3);
-		Tween.registerAccessor(Sprite.class, new SpriteAccessor());		
-	}
-	
-	private void initialiseCamera() {
-		wpw = 1f;
-		wph = wpw * Gdx.graphics.getHeight() / Gdx.graphics.getWidth();
-		camera.viewportWidth = wpw;
-		camera.viewportHeight = wph;
-		camera.update();
-	}
-	
+    private void defineSplashScreen() {
+        initialiseSplashScreen();
+        initialiseTweenEngine();
+        initialiseCamera();
+        createSprites(game.annotationAssetManager);
+        createSplashScreenSequence();
+    }
 
-	private void createSprites(AnnotationAssetManager annotationAssetManager) {
-		TextureAtlas atlas = annotationAssetManager.get(AssetsAnnotation.SPLASH);
-		universal = atlas.createSprite(AssetsAnnotation.UNIVERSAL);
-		tween = atlas.createSprite(AssetsAnnotation.TWEEN);
-		engine = atlas.createSprite(AssetsAnnotation.ENGINE);
-		logo = atlas.createSprite(AssetsAnnotation.LOGO);
-		strip = atlas.createSprite(AssetsAnnotation.WHITE);
-		powered = atlas.createSprite(AssetsAnnotation.POWERED);
-		gdx = atlas.createSprite(AssetsAnnotation.GDXBLUR);
-		veil = atlas.createSprite(AssetsAnnotation.WHITE);
- 		gdxTex = atlas.findRegion(AssetsAnnotation.GDX);
+    private void initialiseSplashScreen() {
+        endOfSplashScreen = false;
+        nextScreen = NextScreen.INTROSCREEN;
+        Gdx.input.setInputProcessor(splashScreenInputProcessor);
+    }
 
-		TextureAtlas atlas1 = annotationAssetManager.get(AssetsAnnotation.SPLASH3);
-		slot = atlas1.createSprite(AssetsAnnotation.SLOT);
-		puzzle = atlas1.createSprite(AssetsAnnotation.PUZZLE);
- 
-		Sprite[] sprites = new Sprite[] {slot, puzzle, universal, tween, engine, logo, powered, gdx};
-		for (Sprite sprite : sprites) {
-			sprite.setSize(sprite.getWidth()/PX_PER_METER, sprite.getHeight()/PX_PER_METER);
-			sprite.setOrigin(sprite.getWidth()/2, sprite.getHeight()/2);
-		}
+    private void initialiseTweenEngine() {
+        Tween.setWaypointsLimit(10);
+        Tween.setCombinedAttributesLimit(3);
+        Tween.registerAccessor(Sprite.class, new SpriteAccessor());
+    }
 
-		slot.setPosition(-0.325f,  0.110f);
-		puzzle.setPosition(0.020f, 0.110f);
-		universal.setPosition(-0.325f, 0.028f);
-		tween.setPosition(-0.320f, -0.066f);
-		engine.setPosition(0.020f, -0.087f);
-		logo.setPosition(0.238f, 0.022f);
+    private void initialiseCamera() {
+        wpw = 1f;
+        wph = wpw * Gdx.graphics.getHeight() / Gdx.graphics.getWidth();
+        camera.viewportWidth = wpw;
+        camera.viewportHeight = wph;
+        camera.update();
+    }
 
-		strip.setSize(wpw, wph);
-		strip.setOrigin(wpw/2, wph/2);
-		strip.setPosition(-wpw/2, -wph/2);
 
-		powered.setPosition(-0.278f, -0.025f);
-		gdx.setPosition(0.068f, -0.077f);
+    private void createSprites(AnnotationAssetManager annotationAssetManager) {
+        TextureAtlas atlas = annotationAssetManager.get(AssetsAnnotation.SPLASH);
+        universal = atlas.createSprite(AssetsAnnotation.UNIVERSAL);
+        tween = atlas.createSprite(AssetsAnnotation.TWEEN);
+        engine = atlas.createSprite(AssetsAnnotation.ENGINE);
+        logo = atlas.createSprite(AssetsAnnotation.LOGO);
+        strip = atlas.createSprite(AssetsAnnotation.WHITE);
+        powered = atlas.createSprite(AssetsAnnotation.POWERED);
+        gdx = atlas.createSprite(AssetsAnnotation.GDXBLUR);
+        veil = atlas.createSprite(AssetsAnnotation.WHITE);
+        gdxTex = atlas.findRegion(AssetsAnnotation.GDX);
 
-		veil.setSize(wpw, wph);
-		veil.setPosition(-wpw/2, -wph/2);
-		veil.setColor(1, 1, 1, 0);		
-	}
-	
-	private void createSplashScreenSequence() {
-		Timeline.createSequence()
-		.push(Tween.set(slot, SpriteAccessor.POS_XY).targetRelative(-1,0))
-		.push(Tween.set(puzzle, SpriteAccessor.POS_XY).targetRelative(1,0))			
-		.push(Tween.set(tween, SpriteAccessor.POS_XY).targetRelative(-1, 0))
-		.push(Tween.set(engine, SpriteAccessor.POS_XY).targetRelative(1, 0))
-		.push(Tween.set(universal, SpriteAccessor.POS_XY).targetRelative(0, 0.5f))
-		.push(Tween.set(logo, SpriteAccessor.SCALE_XY).target(7, 7))
-		.push(Tween.set(logo, SpriteAccessor.OPACITY).target(0))
-		.push(Tween.set(strip, SpriteAccessor.SCALE_XY).target(1, 0))
-		.push(Tween.set(powered, SpriteAccessor.OPACITY).target(0))
-		.push(Tween.set(gdx, SpriteAccessor.OPACITY).target(0))
+        TextureAtlas atlas1 = annotationAssetManager.get(AssetsAnnotation.SPLASH3);
+        slot = atlas1.createSprite(AssetsAnnotation.SLOT);
+        puzzle = atlas1.createSprite(AssetsAnnotation.PUZZLE);
 
-		.pushPause(0.5f)
-		.push(Tween.to(strip, SpriteAccessor.SCALE_XY, 0.8f).target(1, 0.6f).ease(Back.OUT))
-		.push(Tween.to(slot, SpriteAccessor.POS_XY, 0.5f).targetRelative(1, 0).ease(Quart.OUT))			
-		.push(Tween.to(puzzle, SpriteAccessor.POS_XY, 0.5f).targetRelative(-1, 0).ease(Quart.OUT))			
-		.push(Tween.to(tween, SpriteAccessor.POS_XY, 0.5f).targetRelative(1, 0).ease(Quart.OUT))
-		.push(Tween.to(engine, SpriteAccessor.POS_XY, 0.5f).targetRelative(-1, 0).ease(Quart.OUT))
-		.push(Tween.to(universal, SpriteAccessor.POS_XY, 0.6f).targetRelative(0, -0.5f).ease(Quint.OUT))
-		.pushPause(-0.3f)
-		.beginParallel()
-			.push(Tween.set(logo, SpriteAccessor.OPACITY).target(1))
-			.push(Tween.to(logo, SpriteAccessor.SCALE_XY, 0.5f).target(1, 1).ease(Back.OUT))
-		.end()
-		.pushPause(0.3f)
-		.push(Tween.to(slot, SpriteAccessor.SCALE_XY, 0.6f).waypoint(1.6f, 0.4f).target(1.2f, 1.2f).ease(Cubic.OUT))
-		.push(Tween.to(puzzle, SpriteAccessor.SCALE_XY, 0.6f).waypoint(1.6f, 0.4f).target(1.2f, 1.2f).ease(Cubic.OUT))
-		.pushPause(0.3f)
-		.push(Tween.to(strip, SpriteAccessor.SCALE_XY, 0.5f).target(1, 1).ease(Back.IN))
-		.pushPause(0.3f)
-		.beginParallel()
-			.push(Tween.to(slot, SpriteAccessor.POS_XY, 0.5f).targetRelative(1, 0).ease(Back.IN))
-			.push(Tween.to(puzzle, SpriteAccessor.POS_XY, 0.5f).targetRelative(1, 0).ease(Back.IN))
-			.push(Tween.to(tween, SpriteAccessor.POS_XY, 0.5f).targetRelative(1, 0).ease(Back.IN))
-			.push(Tween.to(engine, SpriteAccessor.POS_XY, 0.5f).targetRelative(1, 0).ease(Back.IN))
-			.push(Tween.to(universal, SpriteAccessor.POS_XY, 0.5f).targetRelative(1, 0).ease(Back.IN))
-			.push(Tween.to(logo, SpriteAccessor.POS_XY, 0.5f).targetRelative(1, 0).ease(Back.IN))
-		.end()
-	
-		.pushPause(-0.3f)
-		.push(Tween.set(slot, SpriteAccessor.POS_XY).targetRelative(-1,0))
-		.push(Tween.set(puzzle, SpriteAccessor.POS_XY).targetRelative(1,0))			
-		.pushPause(0.5f)
-		.push(Tween.to(slot, SpriteAccessor.POS_XY, 0.5f).targetRelative(-1, 0).ease(Quart.OUT))			
-		.push(Tween.to(puzzle, SpriteAccessor.POS_XY, 0.5f).targetRelative(-1, 0).ease(Quart.OUT))			
-		.pushPause(0.3f)
-		.push(Tween.to(slot, SpriteAccessor.SCALE_XY, 0.6f).waypoint(1.6f, 0.4f).target(1.2f, 1.2f).ease(Cubic.OUT))
-		.push(Tween.to(puzzle, SpriteAccessor.SCALE_XY, 0.6f).waypoint(1.6f, 0.4f).target(1.2f, 1.2f).ease(Cubic.OUT))
-		.pushPause(-0.3f)
-		.push(Tween.to(powered, SpriteAccessor.OPACITY, 0.3f).target(1))
-		.beginParallel()
-			.push(Tween.to(gdx, SpriteAccessor.OPACITY, 1.5f).target(1).ease(Cubic.IN))
-			.push(Tween.to(gdx, SpriteAccessor.ROTATION, 2.0f).target(360*15).ease(Quad.OUT))
-		.end()
-		.pushPause(0.3f)
-		.push(Tween.to(gdx, SpriteAccessor.SCALE_XY, 0.6f).waypoint(1.6f, 0.4f).target(1.2f, 1.2f).ease(Cubic.OUT))
-		.pushPause(0.3f)
-		.beginParallel()
-			.push(Tween.to(powered, SpriteAccessor.POS_XY, 0.5f).targetRelative(1, 0).ease(Back.IN))
-			.push(Tween.to(gdx, SpriteAccessor.POS_XY, 0.5f).targetRelative(1, 0).ease(Back.IN))
-		.end()
-		.pushPause(0.3f)
+        Sprite[] sprites = new Sprite[] {slot, puzzle, universal, tween, engine, logo, powered, gdx};
+        for (Sprite sprite : sprites) {
+            sprite.setSize(sprite.getWidth()/PX_PER_METER, sprite.getHeight()/PX_PER_METER);
+            sprite.setOrigin(sprite.getWidth()/2, sprite.getHeight()/2);
+        }
 
-		.setCallback(new TweenCallback() {
-			@Override
-			public void onEvent(int arg0, BaseTween<?> arg1) {
-				game.setScreen(new IntroScreen(game));
-			}})
-		.start(tweenManager);		
-	}
-		
-	@Override
-	public void show() {		
-	}
-	
-	private void update(float dt) {
-		tweenManager.update(dt);
-		if (gdx.getRotation() > 360*15-20) gdx.setRegion(gdxTex);
-		if (endOfSplashScreen) {
-			switch (nextScreen) {
-			case LOADINGSCREEN:
-				game.setScreen(new LoadingScreen(game));
-				break;
-			case SPLASHSCREEN:
-				game.setScreen(new SplashScreen(game));
-				break;
-			case INTROSCREEN:
-				game.setScreen(new IntroScreen(game));
-				break;
-			case PLAYSCREEN:
-			    game.setScreen(new PlayScreen(game, null, null));
-				break;
-			case ENDOFGAMESCREEN:
-			    game.setScreen(new EndOfGameScreen(game));
-				break;
-			case CREDITSSCREEN:
-				game.setScreen(new CreditsScreen(game));
-				break;
-			default: 
-				game.setScreen(new IntroScreen(game));
-				break;				
-			}
-			dispose();
-		}
-	}
+        slot.setPosition(-0.325f,  0.110f);
+        puzzle.setPosition(0.020f, 0.110f);
+        universal.setPosition(-0.325f, 0.028f);
+        tween.setPosition(-0.320f, -0.066f);
+        engine.setPosition(0.020f, -0.087f);
+        logo.setPosition(0.238f, 0.022f);
 
-	@Override
-	public void render(float delta) {
-		update(delta);
-		Gdx.gl.glClearColor(0, 0, 0, 1);
-		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
-		if(isLoaded) {
-			game.batch.setProjectionMatrix(camera.combined);
-			game.batch.begin();
-			strip.draw(game.batch);
-			slot.draw(game.batch);
-			puzzle.draw(game.batch);
-			universal.draw(game.batch);
-			tween.draw(game.batch);
-			engine.draw(game.batch);
-			logo.draw(game.batch);
-			powered.draw(game.batch);
-			gdx.draw(game.batch);
-			if (veil.getColor().a > 0.1f) veil.draw(game.batch);
-			game.batch.end();
-		} else {
-			if (Assets.inst().getProgress() < 1) {
-				Assets.inst().update();
-			} else {
-				isLoaded = true;
-			}
-		}
-	}
+        strip.setSize(wpw, wph);
+        strip.setOrigin(wpw/2, wph/2);
+        strip.setPosition(-wpw/2, -wph/2);
 
-	@Override
-	public void resize(int width, int height) {
-	}
+        powered.setPosition(-0.278f, -0.025f);
+        gdx.setPosition(0.068f, -0.077f);
 
-	@Override
-	public void pause() {
-	}
+        veil.setSize(wpw, wph);
+        veil.setPosition(-wpw/2, -wph/2);
+        veil.setColor(1, 1, 1, 0);
+    }
 
-	@Override
-	public void resume() {
-	}
+    private void createSplashScreenSequence() {
+        Timeline.createSequence()
+                .push(Tween.set(slot, SpriteAccessor.POS_XY).targetRelative(-1,0))
+                .push(Tween.set(puzzle, SpriteAccessor.POS_XY).targetRelative(1,0))
+                .push(Tween.set(tween, SpriteAccessor.POS_XY).targetRelative(-1, 0))
+                .push(Tween.set(engine, SpriteAccessor.POS_XY).targetRelative(1, 0))
+                .push(Tween.set(universal, SpriteAccessor.POS_XY).targetRelative(0, 0.5f))
+                .push(Tween.set(logo, SpriteAccessor.SCALE_XY).target(7, 7))
+                .push(Tween.set(logo, SpriteAccessor.OPACITY).target(0))
+                .push(Tween.set(strip, SpriteAccessor.SCALE_XY).target(1, 0))
+                .push(Tween.set(powered, SpriteAccessor.OPACITY).target(0))
+                .push(Tween.set(gdx, SpriteAccessor.OPACITY).target(0))
 
-	@Override
-	public void hide() {
-	}
+                .pushPause(0.5f)
+                .push(Tween.to(strip, SpriteAccessor.SCALE_XY, 0.8f).target(1, 0.6f).ease(Back.OUT))
+                .push(Tween.to(slot, SpriteAccessor.POS_XY, 0.5f).targetRelative(1, 0).ease(Quart.OUT))
+                .push(Tween.to(puzzle, SpriteAccessor.POS_XY, 0.5f).targetRelative(-1, 0).ease(Quart.OUT))
+                .push(Tween.to(tween, SpriteAccessor.POS_XY, 0.5f).targetRelative(1, 0).ease(Quart.OUT))
+                .push(Tween.to(engine, SpriteAccessor.POS_XY, 0.5f).targetRelative(-1, 0).ease(Quart.OUT))
+                .push(Tween.to(universal, SpriteAccessor.POS_XY, 0.6f).targetRelative(0, -0.5f).ease(Quint.OUT))
+                .pushPause(-0.3f)
+                .beginParallel()
+                .push(Tween.set(logo, SpriteAccessor.OPACITY).target(1))
+                .push(Tween.to(logo, SpriteAccessor.SCALE_XY, 0.5f).target(1, 1).ease(Back.OUT))
+                .end()
+                .pushPause(0.3f)
+                .push(Tween.to(slot, SpriteAccessor.SCALE_XY, 0.6f).waypoint(1.6f, 0.4f).target(1.2f, 1.2f).ease(Cubic.OUT))
+                .push(Tween.to(puzzle, SpriteAccessor.SCALE_XY, 0.6f).waypoint(1.6f, 0.4f).target(1.2f, 1.2f).ease(Cubic.OUT))
+                .pushPause(0.3f)
+                .push(Tween.to(strip, SpriteAccessor.SCALE_XY, 0.5f).target(1, 1).ease(Back.IN))
+                .pushPause(0.3f)
+                .beginParallel()
+                .push(Tween.to(slot, SpriteAccessor.POS_XY, 0.5f).targetRelative(1, 0).ease(Back.IN))
+                .push(Tween.to(puzzle, SpriteAccessor.POS_XY, 0.5f).targetRelative(1, 0).ease(Back.IN))
+                .push(Tween.to(tween, SpriteAccessor.POS_XY, 0.5f).targetRelative(1, 0).ease(Back.IN))
+                .push(Tween.to(engine, SpriteAccessor.POS_XY, 0.5f).targetRelative(1, 0).ease(Back.IN))
+                .push(Tween.to(universal, SpriteAccessor.POS_XY, 0.5f).targetRelative(1, 0).ease(Back.IN))
+                .push(Tween.to(logo, SpriteAccessor.POS_XY, 0.5f).targetRelative(1, 0).ease(Back.IN))
+                .end()
 
-	@Override
-	public void dispose() {
-		if (tweenManager != null) tweenManager.killAll();
-	}
-	
-	private final InputProcessor splashScreenInputProcessor = new InputAdapter() {
-		@Override
-		public boolean touchDown (int x, int y, int pointer, int button) {
-			endOfSplashScreen = true;
-		    return true;
-		}
-		@Override
-		public boolean keyDown(int keycode) {
-			switch (keycode) {
-				case Keys.L:
-					nextScreen = NextScreen.LOADINGSCREEN;
-					break;
-			 	case Keys.S: 
-			 		nextScreen = NextScreen.SPLASHSCREEN;
-			 		break;
-			 	case Keys.I: 
-			 		nextScreen = NextScreen.INTROSCREEN;
-			 		break;
-			 	case Keys.P: 
-			 		nextScreen = NextScreen.PLAYSCREEN;
-			 		break;
-			 	case Keys.C:
-			 		nextScreen = NextScreen.CREDITSSCREEN;
-			 		break;
-				case Keys.E:
-					nextScreen = NextScreen.ENDOFGAMESCREEN;
-					break;
-			 	default: 
-			 		nextScreen = NextScreen.INTROSCREEN;
-			 		break;
-			 }
-			 endOfSplashScreen = true;
-			 return true;
-		}
-	};
+                .pushPause(-0.3f)
+                .push(Tween.set(slot, SpriteAccessor.POS_XY).targetRelative(-1,0))
+                .push(Tween.set(puzzle, SpriteAccessor.POS_XY).targetRelative(1,0))
+                .pushPause(0.5f)
+                .push(Tween.to(slot, SpriteAccessor.POS_XY, 0.5f).targetRelative(-1, 0).ease(Quart.OUT))
+                .push(Tween.to(puzzle, SpriteAccessor.POS_XY, 0.5f).targetRelative(-1, 0).ease(Quart.OUT))
+                .pushPause(0.3f)
+                .push(Tween.to(slot, SpriteAccessor.SCALE_XY, 0.6f).waypoint(1.6f, 0.4f).target(1.2f, 1.2f).ease(Cubic.OUT))
+                .push(Tween.to(puzzle, SpriteAccessor.SCALE_XY, 0.6f).waypoint(1.6f, 0.4f).target(1.2f, 1.2f).ease(Cubic.OUT))
+                .pushPause(-0.3f)
+                .push(Tween.to(powered, SpriteAccessor.OPACITY, 0.3f).target(1))
+                .beginParallel()
+                .push(Tween.to(gdx, SpriteAccessor.OPACITY, 1.5f).target(1).ease(Cubic.IN))
+                .push(Tween.to(gdx, SpriteAccessor.ROTATION, 2.0f).target(360*15).ease(Quad.OUT))
+                .end()
+                .pushPause(0.3f)
+                .push(Tween.to(gdx, SpriteAccessor.SCALE_XY, 0.6f).waypoint(1.6f, 0.4f).target(1.2f, 1.2f).ease(Cubic.OUT))
+                .pushPause(0.3f)
+                .beginParallel()
+                .push(Tween.to(powered, SpriteAccessor.POS_XY, 0.5f).targetRelative(1, 0).ease(Back.IN))
+                .push(Tween.to(gdx, SpriteAccessor.POS_XY, 0.5f).targetRelative(1, 0).ease(Back.IN))
+                .end()
+                .pushPause(0.3f)
+
+                .setCallback(new TweenCallback() {
+                    @Override
+                    public void onEvent(int arg0, BaseTween<?> arg1) {
+                        game.setScreen(new IntroScreen(game));
+                    }})
+                .start(tweenManager);
+    }
+
+    @Override
+    public void show() {
+    }
+
+    private void update(float dt) {
+        tweenManager.update(dt);
+        if (gdx.getRotation() > 360*15-20) gdx.setRegion(gdxTex);
+        if (endOfSplashScreen) {
+            switch (nextScreen) {
+                case LOADINGSCREEN:
+                    game.setScreen(new LoadingScreen(game));
+                    break;
+                case SPLASHSCREEN:
+                    game.setScreen(new SplashScreen(game));
+                    break;
+                case INTROSCREEN:
+                    game.setScreen(new IntroScreen(game));
+                    break;
+                case PLAYSCREEN:
+                    game.setScreen(new PlayScreen(game, null, null));
+                    break;
+                case ENDOFGAMESCREEN:
+                    game.setScreen(new EndOfGameScreen(game));
+                    break;
+                case CREDITSSCREEN:
+                    game.setScreen(new CreditsScreen(game));
+                    break;
+                default:
+                    game.setScreen(new IntroScreen(game));
+                    break;
+            }
+            dispose();
+        }
+    }
+
+    @Override
+    public void render(float delta) {
+        update(delta);
+        Gdx.gl.glClearColor(0, 0, 0, 1);
+        Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+        if(isLoaded) {
+            game.batch.setProjectionMatrix(camera.combined);
+            game.batch.begin();
+            strip.draw(game.batch);
+            slot.draw(game.batch);
+            puzzle.draw(game.batch);
+            universal.draw(game.batch);
+            tween.draw(game.batch);
+            engine.draw(game.batch);
+            logo.draw(game.batch);
+            powered.draw(game.batch);
+            gdx.draw(game.batch);
+            if (veil.getColor().a > 0.1f) veil.draw(game.batch);
+            game.batch.end();
+        } else {
+            if (Assets.inst().getProgress() < 1) {
+                Assets.inst().update();
+            } else {
+                isLoaded = true;
+            }
+        }
+    }
+
+    @Override
+    public void resize(int width, int height) {
+    }
+
+    @Override
+    public void pause() {
+    }
+
+    @Override
+    public void resume() {
+    }
+
+    @Override
+    public void hide() {
+    }
+
+    @Override
+    public void dispose() {
+        if (tweenManager != null) tweenManager.killAll();
+    }
+
+    private final InputProcessor splashScreenInputProcessor = new InputAdapter() {
+        @Override
+        public boolean touchDown (int x, int y, int pointer, int button) {
+            endOfSplashScreen = true;
+            return true;
+        }
+        @Override
+        public boolean keyDown(int keycode) {
+            switch (keycode) {
+                case Keys.L:
+                    nextScreen = NextScreen.LOADINGSCREEN;
+                    break;
+                case Keys.S:
+                    nextScreen = NextScreen.SPLASHSCREEN;
+                    break;
+                case Keys.I:
+                    nextScreen = NextScreen.INTROSCREEN;
+                    break;
+                case Keys.P:
+                    nextScreen = NextScreen.PLAYSCREEN;
+                    break;
+                case Keys.C:
+                    nextScreen = NextScreen.CREDITSSCREEN;
+                    break;
+                case Keys.E:
+                    nextScreen = NextScreen.ENDOFGAMESCREEN;
+                    break;
+                default:
+                    nextScreen = NextScreen.INTROSCREEN;
+                    break;
+            }
+            endOfSplashScreen = true;
+            return true;
+        }
+    };
 }

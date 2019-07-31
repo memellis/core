@@ -106,7 +106,7 @@ public class AssetsAnnotation {
             GDXBLUR = "gdxblur",
             GDX = "gdx",
             SLOT = "slot",
-            PUZZLE = "machine";
+            PUZZLE = "puzzle";
 
     public AssetsAnnotation() {}
 }

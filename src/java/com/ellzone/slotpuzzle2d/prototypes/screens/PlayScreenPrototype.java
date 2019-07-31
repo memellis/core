@@ -304,7 +304,7 @@ public class PlayScreenPrototype implements Screen {
                                  if ((event instanceof ReelStoppedFlashingEvent)) {
                                      if (testForAnyLonelyReels(reelTiles)) {
                                          win = false;
-                                         if (Hud.getLives() > 0)
+                                         if (hud.getLives() > 0)
                                              playState = PlayStates.LEVEL_LOST;
                                          else
                                              gameOver = true;
@@ -554,7 +554,7 @@ public class PlayScreenPrototype implements Screen {
             switch (type) {
                 case TweenCallback.COMPLETE:
                     ReelTile reel = (ReelTile) source.getUserData();
-                    Hud.addScore((reel.getEndReel() + 1) * reel.getScore());
+                    hud.addScore((reel.getEndReel() + 1) * reel.getScore());
                     reelStoppedSound.play();
                     chaChingSound.play();
                     reel.deleteReelTile();
@@ -714,7 +714,7 @@ public class PlayScreenPrototype implements Screen {
                         reel.setEndReel(reel.getCurrentReel());
                         displaySpinHelp = true;
                         displaySpinHelpSprite = reel.getCurrentReel();
-                        Hud.addScore(-1);
+                        hud.addScore(-1);
                         pullLeverSound.play();
                         reelSpinningSound.play();
                     }
@@ -733,7 +733,7 @@ public class PlayScreenPrototype implements Screen {
                         ds.accelerator = accelerator;
                         ds.accelerate(new Vector(0, accelerateY));
                         ds.velocityMin.y = velocityMin.y;
-                        Hud.addScore(-1);
+                        hud.addScore(-1);
                         pullLeverSound.play();
                     }
                 }
@@ -786,7 +786,7 @@ public class PlayScreenPrototype implements Screen {
         win = true;
         playState = PlayStates.WON_LEVEL;
         mapTile.getLevel().setLevelCompleted();
-        mapTile.getLevel().setScore(Hud.getScore());
+        mapTile.getLevel().setScore(hud.getScore());
      }
 
     private void update(float delta) {
@@ -803,14 +803,14 @@ public class PlayScreenPrototype implements Screen {
         tileMapRenderer.setView(camera);
         hud.update(delta);
         if (hud.getWorldTime() == 0) {
-            if ((Hud.getLives() > 0) & (!inRestartLevel)) {
+            if ((hud.getLives() > 0) & (!inRestartLevel)) {
                 inRestartLevel = true;
                 playState = PlayStates.LEVEL_LOST;
             } else {
                 gameOver = true;
             }
         }
-        if ((gameOver) & (!win) & (Hud.getLives() == 0)) {
+        if ((gameOver) & (!win) & (hud.getLives() == 0)) {
             dispose();
             game.setScreen(new EndOfGameScreen(game));
         }

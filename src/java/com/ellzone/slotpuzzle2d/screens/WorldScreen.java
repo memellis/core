@@ -123,6 +123,7 @@ public class WorldScreen implements Screen {
 	private boolean inPlayScreen = false;
     private boolean show = false;
 	private Hud hud	;
+	private int worldScreenScore = 0;
 
 	public WorldScreen(SlotPuzzle game) {
 		this.game = game;
@@ -429,8 +430,8 @@ public class WorldScreen implements Screen {
                 update(delta);
                 mapGestureListener.update();
                 renderer.render();
-                renderer.setView(this.camera);
-                this.camera.update();
+                renderer.setView(camera);
+                camera.update();
                 game.batch.begin();
                 for (MapTile mapTile : mapTiles)
                     mapTile.draw(game.batch);
@@ -560,9 +561,8 @@ public class WorldScreen implements Screen {
 			float wy = screenYToWorldY(y);
             int levelDoorIndex = 0;
 			for (LevelDoor levelDoor : levelDoors) {
-				if (levelDoor.getDoorPosition().contains(wx, wy)) {
+				if (levelDoor.getDoorPosition().contains(wx, wy))
 					enterLevel(levelDoor, levelDoorIndex);
-				}
 				levelDoorIndex++;
 			}
 		}
@@ -583,18 +583,14 @@ public class WorldScreen implements Screen {
 	}
 
 		private void clampCamera() {
-			if (camera.position.x < 0) {
+			if (camera.position.x < 0)
 				camera.position.x = 0;
-			}
-			if (camera.position.x > mapWidth) {
+			if (camera.position.x > mapWidth)
 				camera.position.x = mapWidth;
-			}
-			if (camera.position.y < 0) {
+			if (camera.position.y < 0)
 				camera.position.y = 0;
-			}
-			if (camera.position.y > mapHeight) {
+			if (camera.position.y > mapHeight)
 				camera.position.y = mapHeight;
-			}
 		}
 
 		private float screenXToWorldX(float x) {
@@ -614,8 +610,9 @@ public class WorldScreen implements Screen {
 		}
 	}
 
-	public void worldScreenCallBack() {
+	public void worldScreenCallBack(MapTile mapTile) {
 		inPlayScreen = false;
+		hud.addScore(mapTile.getLevel().getScore());
 		tweenManager.killAll();
 		Gdx.input.setInputProcessor(inputMultiplexer);
 	}

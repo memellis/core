@@ -539,7 +539,7 @@ public class LevelCreatorScenario1 {
                 case TweenCallback.COMPLETE:
                     ReelTile reel = (ReelTile) source.getUserData();
                     int reelTilesIndex = reelTiles.indexOf(reel, true);
-                    Hud.addScore((reel.getEndReel() + 1) * reel.getScore());
+//                    hud.addScore((reel.getEndReel() + 1) * reel.getScore());
                     //playSound(reelStoppedSound);
                     //playSound(chaChingSound);
 

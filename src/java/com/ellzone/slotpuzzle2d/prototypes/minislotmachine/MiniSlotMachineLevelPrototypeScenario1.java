@@ -318,7 +318,7 @@ public class MiniSlotMachineLevelPrototypeScenario1 extends SPPrototypeTemplate 
         reel.setEndReel(reel.getCurrentReel());
         displaySpinHelp = true;
         displaySpinHelpSprite = reel.getCurrentReel();
-        Hud.addScore(-1);
+        hud.addScore(-1);
         pullLeverSound.play();
         reelSpinningSound.play();
     }
@@ -329,7 +329,7 @@ public class MiniSlotMachineLevelPrototypeScenario1 extends SPPrototypeTemplate 
         levelCreator.setNumberOfReelsSpinning(levelCreator.getNumberOfReelsSpinning() + 1);
         reel.setSy(0);
         animatedReel.reinitialise();
-        Hud.addScore(-1);
+        hud.addScore(-1);
         if (pullLeverSound != null) {
             pullLeverSound.play();
         }
@@ -350,7 +350,7 @@ public class MiniSlotMachineLevelPrototypeScenario1 extends SPPrototypeTemplate 
         tileMapRenderer.setView(orthographicCamera);
         hud.update(dt);
         if (hud.getWorldTime() == 0) {
-            if ((Hud.getLives() > 0) & (!inRestartLevel)) {
+            if ((hud.getLives() > 0) & (!inRestartLevel)) {
                 inRestartLevel = true;
                 levelCreator.setPlayState(PlayStates.LEVEL_LOST);
             } else {

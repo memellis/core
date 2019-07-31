@@ -144,6 +144,7 @@ public class LevelCreator {
     private PhysicsManagerCustomBodies physics;
     private int levelWidth, levelHeight, reelsSpinning;
     private PlayStates playState;
+    private Hud hud;
     private boolean win = false, gameOver = false;
     private Array<Score> scores;
     private boolean hitSinkBottom = false, dropReplacementReelBoxes = false;
@@ -162,7 +163,8 @@ public class LevelCreator {
                         PhysicsManagerCustomBodies physics,
                         int levelWidth,
                         int levelHeight,
-                        PlayStates playState) {
+                        PlayStates playState,
+                        Hud hud) {
         this.levelDoor = levelDoor;
         this.level = level;
         this.tweenManager = tweenManager;
@@ -172,6 +174,7 @@ public class LevelCreator {
         this.levelWidth = levelWidth;
         this.levelHeight = levelHeight;
         this.playState = playState;
+        this.hud = hud;
         this.puzzleGridTypeReelTile = new PuzzleGridTypeReelTile();
         this.reelBoxes = new Array<Body>();
         this.replacementReelBoxes = new Array<Integer>();
@@ -343,7 +346,7 @@ public class LevelCreator {
         if (playState != PlayStates.INTRO_SPINNING) {
             if (testForAnyLonelyReels(reelTiles, this.levelWidth, this.levelHeight)) {
                 win = false;
-                if (Hud.getLives() > 0) {
+                if (hud.getLives() > 0) {
                     setPlayState(PlayStates.LEVEL_LOST);
                 } else {
                     gameOver = true;
@@ -555,7 +558,7 @@ public class LevelCreator {
                 case TweenCallback.COMPLETE:
                     ReelTile reel = (ReelTile) source.getUserData();
                     int reelTilesIndex = reelTiles.indexOf(reel, true);
-                    Hud.addScore((reel.getEndReel() + 1) * reel.getScore());
+                    hud.addScore((reel.getEndReel() + 1) * reel.getScore());
 
                     reel.deleteReelTile();
                     physics.deleteBody(reelBoxes.get(reelTilesIndex));

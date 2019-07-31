@@ -20,6 +20,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.g2d.Sprite;
+import com.badlogic.gdx.graphics.glutils.HdpiUtils;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.viewport.FitViewport;
@@ -77,6 +78,7 @@ public class TestMiniSlotMachineLevelPrototypeScenario1ProcessIsTiledClicked {
     private Random randomMock;
     private ReelSprites reelSpritesMock;
     private Sprite spriteMock;
+    private Hud hudMock;
 
     @Before
     public void setUp() {
@@ -87,7 +89,6 @@ public class TestMiniSlotMachineLevelPrototypeScenario1ProcessIsTiledClicked {
     private void setUpPowerMocks() {
         partialMockMiniSlotMachineLevelPrototypeScenario1 = PowerMock.createNicePartialMock(MiniSlotMachineLevelPrototypeScenario1.class,
                 "initialiseOverride");
-        PowerMock.mockStatic(Hud.class);
         PowerMock.mockStatic(Random.class);
     }
 
@@ -102,6 +103,7 @@ public class TestMiniSlotMachineLevelPrototypeScenario1ProcessIsTiledClicked {
     }
 
     private void setUpReelMocks() {
+        hudMock = createMock(Hud.class);
         randomMock = createMock(Random.class);
         reelTilesMock = createMock(Array.class);
         reelTileMock = createMock(ReelTile.class);
@@ -148,6 +150,7 @@ public class TestMiniSlotMachineLevelPrototypeScenario1ProcessIsTiledClicked {
         pullLeverSoundMock = null;
         reelSpinningSoundMock = null;
         randomMock = null;
+        hudMock = null;
         reelSpritesMock = null;
     }
 
@@ -206,7 +209,7 @@ public class TestMiniSlotMachineLevelPrototypeScenario1ProcessIsTiledClicked {
         expect(reelTileMock.getCurrentReel()).andReturn(0);
         reelTileMock.setEndReel(0);
         expect(reelTileMock.getCurrentReel()).andReturn(0);
-        Hud.addScore(-1);
+        hudMock.addScore(-1);
         expect(pullLeverSoundMock.play()).andReturn(0L);
         expect(reelSpinningSoundMock.play()).andReturn(0L);
     }
@@ -221,7 +224,7 @@ public class TestMiniSlotMachineLevelPrototypeScenario1ProcessIsTiledClicked {
         levelCreatorScenario1Mock.setNumberOfReelsSpinning(2);
         reelTileMock.setSy(0);
         animatedReelMock.reinitialise();
-        Hud.addScore(-1);
+        hudMock.addScore(-1);
         expect(pullLeverSoundMock.play()).andReturn(0L);
     }
 

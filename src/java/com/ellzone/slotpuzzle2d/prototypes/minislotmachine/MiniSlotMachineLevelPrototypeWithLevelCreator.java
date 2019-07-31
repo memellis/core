@@ -171,14 +171,15 @@ public class MiniSlotMachineLevelPrototypeWithLevelCreator extends SPPrototypeTe
         initialiseReels(this.annotationAssetManager);
         createSlotReelTexture();
         getAssets(annotationAssetManager);
-        this.miniSlotMachineLevel = annotationAssetManager.get(AssetsAnnotation.MINI_SLOT_MACHINE_LEVEL);
+        miniSlotMachineLevel = annotationAssetManager.get(AssetsAnnotation.MINI_SLOT_MACHINE_LEVEL);
         getMapProperties(this.miniSlotMachineLevel);
         numberOfReelsToHitSinkBottom = 0;
         numberOfReelsAboveHitsIntroSpinning = 0;
         initialiseLevelDoor();
         createPlayScreen();
         initialisePhysics();
-        this.levelCreator = new LevelCreator(
+        hud = new Hud(batch);
+        levelCreator = new LevelCreator(
                 levelDoor,
                 miniSlotMachineLevel,
                 annotationAssetManager,
@@ -187,12 +188,12 @@ public class MiniSlotMachineLevelPrototypeWithLevelCreator extends SPPrototypeTe
                 physics,
                 GAME_LEVEL_WIDTH,
                 GAME_LEVEL_HEIGHT,
-                PlayStates.INITIALISING);
+                PlayStates.INITIALISING,
+                hud);
         levelCreator.setPlayState(PlayStates.INITIALISING);
-        reelTiles = this.levelCreator.getReelTiles();
-        animatedReels = this.levelCreator.getAnimatedReels();
-        reelBoxes = this.levelCreator.getReelBoxes();
-        hud = new Hud(batch);
+        reelTiles = levelCreator.getReelTiles();
+        animatedReels = levelCreator.getAnimatedReels();
+        reelBoxes = levelCreator.getReelBoxes();
         hud.setLevelName(levelDoor.getLevelName());
         hud.startWorldTimer();
         levelCreator.setPlayState(PlayStates.INTRO_SPINNING);
@@ -342,7 +343,7 @@ public class MiniSlotMachineLevelPrototypeWithLevelCreator extends SPPrototypeTe
                             reel.setEndReel(reel.getCurrentReel());
                             displaySpinHelp = true;
                             displaySpinHelpSprite = reel.getCurrentReel();
-                            Hud.addScore(-1);
+                            hud.addScore(-1);
                             pullLeverSound.play();
                             reelSpinningSound.play();
                         }
@@ -354,7 +355,7 @@ public class MiniSlotMachineLevelPrototypeWithLevelCreator extends SPPrototypeTe
                             levelCreator.setNumberOfReelsSpinning(levelCreator.getNumberOfReelsSpinning()+1);
                             reel.setSy(0);
                             animatedReel.reinitialise();
-                            Hud.addScore(-1);
+                            hud.addScore(-1);
                             if (pullLeverSound != null) {
                                 pullLeverSound.play();
                             }
@@ -385,7 +386,7 @@ public class MiniSlotMachineLevelPrototypeWithLevelCreator extends SPPrototypeTe
         tileMapRenderer.setView(orthographicCamera);
         hud.update(dt);
         if (hud.getWorldTime() == 0) {
-            if ((Hud.getLives() > 0) & (!inRestartLevel)) {
+            if ((hud.getLives() > 0) & (!inRestartLevel)) {
                 inRestartLevel = true;
                 levelCreator.setPlayState(PlayStates.LEVEL_LOST);
             } else {

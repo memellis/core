@@ -445,7 +445,7 @@ public class MiniSlotMachineLevelFallingReels extends SPPrototypeTemplate {
         win = true;
         playState = PlayStates.WON_LEVEL;
         mapTile.getLevel().setLevelCompleted();
-        mapTile.getLevel().setScore(Hud.getScore());
+        mapTile.getLevel().setScore(hud.getScore());
     }
 
     private void iWonABonus() {
@@ -515,7 +515,7 @@ public class MiniSlotMachineLevelFallingReels extends SPPrototypeTemplate {
     private void actionReelStoppedFlasshing(ReelTileEvent event, ReelTile reelTile) {
         if (testForAnyLonelyReels(reelTiles)) {
             win = false;
-            if (Hud.getLives() > 0) {
+            if (hud.getLives() > 0) {
                 playState = PlayStates.LEVEL_LOST;
             } else {
                 gameOver = true;
@@ -651,7 +651,7 @@ public class MiniSlotMachineLevelFallingReels extends SPPrototypeTemplate {
             switch (type) {
                 case TweenCallback.COMPLETE:
                     ReelTile reel = (ReelTile) source.getUserData();
-                    Hud.addScore((reel.getEndReel() + 1) * reel.getScore());
+                    hud.addScore((reel.getEndReel() + 1) * reel.getScore());
                     reelStoppedSound.play();
                     chaChingSound.play();
                     reel.deleteReelTile();
@@ -791,7 +791,7 @@ public class MiniSlotMachineLevelFallingReels extends SPPrototypeTemplate {
                         reel.setEndReel(reel.getCurrentReel());
                         displaySpinHelp = true;
                         displaySpinHelpSprite = reel.getCurrentReel();
-                        Hud.addScore(-1);
+                        hud.addScore(-1);
                         pullLeverSound.play();
                         reelSpinningSound.play();
                     }
@@ -810,7 +810,7 @@ public class MiniSlotMachineLevelFallingReels extends SPPrototypeTemplate {
                         ds.accelerator = accelerator;
                         ds.accelerate(new Vector(0, accelerateY));
                         ds.velocityMin.y = velocityMin.y;
-                        Hud.addScore(-1);
+                        hud.addScore(-1);
                         pullLeverSound.play();
                     }
                 }

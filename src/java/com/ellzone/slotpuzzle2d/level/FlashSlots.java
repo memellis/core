@@ -233,5 +233,4 @@ public class FlashSlots {
     public void deleteAReel() {
         numberOfReelsToDelete--;
     }
-
 }
