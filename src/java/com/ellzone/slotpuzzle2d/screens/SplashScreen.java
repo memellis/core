@@ -119,6 +119,7 @@ public class SplashScreen implements Screen {
 
         Sprite[] sprites = new Sprite[] {slot, puzzle, universal, tween, engine, logo, powered, gdx};
         for (Sprite sprite : sprites) {
+            System.out.println("sprite="+sprite);
             sprite.setSize(sprite.getWidth()/PX_PER_METER, sprite.getHeight()/PX_PER_METER);
             sprite.setOrigin(sprite.getWidth()/2, sprite.getHeight()/2);
         }

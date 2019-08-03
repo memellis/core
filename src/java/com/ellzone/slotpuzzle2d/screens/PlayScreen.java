@@ -102,7 +102,7 @@ public class PlayScreen implements Screen, PlayInterface, LevelCreatorInjectionI
     public static final float PUZZLE_GRID_START_X = 160.0f;
     public static final float PUZZLE_GRID_START_Y = 40.0f;
     public static final String SLOTPUZZLE_SCREEN = "PlayScreen";
-    public static final int LEVEL_TIME_LENGTH_IN_SECONDS = 300;
+    public static final int LEVEL_TIME_LENGTH_IN_SECONDS = 30;
     public static final String WIDTH_KEY = "width";
     public static final String HEIGHT_KEY = "height";
 

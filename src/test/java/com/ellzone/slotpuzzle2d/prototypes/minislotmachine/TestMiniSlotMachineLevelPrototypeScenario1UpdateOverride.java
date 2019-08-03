@@ -34,7 +34,6 @@ import org.powermock.reflect.Whitebox;
 
 import static org.easymock.EasyMock.expect;
 import static org.powermock.api.easymock.PowerMock.createMock;
-import static org.powermock.api.easymock.PowerMock.mockStatic;
 import static org.powermock.api.easymock.PowerMock.replay;
 import static org.powermock.api.easymock.PowerMock.verify;
 
@@ -78,7 +77,6 @@ public class TestMiniSlotMachineLevelPrototypeScenario1UpdateOverride {
     private void setUpPowerMocks() {
         partialMockMiniSlotMachineLevelPrototypeScenario1 = PowerMock.createNicePartialMock(MiniSlotMachineLevelPrototypeScenario1.class,
                 "initialiseOverride");
-        mockStatic(Hud.class);
     }
 
     @After
@@ -124,7 +122,7 @@ public class TestMiniSlotMachineLevelPrototypeScenario1UpdateOverride {
         tileMapRendererMock.setView(orthographicCameraMock);
         hudMock.update(0.0f);
         expect(hudMock.getWorldTime()).andReturn(0);
-        expect(Hud.getLives()).andReturn(1);
+        expect(hudMock.getLives()).andReturn(1);
         levelCreatorScenario1Mock.setPlayState(PlayStates.LEVEL_LOST);
         expect(levelCreatorScenario1Mock.getPlayState()).andReturn(PlayStates.LEVEL_LOST);
     }
@@ -134,8 +132,7 @@ public class TestMiniSlotMachineLevelPrototypeScenario1UpdateOverride {
                 levelCreatorScenario1Mock,
                 tileMapRendererMock,
                 orthographicCameraMock,
-                hudMock,
-                Hud.class);
+                hudMock);
     }
     
     private void verifyAll() {

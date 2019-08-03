@@ -272,7 +272,8 @@ public class PlayScreenMiniSlotMachine extends PlayScreen {
         switch (type) {
             case TweenCallback.END:
                 playState = PlayStates.PLAYING;
-                hud.resetWorldTime(LEVEL_TIME_LENGTH_IN_SECONDS);
+//                hud.resetWorldTime(LEVEL_TIME_LENGTH_IN_SECONDS);
+                hud.resetWorldTime(30);
                 hud.startWorldTimer();
                 if (levelDoor.getLevelType().equals(MINI_SLOT_MACHINE_LEVEL_TYPE))
                     matchReels();

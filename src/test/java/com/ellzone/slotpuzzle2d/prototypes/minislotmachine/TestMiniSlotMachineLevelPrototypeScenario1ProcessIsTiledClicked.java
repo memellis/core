@@ -20,7 +20,6 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.g2d.Sprite;
-import com.badlogic.gdx.graphics.glutils.HdpiUtils;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.viewport.FitViewport;
@@ -62,6 +61,7 @@ public class TestMiniSlotMachineLevelPrototypeScenario1ProcessIsTiledClicked {
     private final static String PULLLEVELSOUND_FIELD_NAME = "pullLeverSound";
     private final static String REELSPIININGSOUND_FIELD_NAME = "reelSpinningSound";
     private final static String REELS_FIELD_NAME = "reelSprites";
+    private final static String HUD_FIELD_NAME = "hud";
 
     private MiniSlotMachineLevelPrototypeScenario1 partialMockMiniSlotMachineLevelPrototypeScenario1;
     private LevelCreatorScenario1 levelCreatorScenario1Mock;
@@ -170,6 +170,7 @@ public class TestMiniSlotMachineLevelPrototypeScenario1ProcessIsTiledClicked {
         Whitebox.setInternalState(partialMockMiniSlotMachineLevelPrototypeScenario1, PULLLEVELSOUND_FIELD_NAME, pullLeverSoundMock);
         Whitebox.setInternalState(partialMockMiniSlotMachineLevelPrototypeScenario1, REELSPIININGSOUND_FIELD_NAME, reelSpinningSoundMock);
         Whitebox.setInternalState(partialMockMiniSlotMachineLevelPrototypeScenario1, REELS_FIELD_NAME, reelSpritesMock);
+        Whitebox.setInternalState(partialMockMiniSlotMachineLevelPrototypeScenario1, HUD_FIELD_NAME, hudMock);
     }
 
     private void setUpTestData() {
@@ -277,8 +278,9 @@ public class TestMiniSlotMachineLevelPrototypeScenario1ProcessIsTiledClicked {
                animatedReelMock,
                pullLeverSoundMock,
                reelSpinningSoundMock,
-                reelSpritesMock,
-               randomMock);
+               reelSpritesMock,
+               randomMock,
+               hudMock);
     }
 
     private void verifyAll() {
@@ -293,8 +295,9 @@ public class TestMiniSlotMachineLevelPrototypeScenario1ProcessIsTiledClicked {
                animatedReelMock,
                pullLeverSoundMock,
                reelSpinningSoundMock,
-                reelSpritesMock,
-               randomMock);
+               reelSpritesMock,
+               randomMock,
+               hudMock);
     }
 
     private void setSpinning(boolean spinning) {
