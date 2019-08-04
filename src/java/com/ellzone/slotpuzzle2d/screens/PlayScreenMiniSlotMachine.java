@@ -255,7 +255,7 @@ public class PlayScreenMiniSlotMachine extends PlayScreen {
                 default:
                     break;
             }
-            if (playStateMachine.getStateMachine().getCurrentState() == PlayState.PLAY) {
+            if (playStateMachine.getStateMachine().getCurrentState() == PlayState.PLAY && playState != PlayStates.BONUS_LEVEL_ENDED) {
                 Gdx.app.debug(SLOTPUZZLE_SCREEN, "Play");
                 if (levelDoor.getLevelType().equals(MINI_SLOT_MACHINE_LEVEL_TYPE)) {
                     handleReelsTouchedSlotMachine(unprojectTouch.x, unprojectTouch.y);
