@@ -37,6 +37,7 @@ import com.ellzone.slotpuzzle2d.prototypes.SPPrototypesGame;
 import com.ellzone.slotpuzzle2d.prototypes.map.WorldScreenPrototype;
 import com.ellzone.slotpuzzle2d.prototypes.screens.PlayScreenPrototype;
 import com.ellzone.slotpuzzle2d.scene.MapTile;
+import com.ellzone.slotpuzzle2d.screens.EndOfGameScreen;
 import com.ellzone.slotpuzzle2d.tweenengine.TweenManager;
 import com.ellzone.slotpuzzle2d.utils.Assets;
 import com.ellzone.slotpuzzle2d.utils.UiUtils;
@@ -57,6 +58,7 @@ public class MenuScreen implements Screen {
     boolean worldScreenPrototype = false;
     boolean playScreenPrototype = false;
 	boolean typeWriterPrototype = false;
+    boolean endOfGameScreen = false;
     LevelDoor levelDoor;
     MapTile mapTile;
     TweenManager tweenManager = new TweenManager();
@@ -89,40 +91,79 @@ public class MenuScreen implements Screen {
     }
 
     private void createButtons() {
-        TextButton gdxButton = new TextButton("Get libGDX version", skin);
-        gdxButton.setPosition(SPPrototypesGame.V_WIDTH / 2 - SPPrototypesGame.V_WIDTH / 8 , SPPrototypesGame.V_HEIGHT/2 - gdxButton.getHeight());
-        stage.addActor(gdxButton);
-        gdxButton.addListener(new ChangeListener() {
-            @Override
-	        public void changed(ChangeEvent event, Actor actor) {
-                gdxVersion = SPPrototypesGame.gdxVersion.VERSION;
-	        }
-	    });
+//        TextButton gdxButton = new TextButton("Get libGDX version", skin);
+//        gdxButton.setPosition(SPPrototypesGame.V_WIDTH / 2 - SPPrototypesGame.V_WIDTH / 8 , SPPrototypesGame.V_HEIGHT/2 - gdxButton.getHeight());
+//        stage.addActor(gdxButton);
+//        gdxButton.addListener(new ChangeListener() {
+//            @Override
+//	        public void changed(ChangeEvent event, Actor actor) {
+//                gdxVersion = SPPrototypesGame.gdxVersion.VERSION;
+//	        }
+//	    });
 		
-		TextButton introScreenButton = new TextButton("IntroScreen Prototype", skin);
-        introScreenButton.setPosition(SPPrototypesGame.V_WIDTH / 2 - SPPrototypesGame.V_WIDTH / 8, SPPrototypesGame.V_HEIGHT / 2 - 2 * introScreenButton.getHeight());
-        this.stage.addActor(introScreenButton);
-        introScreenButton.addListener(new ChangeListener() {
-				@Override
-				public void changed(ChangeEvent event, Actor actor) {
-					introScreenPrototype = true;
-				}
-			});
+//		TextButton introScreenButton = new TextButton("IntroScreen Prototype", skin);
+//        introScreenButton.setPosition(SPPrototypesGame.V_WIDTH / 2 - SPPrototypesGame.V_WIDTH / 8, SPPrototypesGame.V_HEIGHT / 2 - 2 * introScreenButton.getHeight());
+//        this.stage.addActor(introScreenButton);
+//        introScreenButton.addListener(new ChangeListener() {
+//				@Override
+//				public void changed(ChangeEvent event, Actor actor) {
+//					introScreenPrototype = true;
+//				}
+//			});
 
-        TextButton worldScreenButton = new TextButton("WorldMap Prototype", skin);
-        worldScreenButton.setPosition(SPPrototypesGame.V_WIDTH / 2 - SPPrototypesGame.V_WIDTH / 8, SPPrototypesGame.V_HEIGHT / 2 - 3 * worldScreenButton.getHeight());
-        this.stage.addActor(worldScreenButton);
-        worldScreenButton.addListener(new ChangeListener() {
+//        TextButton worldScreenButton = new TextButton("WorldMap Prototype", skin);
+//        worldScreenButton.setPosition(SPPrototypesGame.V_WIDTH / 2 - SPPrototypesGame.V_WIDTH / 8, SPPrototypesGame.V_HEIGHT / 2 - 3 * worldScreenButton.getHeight());
+//        this.stage.addActor(worldScreenButton);
+//        worldScreenButton.addListener(new ChangeListener() {
+//            @Override
+//            public void changed(ChangeEvent event, Actor actor) {
+//                worldScreenPrototype = true;
+//            }
+//        });
+
+//        TextButton playScreenButton = new TextButton("PlayScreen Prototype", skin);
+//        playScreenButton.setPosition(SPPrototypesGame.V_WIDTH / 2 - SPPrototypesGame.V_WIDTH / 8, SPPrototypesGame.V_HEIGHT / 2 - 4 * playScreenButton.getHeight());
+//        this.stage.addActor(playScreenButton);
+//        playScreenButton.addListener(new ChangeListener() {
+//            @Override
+//            public void changed(ChangeEvent event, Actor actor) {
+//                playScreenPrototype = true;
+//                setUpPlayScreenPrototye();
+//            }
+//        });
+
+//		final TextButton typeWriterButton = new TextButton("TypeWriter Prototype", skin);
+//        typeWriterButton.setPosition(SPPrototypesGame.V_WIDTH / 2 - SPPrototypesGame.V_WIDTH / 8, SPPrototypesGame.V_HEIGHT / 2 - 5 * typeWriterButton.getHeight());
+//        this.stage.addActor(typeWriterButton);
+//        typeWriterButton.addListener(new ChangeListener() {
+//				@Override
+//				public void changed(ChangeEvent event, Actor actor) {
+//					typeWriterPrototype = true;
+//				}
+//        });
+
+        createButton("Get libGDX version", 1, new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent event, Actor actor) {
+                gdxVersion = SPPrototypesGame.gdxVersion.VERSION;
+            }
+        });
+
+        createButton("IntroScreen Prototype", 2, new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
                 worldScreenPrototype = true;
             }
         });
 
-        TextButton playScreenButton = new TextButton("PlayScreen Prototype", skin);
-        playScreenButton.setPosition(SPPrototypesGame.V_WIDTH / 2 - SPPrototypesGame.V_WIDTH / 8, SPPrototypesGame.V_HEIGHT / 2 - 4 * playScreenButton.getHeight());
-        this.stage.addActor(playScreenButton);
-        playScreenButton.addListener(new ChangeListener() {
+        createButton("WorldMap Prototype", 3, new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent event, Actor actor) {
+                worldScreenPrototype = true;
+            }
+        });
+
+        createButton("PlayScreen Prototype", 4 , new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
                 playScreenPrototype = true;
@@ -130,16 +171,29 @@ public class MenuScreen implements Screen {
             }
         });
 
-		TextButton typeWriterButton = new TextButton("TypeWriter Prototype", skin);
-        typeWriterButton.setPosition(SPPrototypesGame.V_WIDTH / 2 - SPPrototypesGame.V_WIDTH / 8, SPPrototypesGame.V_HEIGHT / 2 - 5 * typeWriterButton.getHeight());
-        this.stage.addActor(typeWriterButton);
-        typeWriterButton.addListener(new ChangeListener() {
-				@Override
-				public void changed(ChangeEvent event, Actor actor) {
-					typeWriterPrototype = true;
-				}
+        createButton("TypeWriter Prototype", 5, new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent event, Actor actor) {
+                typeWriterPrototype = true;
+            }
+        });
+
+        createButton("End of Game Screen", 6, new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent event, Actor actor) {
+                endOfGameScreen = true;
+            }
         });
     }
+
+    private void createButton(String buttonText, int buttonPostion, ChangeListener buttonChangeListener) {
+        TextButton textButton = new TextButton(buttonText, skin);
+        textButton.setPosition(SPPrototypesGame.V_WIDTH / 2 - SPPrototypesGame.V_WIDTH / 8,
+                               SPPrototypesGame.V_HEIGHT - buttonPostion * textButton.getHeight());
+        stage.addActor(textButton);
+        textButton.addListener(buttonChangeListener);
+    }
+
 
     private void setUpPlayScreenPrototye() {
     }
@@ -159,25 +213,29 @@ public class MenuScreen implements Screen {
     }
 
     private void update(float delta) {
-        if (this.enteredSubScreen) {
+        if (enteredSubScreen) {
 	        Gdx.input.setInputProcessor(stage);
 	    }
-		if (this.introScreenPrototype) {
-			this.introScreenPrototype = false;
-			this.game.setScreen(new IntroScreenPrototype(this.game));
+		if (introScreenPrototype) {
+			introScreenPrototype = false;
+			game.setScreen(new IntroScreenPrototype(this.game));
 		}
-	    if (this.worldScreenPrototype) {
-            this.worldScreenPrototype = false;
-            this.game.setScreen(new WorldScreenPrototype(this.game));
+	    if (worldScreenPrototype) {
+            worldScreenPrototype = false;
+            game.setScreen(new WorldScreenPrototype(this.game));
         }
-        if (this.playScreenPrototype) {
-            this.playScreenPrototype = false;
-            this.game.setScreen(new PlayScreenPrototype(this.game, levelDoor, mapTile));
+        if (playScreenPrototype) {
+            playScreenPrototype = false;
+            game.setScreen(new PlayScreenPrototype(this.game, levelDoor, mapTile));
         }
-		if (this.typeWriterPrototype) {
-			this.typeWriterPrototype = false;
-			this.game.setScreen(new TypewriterScreen(this.game));
+		if (typeWriterPrototype) {
+			typeWriterPrototype = false;
+			game.setScreen(new TypewriterScreen(this.game));
 		}
+        if (endOfGameScreen) {
+            endOfGameScreen = false;
+            game.setScreen(new EndOfGameScreen(this.game));
+        }
     }
 
     @Override

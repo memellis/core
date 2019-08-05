@@ -34,6 +34,7 @@ import com.ellzone.slotpuzzle2d.level.LevelDoor;
 import com.ellzone.slotpuzzle2d.prototypes.SPPrototypesGame;
 import com.ellzone.slotpuzzle2d.prototypes.map.WorldScreenPrototype;
 import com.ellzone.slotpuzzle2d.scene.MapTile;
+import com.ellzone.slotpuzzle2d.screens.EndOfGameScreen;
 import com.ellzone.slotpuzzle2d.utils.UiUtils;
 
 import java.util.Random;
@@ -50,6 +51,7 @@ public class MenuScreenPrototype implements Screen {
     private Integer fps;
     private boolean level1Won = false;
     private Random random;
+    private boolean endOfGameScreen = false;
 
     public MenuScreenPrototype(SlotPuzzle game, LevelDoor levelDoor, MapTile mapTile) {
         this.game = game;
@@ -74,25 +76,36 @@ public class MenuScreenPrototype implements Screen {
     }
 
     private void createButtons() {
-        TextButton gdxButton = new TextButton("Get libGDX version", skin);
-        gdxButton.setPosition(SPPrototypesGame.V_WIDTH / 2 - SPPrototypesGame.V_WIDTH / 8 , SPPrototypesGame.V_HEIGHT/2 - gdxButton.getHeight());
-        stage.addActor(gdxButton);
-        gdxButton.addListener(new ChangeListener() {
-            @Override
-            public void changed(ChangeEvent event, Actor actor) {
-                gdxVersion = SPPrototypesGame.gdxVersion.VERSION;
-            }
-        });
+        createButton("Get libGDX version",
+                new ChangeListener() {
+                    @Override
+                    public void changed(ChangeEvent event, Actor actor) {
+                        gdxVersion = SPPrototypesGame.gdxVersion.VERSION;
+                    }
+                });
 
-        TextButton worldMapButton = new TextButton("I've won Level 1 ", skin);
-        worldMapButton.setPosition(SPPrototypesGame.V_WIDTH / 2 - SPPrototypesGame.V_WIDTH / 8, SPPrototypesGame.V_HEIGHT / 2 - 2 * worldMapButton.getHeight());
-        stage.addActor(worldMapButton);
-        worldMapButton.addListener(new ChangeListener() {
-            @Override
-            public void changed(ChangeEvent event, Actor actor) {
-                level1Won = true;
-            }
-        });
+        createButton("I've won Level 1 ",
+                new ChangeListener() {
+                    @Override
+                    public void changed(ChangeEvent event, Actor actor) {
+                        level1Won = true;
+                    }
+                });
+
+        createButton("End Of Gamne Screen",
+                new ChangeListener() {
+                    @Override
+                    public void changed(ChangeEvent event, Actor actor) {
+                        endOfGameScreen = true;
+                    }
+                });
+    }
+
+    private void createButton(String buttonText, ChangeListener buttonChangeListener) {
+        TextButton textButton = new TextButton(buttonText, skin);
+        textButton.setPosition(SPPrototypesGame.V_WIDTH / 2 - SPPrototypesGame.V_WIDTH / 8 , SPPrototypesGame.V_HEIGHT / 2 - textButton.getHeight());
+        stage.addActor(textButton);
+        textButton.addListener(buttonChangeListener);
     }
 
     @Override
@@ -105,6 +118,9 @@ public class MenuScreenPrototype implements Screen {
             mapTile.getLevel().setScore(random.nextInt(1000));
             ((WorldScreenPrototype)game.getWorldScreen()).worldScreenCallBack();
             game.setScreen(game.getWorldScreen());
+        }
+        if (endOfGameScreen) {
+            game.setScreen(new EndOfGameScreen(this.game));
         }
     }
 
