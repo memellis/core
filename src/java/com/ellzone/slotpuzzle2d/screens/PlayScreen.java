@@ -16,7 +16,6 @@
 
 package com.ellzone.slotpuzzle2d.screens;
 
-import java.util.Random;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.audio.Sound;
@@ -50,19 +49,19 @@ import com.ellzone.slotpuzzle2d.finitestatemachine.PlayInterface;
 import com.ellzone.slotpuzzle2d.finitestatemachine.PlayState;
 import com.ellzone.slotpuzzle2d.finitestatemachine.PlayStateMachine;
 import com.ellzone.slotpuzzle2d.finitestatemachine.PlayStates;
-import com.ellzone.slotpuzzle2d.level.card.Card;
 import com.ellzone.slotpuzzle2d.level.FlashSlots;
-import com.ellzone.slotpuzzle2d.level.hidden.HiddenPattern;
-import com.ellzone.slotpuzzle2d.level.hidden.HiddenPlayingCard;
+import com.ellzone.slotpuzzle2d.level.LevelDoor;
+import com.ellzone.slotpuzzle2d.level.card.Card;
 import com.ellzone.slotpuzzle2d.level.creator.LevelCallback;
 import com.ellzone.slotpuzzle2d.level.creator.LevelCreator;
 import com.ellzone.slotpuzzle2d.level.creator.LevelCreatorInjectionInterface;
-import com.ellzone.slotpuzzle2d.level.LevelDoor;
 import com.ellzone.slotpuzzle2d.level.creator.LevelLoader;
 import com.ellzone.slotpuzzle2d.level.creator.LevelObjectCreatorEntityHolder;
+import com.ellzone.slotpuzzle2d.level.hidden.HiddenPattern;
+import com.ellzone.slotpuzzle2d.level.hidden.HiddenPlayingCard;
 import com.ellzone.slotpuzzle2d.level.map.MapLevelNameComparator;
-import com.ellzone.slotpuzzle2d.level.sequence.PlayScreenIntroSequence;
 import com.ellzone.slotpuzzle2d.level.popups.PlayScreenPopUps;
+import com.ellzone.slotpuzzle2d.level.sequence.PlayScreenIntroSequence;
 import com.ellzone.slotpuzzle2d.physics.DampenedSineParticle;
 import com.ellzone.slotpuzzle2d.puzzlegrid.PuzzleGridType;
 import com.ellzone.slotpuzzle2d.puzzlegrid.PuzzleGridTypeReelTile;
@@ -75,15 +74,18 @@ import com.ellzone.slotpuzzle2d.sprites.ReelSprites;
 import com.ellzone.slotpuzzle2d.sprites.ReelTile;
 import com.ellzone.slotpuzzle2d.sprites.Score;
 import com.ellzone.slotpuzzle2d.sprites.SlotHandleSprite;
-import com.ellzone.slotpuzzle2d.utils.AssetsAnnotation;
 import com.ellzone.slotpuzzle2d.tweenengine.BaseTween;
 import com.ellzone.slotpuzzle2d.tweenengine.SlotPuzzleTween;
 import com.ellzone.slotpuzzle2d.tweenengine.Timeline;
 import com.ellzone.slotpuzzle2d.tweenengine.TweenCallback;
 import com.ellzone.slotpuzzle2d.tweenengine.TweenManager;
+import com.ellzone.slotpuzzle2d.utils.AssetsAnnotation;
 import com.ellzone.slotpuzzle2d.utils.PixmapProcessors;
 
 import net.dermetfan.gdx.assets.AnnotationAssetManager;
+
+import java.util.Random;
+
 import aurelienribon.tweenengine.equations.Quad;
 import box2dLight.RayHandler;
 
@@ -380,12 +382,12 @@ public class PlayScreen implements Screen, PlayInterface, LevelCreatorInjectionI
 
     private boolean isHiddenPatternRevealed(Array<ReelTile> reelTiles) {
         TupleValueIndex[][] matchGrid = flashSlots.flashSlots(reelTiles);
-        return hiddenPattern.isHiddenPatternRevealed(matchGrid, this.reelTiles, GAME_LEVEL_WIDTH, GAME_LEVEL_HEIGHT);
+        return hiddenPattern.isHiddenPatternRevealed(matchGrid, reelTiles, GAME_LEVEL_WIDTH, GAME_LEVEL_HEIGHT);
     }
 
     private boolean isHiddenPlayingCardsRevealed(Array<ReelTile> reelTiles) {
         TupleValueIndex[][] matchGrid = flashSlots.flashSlots(reelTiles);
-        return hiddenPattern.isHiddenPatternRevealed(matchGrid, this.reelTiles, GAME_LEVEL_WIDTH, GAME_LEVEL_HEIGHT);
+        return hiddenPattern.isHiddenPatternRevealed(matchGrid, reelTiles, GAME_LEVEL_WIDTH, GAME_LEVEL_HEIGHT);
     }
 
     private boolean testForAnyLonelyReels(Array<ReelTile> levelReel) {
@@ -425,9 +427,8 @@ public class PlayScreen implements Screen, PlayInterface, LevelCreatorInjectionI
         flashSlots.deleteAReel();
         if (levelDoor.getLevelType().equals(LevelCreator.PLAYING_CARD_LEVEL_TYPE))
             testPlayingCardLevelWon();
-        else
-            if (levelDoor.getLevelType().equals(LevelCreator.HIDDEN_PATTERN_LEVEL_TYPE))
-                testForHiddenPlatternLevelWon();
+        if (levelDoor.getLevelType().equals(LevelCreator.HIDDEN_PATTERN_LEVEL_TYPE))
+            testForHiddenPlatternLevelWon();
     }
 
     protected void reelScoreAnimation(ReelTile source) {
@@ -515,6 +516,8 @@ public class PlayScreen implements Screen, PlayInterface, LevelCreatorInjectionI
                     hud.resetWorldTime(30);
                     hud.startWorldTimer();
                     if (levelDoor.getLevelType().equals(LevelCreator.HIDDEN_PATTERN_LEVEL_TYPE))
+                        isHiddenPatternRevealed(reelTiles);
+                    if (levelDoor.getLevelType().equals(PLAYING_CARD_LEVEL_TYPE))
                         isHiddenPatternRevealed(reelTiles);
             }
         }
@@ -726,6 +729,8 @@ public class PlayScreen implements Screen, PlayInterface, LevelCreatorInjectionI
             if (playStateMachine.getStateMachine().getCurrentState() == PlayState.PLAY) {
                 Gdx.app.debug(SLOTPUZZLE_SCREEN, "Play");
                 if (levelDoor.getLevelType().equals(HIDDEN_PATTERN_LEVEL_TYPE))
+                    processIsTileClicked(unprojTouch.x, unprojTouch.y);
+                if (levelDoor.getLevelType().equals(PLAYING_CARD_LEVEL_TYPE))
                     processIsTileClicked(unprojTouch.x, unprojTouch.y);
             }
         }
