@@ -16,22 +16,23 @@
 
 package com.ellzone.slotpuzzle2d.audio;
 
-import com.badlogic.gdx.ai.msg.MessageManager;
 import com.badlogic.gdx.ai.msg.Telegram;
 import com.badlogic.gdx.ai.msg.Telegraph;
-import com.badlogic.gdx.audio.Music;
+import com.badlogic.gdx.audio.Sound;
 import com.ellzone.slotpuzzle2d.messaging.MessageType;
 import com.ellzone.slotpuzzle2d.utils.AssetsAnnotation;
 
 import net.dermetfan.gdx.assets.AnnotationAssetManager;
 
 import java.util.HashMap;
+import java.util.Map;
 
 public class AudioManager implements Telegraph {
+
     private AnnotationAssetManager annotationAssetManager;
-    private HashMap<String, Music> musicLibrary;
-    private HashMap<Music, String> musicLibraryToName;
-    private Music currentlyPlaying;
+    private Map<String, Sound> audioLibrary;
+    private Map<Sound, String> audioLibraryToName;
+    private Map<Long, Long> soundsPlayed = new HashMap<Long, Long>();
 
     public AudioManager(AnnotationAssetManager annotationAssetManager) {
         this.annotationAssetManager = annotationAssetManager;
@@ -39,38 +40,52 @@ public class AudioManager implements Telegraph {
     }
 
     private void initialise() {
-        musicLibrary = new HashMap<>();
-        musicLibrary.put(
-                AssetsAnnotation.MUSIC_INTRO_SCREEN,
-                (Music) annotationAssetManager.get(AssetsAnnotation.MUSIC_INTRO_SCREEN));
-        musicLibraryToName = new HashMap<>();
-        musicLibraryToName.put(
-                (Music) annotationAssetManager.get(AssetsAnnotation.MUSIC_INTRO_SCREEN),
-                AssetsAnnotation.MUSIC_INTRO_SCREEN);
+        initialiseAudioLibrary();
+        createAudoLibrary();
+    }
+
+    private void initialiseAudioLibrary() {
+        audioLibrary = new HashMap<>();
+        audioLibraryToName = new HashMap<>();
+    }
+
+    private void createAudoLibrary() {
+        addSoundToAudioLibrary(AssetsAnnotation.SOUND_REEL_SPINNING);
+        addSoundToAudioLibrary(AssetsAnnotation.SOUND_REEL_STOPPED);
+        addSoundToAudioLibrary(AssetsAnnotation.SOUND_PULL_LEVER);
+        addSoundToAudioLibrary(AssetsAnnotation.SOUND_CHA_CHING);
+    }
+
+    private void addSoundToAudioLibrary(String sound) {
+        audioLibrary.put(
+                sound,
+                (Sound) annotationAssetManager.get(sound)
+        );
+        audioLibraryToName.put(
+                (Sound) annotationAssetManager.get(sound),
+                sound
+        );
     }
 
     @Override
     public boolean handleMessage(Telegram message) {
-        if (message.message == MessageType.PlayMusic.index) {
-            currentlyPlaying = musicLibrary.get(AssetsAnnotation.MUSIC_INTRO_SCREEN);
-            currentlyPlaying.play();
-            MessageManager.getInstance().dispatchMessage(MessageType.GetCurrentMusicTrack.index, currentlyPlaying);
-            return true;
-        }
-        if (message.message == MessageType.StopMusic.index) {
-            if (currentlyPlaying != null)
-                currentlyPlaying.stop();
-            return true;
-        }
-        if (message.message == MessageType.PauseMusic.index) {
-            if (currentlyPlaying != null)
-                currentlyPlaying.pause();
+        if (message.message == MessageType.PlayAudio.index) {
+            String soundToPlay = (String) message.extraInfo;
+            Sound sound = audioLibrary.get(soundToPlay);
+            Long soundId = new Long(sound.play());
+            soundsPlayed.put(soundId, System.currentTimeMillis());
             return true;
         }
         return false;
     }
 
-    public String getCurrentlyPlaying() {
-        return currentlyPlaying == null ? null : musicLibraryToName.get(currentlyPlaying);
+    public int getNumberSoundsPlayingSinceTimeInMilliSeconds(Long sinceTime) {
+        int numberOfSoundsPlayedSince = 0;
+        for (Map.Entry<Long, Long> soundEntry : soundsPlayed.entrySet()) {
+            Long timeSoundPlayed = soundEntry.getValue();
+            if (timeSoundPlayed > sinceTime)
+                numberOfSoundsPlayedSince++;
+        }
+        return numberOfSoundsPlayedSince;
     }
 }

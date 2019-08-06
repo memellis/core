@@ -8,7 +8,9 @@ public enum MessageType {
     PlayMusic("PlayMusic", 4),
     StopMusic("StopMusic", 5),
     PauseMusic("PauseMusic", 6),
-    GetCurrentMusicTrack("GetCurrentMusicTrack", 7);
+    GetCurrentMusicTrack("GetCurrentMusicTrack", 7),
+    PlayAudio("PlayAudio", 8),
+    StopAudio("StopAudio", 9);
 
     public final String name;
     public final int index;

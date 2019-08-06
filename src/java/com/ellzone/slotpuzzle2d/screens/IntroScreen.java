@@ -17,7 +17,6 @@
 package com.ellzone.slotpuzzle2d.screens;
 
 import java.io.IOException;
-import java.text.MessageFormat;
 import java.util.Random;
 import org.jrenner.smartfont.SmartFontGenerator;
 import com.badlogic.gdx.Gdx;
@@ -26,8 +25,6 @@ import com.badlogic.gdx.InputAdapter;
 import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.ai.msg.MessageManager;
-import com.badlogic.gdx.ai.msg.Telegram;
-import com.badlogic.gdx.ai.msg.Telegraph;
 import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.Color;
@@ -45,19 +42,17 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer;
 import com.badlogic.gdx.physics.box2d.World;
-import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Slider;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton.TextButtonStyle;
-import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import com.ellzone.slotpuzzle2d.SlotPuzzle;
 import com.ellzone.slotpuzzle2d.Version;
-import com.ellzone.slotpuzzle2d.audio.AudioManager;
+import com.ellzone.slotpuzzle2d.audio.MusicManager;
 import com.ellzone.slotpuzzle2d.audio.MusicPlayer;
 import com.ellzone.slotpuzzle2d.effects.ReelAccessor;
 import com.ellzone.slotpuzzle2d.effects.ReelLetterAccessor;
@@ -147,7 +142,7 @@ public class IntroScreen extends InputAdapter implements Screen {
     private float sceneWidth = SlotPuzzleConstants.VIRTUAL_WIDTH / SlotPuzzleConstants.PIXELS_PER_METER;
     private float sceneHeight = SlotPuzzleConstants.VIRTUAL_HEIGHT / SlotPuzzleConstants.PIXELS_PER_METER;
     private boolean show = false;
-    private AudioManager audioManager;
+    private MusicManager musicManager;
     private MessageManager messageManager;
     private boolean sliderUpdating;
     private Rectangle playButton, stopButton, pauseButton;
@@ -188,14 +183,14 @@ public class IntroScreen extends InputAdapter implements Screen {
     }
 
     private void initisaliseAudio() {
-        audioManager = new AudioManager(game.annotationAssetManager);
+        musicManager = new MusicManager(game.annotationAssetManager);
         musicPlayer = new MusicPlayer(game.annotationAssetManager, game.batch, stage, viewport, 0, 0);
         musicPlayer.setVisible(false);
     }
 
     private MessageManager setUpMessages() {
         messageManager = MessageManager.getInstance();
-        messageManager.addListeners(audioManager,
+        messageManager.addListeners(musicManager,
                 MessageType.PlayMusic.index,
                 MessageType.StopMusic.index,
                 MessageType.PauseMusic.index);
