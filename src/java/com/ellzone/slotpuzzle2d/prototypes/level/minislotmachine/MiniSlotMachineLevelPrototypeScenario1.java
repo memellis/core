@@ -18,8 +18,6 @@ package com.ellzone.slotpuzzle2d.prototypes.level.minislotmachine;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.OrthographicCamera;
-import com.badlogic.gdx.graphics.Pixmap;
-import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
@@ -30,7 +28,6 @@ import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.physics.box2d.Body;
-import com.badlogic.gdx.physics.box2d.BodyDef;
 import com.badlogic.gdx.utils.Array;
 import com.ellzone.slotpuzzle2d.SlotPuzzleConstants;
 import com.ellzone.slotpuzzle2d.camera.CameraHelper;
@@ -38,11 +35,12 @@ import com.ellzone.slotpuzzle2d.effects.ReelAccessor;
 import com.ellzone.slotpuzzle2d.effects.ScoreAccessor;
 import com.ellzone.slotpuzzle2d.effects.SpriteAccessor;
 import com.ellzone.slotpuzzle2d.finitestatemachine.PlayStates;
+import com.ellzone.slotpuzzle2d.level.LevelDoor;
 import com.ellzone.slotpuzzle2d.level.card.Card;
 import com.ellzone.slotpuzzle2d.level.creator.LevelCreatorScenario1;
-import com.ellzone.slotpuzzle2d.level.LevelDoor;
 import com.ellzone.slotpuzzle2d.physics.DampenedSineParticle;
 import com.ellzone.slotpuzzle2d.physics.PhysicsManagerCustomBodies;
+import com.ellzone.slotpuzzle2d.physics.ReelSink;
 import com.ellzone.slotpuzzle2d.prototypes.SPPrototypeTemplate;
 import com.ellzone.slotpuzzle2d.puzzlegrid.PuzzleGridType;
 import com.ellzone.slotpuzzle2d.puzzlegrid.PuzzleGridTypeReelTile;
@@ -57,8 +55,8 @@ import com.ellzone.slotpuzzle2d.sprites.score.Score;
 import com.ellzone.slotpuzzle2d.tweenengine.SlotPuzzleTween;
 import com.ellzone.slotpuzzle2d.tweenengine.Timeline;
 import com.ellzone.slotpuzzle2d.utils.AssetsAnnotation;
-import com.ellzone.slotpuzzle2d.utils.PixmapProcessors;
 import com.ellzone.slotpuzzle2d.utils.Random;
+
 import net.dermetfan.gdx.assets.AnnotationAssetManager;
 
 public class MiniSlotMachineLevelPrototypeScenario1 extends SPPrototypeTemplate {
@@ -118,7 +116,6 @@ public class MiniSlotMachineLevelPrototypeScenario1 extends SPPrototypeTemplate 
 
     private void initialseAssests() {
         initialiseReels(this.annotationAssetManager);
-        createSlotReelTexture();
         getAssets(annotationAssetManager);
         miniSlotMachineLevel = annotationAssetManager.get(AssetsAnnotation.MINI_SLOT_MACHINE_LEVEL1);
     }
@@ -158,34 +155,34 @@ public class MiniSlotMachineLevelPrototypeScenario1 extends SPPrototypeTemplate 
 
     private void initialisePhysics() {
         physics = new PhysicsManagerCustomBodies(camera);
+        ReelSink reelSink = new ReelSink(physics);
+        reelSink.createReelSink(
+                SlotPuzzleConstants.VIRTUAL_WIDTH / 2,
+                SlotPuzzleConstants.VIRTUAL_HEIGHT / 2,
+                8,
+                4,
+                40,
+                40,
+                this);
 
-        float centreX = SlotPuzzleConstants.VIRTUAL_WIDTH / 2;
-        float centreY = SlotPuzzleConstants.VIRTUAL_HEIGHT / 2;
-        Body reelSinkBottom = physics.createEdgeBody(BodyDef.BodyType.StaticBody,
-                centreX - 8 * 40 / 2 - 4,
-                centreY - 4 * 40 / 2 - 40,
-                centreX + 8 * 40 / 2 + 4,
-                centreY - 4 * 40 / 2 - 40);
-        reelSinkBottom.setUserData(this);
-        physics.createEdgeBody(BodyDef.BodyType.StaticBody,
-                centreX - 8 * 40 / 2 - 4,
-                centreY - 4 * 40 / 2 - 40,
-                centreX - 8 * 40 / 2 - 4,
-                centreY + 4 * 40 / 2 - 40);
-        physics.createEdgeBody(BodyDef.BodyType.StaticBody,
-                centreX + 8 * 40 / 2 + 4,
-                centreY - 4 * 40 / 2 - 40,
-                centreX + 8 * 40 / 2 + 4,
-                centreY + 4 * 40 / 2 - 40);
-    }
-
-    private void createSlotReelTexture() {
-        Pixmap slotReelPixmap = new Pixmap(PlayScreen.TILE_WIDTH, PlayScreen.TILE_HEIGHT, Pixmap.Format.RGBA8888);
-        slotReelPixmap = PixmapProcessors.createDynamicScrollAnimatedPixmap(reelSprites.getSprites(), reelSprites.getSprites().length);
-        Texture slotReelTexture = new Texture(slotReelPixmap);
-        Pixmap slotReelScrollPixmap = new Pixmap(reelSprites.getReelWidth(), reelSprites.getReelHeight(), Pixmap.Format.RGBA8888);
-        slotReelScrollPixmap = PixmapProcessors.createPixmapToAnimate(reelSprites.getSprites());
-        Texture slotReelScrollTexture = new Texture(slotReelScrollPixmap);
+//        float centreX = SlotPuzzleConstants.VIRTUAL_WIDTH / 2;
+//        float centreY = SlotPuzzleConstants.VIRTUAL_HEIGHT / 2;
+//        Body reelSinkBottom = physics.createEdgeBody(BodyDef.BodyType.StaticBody,
+//                centreX - 8 * 40 / 2 - 4,
+//                centreY - 4 * 40 / 2 - 40,
+//                centreX + 8 * 40 / 2 + 4,
+//                centreY - 4 * 40 / 2 - 40);
+//        reelSinkBottom.setUserData(this);
+//        physics.createEdgeBody(BodyDef.BodyType.StaticBody,
+//                centreX - 8 * 40 / 2 - 4,
+//                centreY - 4 * 40 / 2 - 40,
+//                centreX - 8 * 40 / 2 - 4,
+//                centreY + 4 * 40 / 2 - 40);
+//        physics.createEdgeBody(BodyDef.BodyType.StaticBody,
+//                centreX + 8 * 40 / 2 + 4,
+//                centreY - 4 * 40 / 2 - 40,
+//                centreX + 8 * 40 / 2 + 4,
+//                centreY + 4 * 40 / 2 - 40);
     }
 
     @Override
