@@ -21,7 +21,7 @@ import com.badlogic.gdx.physics.box2d.Contact;
 import com.badlogic.gdx.physics.box2d.ContactImpulse;
 import com.badlogic.gdx.physics.box2d.ContactListener;
 import com.badlogic.gdx.physics.box2d.Manifold;
-import com.ellzone.slotpuzzle2d.prototypes.minislotmachine.MiniSlotMachineLevelPrototypeScenario1;
+import com.ellzone.slotpuzzle2d.prototypes.level.minislotmachine.MiniSlotMachineLevelPrototypeScenario1;
 import com.ellzone.slotpuzzle2d.sprites.ReelTile;
 
 public class B2dContactListenerScenario1 implements ContactListener {
@@ -40,10 +40,10 @@ public class B2dContactListenerScenario1 implements ContactListener {
         if (bodyB.getUserData() != null) {
             classB = bodyB.getUserData().getClass().getName();
         }
-        if(classA.equalsIgnoreCase("com.ellzone.slotpuzzle2d.prototypes.minislotmachine.MiniSlotMachineLevelPrototypeScenario1") && classB.equalsIgnoreCase("com.ellzone.slotpuzzle2d.sprites.ReelTile")) {
+        if(classA.equalsIgnoreCase("com.ellzone.slotpuzzle2d.prototypes.level.minislotmachine.MiniSlotMachineLevelPrototypeScenario1") && classB.equalsIgnoreCase("com.ellzone.slotpuzzle2d.sprites.ReelTile")) {
             dealWithReelsHittingSinkBottom((MiniSlotMachineLevelPrototypeScenario1) bodyA.getUserData(), (ReelTile) bodyB.getUserData());
         }
-        if(classA.equalsIgnoreCase("com.ellzone.slotpuzzle2d.sprites.ReelTile") && classB.equalsIgnoreCase("com.ellzone.slotpuzzle2d.prototypes.minislotmachine.MiniSlotMachineLevelPrototypeScenario1")) {
+        if(classA.equalsIgnoreCase("com.ellzone.slotpuzzle2d.sprites.ReelTile") && classB.equalsIgnoreCase("com.ellzone.slotpuzzle2d.prototypes.level.minislotmachine.MiniSlotMachineLevelPrototypeScenario1")) {
             dealWithReelsHittingSinkBottom((MiniSlotMachineLevelPrototypeScenario1) bodyB.getUserData(), (ReelTile) bodyA.getUserData());
         }
         if((classA.equalsIgnoreCase("com.ellzone.slotpuzzle2d.sprites.ReelTile") && (classB.equalsIgnoreCase("com.ellzone.slotpuzzle2d.sprites.ReelTile")))) {

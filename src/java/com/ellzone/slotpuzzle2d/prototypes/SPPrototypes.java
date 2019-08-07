@@ -24,15 +24,19 @@ import com.ellzone.slotpuzzle2d.prototypes.ashley.RenderMiniSllotMachineLoadedFr
 import com.ellzone.slotpuzzle2d.prototypes.ashley.RenderReels;
 import com.ellzone.slotpuzzle2d.prototypes.ashley.RenderSystemTest;
 import com.ellzone.slotpuzzle2d.prototypes.audio.PlayMusic;
+import com.ellzone.slotpuzzle2d.prototypes.basic2d.Basic2D;
+import com.ellzone.slotpuzzle2d.prototypes.bezier.Bezier1;
+import com.ellzone.slotpuzzle2d.prototypes.bezier.Bezier2;
+import com.ellzone.slotpuzzle2d.prototypes.bezier.Bezier3;
 import com.ellzone.slotpuzzle2d.prototypes.box2d.Box2DFallingReels;
 import com.ellzone.slotpuzzle2d.prototypes.box2d.Box2DFallingSpinningReelsWithCatchBox;
+import com.ellzone.slotpuzzle2d.prototypes.box2d.Box2DFallingTest;
 import com.ellzone.slotpuzzle2d.prototypes.box2d.Box2DLights;
 import com.ellzone.slotpuzzle2d.prototypes.box2d.Box2dFallingReelsWithCatchBox;
 import com.ellzone.slotpuzzle2d.prototypes.box2d.ButtonLight;
 import com.ellzone.slotpuzzle2d.prototypes.box2d.ButtonLightUsingLightButton;
 import com.ellzone.slotpuzzle2d.prototypes.box2d.ButtonLightUsingLightButtonViaFrameBuffer;
 import com.ellzone.slotpuzzle2d.prototypes.box2d.CollidingFallingReels;
-import com.ellzone.slotpuzzle2d.prototypes.box2d.Box2DFallingTest;
 import com.ellzone.slotpuzzle2d.prototypes.box2d.EdgeShapes;
 import com.ellzone.slotpuzzle2d.prototypes.box2d.EdgeShapesBigCatchBox;
 import com.ellzone.slotpuzzle2d.prototypes.box2d.Light;
@@ -46,31 +50,38 @@ import com.ellzone.slotpuzzle2d.prototypes.cylinder.Render3DCylinderModelAsWiref
 import com.ellzone.slotpuzzle2d.prototypes.cylinder.Render3DCylinderWithOptionalGrid;
 import com.ellzone.slotpuzzle2d.prototypes.events.GdxAiEntityMessaging;
 import com.ellzone.slotpuzzle2d.prototypes.framebuffer.FrameBufferParticleEffectSample;
-import com.ellzone.slotpuzzle2d.prototypes.minislotmachine.MiniSlotMachineLevelPrototype;
-import com.ellzone.slotpuzzle2d.prototypes.minislotmachine.MiniSlotMachineLevelFallingReels;
-import com.ellzone.slotpuzzle2d.prototypes.minislotmachine.MiniSlotMachineLevelPrototypeScenario1;
-import com.ellzone.slotpuzzle2d.prototypes.minislotmachine.MiniSlotMachineLevelPrototypeWithLevelCreator;
-import com.ellzone.slotpuzzle2d.prototypes.minislotmachine.SpinningSlots;
-import com.ellzone.slotpuzzle2d.prototypes.minislotmachine.SpinningSlotsRotateHandleSprite;
-import com.ellzone.slotpuzzle2d.prototypes.minislotmachine.SpinningSlotsRotateHandleSpriteUsingTweenEngine;
-import com.ellzone.slotpuzzle2d.prototypes.minislotmachine.SpinningSlotsUsingSlotHandleSprite;
-import com.ellzone.slotpuzzle2d.prototypes.minislotmachine.SpinningSlotsWithMatchesWin;
-import com.ellzone.slotpuzzle2d.prototypes.minislotmachine.SpinningSlotsWithMatchesWinFlashes;
-import com.ellzone.slotpuzzle2d.prototypes.minislotmachine.SpinningSlotsWithMatchesWinFlashesLoadedLevel;
-import com.ellzone.slotpuzzle2d.prototypes.minislotmachine.SpinningSlotsWithThreeTilesDisplayed;
-import com.ellzone.slotpuzzle2d.prototypes.minislotmachine.SpinningSlotsWithHoldButtons;
+import com.ellzone.slotpuzzle2d.prototypes.icons.DownloadMamuIcons;
+import com.ellzone.slotpuzzle2d.prototypes.level.hiddenpattern.HiddenPatternWithFallingReels;
+import com.ellzone.slotpuzzle2d.prototypes.level.minislotmachine.MiniSlotMachineLevelFallingReels;
+import com.ellzone.slotpuzzle2d.prototypes.level.minislotmachine.MiniSlotMachineLevelPrototype;
+import com.ellzone.slotpuzzle2d.prototypes.level.minislotmachine.MiniSlotMachineLevelPrototypeScenario1;
+import com.ellzone.slotpuzzle2d.prototypes.level.minislotmachine.MiniSlotMachineLevelPrototypeWithLevelCreator;
+import com.ellzone.slotpuzzle2d.prototypes.level.minislotmachine.SpinningSlots;
+import com.ellzone.slotpuzzle2d.prototypes.level.minislotmachine.SpinningSlotsRotateHandleSprite;
+import com.ellzone.slotpuzzle2d.prototypes.level.minislotmachine.SpinningSlotsRotateHandleSpriteUsingTweenEngine;
+import com.ellzone.slotpuzzle2d.prototypes.level.minislotmachine.SpinningSlotsUsingSlotHandleSprite;
+import com.ellzone.slotpuzzle2d.prototypes.level.minislotmachine.SpinningSlotsWithHoldButtons;
+import com.ellzone.slotpuzzle2d.prototypes.level.minislotmachine.SpinningSlotsWithMatchesWin;
+import com.ellzone.slotpuzzle2d.prototypes.level.minislotmachine.SpinningSlotsWithMatchesWinFlashes;
+import com.ellzone.slotpuzzle2d.prototypes.level.minislotmachine.SpinningSlotsWithMatchesWinFlashesLoadedLevel;
+import com.ellzone.slotpuzzle2d.prototypes.level.minislotmachine.SpinningSlotsWithThreeTilesDisplayed;
+import com.ellzone.slotpuzzle2d.prototypes.map.SmoothScrollingWorldMap;
+import com.ellzone.slotpuzzle2d.prototypes.map.SubPixelPerfectSmoothScrolling;
+import com.ellzone.slotpuzzle2d.prototypes.map.WorldMapDynamicDoors;
+import com.ellzone.slotpuzzle2d.prototypes.map.WorldMapLevelSelect;
+import com.ellzone.slotpuzzle2d.prototypes.map.WorldMapLevelSelectAndReturn;
 import com.ellzone.slotpuzzle2d.prototypes.menu.SlotPuzzleGame;
 import com.ellzone.slotpuzzle2d.prototypes.particle.Particle1;
-import com.ellzone.slotpuzzle2d.prototypes.particle.Particle2;
-import com.ellzone.slotpuzzle2d.prototypes.particle.Particle3;
-import com.ellzone.slotpuzzle2d.prototypes.particle.Particle4;
-import com.ellzone.slotpuzzle2d.prototypes.particle.Particle5;
-import com.ellzone.slotpuzzle2d.prototypes.particle.Particle6;
 import com.ellzone.slotpuzzle2d.prototypes.particle.Particle1ExtendingParticleTemplate;
+import com.ellzone.slotpuzzle2d.prototypes.particle.Particle2;
 import com.ellzone.slotpuzzle2d.prototypes.particle.Particle2ExtendingParticleTemplate;
+import com.ellzone.slotpuzzle2d.prototypes.particle.Particle3;
 import com.ellzone.slotpuzzle2d.prototypes.particle.Particle3ExtendingParticleTemplate;
+import com.ellzone.slotpuzzle2d.prototypes.particle.Particle4;
 import com.ellzone.slotpuzzle2d.prototypes.particle.Particle4ExtendingParticleTemplate;
+import com.ellzone.slotpuzzle2d.prototypes.particle.Particle5;
 import com.ellzone.slotpuzzle2d.prototypes.particle.Particle5ExtendingParticleTemplate;
+import com.ellzone.slotpuzzle2d.prototypes.particle.Particle6;
 import com.ellzone.slotpuzzle2d.prototypes.particle.Particle6ExtendingParticleTemplate;
 import com.ellzone.slotpuzzle2d.prototypes.scrollingsign.ScrollSignWithMultipleMessages;
 import com.ellzone.slotpuzzle2d.prototypes.scrollingsign.ScrollingSign;
@@ -90,21 +101,12 @@ import com.ellzone.slotpuzzle2d.prototypes.tween.TileInputSelect;
 import com.ellzone.slotpuzzle2d.prototypes.tween.Veil;
 import com.ellzone.slotpuzzle2d.prototypes.tween.WayPoints1;
 import com.ellzone.slotpuzzle2d.prototypes.tween.WayPoints2;
-import com.ellzone.slotpuzzle2d.prototypes.basic2d.Basic2D;
-import com.ellzone.slotpuzzle2d.prototypes.bezier.Bezier1;
-import com.ellzone.slotpuzzle2d.prototypes.bezier.Bezier2;
-import com.ellzone.slotpuzzle2d.prototypes.bezier.Bezier3;
-import com.ellzone.slotpuzzle2d.prototypes.map.SmoothScrollingWorldMap;
-import com.ellzone.slotpuzzle2d.prototypes.map.SubPixelPerfectSmoothScrolling;
-import com.ellzone.slotpuzzle2d.prototypes.map.WorldMapLevelSelect;
-import com.ellzone.slotpuzzle2d.prototypes.map.WorldMapLevelSelectAndReturn;
-import com.ellzone.slotpuzzle2d.prototypes.map.WorldMapDynamicDoors;
-import java.util.List;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
-import com.ellzone.slotpuzzle2d.prototypes.icons.DownloadMamuIcons;
+import java.util.List;
 
 public class SPPrototypes {
     public static final List<Class<? extends SPPrototype>> tests = new ArrayList<Class<? extends SPPrototype>>((Collection<? extends Class<? extends SPPrototype>>) Arrays.asList(
@@ -137,6 +139,7 @@ public class SPPrototypes {
         MiniSlotMachineLevelPrototypeScenario1.class,
         MiniSlotMachineLevelPrototypeWithLevelCreator.class,
         MiniSlotMachineLevelFallingReels.class,
+        HiddenPatternWithFallingReels.class,
 		Particle1.class,
         Particle2.class,
         Particle3.class,

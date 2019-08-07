@@ -18,7 +18,7 @@ package com.ellzone.slotpuzzle2d.effects;
 
 import aurelienribon.tweenengine.TweenAccessor;
 import com.badlogic.gdx.graphics.Color;
-import com.ellzone.slotpuzzle2d.sprites.Score;
+import com.ellzone.slotpuzzle2d.sprites.score.Score;
 
 public class ScoreAccessor implements TweenAccessor<Score> {
 	public static final int POS_XY = 1;

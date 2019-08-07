@@ -17,7 +17,7 @@
 package com.ellzone.slotpuzzle2d.prototypes.scrollingsign;
 
 import com.ellzone.slotpuzzle2d.prototypes.SPPrototypeTemplate;
-import com.ellzone.slotpuzzle2d.sprites.ScrollSign;
+import com.ellzone.slotpuzzle2d.sprites.sign.ScrollSign;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.Texture;
 import org.jrenner.smartfont.SmartFontGenerator;

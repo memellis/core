@@ -35,7 +35,7 @@ import com.ellzone.slotpuzzle2d.finitestatemachine.PlayStates;
 import com.ellzone.slotpuzzle2d.level.LevelDoor;
 import com.ellzone.slotpuzzle2d.level.hidden.HiddenPlayingCard;
 import com.ellzone.slotpuzzle2d.physics.PhysicsManagerCustomBodies;
-import com.ellzone.slotpuzzle2d.prototypes.minislotmachine.MiniSlotMachineLevelPrototypeWithLevelCreator;
+import com.ellzone.slotpuzzle2d.prototypes.level.minislotmachine.MiniSlotMachineLevelPrototypeWithLevelCreator;
 import com.ellzone.slotpuzzle2d.puzzlegrid.PuzzleGridType;
 import com.ellzone.slotpuzzle2d.puzzlegrid.PuzzleGridTypeReelTile;
 import com.ellzone.slotpuzzle2d.puzzlegrid.ReelTileGridValue;
@@ -49,7 +49,7 @@ import com.ellzone.slotpuzzle2d.sprites.ReelStoppedSpinningEvent;
 import com.ellzone.slotpuzzle2d.sprites.ReelTile;
 import com.ellzone.slotpuzzle2d.sprites.ReelTileEvent;
 import com.ellzone.slotpuzzle2d.sprites.ReelTileListener;
-import com.ellzone.slotpuzzle2d.sprites.Score;
+import com.ellzone.slotpuzzle2d.sprites.score.Score;
 import com.ellzone.slotpuzzle2d.tweenengine.BaseTween;
 import com.ellzone.slotpuzzle2d.tweenengine.SlotPuzzleTween;
 import com.ellzone.slotpuzzle2d.tweenengine.Timeline;
@@ -126,7 +126,7 @@ public class LevelCreator {
     public static final String BONUS_LEVEL_TYPE = "Bonus";
     public static final String MINI_SLOT_MACHINE_LEVEL_TYPE = "MiniSlotMachine";
     public static final String HIDDEN_PATTERN_LAYER_NAME = "Hidden Pattern Object";
-    public static final String REELS_LAYER_NAME = "ReelSprites";
+    public static final String REELS_LAYER_NAME = "Reels";
     public static final String REELS_OBJECT_NAME = "Reel";
     public static final String LIGHT_BUTTON_OBJECT_NME = "Button";
     public static final String SLOT_HANDLER_OBJECT_NAME = "Handle";
@@ -175,15 +175,16 @@ public class LevelCreator {
         this.levelHeight = levelHeight;
         this.playState = playState;
         this.hud = hud;
-        this.puzzleGridTypeReelTile = new PuzzleGridTypeReelTile();
-        this.reelBoxes = new Array<Body>();
-        this.replacementReelBoxes = new Array<Integer>();
-        this.reelTiles = animatedReelHelper.getReelTiles();
-        this.reelTiles = createLevel(this.levelDoor, this.level, this.reelTiles, this.levelWidth, this.levelHeight);
+        puzzleGridTypeReelTile = new PuzzleGridTypeReelTile();
+        reelBoxes = new Array<Body>();
+        replacementReelBoxes = new Array<Integer>();
+        animatedReelHelper = new AnimatedReelHelper(this.annotationAssetManager, this.tweenManager, level.getLayers().get(REELS_LAYER_NAME).getObjects().getByType(RectangleMapObject.class).size);
+        reelTiles = animatedReelHelper.getReelTiles();
+        reelTiles = createLevel(this.levelDoor, this.level, this.reelTiles, this.levelWidth, this.levelHeight);
         printMatchGrid(reelTiles, levelWidth, levelHeight);
-        this.reelsSpinning = reelBoxes.size - 1;
-        this.hitSinkBottom = false;
-        this.scores = new Array<Score>();
+        reelsSpinning = reelBoxes.size - 1;
+        hitSinkBottom = false;
+        scores = new Array<Score>();
     }
 
     private Array<ReelTile> createLevel(LevelDoor levelDoor, TiledMap level, Array<ReelTile> reelTiles, int levelWidth, int levelHeight) {

@@ -18,7 +18,7 @@ package com.ellzone.slotpuzzle2d.prototypes.starfield;
 
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.ellzone.slotpuzzle2d.prototypes.SPPrototypeTemplate;
-import com.ellzone.slotpuzzle2d.sprites.StarField;
+import com.ellzone.slotpuzzle2d.sprites.starfield.StarField;
 import com.ellzone.slotpuzzle2d.utils.Random;
 
 public class StarfieldUsingStarfieldObject extends SPPrototypeTemplate {

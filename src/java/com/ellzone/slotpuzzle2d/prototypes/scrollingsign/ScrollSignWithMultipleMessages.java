@@ -26,7 +26,7 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Array;
 import com.ellzone.slotpuzzle2d.SlotPuzzleConstants;
 import com.ellzone.slotpuzzle2d.prototypes.SPPrototypeTemplate;
-import com.ellzone.slotpuzzle2d.sprites.ScrollSign;
+import com.ellzone.slotpuzzle2d.sprites.sign.ScrollSign;
 import com.ellzone.slotpuzzle2d.utils.FileUtils;
 import com.ellzone.slotpuzzle2d.utils.PixmapProcessors;
 
