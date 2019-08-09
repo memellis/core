@@ -272,6 +272,9 @@ public class MiniSlotMachineLevelPrototypeSimpleScenario extends SPPrototypeTemp
             case WON_LEVEL:
                 Gdx.app.debug(logTag, playState.toString());
                 break;
+            case BONUS_LEVEL_ENDED:
+                Gdx.app.debug(logTag, playState.toString());
+                break;
             default: break;
         }
     }
