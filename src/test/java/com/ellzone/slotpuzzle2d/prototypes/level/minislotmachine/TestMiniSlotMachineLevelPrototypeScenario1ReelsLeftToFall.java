@@ -17,7 +17,7 @@
 package com.ellzone.slotpuzzle2d.prototypes.level.minislotmachine;
 
 import com.badlogic.gdx.utils.Array;
-import com.ellzone.slotpuzzle2d.level.creator.LevelCreatorScenario1;
+import com.ellzone.slotpuzzle2d.level.creator.LevelCreatorSimpleScenario;
 import com.ellzone.slotpuzzle2d.puzzlegrid.TupleValueIndex;
 
 import org.easymock.Capture;
@@ -45,7 +45,7 @@ import static org.powermock.api.easymock.PowerMock.replay;
 public class TestMiniSlotMachineLevelPrototypeScenario1ReelsLeftToFall {
     private static final String LEVEL_CREATOR_FIELD_NAME = "levelCreator";
     private MiniSlotMachineLevelPrototypeScenario1 partialMockMiniSlotMachineLevelPrototypeScenario1;
-    private LevelCreatorScenario1 levelCreatorMock;
+    private LevelCreatorSimpleScenario levelCreatorMock;
     private Array<TupleValueIndex> reelsToFallMock;
     private Array<TupleValueIndex>  reelsToFall;
     private Capture<Boolean> reelsAvoveHaveFallen;
@@ -63,7 +63,7 @@ public class TestMiniSlotMachineLevelPrototypeScenario1ReelsLeftToFall {
     }
 
     private void setUpEasyMocks() {
-        levelCreatorMock = PowerMock.createMock(LevelCreatorScenario1.class);
+        levelCreatorMock = PowerMock.createMock(LevelCreatorSimpleScenario.class);
         reelsToFallMock = PowerMock.createMock(Array.class);
     }
 

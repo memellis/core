@@ -17,7 +17,7 @@
 package com.ellzone.slotpuzzle2d.prototypes.level.minislotmachine;
 
 import com.badlogic.gdx.utils.Array;
-import com.ellzone.slotpuzzle2d.level.creator.LevelCreatorScenario1;
+import com.ellzone.slotpuzzle2d.level.creator.LevelCreatorSimpleScenario;
 import com.ellzone.slotpuzzle2d.puzzlegrid.PuzzleGridType;
 import com.ellzone.slotpuzzle2d.puzzlegrid.PuzzleGridTypeReelTile;
 import com.ellzone.slotpuzzle2d.puzzlegrid.ReelTileGridValue;
@@ -48,7 +48,7 @@ public class TestMiniSlotMachineLevelPrototypeScenario1SwapReelsAboveMe {
 
     private MiniSlotMachineLevelPrototypeScenario1 partialMockMiniSlotMachineLevelPrototypeScenario1;
     private ReelTile reelTileAMock, reelTileBMock;
-    private LevelCreatorScenario1 levelCreatorMock;
+    private LevelCreatorSimpleScenario levelCreatorMock;
     private Array<ReelTile> reelTilesMock;
     private ReelTileGridValue[][] testPuzzleGrid;
     private ReelTileGridValue[] reelTileGridValues;
@@ -69,7 +69,7 @@ public class TestMiniSlotMachineLevelPrototypeScenario1SwapReelsAboveMe {
     private void setUpEasyMocks() {
         reelTileAMock = createMock(ReelTile.class);
         reelTileBMock = createMock(ReelTile.class);
-        levelCreatorMock = createMock(LevelCreatorScenario1.class);
+        levelCreatorMock = createMock(LevelCreatorSimpleScenario.class);
         reelTilesMock = createMock(Array.class);
     }
 

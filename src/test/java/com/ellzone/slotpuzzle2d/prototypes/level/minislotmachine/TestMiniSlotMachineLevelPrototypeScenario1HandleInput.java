@@ -22,7 +22,7 @@ import com.badlogic.gdx.Input;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.ellzone.slotpuzzle2d.finitestatemachine.PlayStates;
-import com.ellzone.slotpuzzle2d.level.creator.LevelCreatorScenario1;
+import com.ellzone.slotpuzzle2d.level.creator.LevelCreatorSimpleScenario;
 
 import org.easymock.Capture;
 import org.easymock.EasyMock;
@@ -53,7 +53,7 @@ public class TestMiniSlotMachineLevelPrototypeScenario1HandleInput {
     private Input mockInput;
     private Application mockApplication;
     private FitViewport mockViewPort;
-    private LevelCreatorScenario1 levelCreatorScenario1Mock;
+    private LevelCreatorSimpleScenario levelCreatorSimpleScenarioMock;
     private Vector3 vector3Mock;
     private Capture<String> logCaptureArgument1, logCaptureArgument2;
 
@@ -68,7 +68,7 @@ public class TestMiniSlotMachineLevelPrototypeScenario1HandleInput {
         mockInput = createMock(Input.class);
         mockApplication = createMock(Application.class);
         mockViewPort = createMock(FitViewport.class);
-        levelCreatorScenario1Mock = createMock(LevelCreatorScenario1.class);
+        levelCreatorSimpleScenarioMock = createMock(LevelCreatorSimpleScenario.class);
         vector3Mock = createMock(Vector3.class);
     }
 
@@ -93,7 +93,7 @@ public class TestMiniSlotMachineLevelPrototypeScenario1HandleInput {
         mockInput = null;
         mockApplication = null;
         mockViewPort = null;
-        levelCreatorScenario1Mock = null;
+        levelCreatorSimpleScenarioMock = null;
         vector3Mock = null;
     }
 
@@ -127,20 +127,20 @@ public class TestMiniSlotMachineLevelPrototypeScenario1HandleInput {
     private void verifyAll() {
         verify(mockInput,
                mockApplication,
-               levelCreatorScenario1Mock,
+                levelCreatorSimpleScenarioMock,
                partialMockMiniSlotMachineLevelPrototypeScenario1);
     }
 
     private void inokeHandleInput() {
         Whitebox.setInternalState(partialMockMiniSlotMachineLevelPrototypeScenario1, VIEWPORT_FIELD_NAME, mockViewPort);
-        Whitebox.setInternalState(partialMockMiniSlotMachineLevelPrototypeScenario1, LEVEL_CREATOR_FIELD_NAME, levelCreatorScenario1Mock);
+        Whitebox.setInternalState(partialMockMiniSlotMachineLevelPrototypeScenario1, LEVEL_CREATOR_FIELD_NAME, levelCreatorSimpleScenarioMock);
         partialMockMiniSlotMachineLevelPrototypeScenario1.handleInput();
     }
 
     private void replayAll() {
         replay(mockInput,
                mockApplication,
-               levelCreatorScenario1Mock,
+                levelCreatorSimpleScenarioMock,
                partialMockMiniSlotMachineLevelPrototypeScenario1);
     }
 
@@ -149,7 +149,7 @@ public class TestMiniSlotMachineLevelPrototypeScenario1HandleInput {
         expect(mockInput.getX()).andReturn(10);
         expect(mockInput.getY()).andReturn(10);
         whenNew(Vector3.class).withArguments(10.0f, 10.0f, 0.0f).thenReturn(vector3Mock);
-        expect(levelCreatorScenario1Mock.getPlayState()).andReturn(playState);
+        expect(levelCreatorSimpleScenarioMock.getPlayState()).andReturn(playState);
         mockApplication.debug(capture(logCaptureArgument1), capture(logCaptureArgument2));
         if (playState == PlayStates.PLAYING)
             PowerMock.expectPrivate(partialMockMiniSlotMachineLevelPrototypeScenario1, "processIsTileClicked").atLeastOnce();

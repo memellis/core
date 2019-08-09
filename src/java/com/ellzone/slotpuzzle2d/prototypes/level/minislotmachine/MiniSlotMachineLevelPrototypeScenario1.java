@@ -22,6 +22,8 @@ import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
+import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
+import com.badlogic.gdx.maps.MapProperties;
 import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
 import com.badlogic.gdx.math.MathUtils;
@@ -35,9 +37,10 @@ import com.ellzone.slotpuzzle2d.effects.ReelAccessor;
 import com.ellzone.slotpuzzle2d.effects.ScoreAccessor;
 import com.ellzone.slotpuzzle2d.effects.SpriteAccessor;
 import com.ellzone.slotpuzzle2d.finitestatemachine.PlayStates;
+import com.ellzone.slotpuzzle2d.level.FlashSlots;
 import com.ellzone.slotpuzzle2d.level.LevelDoor;
 import com.ellzone.slotpuzzle2d.level.card.Card;
-import com.ellzone.slotpuzzle2d.level.creator.LevelCreatorScenario1;
+import com.ellzone.slotpuzzle2d.level.creator.LevelCreatorSimpleScenario;
 import com.ellzone.slotpuzzle2d.physics.DampenedSineParticle;
 import com.ellzone.slotpuzzle2d.physics.PhysicsManagerCustomBodies;
 import com.ellzone.slotpuzzle2d.physics.ReelSink;
@@ -66,6 +69,8 @@ public class MiniSlotMachineLevelPrototypeScenario1 extends SPPrototypeTemplate 
     private static final String MINI_SLOT_MACHINE_LEVEL_NAME = "Mini Slot Machine";
     private static final String BONUS_LEVEL_TYPE = "BonusLevelType";
     public static final int MAX_NUMBER_OF_REELS_HIT_SINK_BOTTOM = 3;
+    public static final String WIDTH_KEY = "width";
+    public static final String HEIGHT_KEY = "height";
 
     public static int numberOfReelsToHitSinkBottom;
     public static int numberOfReelsToFall;
@@ -84,7 +89,7 @@ public class MiniSlotMachineLevelPrototypeScenario1 extends SPPrototypeTemplate 
     private Sound chaChingSound, pullLeverSound, reelSpinningSound, reelStoppedSound, jackpotSound;
     private Array<Timeline> endReelSeqs;
     private Timeline reelFlashSeq;
-    private LevelCreatorScenario1 levelCreator;
+    private LevelCreatorSimpleScenario levelCreator;
     private boolean gameOver = false;
     private boolean inRestartLevel = false;
     private boolean win = false;
@@ -93,6 +98,11 @@ public class MiniSlotMachineLevelPrototypeScenario1 extends SPPrototypeTemplate 
     private Hud hud;
     private PhysicsManagerCustomBodies physics;
     private Array<Body> reelBoxes;
+    private ShapeRenderer shapeRenderer;
+    private int mapWidth;
+    private int mapHeight;
+    private FlashSlots flashSlots;
+    private TiledMap level;
 
     @Override
     protected void initialiseOverride() {
@@ -103,6 +113,7 @@ public class MiniSlotMachineLevelPrototypeScenario1 extends SPPrototypeTemplate 
         createPlayScreen();
         initialisePhysics();
         initialiseLevel();
+        flashSlots = new FlashSlots(tweenManager, mapWidth, mapHeight, reelTiles);
     }
 
     private void getCamera() {
@@ -120,8 +131,23 @@ public class MiniSlotMachineLevelPrototypeScenario1 extends SPPrototypeTemplate 
         miniSlotMachineLevel = annotationAssetManager.get(AssetsAnnotation.MINI_SLOT_MACHINE_LEVEL1);
     }
 
+    private void initialisePhysics() {
+        physics = new PhysicsManagerCustomBodies(camera);
+        ReelSink reelSink = new ReelSink(physics);
+        reelSink.createReelSink(
+                SlotPuzzleConstants.VIRTUAL_WIDTH / 2,
+                SlotPuzzleConstants.VIRTUAL_HEIGHT / 2,
+                8,
+                4,
+                40,
+                40,
+                this);
+    }
+
     private void initialiseLevel() {
-        levelCreator = new LevelCreatorScenario1(levelDoor,
+        getLevelAssets(annotationAssetManager);
+        getMapProperties(level);
+        levelCreator = new LevelCreatorSimpleScenario(levelDoor,
                                                  miniSlotMachineLevel,
                                                  annotationAssetManager,
                                                  carddeckAtlas,
@@ -138,6 +164,10 @@ public class MiniSlotMachineLevelPrototypeScenario1 extends SPPrototypeTemplate 
         levelCreator.setPlayState(PlayStates.INTRO_SPINNING);
     }
 
+    private void getLevelAssets(AnnotationAssetManager annotationAssetManager) {
+        level = annotationAssetManager.get("levels/level " + (this.levelDoor.getId() + 1) + " - 40x40.tmx");
+    }
+
     private void initialiseHud() {
         hud = new Hud(batch);
         hud.setLevelName(levelDoor.getLevelName());
@@ -145,49 +175,25 @@ public class MiniSlotMachineLevelPrototypeScenario1 extends SPPrototypeTemplate 
     }
 
     private void getAssets(AnnotationAssetManager annotationAssetManager) {
-        this.carddeckAtlas = annotationAssetManager.get(AssetsAnnotation.CARDDECK);
-        this.chaChingSound = annotationAssetManager.get(AssetsAnnotation.SOUND_CHA_CHING);
-        this.pullLeverSound = annotationAssetManager.get(AssetsAnnotation.SOUND_PULL_LEVER);
-        this.reelSpinningSound = annotationAssetManager.get(AssetsAnnotation.SOUND_REEL_SPINNING);
-        this.reelStoppedSound = annotationAssetManager.get(AssetsAnnotation.SOUND_REEL_STOPPED);
-        this.jackpotSound = annotationAssetManager.get(AssetsAnnotation.SOUND_JACKPOINT);
-    }
-
-    private void initialisePhysics() {
-        physics = new PhysicsManagerCustomBodies(camera);
-        ReelSink reelSink = new ReelSink(physics);
-        reelSink.createReelSink(
-                SlotPuzzleConstants.VIRTUAL_WIDTH / 2,
-                SlotPuzzleConstants.VIRTUAL_HEIGHT / 2,
-                8,
-                4,
-                40,
-                40,
-                this);
-
-//        float centreX = SlotPuzzleConstants.VIRTUAL_WIDTH / 2;
-//        float centreY = SlotPuzzleConstants.VIRTUAL_HEIGHT / 2;
-//        Body reelSinkBottom = physics.createEdgeBody(BodyDef.BodyType.StaticBody,
-//                centreX - 8 * 40 / 2 - 4,
-//                centreY - 4 * 40 / 2 - 40,
-//                centreX + 8 * 40 / 2 + 4,
-//                centreY - 4 * 40 / 2 - 40);
-//        reelSinkBottom.setUserData(this);
-//        physics.createEdgeBody(BodyDef.BodyType.StaticBody,
-//                centreX - 8 * 40 / 2 - 4,
-//                centreY - 4 * 40 / 2 - 40,
-//                centreX - 8 * 40 / 2 - 4,
-//                centreY + 4 * 40 / 2 - 40);
-//        physics.createEdgeBody(BodyDef.BodyType.StaticBody,
-//                centreX + 8 * 40 / 2 + 4,
-//                centreY - 4 * 40 / 2 - 40,
-//                centreX + 8 * 40 / 2 + 4,
-//                centreY + 4 * 40 / 2 - 40);
+        carddeckAtlas = annotationAssetManager.get(AssetsAnnotation.CARDDECK);
+        chaChingSound = annotationAssetManager.get(AssetsAnnotation.SOUND_CHA_CHING);
+        pullLeverSound = annotationAssetManager.get(AssetsAnnotation.SOUND_PULL_LEVER);
+        reelSpinningSound = annotationAssetManager.get(AssetsAnnotation.SOUND_REEL_SPINNING);
+        reelStoppedSound = annotationAssetManager.get(AssetsAnnotation.SOUND_REEL_STOPPED);
+        jackpotSound = annotationAssetManager.get(AssetsAnnotation.SOUND_JACKPOINT);
     }
 
     @Override
     protected void initialiseScreenOverride() {
+        shapeRenderer = new ShapeRenderer();
     }
+
+    private void getMapProperties(TiledMap level) {
+        MapProperties mapProperties = level.getProperties();
+        mapWidth = mapProperties.get(WIDTH_KEY, Integer.class);
+        mapHeight = mapProperties.get(HEIGHT_KEY, Integer.class);
+    }
+
 
     private void createPlayScreen() {
         initialisePlayScreen();
@@ -300,13 +306,11 @@ public class MiniSlotMachineLevelPrototypeScenario1 extends SPPrototypeTemplate 
     private void processReelClicked(ReelTile reel, AnimatedReel animatedReel) {
         if (!reel.isReelTileDeleted()) {
             if (reel.isSpinning()) {
-                if (animatedReel.getDampenedSineState() == DampenedSineParticle.DSState.UPDATING_DAMPENED_SINE) {
+                if (animatedReel.getDampenedSineState() == DampenedSineParticle.DSState.UPDATING_DAMPENED_SINE)
                     setEndReelWithCurrentReel(reel);
-                }
-            } else {
+            } else
                 if (!reel.getFlashTween()) {
                     startReelSpinning(reel, animatedReel);
-                }
             }
         }
     }
@@ -387,17 +391,18 @@ public class MiniSlotMachineLevelPrototypeScenario1 extends SPPrototypeTemplate 
         handleInput();
         tileMapRenderer.render();
         batch.begin();
-        if (levelDoor.getLevelType().equals(PLAYING_CARD_LEVEL_TYPE)) {
+        if (levelDoor.getLevelType().equals(PLAYING_CARD_LEVEL_TYPE))
             drawPlayingCards(batch);
-        }
-        for (Score score : levelCreator.getScores()) {
+
+        for (Score score : levelCreator.getScores())
             score.render(batch);
-        }
-        if (displaySpinHelp) {
+
+        if (displaySpinHelp)
             reelSprites.getSprites()[displaySpinHelpSprite].draw(batch);
-        }
+
         batch.end();
         renderReelBoxes(batch, reelBoxes);
+        renderAnimatedReelsFlash();
         physics.draw(batch);
         batch.setProjectionMatrix(hud.stage.getCamera().combined);
         hud.stage.draw();
@@ -425,10 +430,20 @@ public class MiniSlotMachineLevelPrototypeScenario1 extends SPPrototypeTemplate 
         batch.end();
     }
 
+    private void renderAnimatedReelsFlash() {
+        shapeRenderer.setProjectionMatrix(camera.combined);
+        for (AnimatedReel animatedReel : animatedReels)
+            if (!animatedReel.getReel().isReelTileDeleted())
+                if (animatedReel.getReel().getFlashState() == ReelTile.FlashState.FLASH_ON) {
+                    animatedReel.draw(shapeRenderer);
+                    System.out.println("Should be drawing a reelflash");
+                }
+    }
+
+
     private void drawPlayingCards(SpriteBatch spriteBatch) {
-        for (Card card : cards) {
+        for (Card card : cards)
             card.draw(spriteBatch);
-        }
     }
 
     @Override
@@ -468,12 +483,12 @@ public class MiniSlotMachineLevelPrototypeScenario1 extends SPPrototypeTemplate 
         rB = PuzzleGridTypeReelTile.getRowFromLevel(reelTileB.getDestinationY(), GAME_LEVEL_HEIGHT);
         cB = PuzzleGridTypeReelTile.getColumnFromLevel(reelTileB.getDestinationX());
 
-        if ((Math.abs(rA - rB) == 1) & (cA == cB)) {
+        if ((Math.abs(rA - rB) == 1) & (cA == cB))
             processReelTileHit(reelTileA);
-        }
-        if ((Math.abs(rA - rB) == 1) & (cA == cB)) {
+
+        if ((Math.abs(rA - rB) == 1) & (cA == cB))
             processReelTileHit(reelTileB);
-        }
+
         if ((levelCreator.getPlayState() == PlayStates.INTRO_FLASHING) |
             (levelCreator.getPlayState() == PlayStates.REELS_FLASHING)) {
             if  (cA == cB) {
@@ -494,9 +509,8 @@ public class MiniSlotMachineLevelPrototypeScenario1 extends SPPrototypeTemplate 
         reelTile.setY(reelTile.getDestinationY());
         Body reelbox = reelBoxes.get(reelTile.getIndex());
         if (PhysicsManagerCustomBodies.isStopped(reelbox)) {
-            if (levelCreator.getPlayState() == PlayStates.INTRO_SPINNING) {
+            if (levelCreator.getPlayState() == PlayStates.INTRO_SPINNING)
                 numberOfReelsAboveHitsIntroSpinning++;
-            }
         }
     }
 
@@ -571,9 +585,8 @@ public class MiniSlotMachineLevelPrototypeScenario1 extends SPPrototypeTemplate 
         swapReels(reelTile);
         ReelTile currentReel = reelTile;
 
-        for (int reelsAboveMeIndex = 0; reelsAboveMeIndex < reelsAboveMe.length; reelsAboveMeIndex++) {
+        for (int reelsAboveMeIndex = 0; reelsAboveMeIndex < reelsAboveMe.length; reelsAboveMeIndex++)
             currentReel = swapReels(reelsAboveMe, reelsAboveMeIndex, currentReel);
-        }
     }
 
     private void reelsLeftToFall(int rA, int cA) {
@@ -586,12 +599,11 @@ public class MiniSlotMachineLevelPrototypeScenario1 extends SPPrototypeTemplate 
             if (index >= 0) {
                 reelsToFall.removeIndex(index);
                 levelCreator.setReelsToFall(reelsToFall);
-                if (reelsToFall.size == 0) {
+                if (reelsToFall.size == 0)
                     levelCreator.setReelsAboveHaveFallen(true);
-                }
-            } else {
+            } else
                 finishedColumn = true;
-            }
+
             row--;
         }
     }
@@ -599,11 +611,10 @@ public class MiniSlotMachineLevelPrototypeScenario1 extends SPPrototypeTemplate 
     private int findReelToFall(int row, int column, Array<TupleValueIndex> reelsToFall) {
         int index = 0;
         while (index < reelsToFall.size) {
-            if ((reelsToFall.get(index).getR() == row) & (reelsToFall.get(index).getC() == column)) {
+            if ((reelsToFall.get(index).getR() == row) & (reelsToFall.get(index).getC() == column))
                 return index;
-            } else {
+            else
                 index++;
-            }
         }
         return -1;
     }

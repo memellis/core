@@ -24,7 +24,7 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
-import com.ellzone.slotpuzzle2d.level.creator.LevelCreatorScenario1;
+import com.ellzone.slotpuzzle2d.level.creator.LevelCreatorSimpleScenario;
 import com.ellzone.slotpuzzle2d.physics.DampenedSineParticle;
 import com.ellzone.slotpuzzle2d.puzzlegrid.ReelTileGridValue;
 import com.ellzone.slotpuzzle2d.scene.Hud;
@@ -64,7 +64,7 @@ public class TestMiniSlotMachineLevelPrototypeScenario1ProcessIsTiledClicked {
     private final static String HUD_FIELD_NAME = "hud";
 
     private MiniSlotMachineLevelPrototypeScenario1 partialMockMiniSlotMachineLevelPrototypeScenario1;
-    private LevelCreatorScenario1 levelCreatorScenario1Mock;
+    private LevelCreatorSimpleScenario levelCreatorSimpleScenarioMock;
     private Input inputMock;
     private Vector2 vector2Mock;
     private Viewport viewportMock;
@@ -99,7 +99,7 @@ public class TestMiniSlotMachineLevelPrototypeScenario1ProcessIsTiledClicked {
     }
 
     private void levelcreatorMock() {
-        levelCreatorScenario1Mock = createMock(LevelCreatorScenario1.class);
+        levelCreatorSimpleScenarioMock = createMock(LevelCreatorSimpleScenario.class);
     }
 
     private void setUpReelMocks() {
@@ -142,7 +142,7 @@ public class TestMiniSlotMachineLevelPrototypeScenario1ProcessIsTiledClicked {
         inputMock = null;
         vector2Mock = null;
         viewportMock = null;
-        levelCreatorScenario1Mock = null;
+        levelCreatorSimpleScenarioMock = null;
         reelTilesMock = null;
         reelTileMock = null;
         animatedReelsMock = null;
@@ -164,7 +164,7 @@ public class TestMiniSlotMachineLevelPrototypeScenario1ProcessIsTiledClicked {
 
     private void setFieldsInClassUnderTest() {
         Whitebox.setInternalState(partialMockMiniSlotMachineLevelPrototypeScenario1, VIEWPORT_FIELD_NAME, viewportMock);
-        Whitebox.setInternalState(partialMockMiniSlotMachineLevelPrototypeScenario1, LEVEL_CREATOR_FIELD_NAME, levelCreatorScenario1Mock);
+        Whitebox.setInternalState(partialMockMiniSlotMachineLevelPrototypeScenario1, LEVEL_CREATOR_FIELD_NAME, levelCreatorSimpleScenarioMock);
         Whitebox.setInternalState(partialMockMiniSlotMachineLevelPrototypeScenario1, REELTILES_FIELD_NAME, reelTilesMock);
         Whitebox.setInternalState(partialMockMiniSlotMachineLevelPrototypeScenario1, ANIMATEDREELS_FIELD_NAME, animatedReelsMock);
         Whitebox.setInternalState(partialMockMiniSlotMachineLevelPrototypeScenario1, PULLLEVELSOUND_FIELD_NAME, pullLeverSoundMock);
@@ -221,8 +221,8 @@ public class TestMiniSlotMachineLevelPrototypeScenario1ProcessIsTiledClicked {
         expect(reelSpritesMock.getSprites()).andReturn(new Sprite[] {spriteMock});
         reelTileMock.startSpinning();
         reelTileMock.setEndReel(0);
-        expect(levelCreatorScenario1Mock.getNumberOfReelsSpinning()).andReturn(1);
-        levelCreatorScenario1Mock.setNumberOfReelsSpinning(2);
+        expect(levelCreatorSimpleScenarioMock.getNumberOfReelsSpinning()).andReturn(1);
+        levelCreatorSimpleScenarioMock.setNumberOfReelsSpinning(2);
         reelTileMock.setSy(0);
         animatedReelMock.reinitialise();
         hudMock.addScore(-1);
@@ -240,12 +240,12 @@ public class TestMiniSlotMachineLevelPrototypeScenario1ProcessIsTiledClicked {
     }
 
     private void expectationsProcessTileClicked() {
-        expect(levelCreatorScenario1Mock.populateMatchGrid(reelTilesMock,
+        expect(levelCreatorSimpleScenarioMock.populateMatchGrid(reelTilesMock,
                 partialMockMiniSlotMachineLevelPrototypeScenario1.GAME_LEVEL_WIDTH,
                 partialMockMiniSlotMachineLevelPrototypeScenario1.GAME_LEVEL_HEIGHT))
                 .andReturn(testPuzzleGrid);
         expect(reelTilesMock.get(testPuzzleGrid[2][2].index)).andReturn(reelTileMock);
-        expect(levelCreatorScenario1Mock.getAnimatedReels()).andReturn(animatedReelsMock);
+        expect(levelCreatorSimpleScenarioMock.getAnimatedReels()).andReturn(animatedReelsMock);
         expect(animatedReelsMock.get(testPuzzleGrid[2][2].index)).andReturn(animatedReelMock);
     }
 
@@ -271,7 +271,7 @@ public class TestMiniSlotMachineLevelPrototypeScenario1ProcessIsTiledClicked {
                inputMock,
                vector2Mock,
                viewportMock,
-               levelCreatorScenario1Mock,
+                levelCreatorSimpleScenarioMock,
                reelTilesMock,
                reelTileMock,
                animatedReelsMock,
@@ -288,7 +288,7 @@ public class TestMiniSlotMachineLevelPrototypeScenario1ProcessIsTiledClicked {
                inputMock,
                vector2Mock,
                viewportMock,
-               levelCreatorScenario1Mock,
+                levelCreatorSimpleScenarioMock,
                reelTilesMock,
                reelTileMock,
                animatedReelMock,

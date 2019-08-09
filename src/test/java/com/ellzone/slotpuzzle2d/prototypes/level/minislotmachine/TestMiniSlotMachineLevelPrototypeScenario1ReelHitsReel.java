@@ -19,7 +19,7 @@ package com.ellzone.slotpuzzle2d.prototypes.level.minislotmachine;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.utils.Array;
 import com.ellzone.slotpuzzle2d.finitestatemachine.PlayStates;
-import com.ellzone.slotpuzzle2d.level.creator.LevelCreatorScenario1;
+import com.ellzone.slotpuzzle2d.level.creator.LevelCreatorSimpleScenario;
 import com.ellzone.slotpuzzle2d.physics.PhysicsManagerCustomBodies;
 import com.ellzone.slotpuzzle2d.puzzlegrid.PuzzleGridTypeReelTile;
 import com.ellzone.slotpuzzle2d.sprites.ReelTile;
@@ -61,7 +61,7 @@ public class TestMiniSlotMachineLevelPrototypeScenario1ReelHitsReel {
     private Array reelBoxesMock;
     private Body reelBoxMock;
     private Capture<Float> captureReelSetY;
-    private LevelCreatorScenario1 levelCreatorMock;
+    private LevelCreatorSimpleScenario levelCreatorMock;
     private Capture<ReelTile> reelTileCaptureArg1, reelTileCaptureArg2;
     private Capture<Integer> rACapture, cACapture, rBCapture, cBCapture;
 
@@ -86,7 +86,7 @@ public class TestMiniSlotMachineLevelPrototypeScenario1ReelHitsReel {
         reelTileBMock = createMock(ReelTile.class);
         reelBoxesMock = createMock(Array.class);
         reelBoxMock = createMock(Body.class);
-        levelCreatorMock = createMock(LevelCreatorScenario1.class);
+        levelCreatorMock = createMock(LevelCreatorSimpleScenario.class);
     }
 
     private void setUpCaptures(){

@@ -19,7 +19,7 @@ package com.ellzone.slotpuzzle2d.prototypes.level.minislotmachine;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
 import com.ellzone.slotpuzzle2d.finitestatemachine.PlayStates;
-import com.ellzone.slotpuzzle2d.level.creator.LevelCreatorScenario1;
+import com.ellzone.slotpuzzle2d.level.creator.LevelCreatorSimpleScenario;
 import com.ellzone.slotpuzzle2d.scene.Hud;
 import com.ellzone.slotpuzzle2d.tweenengine.TweenManager;
 
@@ -50,7 +50,7 @@ public class TestMiniSlotMachineLevelPrototypeScenario1UpdateOverride {
     private static final String GAME_OVER_FIELD_NAME = "gameOver";
 
     private MiniSlotMachineLevelPrototypeScenario1 partialMockMiniSlotMachineLevelPrototypeScenario1;
-    private LevelCreatorScenario1 levelCreatorScenario1Mock;
+    private LevelCreatorSimpleScenario levelCreatorSimpleScenarioMock;
     private TweenManager tweenManagerMock;
     private OrthogonalTiledMapRenderer tileMapRendererMock;
     private OrthographicCamera orthographicCameraMock;
@@ -67,7 +67,7 @@ public class TestMiniSlotMachineLevelPrototypeScenario1UpdateOverride {
     }
 
     private void setUpEasyMock() {
-        levelCreatorScenario1Mock = createMock(LevelCreatorScenario1.class);
+        levelCreatorSimpleScenarioMock = createMock(LevelCreatorSimpleScenario.class);
         tweenManagerMock = createMock(TweenManager.class);
         tileMapRendererMock = createMock(OrthogonalTiledMapRenderer.class);
         orthographicCameraMock = createMock(OrthographicCamera.class);
@@ -86,7 +86,7 @@ public class TestMiniSlotMachineLevelPrototypeScenario1UpdateOverride {
     }
 
     private void tearDownEasyMocks() {
-        levelCreatorScenario1Mock = null;
+        levelCreatorSimpleScenarioMock = null;
         tweenManagerMock = null;
         tileMapRendererMock = null;
         orthographicCameraMock = null;
@@ -108,7 +108,7 @@ public class TestMiniSlotMachineLevelPrototypeScenario1UpdateOverride {
 
     private void setFields() {
         Whitebox.setInternalState(partialMockMiniSlotMachineLevelPrototypeScenario1, TWEEN_MANAGER_FIELD_NAME, tweenManagerMock);
-        Whitebox.setInternalState(partialMockMiniSlotMachineLevelPrototypeScenario1, LEVEL_CREATOR_FIELD_NAME, levelCreatorScenario1Mock);
+        Whitebox.setInternalState(partialMockMiniSlotMachineLevelPrototypeScenario1, LEVEL_CREATOR_FIELD_NAME, levelCreatorSimpleScenarioMock);
         Whitebox.setInternalState(partialMockMiniSlotMachineLevelPrototypeScenario1, TILE_MAP_RENDERER_FIELD_NAME, tileMapRendererMock);
         Whitebox.setInternalState(partialMockMiniSlotMachineLevelPrototypeScenario1, ORTHOGRAPHIC_CAMERA_FIELD_NAME, orthographicCameraMock);
         Whitebox.setInternalState(partialMockMiniSlotMachineLevelPrototypeScenario1, HUD_FIELD_NAME, hudMock);
@@ -118,18 +118,18 @@ public class TestMiniSlotMachineLevelPrototypeScenario1UpdateOverride {
 
     private void setExpectations() {
         tweenManagerMock.update(0.0f);
-        levelCreatorScenario1Mock.update(0.0f);
+        levelCreatorSimpleScenarioMock.update(0.0f);
         tileMapRendererMock.setView(orthographicCameraMock);
         hudMock.update(0.0f);
         expect(hudMock.getWorldTime()).andReturn(0);
         expect(hudMock.getLives()).andReturn(1);
-        levelCreatorScenario1Mock.setPlayState(PlayStates.LEVEL_LOST);
-        expect(levelCreatorScenario1Mock.getPlayState()).andReturn(PlayStates.LEVEL_LOST);
+        levelCreatorSimpleScenarioMock.setPlayState(PlayStates.LEVEL_LOST);
+        expect(levelCreatorSimpleScenarioMock.getPlayState()).andReturn(PlayStates.LEVEL_LOST);
     }
 
     private void replayAll() {
         replay(tweenManagerMock,
-                levelCreatorScenario1Mock,
+                levelCreatorSimpleScenarioMock,
                 tileMapRendererMock,
                 orthographicCameraMock,
                 hudMock);
@@ -137,7 +137,7 @@ public class TestMiniSlotMachineLevelPrototypeScenario1UpdateOverride {
     
     private void verifyAll() {
         verify(tweenManagerMock,
-                levelCreatorScenario1Mock,
+                levelCreatorSimpleScenarioMock,
                 tileMapRendererMock,
                 orthographicCameraMock,
                 hudMock);

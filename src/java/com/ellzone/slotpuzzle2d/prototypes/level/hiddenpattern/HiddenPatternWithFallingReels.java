@@ -9,18 +9,23 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.maps.objects.RectangleMapObject;
 import com.badlogic.gdx.maps.tiled.TiledMap;
+import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.GdxRuntimeException;
 import com.badlogic.gdx.utils.viewport.FitViewport;
+import com.ellzone.slotpuzzle2d.SlotPuzzleConstants;
 import com.ellzone.slotpuzzle2d.effects.ReelAccessor;
 import com.ellzone.slotpuzzle2d.effects.SpriteAccessor;
 import com.ellzone.slotpuzzle2d.level.creator.LevelCreatorInjectionInterface;
 import com.ellzone.slotpuzzle2d.level.creator.LevelObjectCreatorEntityHolder;
 import com.ellzone.slotpuzzle2d.level.map.MapLevelNameComparator;
 import com.ellzone.slotpuzzle2d.level.sequence.PlayScreenIntroSequence;
+import com.ellzone.slotpuzzle2d.physics.PhysicsManagerCustomBodies;
+import com.ellzone.slotpuzzle2d.physics.ReelSink;
 import com.ellzone.slotpuzzle2d.prototypes.SPPrototypeTemplate;
 import com.ellzone.slotpuzzle2d.scene.Hud;
 import com.ellzone.slotpuzzle2d.sprites.AnimatedReel;
@@ -54,6 +59,7 @@ public class HiddenPatternWithFallingReels extends SPPrototypeTemplate
     public static final String LEVEL_7_NAME = "1-7";
 
     private Array<AnimatedReel> reels;
+    private Array<Body> reelBoxes;
     private Texture slotReelScrollTexture;
     private TextureAtlas slotHandleAtlas;
     private Vector2 touch;
@@ -68,33 +74,42 @@ public class HiddenPatternWithFallingReels extends SPPrototypeTemplate
     private Sound pullLeverSound;
     private Sound reelSpinningSound;
     private Sound reelStoppingSound;
+    private PhysicsManagerCustomBodies physics;
+    private OrthographicCamera camera;
 
     @Override
     protected void initialiseOverride() {
         touch = new Vector2();
         initialiseWorld();
         random = new Random();
+        camera = new OrthographicCamera();
         slotReelScrollTexture = createSlotReelScrollTexture();
+        initialisePhysics();
         loadlevel();
         createViewPorts();
         hud = setUpHud(batch);
         createIntroSequence();
     }
 
-    private Hud setUpHud(SpriteBatch batch) {
-        Hud hud = new Hud(batch);
-        hud.setLevelName(LEVEL_7_NAME);
-        return hud;
+    private void initialiseWorld() {
+        world = new World(new Vector2(0, -9.8f), true);
+        debugRenderer = new Box2DDebugRenderer();
+        rayHandler = new RayHandler(world);
+        rayHandler.useDiffuseLight(true);
+        rayHandler.setAmbientLight(0.2f, 0.2f, 0.2f, 0.25f);
     }
 
-    private void createViewPorts() {
-        lightViewport = new FitViewport((float) VIRTUAL_WIDTH / PIXELS_PER_METER, (float) VIRTUAL_HEIGHT / PIXELS_PER_METER);
-        lightViewport.getCamera().position.set( (float) VIRTUAL_WIDTH / PIXELS_PER_METER * 0.5f,
-                (float) VIRTUAL_HEIGHT / PIXELS_PER_METER * 0.5f,
-                0);
-        lightViewport.getCamera().update();
-        lightViewport.update(VIRTUAL_WIDTH, VIRTUAL_HEIGHT);
-        hudViewport = new FitViewport(VIRTUAL_WIDTH, VIRTUAL_HEIGHT, new OrthographicCamera());
+    private void initialisePhysics() {
+        physics = new PhysicsManagerCustomBodies(camera, world, debugRenderer);
+        ReelSink reelSink = new ReelSink(physics);
+        reelSink.createReelSink(
+                SlotPuzzleConstants.VIRTUAL_WIDTH / 2,
+                SlotPuzzleConstants.VIRTUAL_HEIGHT / 2 + 20,
+                12,
+                9,
+                40,
+                40,
+                this);
     }
 
     private void loadlevel() {
@@ -108,6 +123,22 @@ public class HiddenPatternWithFallingReels extends SPPrototypeTemplate
             throw new GdxRuntimeException(gdxRuntimeException);
         }
         initialiseReels();
+    }
+
+    private void createViewPorts() {
+        lightViewport = new FitViewport((float) VIRTUAL_WIDTH / PIXELS_PER_METER, (float) VIRTUAL_HEIGHT / PIXELS_PER_METER);
+        lightViewport.getCamera().position.set( (float) VIRTUAL_WIDTH / PIXELS_PER_METER * 0.5f,
+                (float) VIRTUAL_HEIGHT / PIXELS_PER_METER * 0.5f,
+                0);
+        lightViewport.getCamera().update();
+        lightViewport.update(VIRTUAL_WIDTH, VIRTUAL_HEIGHT);
+        hudViewport = new FitViewport(VIRTUAL_WIDTH, VIRTUAL_HEIGHT, new OrthographicCamera());
+    }
+
+    private Hud setUpHud(SpriteBatch batch) {
+        Hud hud = new Hud(batch);
+        hud.setLevelName(LEVEL_7_NAME);
+        return hud;
     }
 
     private Array<RectangleMapObject> extractLevelAssets(TiledMap level) {
@@ -153,14 +184,6 @@ public class HiddenPatternWithFallingReels extends SPPrototypeTemplate
     private Texture createSlotReelScrollTexture() {
         Pixmap slotReelScrollPixmap = PixmapProcessors.createPixmapToAnimate(sprites);
         return new Texture(slotReelScrollPixmap);
-    }
-
-    private void initialiseWorld() {
-        world = new World(new Vector2(0, -9.8f), true);
-        debugRenderer = new Box2DDebugRenderer();
-        rayHandler = new RayHandler(world);
-        rayHandler.useDiffuseLight(true);
-        rayHandler.setAmbientLight(0.2f, 0.2f, 0.2f, 0.25f);
     }
 
     private void createIntroSequence() {
@@ -226,6 +249,7 @@ public class HiddenPatternWithFallingReels extends SPPrototypeTemplate
         renderRayHandler();
         renderHud(batch);
         renderWorld();
+        physics.draw(batch);
     }
 
     @Override
@@ -236,7 +260,6 @@ public class HiddenPatternWithFallingReels extends SPPrototypeTemplate
     }
 
     private void handleInput() {
-
     }
 
     private void renderReels() {
@@ -263,6 +286,26 @@ public class HiddenPatternWithFallingReels extends SPPrototypeTemplate
         debugRenderer.render(world, lightViewport.getCamera().combined);
     }
 
+    private void renderReelBoxes(SpriteBatch batch, Array<Body> reelBoxes) {
+        batch.begin();
+        batch.setProjectionMatrix(viewport.getCamera().combined);
+        int index = 0;
+        for (Body reelBox : reelBoxes) {
+            float angle = MathUtils.radiansToDegrees * reelBox.getAngle();
+            if (index < reels.size) {
+                ReelTile reelTile = reels.get(index).getReel();
+                if (!reelTile.isReelTileDeleted()) {
+                    reelTile.setPosition(reelBox.getPosition().x * 100 - 20, reelBox.getPosition().y * 100 - 20);
+                    reelTile.setOrigin(0, 0);
+                    reelTile.setSize(40, 40);
+                    reelTile.setRotation(angle);
+                    reelTile.draw(batch);
+                }
+            }
+            index++;
+        }
+        batch.end();
+    }
 
     @Override
     protected void initialiseScreenOverride() {

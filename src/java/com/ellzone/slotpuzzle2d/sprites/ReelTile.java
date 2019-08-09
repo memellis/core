@@ -308,6 +308,7 @@ public class ReelTile extends ReelSprite {
 
     public void addReelFlashSegment(float x, float y) {
         reelFlashSegments.add(new Vector2(x, y));
+        System.out.println("Added flash segment x="+x+" y="+y);
     }
 
     public Array<Vector2> getReelFlashSegments() {

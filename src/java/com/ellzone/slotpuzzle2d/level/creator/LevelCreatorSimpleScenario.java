@@ -61,7 +61,7 @@ import net.dermetfan.gdx.assets.AnnotationAssetManager;
 import aurelienribon.tweenengine.equations.Quad;
 import aurelienribon.tweenengine.equations.Sine;
 
-public class LevelCreatorScenario1 {
+public class LevelCreatorSimpleScenario {
     public static final String HIDDEN_PATTERN_LEVEL_TYPE = "HiddenPattern";
     public static final String HIDDEN_PATTERN_LAYER_NAME = "Hidden Pattern Object";
     public static final String PLAYING_CARD_LEVEL_TYPE = "PlayingCard";
@@ -97,7 +97,7 @@ public class LevelCreatorScenario1 {
     int scenario1Reels[] = {4, 6, 2, 5, 0, 1, 3, 1, 0, 4, 3, 4};
     Array<TupleValueIndex> reelsToFall;
 
-    public LevelCreatorScenario1(LevelDoor levelDoor, TiledMap level, AnnotationAssetManager annotationAssetManager, TextureAtlas carddeckAtlas, TweenManager tweenManager, PhysicsManagerCustomBodies physics, int levelWidth, int levelHeight, PlayStates playState) {
+    public LevelCreatorSimpleScenario(LevelDoor levelDoor, TiledMap level, AnnotationAssetManager annotationAssetManager, TextureAtlas carddeckAtlas, TweenManager tweenManager, PhysicsManagerCustomBodies physics, int levelWidth, int levelHeight, PlayStates playState) {
         this.levelDoor = levelDoor;
         this.level = level;
         this.tweenManager = tweenManager;
@@ -121,20 +121,18 @@ public class LevelCreatorScenario1 {
     }
 
     private Array<ReelTile> createLevel(LevelDoor levelDoor, TiledMap level, Array<ReelTile> reelTiles, int levelWidth, int levelHeight) {
-        if (levelDoor.getLevelType().equals(PLAYING_CARD_LEVEL_TYPE)) {
+        if (levelDoor.getLevelType().equals(PLAYING_CARD_LEVEL_TYPE))
             hiddenPlayingCard = new HiddenPlayingCard(level, carddeckAtlas);
-        }
+
         reelTiles = populateLevel(level, reelTiles, levelWidth, levelHeight);
         reelTiles = checkLevel(reelTiles, levelWidth, levelHeight);
         reelTiles = adjustForAnyLonelyReels(reelTiles, levelWidth, levelHeight);
-        for (ReelTile reelTile : reelTiles) {
+        for (ReelTile reelTile : reelTiles)
             reelTile.setEndReel(scenario1Reels[reelTile.getIndex()]);
-        }
+
         return reelTiles;
     }
 
-    /* This method needs to throw an exception if its to be of use
-     */
     private Array<ReelTile> checkLevel(Array<ReelTile> reelLevel, int levelWidth, int levelHeight) {
         ReelTileGridValue[][] grid = puzzleGridTypeReelTile.populateMatchGrid(reelLevel, levelWidth, levelHeight);
         int arraySizeR = grid.length;
@@ -155,9 +153,8 @@ public class LevelCreatorScenario1 {
         PuzzleGridType puzzleGrid = new PuzzleGridType();
         TupleValueIndex[][] grid = puzzleGridTypeReelTile.populateMatchGrid(levelReel, levelWidth, levelHeight);
         Array<TupleValueIndex> lonelyTiles = puzzleGrid.getLonelyTiles(grid);
-        for (TupleValueIndex lonelyTile : lonelyTiles) {
+        for (TupleValueIndex lonelyTile : lonelyTiles)
             adjustAnyLonelyTileAtEdge(levelReel, grid, lonelyTile);
-        }
         return levelReel;
     }
 
@@ -286,24 +283,20 @@ public class LevelCreatorScenario1 {
     private void allReelsHaveStoppedSpinning() {
         if ((reelsSpinning <= -1) & (hitSinkBottom)) {
             if (levelDoor.getLevelType().equals(HIDDEN_PATTERN_LEVEL_TYPE)) {
-                if (testForHiddenPatternRevealed(reelTiles, levelWidth, levelHeight)) {
+                if (testForHiddenPatternRevealed(reelTiles, levelWidth, levelHeight))
                     iWonTheLevel();
-                }
             }
             if (levelDoor.getLevelType().equals(PLAYING_CARD_LEVEL_TYPE)) {
-                if (testForHiddenPlayingCardsRevealed(reelTiles, levelWidth, levelHeight)) {
+                if (testForHiddenPlayingCardsRevealed(reelTiles, levelWidth, levelHeight))
                     iWonTheLevel();
-                }
             }
             if (levelDoor.getLevelType().equals(BONUS_LEVEL_TYPE)) {
-                if (testForJackpot(reelTiles, levelWidth, levelHeight)) {
+                if (testForJackpot(reelTiles, levelWidth, levelHeight))
                     iWonABonus();
-                }
             }
         } else {
-            if (testForJackpot(reelTiles, levelWidth, levelHeight)) {
+            if (testForJackpot(reelTiles, levelWidth, levelHeight))
                 iWonABonus();
-            }
         }
     }
 
@@ -340,11 +333,10 @@ public class LevelCreatorScenario1 {
 
         matchedSlots = PuzzleGridTypeReelTile.adjustMatchSlotDuplicates(matchedSlots, duplicateMatchedSlots);
 
-        if (matchedSlots.size > 0) {
+        if (matchedSlots.size > 0)
             setUpToFlashMatchedReels(reelTiles, matchedSlots, duplicateMatchedSlots);
-        } else {
+        else
             matchedReels = false;
-        }
         return puzzleGrid;
     }
 
@@ -353,9 +345,9 @@ public class LevelCreatorScenario1 {
         numberOfReelBoxesToReplace = matchedSlots.size - 1 - duplicateMatchedSlots.size / 2;
         numberOfReelBoxesToDelete = matchedSlots.size - 1 - duplicateMatchedSlots.size / 2;
 
-        for (TupleValueIndex matchedSlot : matchedSlots) {
+        for (TupleValueIndex matchedSlot : matchedSlots)
             reelTiles.get(matchedSlot.index).setScore(matchedSlot.value);
-        }
+
 
         flashMatchedSlots(matchedSlots, puzzleGridTypeReelTile);
         matchedReels = true;
@@ -389,14 +381,13 @@ public class LevelCreatorScenario1 {
                     batchPosition = matchSlotsBatch.size;
                     matchSlotsBatch = puzzleGridTypeReelTile.depthFirstSearchAddToMatchSlotBatch(matchedSlots.get(0), matchSlotsBatch);
 
-                    for (int deleteIndex = batchPosition; deleteIndex < matchSlotsBatch.size; deleteIndex++) {
+                    for (int deleteIndex = batchPosition; deleteIndex < matchSlotsBatch.size; deleteIndex++)
                         matchedSlots.removeValue(matchSlotsBatch.get(deleteIndex), true);
-                    }
                 }
             }
-            if (matchSlotsBatch.size == 0) {
+            if (matchSlotsBatch.size == 0)
                 break;
-            }
+
             flashMatchedSlotsBatch(matchSlotsBatch, pushPause);
             pushPause += 2.0f;
             matchSlotsBatch.clear();
@@ -490,7 +481,7 @@ public class LevelCreatorScenario1 {
     }
 
     public Array<AnimatedReel> getAnimatedReels() {
-        return this.animatedReelHelper.getAnimatedReels();
+        return animatedReelHelper.getAnimatedReels();
     }
 
     private void reelScoreAnimation(ReelTile source) {
@@ -615,6 +606,8 @@ public class LevelCreatorScenario1 {
     private void initialiseReelFlash(ReelTile reel, float pushPause) {
         Array<Object> userData = new Array<Object>();
         reel.setFlashTween(true);
+        reel.addReelFlashSegment(reel.getX(),
+                                 reel.getY());
         reelFlashSeq = Timeline.createSequence();
         reelFlashSeq = reelFlashSeq.pushPause(pushPause);
 

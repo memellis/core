@@ -25,7 +25,7 @@ import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.viewport.FitViewport;
-import com.ellzone.slotpuzzle2d.level.creator.LevelCreatorScenario1;
+import com.ellzone.slotpuzzle2d.level.creator.LevelCreatorSimpleScenario;
 import com.ellzone.slotpuzzle2d.level.LevelDoor;
 import com.ellzone.slotpuzzle2d.physics.PhysicsManagerCustomBodies;
 import com.ellzone.slotpuzzle2d.scene.Hud;
@@ -64,7 +64,7 @@ public class TestMiniSlotMachineLevelPrototypeScenario1RenderOverride {
     private static final String STAGE_FIELD_NAME = "stage";
 
     private MiniSlotMachineLevelPrototypeScenario1 partialMockMiniSlotMachineLevelPrototypeScenario1;
-    private LevelCreatorScenario1 levelCreatorScenario1Mock;
+    private LevelCreatorSimpleScenario levelCreatorSimpleScenarioMock;
     private OrthogonalTiledMapRenderer tileMapRendererMock;
     private SpriteBatch batchMock;
     private LevelDoor levelDoorMock;
@@ -107,7 +107,7 @@ public class TestMiniSlotMachineLevelPrototypeScenario1RenderOverride {
 
     private void setUpLevelMocks() {
         levelDoorMock = createMock(LevelDoor.class);
-        levelCreatorScenario1Mock = createMock(LevelCreatorScenario1.class);
+        levelCreatorSimpleScenarioMock = createMock(LevelCreatorSimpleScenario.class);
         tileMapRendererMock = createMock(OrthogonalTiledMapRenderer.class);
     }
 
@@ -152,7 +152,7 @@ public class TestMiniSlotMachineLevelPrototypeScenario1RenderOverride {
 
     private void tearDownLevelMocks() {
         levelDoorMock = null;
-        levelCreatorScenario1Mock = null;
+        levelCreatorSimpleScenarioMock = null;
         tileMapRendererMock = null;
     }
 
@@ -194,7 +194,7 @@ public class TestMiniSlotMachineLevelPrototypeScenario1RenderOverride {
     private void setLevelFields() {
         Whitebox.setInternalState(partialMockMiniSlotMachineLevelPrototypeScenario1, TILE_MAP_RENDERER_FIELD_NAME, tileMapRendererMock);
         Whitebox.setInternalState(partialMockMiniSlotMachineLevelPrototypeScenario1, LEVEL_DOOR_FIELD_NAME, levelDoorMock);
-        Whitebox.setInternalState(partialMockMiniSlotMachineLevelPrototypeScenario1, LEVEL_CREATOR_FIELD_NAME, levelCreatorScenario1Mock);
+        Whitebox.setInternalState(partialMockMiniSlotMachineLevelPrototypeScenario1, LEVEL_CREATOR_FIELD_NAME, levelCreatorSimpleScenarioMock);
         Whitebox.setInternalState(partialMockMiniSlotMachineLevelPrototypeScenario1, REEL_BOXES_FIELD_NAME, reelBoxesMock);
         Whitebox.setInternalState(partialMockMiniSlotMachineLevelPrototypeScenario1, ANIMATED_REELS_FIELD_NAME, animatedReelsMock);
     }
@@ -222,7 +222,7 @@ public class TestMiniSlotMachineLevelPrototypeScenario1RenderOverride {
         tileMapRendererMock.render();
         batchMock.begin();
         expect(levelDoorMock.getLevelType()).andReturn(PLAYING_CARD_LEVEL_TYPE);
-        expect(levelCreatorScenario1Mock.getScores()).andReturn(new Array<Score>());
+        expect(levelCreatorSimpleScenarioMock.getScores()).andReturn(new Array<Score>());
         expect(viewportMock.getCamera()).andReturn(cameraMock);
         expect(reelBoxMock.getAngle()).andReturn(1.0f);
     }
@@ -252,7 +252,7 @@ public class TestMiniSlotMachineLevelPrototypeScenario1RenderOverride {
     private void replayAll() {
         replay(tileMapRendererMock,
                levelDoorMock,
-               levelCreatorScenario1Mock,
+                levelCreatorSimpleScenarioMock,
                viewportMock,
                cameraMock,
                reelBoxMock,
@@ -266,7 +266,7 @@ public class TestMiniSlotMachineLevelPrototypeScenario1RenderOverride {
     private void verifyAll() {
         verify(tileMapRendererMock,
                levelDoorMock,
-               levelCreatorScenario1Mock,
+                levelCreatorSimpleScenarioMock,
                viewportMock,
                cameraMock,
                reelBoxMock,

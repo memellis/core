@@ -17,7 +17,7 @@
 package com.ellzone.slotpuzzle2d.prototypes.level.minislotmachine;
 
 import com.ellzone.slotpuzzle2d.finitestatemachine.PlayStates;
-import com.ellzone.slotpuzzle2d.level.creator.LevelCreatorScenario1;
+import com.ellzone.slotpuzzle2d.level.creator.LevelCreatorSimpleScenario;
 import com.ellzone.slotpuzzle2d.puzzlegrid.PuzzleGridTypeReelTile;
 import com.ellzone.slotpuzzle2d.sprites.ReelTile;
 
@@ -52,7 +52,7 @@ public class TestMiniSlotMachineLevelPrototypeScenario1ReelTileCollisions {
 
     private MiniSlotMachineLevelPrototypeScenario1 partialMockMiniSlotMachineLevelPrototypeScenario1;
     private ReelTile reelTileMock;
-    private LevelCreatorScenario1 levelCreatorScenario1Mock;
+    private LevelCreatorSimpleScenario levelCreatorSimpleScenarioMock;
     private Capture<Boolean> captureLevelCreatorSetHitSinkBottomArgument;
     private Capture<ReelTile> captureSwapReelsAboveArgument;
     private Capture<Integer> captureReelsLeftToFallArgumentRow, captureReelsLeftToFallArgumentCol;
@@ -73,7 +73,7 @@ public class TestMiniSlotMachineLevelPrototypeScenario1ReelTileCollisions {
 
     private void setUpEasyMocks() {
         reelTileMock = createMock(ReelTile.class);
-        levelCreatorScenario1Mock = createMock(LevelCreatorScenario1.class);
+        levelCreatorSimpleScenarioMock = createMock(LevelCreatorSimpleScenario.class);
     }
 
     private void setUpCapture() {
@@ -96,7 +96,7 @@ public class TestMiniSlotMachineLevelPrototypeScenario1ReelTileCollisions {
 
     private void tearDownEasyMocks() {
         reelTileMock = null;
-        levelCreatorScenario1Mock = null;
+        levelCreatorSimpleScenarioMock = null;
     }
 
     private void tearDownCaptures() {
@@ -129,16 +129,16 @@ public class TestMiniSlotMachineLevelPrototypeScenario1ReelTileCollisions {
     }
 
     private void setFields() {
-        Whitebox.setInternalState(partialMockMiniSlotMachineLevelPrototypeScenario1, LEVEL_CREATOR_FIELD_NAME, levelCreatorScenario1Mock);
+        Whitebox.setInternalState(partialMockMiniSlotMachineLevelPrototypeScenario1, LEVEL_CREATOR_FIELD_NAME, levelCreatorSimpleScenarioMock);
     }
 
     private void setExpects(PlayStates playState) throws Exception {
-        expect(levelCreatorScenario1Mock.getPlayState()).andReturn(playState);
+        expect(levelCreatorSimpleScenarioMock.getPlayState()).andReturn(playState);
         if (playState == PlayStates.INTRO_SPINNING)
-            levelCreatorScenario1Mock.setHitSinkBottom(captureBoolean(captureLevelCreatorSetHitSinkBottomArgument));
+            levelCreatorSimpleScenarioMock.setHitSinkBottom(captureBoolean(captureLevelCreatorSetHitSinkBottomArgument));
 
-        expect(levelCreatorScenario1Mock.getPlayState()).andReturn(playState);
-        expect(levelCreatorScenario1Mock.getPlayState()).andReturn(playState);
+        expect(levelCreatorSimpleScenarioMock.getPlayState()).andReturn(playState);
+        expect(levelCreatorSimpleScenarioMock.getPlayState()).andReturn(playState);
         expectIsFlashing(playState);
     }
 
@@ -154,7 +154,7 @@ public class TestMiniSlotMachineLevelPrototypeScenario1ReelTileCollisions {
     }
 
     private void expectSwapReelsAboveMe() throws Exception {
-        expect(levelCreatorScenario1Mock.findReel(10, 120)).andReturn(0);
+        expect(levelCreatorSimpleScenarioMock.findReel(10, 120)).andReturn(0);
         expect(reelTileMock.getDestinationX()).andReturn(10.0f);
         expectPrivate(partialMockMiniSlotMachineLevelPrototypeScenario1,
                      "swapReelsAboveMe",
@@ -176,13 +176,13 @@ public class TestMiniSlotMachineLevelPrototypeScenario1ReelTileCollisions {
         replay(PuzzleGridTypeReelTile.class,
                partialMockMiniSlotMachineLevelPrototypeScenario1,
                reelTileMock,
-               levelCreatorScenario1Mock);
+                levelCreatorSimpleScenarioMock);
     }
 
     private void verifyAll() {
         verify(PuzzleGridTypeReelTile.class,
                partialMockMiniSlotMachineLevelPrototypeScenario1,
                reelTileMock,
-               levelCreatorScenario1Mock);
+                levelCreatorSimpleScenarioMock);
     }
 }
