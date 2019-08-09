@@ -43,13 +43,13 @@ import static org.powermock.api.easymock.PowerMock.verify;
 import static org.powermock.api.mockito.PowerMockito.whenNew;
 
 @RunWith(PowerMockRunner.class)
-@PrepareForTest( {MiniSlotMachineLevelPrototypeScenario1.class} )
+@PrepareForTest( {MiniSlotMachineLevelPrototypeSimpleScenario.class} )
 
-public class TestMiniSlotMachineLevelPrototypeScenario1HandleInput {
+public class TestMiniSlotMachineLevelPrototypeSimpleScenarioHandleInput {
     private static final String VIEWPORT_FIELD_NAME = "viewport";
     private static final String LEVEL_CREATOR_FIELD_NAME = "levelCreator";
 
-    private MiniSlotMachineLevelPrototypeScenario1 partialMockMiniSlotMachineLevelPrototypeScenario1;
+    private MiniSlotMachineLevelPrototypeSimpleScenario partialMockMiniSlotMachineLevelPrototypeSimpleScenario;
     private Input mockInput;
     private Application mockApplication;
     private FitViewport mockViewPort;
@@ -64,7 +64,7 @@ public class TestMiniSlotMachineLevelPrototypeScenario1HandleInput {
     }
 
     private void setUpMocks() {
-        partialMockMiniSlotMachineLevelPrototypeScenario1 = PowerMock.createNicePartialMock(MiniSlotMachineLevelPrototypeScenario1.class, "processIsTileClicked");
+        partialMockMiniSlotMachineLevelPrototypeSimpleScenario = PowerMock.createNicePartialMock(MiniSlotMachineLevelPrototypeSimpleScenario.class, "processIsTileClicked");
         mockInput = createMock(Input.class);
         mockApplication = createMock(Application.class);
         mockViewPort = createMock(FitViewport.class);
@@ -89,7 +89,7 @@ public class TestMiniSlotMachineLevelPrototypeScenario1HandleInput {
     }
 
     private void tearDownMocks() {
-        partialMockMiniSlotMachineLevelPrototypeScenario1 = null;
+        partialMockMiniSlotMachineLevelPrototypeSimpleScenario = null;
         mockInput = null;
         mockApplication = null;
         mockViewPort = null;
@@ -109,9 +109,8 @@ public class TestMiniSlotMachineLevelPrototypeScenario1HandleInput {
 
     @Test
     public void testHandleInput() throws Exception {
-        for (PlayStates playState : PlayStates.values()) {
+        for (PlayStates playState : PlayStates.values())
             testHandleInputPlayStates(playState);
-        }
     }
 
     private void testHandleInputPlayStates(PlayStates playState) throws Exception {
@@ -128,20 +127,20 @@ public class TestMiniSlotMachineLevelPrototypeScenario1HandleInput {
         verify(mockInput,
                mockApplication,
                 levelCreatorSimpleScenarioMock,
-               partialMockMiniSlotMachineLevelPrototypeScenario1);
+                partialMockMiniSlotMachineLevelPrototypeSimpleScenario);
     }
 
     private void inokeHandleInput() {
-        Whitebox.setInternalState(partialMockMiniSlotMachineLevelPrototypeScenario1, VIEWPORT_FIELD_NAME, mockViewPort);
-        Whitebox.setInternalState(partialMockMiniSlotMachineLevelPrototypeScenario1, LEVEL_CREATOR_FIELD_NAME, levelCreatorSimpleScenarioMock);
-        partialMockMiniSlotMachineLevelPrototypeScenario1.handleInput();
+        Whitebox.setInternalState(partialMockMiniSlotMachineLevelPrototypeSimpleScenario, VIEWPORT_FIELD_NAME, mockViewPort);
+        Whitebox.setInternalState(partialMockMiniSlotMachineLevelPrototypeSimpleScenario, LEVEL_CREATOR_FIELD_NAME, levelCreatorSimpleScenarioMock);
+        partialMockMiniSlotMachineLevelPrototypeSimpleScenario.handleInput();
     }
 
     private void replayAll() {
         replay(mockInput,
                mockApplication,
                 levelCreatorSimpleScenarioMock,
-               partialMockMiniSlotMachineLevelPrototypeScenario1);
+                partialMockMiniSlotMachineLevelPrototypeSimpleScenario);
     }
 
     private void expectations(PlayStates playState) throws Exception {
@@ -152,6 +151,6 @@ public class TestMiniSlotMachineLevelPrototypeScenario1HandleInput {
         expect(levelCreatorSimpleScenarioMock.getPlayState()).andReturn(playState);
         mockApplication.debug(capture(logCaptureArgument1), capture(logCaptureArgument2));
         if (playState == PlayStates.PLAYING)
-            PowerMock.expectPrivate(partialMockMiniSlotMachineLevelPrototypeScenario1, "processIsTileClicked").atLeastOnce();
+            PowerMock.expectPrivate(partialMockMiniSlotMachineLevelPrototypeSimpleScenario, "processIsTileClicked").atLeastOnce();
     }
 }

@@ -51,9 +51,9 @@ import static org.powermock.api.easymock.PowerMock.replay;
 import static org.powermock.api.easymock.PowerMock.verify;
 
 @RunWith(PowerMockRunner.class)
-@PrepareForTest( {MiniSlotMachineLevelPrototypeScenario1.class, Vector2.class, Hud.class, Random.class } )
+@PrepareForTest( {MiniSlotMachineLevelPrototypeSimpleScenario.class, Vector2.class, Hud.class, Random.class } )
 
-public class TestMiniSlotMachineLevelPrototypeScenario1ProcessIsTiledClicked {
+public class TestMiniSlotMachineLevelPrototypeSimpleScenarioProcessIsTiledClicked {
     private final static String VIEWPORT_FIELD_NAME = "viewport";
     private final static String LEVEL_CREATOR_FIELD_NAME = "levelCreator";
     private final static String REELTILES_FIELD_NAME = "reelTiles";
@@ -63,7 +63,7 @@ public class TestMiniSlotMachineLevelPrototypeScenario1ProcessIsTiledClicked {
     private final static String REELS_FIELD_NAME = "reelSprites";
     private final static String HUD_FIELD_NAME = "hud";
 
-    private MiniSlotMachineLevelPrototypeScenario1 partialMockMiniSlotMachineLevelPrototypeScenario1;
+    private MiniSlotMachineLevelPrototypeSimpleScenario partialMockMiniSlotMachineLevelPrototypeSimpleScenario;
     private LevelCreatorSimpleScenario levelCreatorSimpleScenarioMock;
     private Input inputMock;
     private Vector2 vector2Mock;
@@ -87,7 +87,7 @@ public class TestMiniSlotMachineLevelPrototypeScenario1ProcessIsTiledClicked {
     }
 
     private void setUpPowerMocks() {
-        partialMockMiniSlotMachineLevelPrototypeScenario1 = PowerMock.createNicePartialMock(MiniSlotMachineLevelPrototypeScenario1.class,
+        partialMockMiniSlotMachineLevelPrototypeSimpleScenario = PowerMock.createNicePartialMock(MiniSlotMachineLevelPrototypeSimpleScenario.class,
                 "initialiseOverride");
         PowerMock.mockStatic(Random.class);
     }
@@ -159,18 +159,18 @@ public class TestMiniSlotMachineLevelPrototypeScenario1ProcessIsTiledClicked {
     }
 
     private void tearDownPowerMocks() {
-        partialMockMiniSlotMachineLevelPrototypeScenario1 = null;
+        partialMockMiniSlotMachineLevelPrototypeSimpleScenario = null;
     }
 
     private void setFieldsInClassUnderTest() {
-        Whitebox.setInternalState(partialMockMiniSlotMachineLevelPrototypeScenario1, VIEWPORT_FIELD_NAME, viewportMock);
-        Whitebox.setInternalState(partialMockMiniSlotMachineLevelPrototypeScenario1, LEVEL_CREATOR_FIELD_NAME, levelCreatorSimpleScenarioMock);
-        Whitebox.setInternalState(partialMockMiniSlotMachineLevelPrototypeScenario1, REELTILES_FIELD_NAME, reelTilesMock);
-        Whitebox.setInternalState(partialMockMiniSlotMachineLevelPrototypeScenario1, ANIMATEDREELS_FIELD_NAME, animatedReelsMock);
-        Whitebox.setInternalState(partialMockMiniSlotMachineLevelPrototypeScenario1, PULLLEVELSOUND_FIELD_NAME, pullLeverSoundMock);
-        Whitebox.setInternalState(partialMockMiniSlotMachineLevelPrototypeScenario1, REELSPIININGSOUND_FIELD_NAME, reelSpinningSoundMock);
-        Whitebox.setInternalState(partialMockMiniSlotMachineLevelPrototypeScenario1, REELS_FIELD_NAME, reelSpritesMock);
-        Whitebox.setInternalState(partialMockMiniSlotMachineLevelPrototypeScenario1, HUD_FIELD_NAME, hudMock);
+        Whitebox.setInternalState(partialMockMiniSlotMachineLevelPrototypeSimpleScenario, VIEWPORT_FIELD_NAME, viewportMock);
+        Whitebox.setInternalState(partialMockMiniSlotMachineLevelPrototypeSimpleScenario, LEVEL_CREATOR_FIELD_NAME, levelCreatorSimpleScenarioMock);
+        Whitebox.setInternalState(partialMockMiniSlotMachineLevelPrototypeSimpleScenario, REELTILES_FIELD_NAME, reelTilesMock);
+        Whitebox.setInternalState(partialMockMiniSlotMachineLevelPrototypeSimpleScenario, ANIMATEDREELS_FIELD_NAME, animatedReelsMock);
+        Whitebox.setInternalState(partialMockMiniSlotMachineLevelPrototypeSimpleScenario, PULLLEVELSOUND_FIELD_NAME, pullLeverSoundMock);
+        Whitebox.setInternalState(partialMockMiniSlotMachineLevelPrototypeSimpleScenario, REELSPIININGSOUND_FIELD_NAME, reelSpinningSoundMock);
+        Whitebox.setInternalState(partialMockMiniSlotMachineLevelPrototypeSimpleScenario, REELS_FIELD_NAME, reelSpritesMock);
+        Whitebox.setInternalState(partialMockMiniSlotMachineLevelPrototypeSimpleScenario, HUD_FIELD_NAME, hudMock);
     }
 
     private void setUpTestData() {
@@ -241,8 +241,8 @@ public class TestMiniSlotMachineLevelPrototypeScenario1ProcessIsTiledClicked {
 
     private void expectationsProcessTileClicked() {
         expect(levelCreatorSimpleScenarioMock.populateMatchGrid(reelTilesMock,
-                partialMockMiniSlotMachineLevelPrototypeScenario1.GAME_LEVEL_WIDTH,
-                partialMockMiniSlotMachineLevelPrototypeScenario1.GAME_LEVEL_HEIGHT))
+                partialMockMiniSlotMachineLevelPrototypeSimpleScenario.GAME_LEVEL_WIDTH,
+                partialMockMiniSlotMachineLevelPrototypeSimpleScenario.GAME_LEVEL_HEIGHT))
                 .andReturn(testPuzzleGrid);
         expect(reelTilesMock.get(testPuzzleGrid[2][2].index)).andReturn(reelTileMock);
         expect(levelCreatorSimpleScenarioMock.getAnimatedReels()).andReturn(animatedReelsMock);
@@ -265,7 +265,7 @@ public class TestMiniSlotMachineLevelPrototypeScenario1ProcessIsTiledClicked {
     }
 
     private void replayAll() {
-        replay(partialMockMiniSlotMachineLevelPrototypeScenario1,
+        replay(partialMockMiniSlotMachineLevelPrototypeSimpleScenario,
                Vector2.class,
                Random.class,
                inputMock,
@@ -284,7 +284,7 @@ public class TestMiniSlotMachineLevelPrototypeScenario1ProcessIsTiledClicked {
     }
 
     private void verifyAll() {
-        verify(partialMockMiniSlotMachineLevelPrototypeScenario1,
+        verify(partialMockMiniSlotMachineLevelPrototypeSimpleScenario,
                inputMock,
                vector2Mock,
                viewportMock,
@@ -309,7 +309,7 @@ public class TestMiniSlotMachineLevelPrototypeScenario1ProcessIsTiledClicked {
         setSpinning(true);
         expectations();
         replayAll();
-        Whitebox.invokeMethod(partialMockMiniSlotMachineLevelPrototypeScenario1, "processIsTileClicked");
+        Whitebox.invokeMethod(partialMockMiniSlotMachineLevelPrototypeSimpleScenario, "processIsTileClicked");
         assertThat(reelTileMock.isSpinning(), is(true));
         verifyAll();
     }
@@ -319,7 +319,7 @@ public class TestMiniSlotMachineLevelPrototypeScenario1ProcessIsTiledClicked {
         setSpinning(false);
         expectations();
         replayAll();
-        Whitebox.invokeMethod(partialMockMiniSlotMachineLevelPrototypeScenario1, "processIsTileClicked");
+        Whitebox.invokeMethod(partialMockMiniSlotMachineLevelPrototypeSimpleScenario, "processIsTileClicked");
         assertThat(reelTileMock.isSpinning(), is(false));
         verifyAll();
     }

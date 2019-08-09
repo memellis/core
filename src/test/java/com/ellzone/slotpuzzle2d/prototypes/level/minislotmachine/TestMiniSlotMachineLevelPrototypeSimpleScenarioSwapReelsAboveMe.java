@@ -40,13 +40,13 @@ import static org.powermock.api.easymock.PowerMock.replay;
 import static org.powermock.api.easymock.PowerMock.verify;
 
 @RunWith(PowerMockRunner.class)
-@PrepareForTest( {MiniSlotMachineLevelPrototypeScenario1.class,
+@PrepareForTest( {MiniSlotMachineLevelPrototypeSimpleScenario.class,
                   PuzzleGridType.class,
                   PuzzleGridTypeReelTile.class} )
 
-public class TestMiniSlotMachineLevelPrototypeScenario1SwapReelsAboveMe {
+public class TestMiniSlotMachineLevelPrototypeSimpleScenarioSwapReelsAboveMe {
 
-    private MiniSlotMachineLevelPrototypeScenario1 partialMockMiniSlotMachineLevelPrototypeScenario1;
+    private MiniSlotMachineLevelPrototypeSimpleScenario partialMockMiniSlotMachineLevelPrototypeSimpleScenario;
     private ReelTile reelTileAMock, reelTileBMock;
     private LevelCreatorSimpleScenario levelCreatorMock;
     private Array<ReelTile> reelTilesMock;
@@ -60,7 +60,7 @@ public class TestMiniSlotMachineLevelPrototypeScenario1SwapReelsAboveMe {
     }
 
     private void setUpPowerMocks() {
-        partialMockMiniSlotMachineLevelPrototypeScenario1 = PowerMock.createNicePartialMock(MiniSlotMachineLevelPrototypeScenario1.class,
+        partialMockMiniSlotMachineLevelPrototypeSimpleScenario = PowerMock.createNicePartialMock(MiniSlotMachineLevelPrototypeSimpleScenario.class,
         "swapReels");
         mockStatic(PuzzleGridType.class);
         mockStatic(PuzzleGridTypeReelTile.class);
@@ -80,7 +80,7 @@ public class TestMiniSlotMachineLevelPrototypeScenario1SwapReelsAboveMe {
     }
 
     private void tearDownSetUpPowerMocks(){
-        partialMockMiniSlotMachineLevelPrototypeScenario1 = null;
+        partialMockMiniSlotMachineLevelPrototypeSimpleScenario = null;
     }
 
     private void tearDownEasyMocks() {
@@ -94,7 +94,7 @@ public class TestMiniSlotMachineLevelPrototypeScenario1SwapReelsAboveMe {
         setUpTestData();
         setUpExpectations();
         replayAll();
-        Whitebox.invokeMethod(partialMockMiniSlotMachineLevelPrototypeScenario1,
+        Whitebox.invokeMethod(partialMockMiniSlotMachineLevelPrototypeSimpleScenario,
                 "swapReelsAboveMe",
                 reelTileAMock,
                 reelTileBMock);
@@ -144,10 +144,10 @@ public class TestMiniSlotMachineLevelPrototypeScenario1SwapReelsAboveMe {
     }
 
     private void setUpFields() {
-        Whitebox.setInternalState(partialMockMiniSlotMachineLevelPrototypeScenario1,
+        Whitebox.setInternalState(partialMockMiniSlotMachineLevelPrototypeSimpleScenario,
                 "reelTiles",
                 reelTilesMock);
-        Whitebox.setInternalState(partialMockMiniSlotMachineLevelPrototypeScenario1,
+        Whitebox.setInternalState(partialMockMiniSlotMachineLevelPrototypeSimpleScenario,
                 "levelCreator",
                  levelCreatorMock);
     }
@@ -158,11 +158,11 @@ public class TestMiniSlotMachineLevelPrototypeScenario1SwapReelsAboveMe {
 
     private void setUpReelsAboveMeExpectatiosn() {
         expect(levelCreatorMock.populateMatchGrid(reelTilesMock,
-                MiniSlotMachineLevelPrototypeScenario1.GAME_LEVEL_WIDTH,
-                MiniSlotMachineLevelPrototypeScenario1.GAME_LEVEL_HEIGHT)).andReturn(testPuzzleGrid);
+                MiniSlotMachineLevelPrototypeSimpleScenario.GAME_LEVEL_WIDTH,
+                MiniSlotMachineLevelPrototypeSimpleScenario.GAME_LEVEL_HEIGHT)).andReturn(testPuzzleGrid);
         expect(reelTileAMock.getDestinationY()).andReturn(10.0f);
         expect(PuzzleGridTypeReelTile.getRowFromLevel(10.0f,
-                MiniSlotMachineLevelPrototypeScenario1.GAME_LEVEL_HEIGHT)).andReturn(2);
+                MiniSlotMachineLevelPrototypeSimpleScenario.GAME_LEVEL_HEIGHT)).andReturn(2);
         expect(reelTileAMock.getDestinationX()).andReturn(10.0f);
         expect(PuzzleGridTypeReelTile.getColumnFromLevel(10.0f)).andReturn(2);
         expect(PuzzleGridType.getReelsAboveMe(testPuzzleGrid,
@@ -174,7 +174,7 @@ public class TestMiniSlotMachineLevelPrototypeScenario1SwapReelsAboveMe {
         replay(PuzzleGridType.class,
                PuzzleGridTypeReelTile.class,
                levelCreatorMock,
-               partialMockMiniSlotMachineLevelPrototypeScenario1,
+                partialMockMiniSlotMachineLevelPrototypeSimpleScenario,
                reelTileAMock,
                reelTileBMock);
     }
@@ -183,7 +183,7 @@ public class TestMiniSlotMachineLevelPrototypeScenario1SwapReelsAboveMe {
         verify(PuzzleGridType.class,
                PuzzleGridTypeReelTile.class,
                levelCreatorMock,
-               partialMockMiniSlotMachineLevelPrototypeScenario1,
+                partialMockMiniSlotMachineLevelPrototypeSimpleScenario,
                reelTileAMock,
                reelTileBMock);
     }

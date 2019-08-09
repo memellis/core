@@ -16,17 +16,19 @@
 
 package com.ellzone.slotpuzzle2d.prototypes.level.minislotmachine;
 
-import com.badlogic.gdx.graphics.Camera;
+import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
 import com.badlogic.gdx.math.MathUtils;
+import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.viewport.FitViewport;
-import com.ellzone.slotpuzzle2d.level.creator.LevelCreatorSimpleScenario;
 import com.ellzone.slotpuzzle2d.level.LevelDoor;
+import com.ellzone.slotpuzzle2d.level.creator.LevelCreatorSimpleScenario;
 import com.ellzone.slotpuzzle2d.physics.PhysicsManagerCustomBodies;
 import com.ellzone.slotpuzzle2d.scene.Hud;
 import com.ellzone.slotpuzzle2d.sprites.AnimatedReel;
@@ -48,9 +50,9 @@ import static org.powermock.api.easymock.PowerMock.replay;
 import static org.powermock.api.easymock.PowerMock.verify;
 
 @RunWith(PowerMockRunner.class)
-@PrepareForTest( {MiniSlotMachineLevelPrototypeScenario1.class} )
+@PrepareForTest( {MiniSlotMachineLevelPrototypeSimpleScenario.class} )
 
-public class TestMiniSlotMachineLevelPrototypeScenario1RenderOverride {
+public class TestMiniSlotMachineLevelPrototypeSimpleScenarioRenderOverride {
     private static final String PLAYING_CARD_LEVEL_TYPE = "PlayingCard";
     private static final String TILE_MAP_RENDERER_FIELD_NAME = "tileMapRenderer";
     private static final String BATCH_FIELD_NAME = "batch";
@@ -62,14 +64,16 @@ public class TestMiniSlotMachineLevelPrototypeScenario1RenderOverride {
     private static final String PHYSICS_FIELD_NAME = "physics";
     private static final String HUD_FIELD_NAME = "hud";
     private static final String STAGE_FIELD_NAME = "stage";
+    private static final String SHAPE_RENDERER_FIELD_NAME = "shapeRenderer";
+    private static final String CAMERA_FIELD_NAME = "camera";
 
-    private MiniSlotMachineLevelPrototypeScenario1 partialMockMiniSlotMachineLevelPrototypeScenario1;
+    private MiniSlotMachineLevelPrototypeSimpleScenario partialMockMiniSlotMachineLevelPrototypeSimpleScenario;
     private LevelCreatorSimpleScenario levelCreatorSimpleScenarioMock;
     private OrthogonalTiledMapRenderer tileMapRendererMock;
     private SpriteBatch batchMock;
     private LevelDoor levelDoorMock;
     private FitViewport viewportMock;
-    private Camera cameraMock;
+    private OrthographicCamera cameraMock;
     private Array<Body> reelBoxesMock;
     private Body reelBoxMock;
     private Array animatedReelsMock;
@@ -79,6 +83,7 @@ public class TestMiniSlotMachineLevelPrototypeScenario1RenderOverride {
     private PhysicsManagerCustomBodies physicsMock;
     private Hud hudMock;
     private Stage stageMock;
+    private ShapeRenderer shapeRendererMock;
 
     @Before
     public void setUp() {
@@ -87,7 +92,7 @@ public class TestMiniSlotMachineLevelPrototypeScenario1RenderOverride {
     }
 
     private void setUpPowerMocks() {
-        partialMockMiniSlotMachineLevelPrototypeScenario1 = PowerMock.createNicePartialMock(MiniSlotMachineLevelPrototypeScenario1.class,
+        partialMockMiniSlotMachineLevelPrototypeSimpleScenario = PowerMock.createNicePartialMock(MiniSlotMachineLevelPrototypeSimpleScenario.class,
                 "handleInput",
                               "drawPlayingCards");
     }
@@ -115,15 +120,16 @@ public class TestMiniSlotMachineLevelPrototypeScenario1RenderOverride {
         reelBoxMock = createMock(Body.class);
         reelBoxesMock = new Array<>();
         reelBoxesMock.add(reelBoxMock);
-        animatedReelsMock = createMock(Array.class);
+        animatedReelsMock = new Array<AnimatedReel>();
         animatedReelMock = createMock(AnimatedReel.class);
         reelTileMock = createMock(ReelTile.class);
+        shapeRendererMock = createMock(ShapeRenderer.class);
     }
 
     private void setUpLibGDXMocks() {
         batchMock = createMock(SpriteBatch.class);
         viewportMock = createMock(FitViewport.class);
-        cameraMock = createMock(Camera.class);
+        cameraMock = createMock(OrthographicCamera.class);
         stageMock = createMock(Stage.class);
     }
 
@@ -134,7 +140,7 @@ public class TestMiniSlotMachineLevelPrototypeScenario1RenderOverride {
      }
 
     private void tearDownPowerMocks() {
-        partialMockMiniSlotMachineLevelPrototypeScenario1 = null;
+        partialMockMiniSlotMachineLevelPrototypeSimpleScenario = null;
     }
 
     private void tearDownEasyMocks() {
@@ -176,7 +182,7 @@ public class TestMiniSlotMachineLevelPrototypeScenario1RenderOverride {
         setFields();
         setUpExpectations();
         replayAll();
-        partialMockMiniSlotMachineLevelPrototypeScenario1.renderOverride(0.0f);
+        partialMockMiniSlotMachineLevelPrototypeSimpleScenario.renderOverride(0.0f);
         verifyAll();
     }
 
@@ -187,35 +193,30 @@ public class TestMiniSlotMachineLevelPrototypeScenario1RenderOverride {
     }
 
     private void setSlotPuzzleFields() {
-        Whitebox.setInternalState(partialMockMiniSlotMachineLevelPrototypeScenario1, PHYSICS_FIELD_NAME, physicsMock);
-        Whitebox.setInternalState(partialMockMiniSlotMachineLevelPrototypeScenario1, HUD_FIELD_NAME, hudMock);
+        Whitebox.setInternalState(partialMockMiniSlotMachineLevelPrototypeSimpleScenario, PHYSICS_FIELD_NAME, physicsMock);
+        Whitebox.setInternalState(partialMockMiniSlotMachineLevelPrototypeSimpleScenario, HUD_FIELD_NAME, hudMock);
     }
 
     private void setLevelFields() {
-        Whitebox.setInternalState(partialMockMiniSlotMachineLevelPrototypeScenario1, TILE_MAP_RENDERER_FIELD_NAME, tileMapRendererMock);
-        Whitebox.setInternalState(partialMockMiniSlotMachineLevelPrototypeScenario1, LEVEL_DOOR_FIELD_NAME, levelDoorMock);
-        Whitebox.setInternalState(partialMockMiniSlotMachineLevelPrototypeScenario1, LEVEL_CREATOR_FIELD_NAME, levelCreatorSimpleScenarioMock);
-        Whitebox.setInternalState(partialMockMiniSlotMachineLevelPrototypeScenario1, REEL_BOXES_FIELD_NAME, reelBoxesMock);
-        Whitebox.setInternalState(partialMockMiniSlotMachineLevelPrototypeScenario1, ANIMATED_REELS_FIELD_NAME, animatedReelsMock);
+        Whitebox.setInternalState(partialMockMiniSlotMachineLevelPrototypeSimpleScenario, TILE_MAP_RENDERER_FIELD_NAME, tileMapRendererMock);
+        Whitebox.setInternalState(partialMockMiniSlotMachineLevelPrototypeSimpleScenario, LEVEL_DOOR_FIELD_NAME, levelDoorMock);
+        Whitebox.setInternalState(partialMockMiniSlotMachineLevelPrototypeSimpleScenario, LEVEL_CREATOR_FIELD_NAME, levelCreatorSimpleScenarioMock);
+        Whitebox.setInternalState(partialMockMiniSlotMachineLevelPrototypeSimpleScenario, REEL_BOXES_FIELD_NAME, reelBoxesMock);
+        Whitebox.setInternalState(partialMockMiniSlotMachineLevelPrototypeSimpleScenario, ANIMATED_REELS_FIELD_NAME, animatedReelsMock);
+        Whitebox.setInternalState(partialMockMiniSlotMachineLevelPrototypeSimpleScenario, SHAPE_RENDERER_FIELD_NAME, shapeRendererMock);
+        Whitebox.setInternalState(partialMockMiniSlotMachineLevelPrototypeSimpleScenario, CAMERA_FIELD_NAME, cameraMock);
     }
 
     private void setLibGDXFields() {
-        Whitebox.setInternalState(partialMockMiniSlotMachineLevelPrototypeScenario1, BATCH_FIELD_NAME, batchMock);
-        Whitebox.setInternalState(partialMockMiniSlotMachineLevelPrototypeScenario1, STAGE_FIELD_NAME, stageMock);
-        Whitebox.setInternalState(partialMockMiniSlotMachineLevelPrototypeScenario1, VIEWPORT_FIELD_NAME, viewportMock);
+        Whitebox.setInternalState(partialMockMiniSlotMachineLevelPrototypeSimpleScenario, BATCH_FIELD_NAME, batchMock);
+        Whitebox.setInternalState(partialMockMiniSlotMachineLevelPrototypeSimpleScenario, STAGE_FIELD_NAME, stageMock);
+        Whitebox.setInternalState(partialMockMiniSlotMachineLevelPrototypeSimpleScenario, VIEWPORT_FIELD_NAME, viewportMock);
     }
 
     private void setUpExpectations() {
         setUpExpectationsRenderOverridePart1();
         setUpExpectationsRenderReelsBoxes();
         setUpExpectationsRenderOverridePart2();
-    }
-
-    private void setUpExpectationsRenderOverridePart2() {
-        hudMock.stage = stageMock;
-        expect(stageMock.getCamera()).andReturn(cameraMock);
-        hudMock.stage.draw();
-        stageMock.draw();
     }
 
     private void setUpExpectationsRenderOverridePart1() {
@@ -225,14 +226,23 @@ public class TestMiniSlotMachineLevelPrototypeScenario1RenderOverride {
         expect(levelCreatorSimpleScenarioMock.getScores()).andReturn(new Array<Score>());
         expect(viewportMock.getCamera()).andReturn(cameraMock);
         expect(reelBoxMock.getAngle()).andReturn(1.0f);
+        Whitebox.setInternalState(cameraMock,"combined", new Matrix4());
+        shapeRendererMock.setProjectionMatrix(cameraMock.combined);
     }
 
-    private void setUpExpectationsRenderReelsBoxes() {
+    private void setUpExpectationsRenderOverridePart2() {
+        hudMock.stage = stageMock;
+        expect(stageMock.getCamera()).andReturn(cameraMock);
+        hudMock.stage.draw();
+        stageMock.draw();
+    }
+
+        private void setUpExpectationsRenderReelsBoxes() {
         setUpExpectationsRenderReelsBoxesPart1();
-        setUPExpectationsRenderReelBoxesPart2();
+        setUpExpectationsRenderReelBoxesPart2();
     }
 
-    private void setUPExpectationsRenderReelBoxesPart2() {
+    private void setUpExpectationsRenderReelBoxesPart2() {
         reelTileMock.setPosition(-20.0f, -20.0f);
         reelTileMock.setOrigin(0, 0);
         reelTileMock.setSize(40, 40);
@@ -242,23 +252,23 @@ public class TestMiniSlotMachineLevelPrototypeScenario1RenderOverride {
     }
 
     private void setUpExpectationsRenderReelsBoxesPart1() {
-        animatedReelsMock.size = 1;
-        expect(animatedReelsMock.get(0)).andReturn(animatedReelMock);
-        expect(animatedReelMock.getReel()).andReturn(reelTileMock);
+        animatedReelsMock.add(animatedReelMock);
+        expect(animatedReelMock.getReel()).andReturn(reelTileMock).times(3);
         expect(reelBoxMock.getPosition()).andReturn(vector2Mock).atLeastOnce();
-        expect(reelTileMock.isReelTileDeleted()).andReturn(false);
+        expect(reelTileMock.isReelTileDeleted()).andReturn(false).times(2);
+        expect(reelTileMock.getFlashState()).andReturn(ReelTile.FlashState.FLASH_OFF);
     }
 
     private void replayAll() {
         replay(tileMapRendererMock,
                levelDoorMock,
-                levelCreatorSimpleScenarioMock,
+               levelCreatorSimpleScenarioMock,
                viewportMock,
                cameraMock,
                reelBoxMock,
-               animatedReelsMock,
                animatedReelMock,
                reelTileMock,
+               shapeRendererMock,
                hudMock,
                stageMock);
     }
@@ -266,13 +276,13 @@ public class TestMiniSlotMachineLevelPrototypeScenario1RenderOverride {
     private void verifyAll() {
         verify(tileMapRendererMock,
                levelDoorMock,
-                levelCreatorSimpleScenarioMock,
+               levelCreatorSimpleScenarioMock,
                viewportMock,
                cameraMock,
                reelBoxMock,
                animatedReelMock,
-               animatedReelsMock,
                reelTileMock,
+               shapeRendererMock,
                hudMock,
                stageMock);
     }

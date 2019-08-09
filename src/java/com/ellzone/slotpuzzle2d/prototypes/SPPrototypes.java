@@ -54,7 +54,7 @@ import com.ellzone.slotpuzzle2d.prototypes.icons.DownloadMamuIcons;
 import com.ellzone.slotpuzzle2d.prototypes.level.hiddenpattern.HiddenPatternWithFallingReels;
 import com.ellzone.slotpuzzle2d.prototypes.level.minislotmachine.MiniSlotMachineLevelFallingReels;
 import com.ellzone.slotpuzzle2d.prototypes.level.minislotmachine.MiniSlotMachineLevelPrototype;
-import com.ellzone.slotpuzzle2d.prototypes.level.minislotmachine.MiniSlotMachineLevelPrototypeScenario1;
+import com.ellzone.slotpuzzle2d.prototypes.level.minislotmachine.MiniSlotMachineLevelPrototypeSimpleScenario;
 import com.ellzone.slotpuzzle2d.prototypes.level.minislotmachine.MiniSlotMachineLevelPrototypeWithLevelCreator;
 import com.ellzone.slotpuzzle2d.prototypes.level.minislotmachine.SpinningSlots;
 import com.ellzone.slotpuzzle2d.prototypes.level.minislotmachine.SpinningSlotsRotateHandleSprite;
@@ -136,7 +136,7 @@ public class SPPrototypes {
         WorldMapLevelSelectAndReturn.class,
         WorldMapDynamicDoors.class,
         MiniSlotMachineLevelPrototype.class,
-        MiniSlotMachineLevelPrototypeScenario1.class,
+        MiniSlotMachineLevelPrototypeSimpleScenario.class,
         MiniSlotMachineLevelPrototypeWithLevelCreator.class,
         MiniSlotMachineLevelFallingReels.class,
         HiddenPatternWithFallingReels.class,

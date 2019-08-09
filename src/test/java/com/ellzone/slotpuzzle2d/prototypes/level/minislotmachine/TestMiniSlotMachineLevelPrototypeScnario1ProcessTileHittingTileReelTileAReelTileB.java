@@ -24,10 +24,10 @@ import static org.powermock.api.easymock.PowerMock.replay;
 import static org.powermock.api.easymock.PowerMock.verify;
 
 @RunWith(PowerMockRunner.class)
-@PrepareForTest( {MiniSlotMachineLevelPrototypeScenario1.class} )
+@PrepareForTest( {MiniSlotMachineLevelPrototypeSimpleScenario.class} )
 
 public class TestMiniSlotMachineLevelPrototypeScnario1ProcessTileHittingTileReelTileAReelTileB {
-    private MiniSlotMachineLevelPrototypeScenario1 partialMockMiniSlotMachineLevelPrototypeScenario1;
+    private MiniSlotMachineLevelPrototypeSimpleScenario partialMockMiniSlotMachineLevelPrototypeSimpleScenario;
     private ReelTile reelTileAMock, reelTileBMock;
     private Capture<ReelTile> reelTileCaptureA, reelTileCaptureB;
     private Capture<Integer> rCapture, cCapture;
@@ -40,7 +40,7 @@ public class TestMiniSlotMachineLevelPrototypeScnario1ProcessTileHittingTileReel
     }
 
     private void setUpPowerMocks() {
-        partialMockMiniSlotMachineLevelPrototypeScenario1 = createNicePartialMock(MiniSlotMachineLevelPrototypeScenario1.class,
+        partialMockMiniSlotMachineLevelPrototypeSimpleScenario = createNicePartialMock(MiniSlotMachineLevelPrototypeSimpleScenario.class,
                 "swapReelsAboveMe",
                 "reelsLeftToFall");
     }
@@ -65,7 +65,7 @@ public class TestMiniSlotMachineLevelPrototypeScnario1ProcessTileHittingTileReel
     }
 
     private void tearDownCaptures() {
-        partialMockMiniSlotMachineLevelPrototypeScenario1 = null;
+        partialMockMiniSlotMachineLevelPrototypeSimpleScenario = null;
     }
 
     private void tearDownEasyMocks() {
@@ -84,7 +84,7 @@ public class TestMiniSlotMachineLevelPrototypeScnario1ProcessTileHittingTileReel
     public void testProcessReelTileHitReelAGreatherThanReelB() throws Exception {
         setExpectations();
         replayAll();
-        Whitebox.invokeMethod(partialMockMiniSlotMachineLevelPrototypeScenario1,
+        Whitebox.invokeMethod(partialMockMiniSlotMachineLevelPrototypeSimpleScenario,
                     "processTileHittingTile",
                     reelTileAMock,
                                reelTileBMock,
@@ -98,7 +98,7 @@ public class TestMiniSlotMachineLevelPrototypeScnario1ProcessTileHittingTileReel
     public void testProcessReelTileHitReelALessThanOrEqualReelB() throws Exception {
         setExpectations();
         replayAll();
-        Whitebox.invokeMethod(partialMockMiniSlotMachineLevelPrototypeScenario1,
+        Whitebox.invokeMethod(partialMockMiniSlotMachineLevelPrototypeSimpleScenario,
                 "processTileHittingTile",
                 reelTileAMock,
                             reelTileBMock,
@@ -117,11 +117,11 @@ public class TestMiniSlotMachineLevelPrototypeScnario1ProcessTileHittingTileReel
 
 
     private void setExpectations() throws Exception {
-        PowerMock.expectPrivate(partialMockMiniSlotMachineLevelPrototypeScenario1,
+        PowerMock.expectPrivate(partialMockMiniSlotMachineLevelPrototypeSimpleScenario,
                 "swapReelsAboveMe",
                 capture(reelTileCaptureA),
                 capture(reelTileCaptureB));
-        PowerMock.expectPrivate(partialMockMiniSlotMachineLevelPrototypeScenario1,
+        PowerMock.expectPrivate(partialMockMiniSlotMachineLevelPrototypeSimpleScenario,
                 "reelsLeftToFall",
                   captureInt(rCapture),
                   captureInt(cCapture));
@@ -135,10 +135,10 @@ public class TestMiniSlotMachineLevelPrototypeScnario1ProcessTileHittingTileReel
     }
 
     private void replayAll(){
-        replay(partialMockMiniSlotMachineLevelPrototypeScenario1);
+        replay(partialMockMiniSlotMachineLevelPrototypeSimpleScenario);
     }
 
     private void verifyAll() {
-        verify(partialMockMiniSlotMachineLevelPrototypeScenario1);
+        verify(partialMockMiniSlotMachineLevelPrototypeSimpleScenario);
     }
 }

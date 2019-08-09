@@ -25,14 +25,14 @@ import static org.powermock.api.easymock.PowerMock.replay;
 import static org.powermock.api.easymock.PowerMock.verify;
 
 @RunWith(PowerMockRunner.class)
-@PrepareForTest( {MiniSlotMachineLevelPrototypeScenario1.class} )
+@PrepareForTest( {MiniSlotMachineLevelPrototypeSimpleScenario.class} )
 
 
-public class TestMiniSlotMachineLevelPrototypeScenario1SwapReels {
+public class TestMiniSlotMachineLevelPrototypeSimpleScenarioSwapReels {
     private static final String LEVEL_CREATOR_FIELD_NAME = "levelCreator";
     private static final String REEL_TILES_FIELD_NAME = "reelTiles";
 
-    private MiniSlotMachineLevelPrototypeScenario1 partialMockMiniSlotMachineLevelPrototypeScenario1;
+    private MiniSlotMachineLevelPrototypeSimpleScenario partialMockMiniSlotMachineLevelPrototypeSimpleScenario;
     private ReelTile reelTileAMock, reelTileBMock, deletedReelMock;
     private LevelCreatorSimpleScenario levelCreatorMock;
     private Array<ReelTile> reelTilesMock;
@@ -49,7 +49,7 @@ public class TestMiniSlotMachineLevelPrototypeScenario1SwapReels {
     }
 
     private void setUpPowerMocks() {
-        partialMockMiniSlotMachineLevelPrototypeScenario1 = PowerMock.createNicePartialMock(MiniSlotMachineLevelPrototypeScenario1.class,
+        partialMockMiniSlotMachineLevelPrototypeSimpleScenario = PowerMock.createNicePartialMock(MiniSlotMachineLevelPrototypeSimpleScenario.class,
                 "swapReelsAboveMe");
     }
 
@@ -94,7 +94,7 @@ public class TestMiniSlotMachineLevelPrototypeScenario1SwapReels {
         setFields();
         setUpSwapReelsReelTileAReelTileBExpectations();
         replayAll();
-        Whitebox.invokeMethod(partialMockMiniSlotMachineLevelPrototypeScenario1,
+        Whitebox.invokeMethod(partialMockMiniSlotMachineLevelPrototypeSimpleScenario,
                 "swapReels",
                 reelTileAMock,
                 reelTileBMock);
@@ -110,7 +110,7 @@ public class TestMiniSlotMachineLevelPrototypeScenario1SwapReels {
         setFields();
         setUpSwapReelTileExpectations();
         replayAll();
-        Whitebox.invokeMethod(partialMockMiniSlotMachineLevelPrototypeScenario1,
+        Whitebox.invokeMethod(partialMockMiniSlotMachineLevelPrototypeSimpleScenario,
                 "swapReels",
                 reelTileAMock);
         assertThat(reelTileASetYCapture.getValue(), is(equalTo(120.0f)));
@@ -121,8 +121,8 @@ public class TestMiniSlotMachineLevelPrototypeScenario1SwapReels {
     }
 
     private void setFields() {
-        Whitebox.setInternalState(partialMockMiniSlotMachineLevelPrototypeScenario1, LEVEL_CREATOR_FIELD_NAME, levelCreatorMock);
-        Whitebox.setInternalState(partialMockMiniSlotMachineLevelPrototypeScenario1, REEL_TILES_FIELD_NAME, reelTilesMock);
+        Whitebox.setInternalState(partialMockMiniSlotMachineLevelPrototypeSimpleScenario, LEVEL_CREATOR_FIELD_NAME, levelCreatorMock);
+        Whitebox.setInternalState(partialMockMiniSlotMachineLevelPrototypeSimpleScenario, REEL_TILES_FIELD_NAME, reelTilesMock);
     }
 
     private void setUpSwapReelsReelTileAReelTileBExpectations() {
@@ -155,7 +155,7 @@ public class TestMiniSlotMachineLevelPrototypeScenario1SwapReels {
     private void replayAll() {
         replay(reelTileAMock,
                reelTileBMock,
-               partialMockMiniSlotMachineLevelPrototypeScenario1,
+                partialMockMiniSlotMachineLevelPrototypeSimpleScenario,
                reelTilesMock,
                deletedReelMock
         );
@@ -164,7 +164,7 @@ public class TestMiniSlotMachineLevelPrototypeScenario1SwapReels {
     private void verifyAll() {
         verify(reelTileAMock,
                reelTileBMock,
-               partialMockMiniSlotMachineLevelPrototypeScenario1,
+                partialMockMiniSlotMachineLevelPrototypeSimpleScenario,
                reelTilesMock,
                deletedReelMock
         );

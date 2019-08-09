@@ -38,9 +38,9 @@ import static org.powermock.api.easymock.PowerMock.replay;
 import static org.powermock.api.easymock.PowerMock.verify;
 
 @RunWith(PowerMockRunner.class)
-@PrepareForTest( {MiniSlotMachineLevelPrototypeScenario1.class, Hud.class} )
+@PrepareForTest( {MiniSlotMachineLevelPrototypeSimpleScenario.class, Hud.class} )
 
-public class TestMiniSlotMachineLevelPrototypeScenario1UpdateOverride {
+public class TestMiniSlotMachineLevelPrototypeSimpleScenarioUpdateOverride {
     private static final String TWEEN_MANAGER_FIELD_NAME = "tweenManager";
     private static final String LEVEL_CREATOR_FIELD_NAME = "levelCreator";
     private static final String TILE_MAP_RENDERER_FIELD_NAME = "tileMapRenderer";
@@ -49,7 +49,7 @@ public class TestMiniSlotMachineLevelPrototypeScenario1UpdateOverride {
     private static final String IN_RESTART_LEVEL_FIELD_NAME = "inRestartLevel";
     private static final String GAME_OVER_FIELD_NAME = "gameOver";
 
-    private MiniSlotMachineLevelPrototypeScenario1 partialMockMiniSlotMachineLevelPrototypeScenario1;
+    private MiniSlotMachineLevelPrototypeSimpleScenario partialMockMiniSlotMachineLevelPrototypeSimpleScenario;
     private LevelCreatorSimpleScenario levelCreatorSimpleScenarioMock;
     private TweenManager tweenManagerMock;
     private OrthogonalTiledMapRenderer tileMapRendererMock;
@@ -75,7 +75,7 @@ public class TestMiniSlotMachineLevelPrototypeScenario1UpdateOverride {
     }
 
     private void setUpPowerMocks() {
-        partialMockMiniSlotMachineLevelPrototypeScenario1 = PowerMock.createNicePartialMock(MiniSlotMachineLevelPrototypeScenario1.class,
+        partialMockMiniSlotMachineLevelPrototypeSimpleScenario = PowerMock.createNicePartialMock(MiniSlotMachineLevelPrototypeSimpleScenario.class,
                 "initialiseOverride");
     }
 
@@ -94,7 +94,7 @@ public class TestMiniSlotMachineLevelPrototypeScenario1UpdateOverride {
     }
 
     private void tearDownPowerMocks() {
-        partialMockMiniSlotMachineLevelPrototypeScenario1 = null;
+        partialMockMiniSlotMachineLevelPrototypeSimpleScenario = null;
     }
 
     @Test
@@ -102,18 +102,18 @@ public class TestMiniSlotMachineLevelPrototypeScenario1UpdateOverride {
         setFields();
         setExpectations();
         replayAll();
-        partialMockMiniSlotMachineLevelPrototypeScenario1.updateOverride(0.0f);
+        partialMockMiniSlotMachineLevelPrototypeSimpleScenario.updateOverride(0.0f);
         verifyAll();
     }
 
     private void setFields() {
-        Whitebox.setInternalState(partialMockMiniSlotMachineLevelPrototypeScenario1, TWEEN_MANAGER_FIELD_NAME, tweenManagerMock);
-        Whitebox.setInternalState(partialMockMiniSlotMachineLevelPrototypeScenario1, LEVEL_CREATOR_FIELD_NAME, levelCreatorSimpleScenarioMock);
-        Whitebox.setInternalState(partialMockMiniSlotMachineLevelPrototypeScenario1, TILE_MAP_RENDERER_FIELD_NAME, tileMapRendererMock);
-        Whitebox.setInternalState(partialMockMiniSlotMachineLevelPrototypeScenario1, ORTHOGRAPHIC_CAMERA_FIELD_NAME, orthographicCameraMock);
-        Whitebox.setInternalState(partialMockMiniSlotMachineLevelPrototypeScenario1, HUD_FIELD_NAME, hudMock);
-        Whitebox.setInternalState(partialMockMiniSlotMachineLevelPrototypeScenario1, IN_RESTART_LEVEL_FIELD_NAME, false);
-        Whitebox.setInternalState(partialMockMiniSlotMachineLevelPrototypeScenario1, GAME_OVER_FIELD_NAME, false);
+        Whitebox.setInternalState(partialMockMiniSlotMachineLevelPrototypeSimpleScenario, TWEEN_MANAGER_FIELD_NAME, tweenManagerMock);
+        Whitebox.setInternalState(partialMockMiniSlotMachineLevelPrototypeSimpleScenario, LEVEL_CREATOR_FIELD_NAME, levelCreatorSimpleScenarioMock);
+        Whitebox.setInternalState(partialMockMiniSlotMachineLevelPrototypeSimpleScenario, TILE_MAP_RENDERER_FIELD_NAME, tileMapRendererMock);
+        Whitebox.setInternalState(partialMockMiniSlotMachineLevelPrototypeSimpleScenario, ORTHOGRAPHIC_CAMERA_FIELD_NAME, orthographicCameraMock);
+        Whitebox.setInternalState(partialMockMiniSlotMachineLevelPrototypeSimpleScenario, HUD_FIELD_NAME, hudMock);
+        Whitebox.setInternalState(partialMockMiniSlotMachineLevelPrototypeSimpleScenario, IN_RESTART_LEVEL_FIELD_NAME, false);
+        Whitebox.setInternalState(partialMockMiniSlotMachineLevelPrototypeSimpleScenario, GAME_OVER_FIELD_NAME, false);
     }
 
     private void setExpectations() {

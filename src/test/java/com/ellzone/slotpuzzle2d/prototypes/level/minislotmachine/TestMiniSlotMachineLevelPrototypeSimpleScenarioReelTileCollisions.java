@@ -45,12 +45,12 @@ import static org.powermock.api.easymock.PowerMock.replay;
 import static org.powermock.api.easymock.PowerMock.verify;
 
 @RunWith(PowerMockRunner.class)
-@PrepareForTest( {MiniSlotMachineLevelPrototypeScenario1.class, PuzzleGridTypeReelTile.class} )
+@PrepareForTest( {MiniSlotMachineLevelPrototypeSimpleScenario.class, PuzzleGridTypeReelTile.class} )
 
-public class TestMiniSlotMachineLevelPrototypeScenario1ReelTileCollisions {
+public class TestMiniSlotMachineLevelPrototypeSimpleScenarioReelTileCollisions {
     private static final String LEVEL_CREATOR_FIELD_NAME = "levelCreator";
 
-    private MiniSlotMachineLevelPrototypeScenario1 partialMockMiniSlotMachineLevelPrototypeScenario1;
+    private MiniSlotMachineLevelPrototypeSimpleScenario partialMockMiniSlotMachineLevelPrototypeSimpleScenario;
     private ReelTile reelTileMock;
     private LevelCreatorSimpleScenario levelCreatorSimpleScenarioMock;
     private Capture<Boolean> captureLevelCreatorSetHitSinkBottomArgument;
@@ -65,7 +65,7 @@ public class TestMiniSlotMachineLevelPrototypeScenario1ReelTileCollisions {
     }
 
     private void setUpPowerMocks() {
-        partialMockMiniSlotMachineLevelPrototypeScenario1 = createNicePartialMock(MiniSlotMachineLevelPrototypeScenario1.class,
+        partialMockMiniSlotMachineLevelPrototypeSimpleScenario = createNicePartialMock(MiniSlotMachineLevelPrototypeSimpleScenario.class,
                 "swapReelsAboveMe",
                               "reelsLeftToFall");
         mockStatic(PuzzleGridTypeReelTile.class);
@@ -91,7 +91,7 @@ public class TestMiniSlotMachineLevelPrototypeScenario1ReelTileCollisions {
     }
 
     private void tearDownPowerMocks() {
-        partialMockMiniSlotMachineLevelPrototypeScenario1 = null;
+        partialMockMiniSlotMachineLevelPrototypeSimpleScenario = null;
     }
 
     private void tearDownEasyMocks() {
@@ -111,7 +111,7 @@ public class TestMiniSlotMachineLevelPrototypeScenario1ReelTileCollisions {
         setFields();
         setExpects(PlayStates.INTRO_SPINNING);
         replayAll();
-        partialMockMiniSlotMachineLevelPrototypeScenario1.dealWithHitSinkBottom(reelTileMock);
+        partialMockMiniSlotMachineLevelPrototypeSimpleScenario.dealWithHitSinkBottom(reelTileMock);
         assertThat(captureLevelCreatorSetHitSinkBottomArgument.getValue(), is(true));
         verifyAll();
     }
@@ -121,7 +121,7 @@ public class TestMiniSlotMachineLevelPrototypeScenario1ReelTileCollisions {
         setFields();
         setExpects(PlayStates.INTRO_FLASHING);
         replayAll();
-        partialMockMiniSlotMachineLevelPrototypeScenario1.dealWithHitSinkBottom(reelTileMock);
+        partialMockMiniSlotMachineLevelPrototypeSimpleScenario.dealWithHitSinkBottom(reelTileMock);
         assertThat(captureSwapReelsAboveArgument.getValue(), is(reelTileMock));
         assertThat(captureReelsLeftToFallArgumentRow.getValue(), is(2));
         assertThat(captureReelsLeftToFallArgumentCol.getValue(), is(2));
@@ -129,7 +129,7 @@ public class TestMiniSlotMachineLevelPrototypeScenario1ReelTileCollisions {
     }
 
     private void setFields() {
-        Whitebox.setInternalState(partialMockMiniSlotMachineLevelPrototypeScenario1, LEVEL_CREATOR_FIELD_NAME, levelCreatorSimpleScenarioMock);
+        Whitebox.setInternalState(partialMockMiniSlotMachineLevelPrototypeSimpleScenario, LEVEL_CREATOR_FIELD_NAME, levelCreatorSimpleScenarioMock);
     }
 
     private void setExpects(PlayStates playState) throws Exception {
@@ -156,10 +156,10 @@ public class TestMiniSlotMachineLevelPrototypeScenario1ReelTileCollisions {
     private void expectSwapReelsAboveMe() throws Exception {
         expect(levelCreatorSimpleScenarioMock.findReel(10, 120)).andReturn(0);
         expect(reelTileMock.getDestinationX()).andReturn(10.0f);
-        expectPrivate(partialMockMiniSlotMachineLevelPrototypeScenario1,
+        expectPrivate(partialMockMiniSlotMachineLevelPrototypeSimpleScenario,
                      "swapReelsAboveMe",
                       capture(captureSwapReelsAboveArgument));
-        expectPrivate(partialMockMiniSlotMachineLevelPrototypeScenario1,
+        expectPrivate(partialMockMiniSlotMachineLevelPrototypeSimpleScenario,
                      "reelsLeftToFall",
                       captureInt(captureReelsLeftToFallArgumentRow),
                       captureInt(captureReelsLeftToFallArgumentCol));
@@ -174,14 +174,14 @@ public class TestMiniSlotMachineLevelPrototypeScenario1ReelTileCollisions {
 
     private void replayAll() {
         replay(PuzzleGridTypeReelTile.class,
-               partialMockMiniSlotMachineLevelPrototypeScenario1,
+                partialMockMiniSlotMachineLevelPrototypeSimpleScenario,
                reelTileMock,
                 levelCreatorSimpleScenarioMock);
     }
 
     private void verifyAll() {
         verify(PuzzleGridTypeReelTile.class,
-               partialMockMiniSlotMachineLevelPrototypeScenario1,
+                partialMockMiniSlotMachineLevelPrototypeSimpleScenario,
                reelTileMock,
                 levelCreatorSimpleScenarioMock);
     }

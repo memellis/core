@@ -62,7 +62,7 @@ import com.ellzone.slotpuzzle2d.utils.Random;
 
 import net.dermetfan.gdx.assets.AnnotationAssetManager;
 
-public class MiniSlotMachineLevelPrototypeScenario1 extends SPPrototypeTemplate {
+public class MiniSlotMachineLevelPrototypeSimpleScenario extends SPPrototypeTemplate {
     static final int GAME_LEVEL_WIDTH = 12;
     static final int GAME_LEVEL_HEIGHT = 9;
     private static final String PLAYING_CARD_LEVEL_TYPE = "PlayingCard";
@@ -434,10 +434,8 @@ public class MiniSlotMachineLevelPrototypeScenario1 extends SPPrototypeTemplate 
         shapeRenderer.setProjectionMatrix(camera.combined);
         for (AnimatedReel animatedReel : animatedReels)
             if (!animatedReel.getReel().isReelTileDeleted())
-                if (animatedReel.getReel().getFlashState() == ReelTile.FlashState.FLASH_ON) {
+                if (animatedReel.getReel().getFlashState() == ReelTile.FlashState.FLASH_ON)
                     animatedReel.draw(shapeRenderer);
-                    System.out.println("Should be drawing a reelflash");
-                }
     }
 
 

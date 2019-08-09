@@ -21,11 +21,11 @@ import com.badlogic.gdx.physics.box2d.Contact;
 import com.badlogic.gdx.physics.box2d.ContactImpulse;
 import com.badlogic.gdx.physics.box2d.ContactListener;
 import com.badlogic.gdx.physics.box2d.Manifold;
-import com.ellzone.slotpuzzle2d.prototypes.level.minislotmachine.MiniSlotMachineLevelPrototypeScenario1;
+import com.ellzone.slotpuzzle2d.prototypes.level.minislotmachine.MiniSlotMachineLevelPrototypeSimpleScenario;
 import com.ellzone.slotpuzzle2d.sprites.ReelTile;
 
 public class B2dContactListenerScenario1 implements ContactListener {
-    private MiniSlotMachineLevelPrototypeScenario1 prototype;
+    private MiniSlotMachineLevelPrototypeSimpleScenario prototype;
 
     @Override
     public void beginContact(Contact contact) {
@@ -40,11 +40,11 @@ public class B2dContactListenerScenario1 implements ContactListener {
         if (bodyB.getUserData() != null) {
             classB = bodyB.getUserData().getClass().getName();
         }
-        if(classA.equalsIgnoreCase("com.ellzone.slotpuzzle2d.prototypes.level.minislotmachine.MiniSlotMachineLevelPrototypeScenario1") && classB.equalsIgnoreCase("com.ellzone.slotpuzzle2d.sprites.ReelTile")) {
-            dealWithReelsHittingSinkBottom((MiniSlotMachineLevelPrototypeScenario1) bodyA.getUserData(), (ReelTile) bodyB.getUserData());
+        if(classA.equalsIgnoreCase("com.ellzone.slotpuzzle2d.prototypes.level.minislotmachine.MiniSlotMachineLevelPrototypeSimpleScenario") && classB.equalsIgnoreCase("com.ellzone.slotpuzzle2d.sprites.ReelTile")) {
+            dealWithReelsHittingSinkBottom((MiniSlotMachineLevelPrototypeSimpleScenario) bodyA.getUserData(), (ReelTile) bodyB.getUserData());
         }
-        if(classA.equalsIgnoreCase("com.ellzone.slotpuzzle2d.sprites.ReelTile") && classB.equalsIgnoreCase("com.ellzone.slotpuzzle2d.prototypes.level.minislotmachine.MiniSlotMachineLevelPrototypeScenario1")) {
-            dealWithReelsHittingSinkBottom((MiniSlotMachineLevelPrototypeScenario1) bodyB.getUserData(), (ReelTile) bodyA.getUserData());
+        if(classA.equalsIgnoreCase("com.ellzone.slotpuzzle2d.sprites.ReelTile") && classB.equalsIgnoreCase("com.ellzone.slotpuzzle2d.prototypes.level.minislotmachine.MiniSlotMachineLevelPrototypeSimpleScenario")) {
+            dealWithReelsHittingSinkBottom((MiniSlotMachineLevelPrototypeSimpleScenario) bodyB.getUserData(), (ReelTile) bodyA.getUserData());
         }
         if((classA.equalsIgnoreCase("com.ellzone.slotpuzzle2d.sprites.ReelTile") && (classB.equalsIgnoreCase("com.ellzone.slotpuzzle2d.sprites.ReelTile")))) {
             dealWithReelTileHittingReelTile((ReelTile) bodyA.getUserData(), (ReelTile) bodyB.getUserData());
@@ -63,17 +63,17 @@ public class B2dContactListenerScenario1 implements ContactListener {
     public void postSolve(Contact contact, ContactImpulse impulse) {
     }
 
-    private void dealWithReelsHittingSinkBottom(MiniSlotMachineLevelPrototypeScenario1 prototype, ReelTile reelTile) {
-        MiniSlotMachineLevelPrototypeScenario1.numberOfReelsToHitSinkBottom++;
-        if (MiniSlotMachineLevelPrototypeScenario1.numberOfReelsToHitSinkBottom >= MiniSlotMachineLevelPrototypeScenario1.MAX_NUMBER_OF_REELS_HIT_SINK_BOTTOM) {
+    private void dealWithReelsHittingSinkBottom(MiniSlotMachineLevelPrototypeSimpleScenario prototype, ReelTile reelTile) {
+        MiniSlotMachineLevelPrototypeSimpleScenario.numberOfReelsToHitSinkBottom++;
+        if (MiniSlotMachineLevelPrototypeSimpleScenario.numberOfReelsToHitSinkBottom >= MiniSlotMachineLevelPrototypeSimpleScenario.MAX_NUMBER_OF_REELS_HIT_SINK_BOTTOM) {
             prototype.dealWithHitSinkBottom(reelTile);
             this.prototype = prototype;
         }
     }
 
     private void dealWithReelTileHittingReelTile(ReelTile reelTileA, ReelTile reelTileB) {
-        MiniSlotMachineLevelPrototypeScenario1.numberOfReelsToFall--;
-        if (MiniSlotMachineLevelPrototypeScenario1.numberOfReelsToFall <= 0) {
+        MiniSlotMachineLevelPrototypeSimpleScenario.numberOfReelsToFall--;
+        if (MiniSlotMachineLevelPrototypeSimpleScenario.numberOfReelsToFall <= 0) {
             if (this.prototype != null) {
                 this.prototype.dealWithReelTileHittingReelTile(reelTileA, reelTileB);
             }
