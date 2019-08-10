@@ -75,7 +75,7 @@ public class FlashSlots {
         return puzzleGrid;
     }
 
-    private void flashMatchedSlots(Array<ReelTileGridValue> matchedSlots, PuzzleGridTypeReelTile puzzleGridTypeReelTile) {
+    public void flashMatchedSlots(Array<ReelTileGridValue> matchedSlots, PuzzleGridTypeReelTile puzzleGridTypeReelTile) {
         int matchSlotIndex, batchIndex, batchPosition;
         Array<ReelTileGridValue> matchSlotsBatch = new Array<>();
         float pushPause = 0.0f;
@@ -92,9 +92,8 @@ public class FlashSlots {
                     batchPosition = matchSlotsBatch.size;
                     matchSlotsBatch = puzzleGridTypeReelTile.depthFirstSearchAddToMatchSlotBatch(matchedSlots.get(0), matchSlotsBatch);
 
-                    for (int deleteIndex = batchPosition; deleteIndex < matchSlotsBatch.size; deleteIndex++) {
+                    for (int deleteIndex = batchPosition; deleteIndex < matchSlotsBatch.size; deleteIndex++)
                         matchedSlots.removeValue(matchSlotsBatch.get(deleteIndex), true);
-                    }
                 }
             }
             flashMatchedSlotsBatch(matchSlotsBatch, pushPause);
@@ -102,6 +101,31 @@ public class FlashSlots {
             matchSlotsBatch.clear();
         }
         finishedMatchingSlots = true;
+    }
+
+    public void flashMatchedSlotsForLevelCreator(Array<ReelTileGridValue> matchedSlots, PuzzleGridTypeReelTile puzzleGridTypeReelTile) {
+        int matchSlotIndex, batchIndex, batchPosition;
+        Array<ReelTileGridValue> matchSlotsBatch = new Array<ReelTileGridValue>();
+        float pushPause = 0.0f;
+        matchSlotIndex = 0;
+        while (matchedSlots.size > 0) {
+            batchIndex = matchSlotIndex;
+            for (int batchCount = batchIndex; batchCount < batchIndex + 3; batchCount++) {
+                if (batchCount < matchedSlots.size) {
+                    batchPosition = matchSlotsBatch.size;
+                    matchSlotsBatch = puzzleGridTypeReelTile.depthFirstSearchAddToMatchSlotBatch(matchedSlots.get(0), matchSlotsBatch);
+
+                    for (int deleteIndex = batchPosition; deleteIndex < matchSlotsBatch.size; deleteIndex++)
+                        matchedSlots.removeValue(matchSlotsBatch.get(deleteIndex), true);
+                }
+            }
+            if (matchSlotsBatch.size == 0)
+                break;
+
+            flashMatchedSlotsBatchForLevelCreator(matchSlotsBatch, pushPause);
+            pushPause += 2.0f;
+            matchSlotsBatch.clear();
+        }
     }
 
     public void flashSlotsForMiniSlotMachine(Array<ReelTileGridValue> miniSlotMachineReelsToFlash) {
@@ -127,6 +151,22 @@ public class FlashSlots {
                     reel.setFlashMode(true);
                     reel.setFlashColor(new Color(Color.WHITE));
                     initialiseReelFlash(reel, pushPause);
+                }
+            }
+        }
+    }
+
+    private void flashMatchedSlotsBatchForLevelCreator(Array<ReelTileGridValue> matchedSlots, float pushPause) {
+        int index;
+        for (int i = 0; i < matchedSlots.size; i++) {
+            index = matchedSlots.get(i).getIndex();
+            if (index >= 0) {
+                ReelTile reel = reelTiles.get(index);
+                if (!reel.getFlashTween()) {
+                    reel.setFlashMode(true);
+                    Color flashColor = new Color(Color.WHITE);
+                    reel.setFlashColor(flashColor);
+                    initialiseReelFlashForLevelCreator(reel, pushPause);
                 }
             }
         }
@@ -196,6 +236,68 @@ public class FlashSlots {
         numberOfReelsFlashing--;
     }
 
+    private void delegateReelFlashCallbackForLevelCreator(int type, BaseTween<?> source) {
+        @SuppressWarnings("unchecked")
+        Array<Object> userData = (Array<Object>) source.getUserData();
+        ReelTile reel = (ReelTile) userData.get(0);
+        Timeline reelFlashSeq = (Timeline) userData.get(1);
+        reelFlashSeq.kill();
+        if (reel.getFlashTween()) {
+            reel.setFlashOff();
+            reel.setFlashTween(false);
+            reel.processEvent(new ReelStoppedFlashingEvent());
+        }
+    }
+
+    private void initialiseReelFlashForLevelCreator(ReelTile reel, float pushPause) {
+        Array<Object> userData = new Array<Object>();
+        reel.setFlashTween(true);
+        reel.addReelFlashSegment(reel.getX(),
+                reel.getY());
+        reelFlashSeq = Timeline.createSequence();
+        reelFlashSeq = reelFlashSeq.pushPause(pushPause);
+
+        Color fromColor = new Color(Color.WHITE);
+        fromColor.a = 1;
+        Color toColor = new Color(Color.RED);
+        toColor.a = 1;
+
+        userData.add(reel);
+        userData.add(reelFlashSeq);
+
+        reelFlashSeq = reelFlashSeq.push(SlotPuzzleTween.set(reel, ReelAccessor.FLASH_TINT)
+                .target(fromColor.r, fromColor.g, fromColor.b)
+                .ease(Sine.IN));
+        reelFlashSeq = reelFlashSeq.push(SlotPuzzleTween.to(reel, ReelAccessor.FLASH_TINT, 0.2f)
+                .target(toColor.r, toColor.g, toColor.b)
+                .ease(Sine.OUT)
+                .repeatYoyo(17, 0));
+
+        reelFlashSeq = reelFlashSeq.push(SlotPuzzleTween.set(reel, ReelAccessor.FLASH_TINT)
+                .target(fromColor.r, fromColor.g, fromColor.b)
+                .ease(Sine.IN));
+        reelFlashSeq = reelFlashSeq.push(SlotPuzzleTween.to(reel, ReelAccessor.FLASH_TINT, 0.05f)
+                .target(toColor.r, toColor.g, toColor.b)
+                .ease(Sine.OUT)
+                .repeatYoyo(25, 0))
+                .setCallback(reelFlashCallbackForLevelCreator)
+                .setCallbackTriggers(TweenCallback.COMPLETE)
+                .setUserData(userData)
+                .start(tweenManager);
+        System.out.println("numberOfReelsFlashing="+numberOfReelsFlashing);
+        numberOfReelsFlashing++;
+    }
+
+    private TweenCallback reelFlashCallbackForLevelCreator = new TweenCallback() {
+        @Override
+        public void onEvent(int type, BaseTween<?> source) {
+            switch (type) {
+                case TweenCallback.COMPLETE:
+                    delegateReelFlashCallbackForLevelCreator(type, source);
+            }
+        }
+    };
+
     public int getNumberOfReelsFlashing() {
         return numberOfReelsFlashing;
     }
@@ -217,6 +319,10 @@ public class FlashSlots {
     }
 
     public boolean isFinishedMatchingSlots() { return finishedMatchingSlots; }
+
+    public void setNumberOfReelsFlashing(int numberOfReelsFlashing) {
+        this.numberOfReelsFlashing = numberOfReelsFlashing;
+    }
 
     public void setReelsAreFlashing(boolean reelsAreFlashing) {
         this.reelsAreFlashing = reelsAreFlashing;

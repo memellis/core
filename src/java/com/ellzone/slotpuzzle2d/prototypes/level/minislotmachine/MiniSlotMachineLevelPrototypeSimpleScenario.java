@@ -23,7 +23,6 @@ import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
-import com.badlogic.gdx.maps.MapProperties;
 import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
 import com.badlogic.gdx.math.MathUtils;
@@ -37,7 +36,6 @@ import com.ellzone.slotpuzzle2d.effects.ReelAccessor;
 import com.ellzone.slotpuzzle2d.effects.ScoreAccessor;
 import com.ellzone.slotpuzzle2d.effects.SpriteAccessor;
 import com.ellzone.slotpuzzle2d.finitestatemachine.PlayStates;
-import com.ellzone.slotpuzzle2d.level.FlashSlots;
 import com.ellzone.slotpuzzle2d.level.LevelDoor;
 import com.ellzone.slotpuzzle2d.level.card.Card;
 import com.ellzone.slotpuzzle2d.level.creator.LevelCreatorSimpleScenario;
@@ -101,7 +99,6 @@ public class MiniSlotMachineLevelPrototypeSimpleScenario extends SPPrototypeTemp
     private ShapeRenderer shapeRenderer;
     private int mapWidth;
     private int mapHeight;
-    private FlashSlots flashSlots;
     private TiledMap level;
 
     @Override
@@ -113,7 +110,6 @@ public class MiniSlotMachineLevelPrototypeSimpleScenario extends SPPrototypeTemp
         createPlayScreen();
         initialisePhysics();
         initialiseLevel();
-        flashSlots = new FlashSlots(tweenManager, mapWidth, mapHeight, reelTiles);
     }
 
     private void getCamera() {
@@ -146,7 +142,6 @@ public class MiniSlotMachineLevelPrototypeSimpleScenario extends SPPrototypeTemp
 
     private void initialiseLevel() {
         getLevelAssets(annotationAssetManager);
-        getMapProperties(level);
         levelCreator = new LevelCreatorSimpleScenario(levelDoor,
                                                  miniSlotMachineLevel,
                                                  annotationAssetManager,
@@ -187,13 +182,6 @@ public class MiniSlotMachineLevelPrototypeSimpleScenario extends SPPrototypeTemp
     protected void initialiseScreenOverride() {
         shapeRenderer = new ShapeRenderer();
     }
-
-    private void getMapProperties(TiledMap level) {
-        MapProperties mapProperties = level.getProperties();
-        mapWidth = mapProperties.get(WIDTH_KEY, Integer.class);
-        mapHeight = mapProperties.get(HEIGHT_KEY, Integer.class);
-    }
-
 
     private void createPlayScreen() {
         initialisePlayScreen();
@@ -493,15 +481,15 @@ public class MiniSlotMachineLevelPrototypeSimpleScenario extends SPPrototypeTemp
         if ((levelCreator.getPlayState() == PlayStates.INTRO_FLASHING) |
             (levelCreator.getPlayState() == PlayStates.REELS_FLASHING)) {
             if  (cA == cB) {
-                if (Math.abs(rA - rB) > 1) {
+                if (Math.abs(rA - rB) > 1)
                     processTileHittingTile(reelTileA, reelTileB, rA, cA, rB, cA);
-                }
-                if (Math.abs(rA - rB) == 1) {
+
+                if (Math.abs(rA - rB) == 1)
                     processTileHittingTile(reelTileA, reelTileB, rA, cA, rB, cB);
-                }
-                if (Math.abs(rA - rB) == 0) {
+
+                if (Math.abs(rA - rB) == 0)
                     System.out.println("Difference between rows is == 0. I shouldn't get this.");
-                }
+
             }
         }
     }
