@@ -49,7 +49,7 @@ public class PhysicsManagerCustomBodies {
         if (world == null) {
             world = new World(new Vector2(0, -5), true);
             disposeWorld = true;
-            world.setContactListener(new B2dContactListenerScenario1());
+            world.setContactListener(new B2dContactListenerSimpleScenario());
         }
         bodyFactory = new BoxBodyBuilder();
 

@@ -93,6 +93,7 @@ public class BoxBodyBuilder {
         //CALCULATE ANGLE OF THE LINE SEGMENT
         body.setTransform(bx, by, MathUtils.atan2(v2y-v1y, v2x-v1x));
 
+
         return body;
     }
 
@@ -104,9 +105,7 @@ public class BoxBodyBuilder {
         fixtureDef.friction = friction;
 
         EdgeShape es = new EdgeShape();
-        //SET LENGTH IN BOX COORDINATES
         float boxLen = convertToBox(len);
-        //SETTING THE POINTS AS OFFSET DISTANCE FROM CENTER
         es.set(-boxLen/2f,0,boxLen/2f,0);
         fixtureDef.shape = es;
 

@@ -23,6 +23,7 @@ import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
+import com.badlogic.gdx.maps.MapProperties;
 import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
 import com.badlogic.gdx.math.MathUtils;
@@ -107,6 +108,8 @@ public class MiniSlotMachineLevelPrototypeSimpleScenario extends SPPrototypeTemp
         initialseAssests();
         initialiseReelCounts();
         initialiseLevelDoor();
+        getLevelAssets(annotationAssetManager);
+        getMapProperties(level);
         createPlayScreen();
         initialisePhysics();
         initialiseLevel();
@@ -127,6 +130,14 @@ public class MiniSlotMachineLevelPrototypeSimpleScenario extends SPPrototypeTemp
         miniSlotMachineLevel = annotationAssetManager.get(AssetsAnnotation.MINI_SLOT_MACHINE_LEVEL1);
     }
 
+    private void getMapProperties(TiledMap level) {
+        MapProperties mapProperties = level.getProperties();
+        mapWidth = mapProperties.get(WIDTH_KEY, Integer.class);
+        mapHeight = mapProperties.get(HEIGHT_KEY, Integer.class);
+        System.out.println("mapWidth="+mapWidth);
+        System.out.println(("mapHeight="+mapWidth));
+    }
+
     private void initialisePhysics() {
         physics = new PhysicsManagerCustomBodies(camera);
         ReelSink reelSink = new ReelSink(physics);
@@ -141,7 +152,6 @@ public class MiniSlotMachineLevelPrototypeSimpleScenario extends SPPrototypeTemp
     }
 
     private void initialiseLevel() {
-        getLevelAssets(annotationAssetManager);
         levelCreator = new LevelCreatorSimpleScenario(levelDoor,
                                                  miniSlotMachineLevel,
                                                  annotationAssetManager,

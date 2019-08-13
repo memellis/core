@@ -126,7 +126,7 @@ public class LevelCreatorSimpleScenario {
         animatedReelHelper = new AnimatedReelHelper(
                 annotationAssetManager,
                 tweenManager,
-                level.getLayers().get(REELS_LAYER_NAME).getObjects().getByType(RectangleMapObject.class).size);
+                getNumberOfReelMapObjectsByName(level, REELS_LAYER_NAME, "Reel"));
         reelTiles = animatedReelHelper.getReelTiles();
         reelTiles = createLevel(levelDoor, level, reelTiles, levelWidth, levelHeight);
         reelsSpinning = reelBoxes.size - 1;
@@ -136,6 +136,20 @@ public class LevelCreatorSimpleScenario {
         reelsToFall = new Array<TupleValueIndex>();
         getMapProperties(level);
         flashSlots = new FlashSlots(tweenManager, mapWidth, mapHeight, reelTiles);
+    }
+
+    private int getNumberOfReelMapObjectsByName(TiledMap level, String layerName, String name) {
+        return getRectangleMapObjectsByName(level, layerName, name).size;
+    }
+
+    private Array<RectangleMapObject> getRectangleMapObjectsByName(TiledMap level, String layerName, String name) {
+        Array<RectangleMapObject> rectangleMapObjectsByName = new Array<>();
+        for (RectangleMapObject mapObject :
+                level.getLayers().get(layerName).getObjects().
+                        getByType(RectangleMapObject.class))
+            if (mapObject.getName().equals(name))
+                rectangleMapObjectsByName.add(mapObject);
+        return rectangleMapObjectsByName;
     }
 
     private void getMapProperties(TiledMap level) {
@@ -156,8 +170,8 @@ public class LevelCreatorSimpleScenario {
         reelTiles = populateLevel(level, reelTiles, levelWidth, levelHeight);
         reelTiles = checkLevel(reelTiles, levelWidth, levelHeight);
         reelTiles = adjustForAnyLonelyReels(reelTiles, levelWidth, levelHeight);
-        for (ReelTile reelTile : reelTiles)
-            reelTile.setEndReel(scenario1Reels[reelTile.getIndex()]);
+//        for (ReelTile reelTile : reelTiles)
+//            reelTile.setEndReel(scenario1Reels[reelTile.getIndex()]);
 
         return reelTiles;
     }
@@ -191,9 +205,9 @@ public class LevelCreatorSimpleScenario {
             levelReel.get(grid[lonelyTile.r][lonelyTile.c].index).setEndReel(levelReel.get(grid[lonelyTile.r + 1][lonelyTile.c].index).getEndReel());
         } else if (lonelyTile.c == 0) {
             levelReel.get(grid[lonelyTile.r][lonelyTile.c].index).setEndReel(levelReel.get(grid[lonelyTile.r][lonelyTile.c + 1].index).getEndReel());
-        } else if (lonelyTile.r == levelHeight) {
+        } else if (lonelyTile.r == levelHeight - 1) {
             levelReel.get(grid[lonelyTile.r][lonelyTile.c].index).setEndReel(levelReel.get(grid[lonelyTile.r - 1][lonelyTile.c].index).getEndReel());
-        } else if (lonelyTile.c == levelWidth) {
+        } else if (lonelyTile.c == levelWidth - 1) {
             levelReel.get(grid[lonelyTile.r][lonelyTile.c].index).setEndReel(levelReel.get(grid[lonelyTile.r][lonelyTile.c - 1].index).getEndReel());
         } else {
             adjustAnyLoneyAdjacentTile(levelReel, grid, lonelyTile);
@@ -214,7 +228,7 @@ public class LevelCreatorSimpleScenario {
 
     private Array<ReelTile> populateLevel(TiledMap level, Array<ReelTile> reelTiles, int levelWidth, int levelHeight) {
         int index = 0;
-        for (MapObject mapObject : level.getLayers().get(REELS_LAYER_NAME).getObjects().getByType(RectangleMapObject.class)) {
+        for (MapObject mapObject : getRectangleMapObjectsByName(level, REELS_LAYER_NAME, "Reel")) {
             Rectangle mapRectangle = ((RectangleMapObject) mapObject).getRectangle();
             int c = getColumnFromLevel(mapRectangle.getX());
             int r = getRowFromLevel(mapRectangle.getY(), levelHeight);
@@ -228,7 +242,6 @@ public class LevelCreatorSimpleScenario {
         }
         return reelTiles;
     }
-
 
     public ReelTileGridValue[][] populateMatchGrid(Array<ReelTile> reelLevel, int gridWidth, int gridHeight) {
         return puzzleGridTypeReelTile.populateMatchGrid(reelLevel, gridWidth, gridHeight);
