@@ -198,7 +198,7 @@ public class AnimatedReel {
 	public void draw(ShapeRenderer shapeRenderer) {
 	    reel.drawFlashSegments(shapeRenderer);
     }
-	
+
 	public ReelTile getReel() {
 		return reel;
 	}

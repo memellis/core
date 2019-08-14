@@ -317,4 +317,9 @@ public class ReelTile extends ReelSprite {
     public void clearReelFlashSegments() {
         reelFlashSegments.clear();
     }
+
+    public void updateReelFlashSegments(float x, float y) {
+        for (Vector2 reelFlashSegment : reelFlashSegments)
+            reelFlashSegment.set(new Vector2(x, y));
+    }
 }

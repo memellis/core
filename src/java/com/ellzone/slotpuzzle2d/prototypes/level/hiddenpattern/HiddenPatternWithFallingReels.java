@@ -103,6 +103,8 @@ public class HiddenPatternWithFallingReels extends SPPrototypeTemplate
     private ShapeRenderer shapeRenderer;
     private boolean displaySpinHelp;
     private int displaySpinHelpSprite;
+    private boolean slowMotion = false;
+    private float slowMotionCount = 0;
 
     @Override
     protected void initialiseOverride() {
@@ -242,7 +244,6 @@ public class HiddenPatternWithFallingReels extends SPPrototypeTemplate
     @Override
     public void dealWithReelHittingReel(ReelTile reelTileA, ReelTile reelTileB)  {
 
-
         int rA, cA, rB, cB;
 
         rA = PuzzleGridTypeReelTile.getRowFromLevel(reelTileA.getDestinationY(), GAME_LEVEL_HEIGHT);
@@ -267,7 +268,6 @@ public class HiddenPatternWithFallingReels extends SPPrototypeTemplate
 
                 if (Math.abs(rA - rB) == 0)
                     System.out.println("Difference between rows is == 0. I shouldn't get this.");
-
             }
         }
     }
@@ -457,6 +457,10 @@ public class HiddenPatternWithFallingReels extends SPPrototypeTemplate
 
     @Override
     protected void updateOverride(float dt) {
+        if (slowMotion) {
+            if (isSlowMotionTimerEnded(dt))
+                return;
+        }
         handleInput();
         tweenManager.update(dt);
         levelCreator.update(dt);
@@ -464,6 +468,15 @@ public class HiddenPatternWithFallingReels extends SPPrototypeTemplate
         hud.update(dt);
         for (AnimatedReel animatedReel : reels)
             animatedReel.update(dt);
+    }
+
+    private boolean isSlowMotionTimerEnded(float dt) {
+        slowMotionCount+=dt;
+        if (slowMotionCount<0.1f)
+            return true;
+        else
+            slowMotionCount = 0;
+        return false;
     }
 
     @Override
@@ -503,6 +516,7 @@ public class HiddenPatternWithFallingReels extends SPPrototypeTemplate
                 ReelTile reelTile = reels.get(index).getReel();
                 if (!reelTile.isReelTileDeleted()) {
                     reelTile.setPosition(reelBox.getPosition().x * 100 - 20, reelBox.getPosition().y * 100 - 20);
+                    reelTile.updateReelFlashSegments(reelBox.getPosition().x * 100 - 20, reelBox.getPosition().y * 100 - 20);
                     reelTile.setOrigin(0, 0);
                     reelTile.setSize(40, 40);
                     reelTile.setRotation(angle);
@@ -515,7 +529,7 @@ public class HiddenPatternWithFallingReels extends SPPrototypeTemplate
     }
 
     private void renderAnimatedReelsFlash() {
-        shapeRenderer.setProjectionMatrix(batch.getProjectionMatrix());
+        shapeRenderer.setProjectionMatrix(viewport.getCamera().combined);
         for (AnimatedReel animatedReel : reels)
             if (!animatedReel.getReel().isReelTileDeleted())
                 if (animatedReel.getReel().getFlashState() == ReelTile.FlashState.FLASH_ON)
