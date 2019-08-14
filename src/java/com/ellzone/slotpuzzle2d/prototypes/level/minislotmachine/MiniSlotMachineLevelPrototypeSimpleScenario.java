@@ -12,6 +12,20 @@
  See the License for the specific language governing permissions and
  limitations under the License.
  */
+/*
+ Copyright 2011 See AUTHORS file.
+
+ Licensed under the Apache License, Version 2.0 (the "License");
+ you may not use this file except in compliance with the License.
+ You may obtain a copy of the License at
+
+ http://www.apache.org/licenses/LICENSE-2.0
+
+ Unless required by applicable law or agreed to in writing, software * distributed under the License is distributed on an "AS IS" BASIS,
+ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ See the License for the specific language governing permissions and
+ limitations under the License.
+ */
 
 package com.ellzone.slotpuzzle2d.prototypes.level.minislotmachine;
 
@@ -73,7 +87,7 @@ public class MiniSlotMachineLevelPrototypeSimpleScenario extends SPPrototypeTemp
 
     public static int numberOfReelsToHitSinkBottom;
     public static int numberOfReelsToFall;
-    private static int numberOfReelsAboveHitsIntroSpinning;
+//    private static int numberOfReelsAboveHitsIntroSpinning;
 
     private String logTag = SlotPuzzleConstants.SLOT_PUZZLE + this.getClass().getName();
     private OrthographicCamera camera;
@@ -121,7 +135,7 @@ public class MiniSlotMachineLevelPrototypeSimpleScenario extends SPPrototypeTemp
 
     private void initialiseReelCounts() {
         numberOfReelsToHitSinkBottom = 0;
-        numberOfReelsAboveHitsIntroSpinning = 0;
+//        numberOfReelsAboveHitsIntroSpinning = 0;
     }
 
     private void initialseAssests() {
@@ -332,9 +346,8 @@ public class MiniSlotMachineLevelPrototypeSimpleScenario extends SPPrototypeTemp
         reel.setSy(0);
         animatedReel.reinitialise();
         hud.addScore(-1);
-        if (pullLeverSound != null) {
+        if (pullLeverSound != null)
             pullLeverSound.play();
-        }
     }
     
     @Override
@@ -355,9 +368,8 @@ public class MiniSlotMachineLevelPrototypeSimpleScenario extends SPPrototypeTemp
             if ((hud.getLives() > 0) & (!inRestartLevel)) {
                 inRestartLevel = true;
                 levelCreator.setPlayState(PlayStates.LEVEL_LOST);
-            } else {
+            } else
                 gameOver = true;
-            }
         }
         handlePlayState(levelCreator.getPlayState());
     }
@@ -439,7 +451,6 @@ public class MiniSlotMachineLevelPrototypeSimpleScenario extends SPPrototypeTemp
                     animatedReel.draw(shapeRenderer);
     }
 
-
     private void drawPlayingCards(SpriteBatch spriteBatch) {
         for (Card card : cards)
             card.draw(spriteBatch);
@@ -482,11 +493,11 @@ public class MiniSlotMachineLevelPrototypeSimpleScenario extends SPPrototypeTemp
         rB = PuzzleGridTypeReelTile.getRowFromLevel(reelTileB.getDestinationY(), GAME_LEVEL_HEIGHT);
         cB = PuzzleGridTypeReelTile.getColumnFromLevel(reelTileB.getDestinationX());
 
-        if ((Math.abs(rA - rB) == 1) & (cA == cB))
-            processReelTileHit(reelTileA);
-
-        if ((Math.abs(rA - rB) == 1) & (cA == cB))
-            processReelTileHit(reelTileB);
+//        if ((Math.abs(rA - rB) == 1) & (cA == cB))
+//            processReelTileHit(reelTileA);
+//
+//        if ((Math.abs(rA - rB) == 1) & (cA == cB))
+//            processReelTileHit(reelTileB);
 
         if ((levelCreator.getPlayState() == PlayStates.INTRO_FLASHING) |
             (levelCreator.getPlayState() == PlayStates.REELS_FLASHING)) {
@@ -504,14 +515,14 @@ public class MiniSlotMachineLevelPrototypeSimpleScenario extends SPPrototypeTemp
         }
     }
 
-    private void processReelTileHit(ReelTile reelTile) {
-        reelTile.setY(reelTile.getDestinationY());
-        Body reelbox = reelBoxes.get(reelTile.getIndex());
-        if (PhysicsManagerCustomBodies.isStopped(reelbox)) {
-            if (levelCreator.getPlayState() == PlayStates.INTRO_SPINNING)
-                numberOfReelsAboveHitsIntroSpinning++;
-        }
-    }
+//    private void processReelTileHit(ReelTile reelTile) {
+//        reelTile.setY(reelTile.getDestinationY());
+//        Body reelbox = reelBoxes.get(reelTile.getIndex());
+//        if (PhysicsManagerCustomBodies.isStopped(reelbox)) {
+//            if (levelCreator.getPlayState() == PlayStates.INTRO_SPINNING)
+//                numberOfReelsAboveHitsIntroSpinning++;
+//        }
+//    }
 
     private void processTileHittingTile(ReelTile reelTileA, ReelTile reelTileB, int rA, int cA, int rB, int cB) {
         if (rA > rB) {
@@ -602,7 +613,6 @@ public class MiniSlotMachineLevelPrototypeSimpleScenario extends SPPrototypeTemp
                     levelCreator.setReelsAboveHaveFallen(true);
             } else
                 finishedColumn = true;
-
             row--;
         }
     }

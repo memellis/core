@@ -18,7 +18,7 @@ package com.ellzone.slotpuzzle2d.prototypes.level.minislotmachine;
 
 import com.ellzone.slotpuzzle2d.prototypes.SPPrototypeTemplate;
 
-public class MiniSlotMachineLevelSimplified1 extends SPPrototypeTemplate {
+public class MiniSlotMachineLevelSimplified extends SPPrototypeTemplate {
     @Override
     protected void initialiseOverride() {
 

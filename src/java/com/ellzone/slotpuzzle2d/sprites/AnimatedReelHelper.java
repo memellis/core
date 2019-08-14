@@ -111,8 +111,7 @@ public class AnimatedReelHelper {
     }
 
     public void update(float dt) {
-        for (AnimatedReel animatedReel : animatedReels) {
+        for (AnimatedReel animatedReel : animatedReels)
             animatedReel.update(dt);
-        }
     }
  }

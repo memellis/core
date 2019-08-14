@@ -88,7 +88,6 @@ public class ReelTile extends ReelSprite {
             randomSy = Random.getInstance().nextInt(numberOfReelsInTexture) * (int)tileHeight;
             sy = randomSy;
         }
-
         if ((reelDisplayWidth == 0) && (reelDisplayHeight == 0)) {
             region.setRegion((int) 0, randomSy, (int) tileWidth, (int) tileHeight);
             setBounds((int) x, (int) y, (int) tileWidth, (int) tileHeight);
@@ -108,8 +107,9 @@ public class ReelTile extends ReelSprite {
     public void update(float delta) {
         if (super.isSpinning())
             processSpinningState();
-        if (reelFlashTween)
-        	processFlashTweenState(delta);
+        if (reelFlashTween) {
+            processFlashTweenState(delta);
+        }
     }
 	
 	private void processSpinningState() {
@@ -308,7 +308,6 @@ public class ReelTile extends ReelSprite {
 
     public void addReelFlashSegment(float x, float y) {
         reelFlashSegments.add(new Vector2(x, y));
-        System.out.println("Added flash segment x="+x+" y="+y);
     }
 
     public Array<Vector2> getReelFlashSegments() {

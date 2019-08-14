@@ -236,19 +236,6 @@ public class FlashSlots {
         numberOfReelsFlashing--;
     }
 
-    private void delegateReelFlashCallbackForLevelCreator(int type, BaseTween<?> source) {
-        @SuppressWarnings("unchecked")
-        Array<Object> userData = (Array<Object>) source.getUserData();
-        ReelTile reel = (ReelTile) userData.get(0);
-        Timeline reelFlashSeq = (Timeline) userData.get(1);
-        reelFlashSeq.kill();
-        if (reel.getFlashTween()) {
-            reel.setFlashOff();
-            reel.setFlashTween(false);
-            reel.processEvent(new ReelStoppedFlashingEvent());
-        }
-    }
-
     private void initialiseReelFlashForLevelCreator(ReelTile reel, float pushPause) {
         Array<Object> userData = new Array<Object>();
         reel.setFlashTween(true);
@@ -297,6 +284,20 @@ public class FlashSlots {
             }
         }
     };
+
+    private void delegateReelFlashCallbackForLevelCreator(int type, BaseTween<?> source) {
+        @SuppressWarnings("unchecked")
+        Array<Object> userData = (Array<Object>) source.getUserData();
+        ReelTile reel = (ReelTile) userData.get(0);
+        System.out.println("delegateReelFlashCallbackForLevelCreator reel x="+reel.getX()+"reel y="+reel.getY());
+        Timeline reelFlashSeq = (Timeline) userData.get(1);
+        reelFlashSeq.kill();
+        if (reel.getFlashTween()) {
+            reel.setFlashOff();
+            reel.setFlashTween(false);
+            reel.processEvent(new ReelStoppedFlashingEvent());
+        }
+    }
 
     public int getNumberOfReelsFlashing() {
         return numberOfReelsFlashing;
