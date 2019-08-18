@@ -221,14 +221,21 @@ public class HiddenPatternWithFallingReels extends SPPrototypeTemplate
     @Override
     public void dealWithReelHittingReelSink(ReelTile reelTile) {
         numberOfReelsToHitSinkBottom++;
+        System.out.println("numberOfReelsToHitSinkBottom="+numberOfReelsToHitSinkBottom);
         if (numberOfReelsToHitSinkBottom < GAME_LEVEL_WIDTH)
             return;
 
         if (levelCreator.getPlayState() == PlayStates.INTRO_SPINNING)
             levelCreator.setHitSinkBottom(true);
 
-        if ((levelCreator.getPlayState() == PlayStates.INTRO_FLASHING) |
-            (levelCreator.getPlayState() == PlayStates.REELS_FLASHING)) {
+        if (levelCreator.getPlayState() == PlayStates.REELS_SPINNING ||
+            levelCreator.getPlayState() == PlayStates.INTRO_FLASHING ||
+            levelCreator.getPlayState() == PlayStates.REELS_FLASHING ||
+            levelCreator.getPlayState() == PlayStates.PLAYING) {
+
+            if (levelCreator.getPlayState() == PlayStates.REELS_SPINNING ||
+               (levelCreator.getPlayState() == PlayStates.PLAYING))
+                System.out.println("I've hit sink bottom");
 
             int r = PuzzleGridTypeReelTile.getRowFromLevel(reelTile.getDestinationY(), GAME_LEVEL_HEIGHT);
             int c = PuzzleGridTypeReelTile.getColumnFromLevel(reelTile.getDestinationX());
@@ -257,8 +264,10 @@ public class HiddenPatternWithFallingReels extends SPPrototypeTemplate
         if ((Math.abs(rA - rB) == 1) & (cA == cB))
             processReelTileHit(reelTileB);
 
-        if ((levelCreator.getPlayState() == PlayStates.INTRO_FLASHING) |
-                (levelCreator.getPlayState() == PlayStates.REELS_FLASHING)) {
+        if (levelCreator.getPlayState() == PlayStates.INTRO_SPINNING ||
+            levelCreator.getPlayState() == PlayStates.INTRO_FLASHING ||
+            levelCreator.getPlayState() == PlayStates.REELS_FLASHING ||
+            levelCreator.getPlayState() == PlayStates.PLAYING) {
             if  (cA == cB) {
                 if (Math.abs(rA - rB) > 1)
                     processTileHittingTile(reelTileA, reelTileB, rA, cA, rB, cA);
@@ -274,6 +283,7 @@ public class HiddenPatternWithFallingReels extends SPPrototypeTemplate
 
     private void processReelTileHit(ReelTile reelTile) {
         reelTile.setY(reelTile.getDestinationY());
+        levelCreator.printMatchGrid(reelTiles, 12, 9);
         Body reelbox = reelBoxes.get(reelTile.getIndex());
         if (PhysicsManagerCustomBodies.isStopped(reelbox)) {
             if (levelCreator.getPlayState() == PlayStates.INTRO_SPINNING)
@@ -285,9 +295,11 @@ public class HiddenPatternWithFallingReels extends SPPrototypeTemplate
         if (rA > rB) {
             swapReelsAboveMe(reelTileB, reelTileA);
             reelsLeftToFall(rB, cB);
+             levelCreator.printMatchGrid(reelTiles, 12, 9);
         } else {
             swapReelsAboveMe(reelTileA, reelTileB);
             reelsLeftToFall(rA, cA);
+            levelCreator.printMatchGrid(reelTiles, 12, 9);
         }
     }
 
@@ -307,12 +319,14 @@ public class HiddenPatternWithFallingReels extends SPPrototypeTemplate
         float savedDestinationY = reelTileA.getDestinationY();
         int reelHasFallenFrom = levelCreator.findReel((int)reelTileB.getDestinationX(), (int) reelTileB.getDestinationY() + 40);
 
-        if (reelHasFallenFrom >= 0) {
+        if (reelHasFallenFrom > 0) {
             ReelTile deletedReel = reelTiles.get(reelHasFallenFrom);
+            System.out.println("swapReels deleteReel="+reelHasFallenFrom+" x="+deletedReel.getX()+" y="+deletedReel.getY());
 
             reelTileA.setDestinationY(reelTileB.getDestinationY() + 40);
             reelTileA.setY(reelTileB.getDestinationY() + 40);
-            reelTileA.unDeleteReelTile();
+//            reelTileA.unDeleteReelTile();
+//            levelCreator.undeleteReelBox(reelTileA.getIndex());
 
             deletedReel.setDestinationY(savedDestinationY);
             deletedReel.setY(savedDestinationY);
@@ -321,12 +335,15 @@ public class HiddenPatternWithFallingReels extends SPPrototypeTemplate
 
     private void swapReels(ReelTile reelTile) {
         float savedDestinationY = reelTile.getDestinationY();
-        int reelHasFallenFrom = levelCreator.findReel((int)reelTile.getDestinationX(), 40);
-        ReelTile deletedReel = reelTiles.get(reelHasFallenFrom);
+        System.out.println("savedDesinationY="+savedDestinationY);
+        int reelHasFallenTo = levelCreator.findReel((int)reelTile.getDestinationX(), 40);
+        ReelTile deletedReel = reelTiles.get(reelHasFallenTo);
+        System.out.println("swapReels deleteReel="+reelHasFallenTo+" x="+deletedReel.getX()+" y="+deletedReel.getY());
 
         reelTile.setDestinationY(40);
         reelTile.setY(40);
         reelTile.unDeleteReelTile();
+        levelCreator.undeleteReelBox(reelTile.getIndex());
 
         deletedReel.setDestinationY(savedDestinationY);
         deletedReel.setY(savedDestinationY);
@@ -343,7 +360,6 @@ public class HiddenPatternWithFallingReels extends SPPrototypeTemplate
 
         deletedReel.setDestinationY(savedDestinationY);
         deletedReel.setY(savedDestinationY);
-
         return reelTiles.get(reelsAboveMe[reelsAboveMeIndex].getIndex());
     }
 
@@ -539,12 +555,15 @@ public class HiddenPatternWithFallingReels extends SPPrototypeTemplate
     public void handleInput() {
         int touchX, touchY;
         if (Gdx.input.justTouched()) {
+
             touchX = Gdx.input.getX();
             touchY = Gdx.input.getY();
             Vector3 unProjectTouch = new Vector3(touchX, touchY, 0);
             viewport.unproject(unProjectTouch);
             PlayStates playState = levelCreator.getPlayState();
             switchPlayState(playState);
+            System.out.println("playState="+playState);
+            levelCreator.printMatchGrid(reelTiles, 12, 9);
         }
     }
 
@@ -633,8 +652,8 @@ public class HiddenPatternWithFallingReels extends SPPrototypeTemplate
                 if (animatedReel.getDampenedSineState() == DampenedSineParticle.DSState.UPDATING_DAMPENED_SINE)
                     setEndReelWithCurrentReel(reel);
             } else
-            if (!reel.getFlashTween()) {
-                startReelSpinning(reel, animatedReel);
+                if (!reel.getFlashTween()) {
+                    startReelSpinning(reel, animatedReel);
             }
         }
     }
@@ -657,6 +676,10 @@ public class HiddenPatternWithFallingReels extends SPPrototypeTemplate
         hud.addScore(-1);
         if (pullLeverSound != null)
             pullLeverSound.play();
+    }
+
+    public void hudAddScore(int score) {
+        hud.addScore(score);
     }
 
     @Override
