@@ -638,11 +638,13 @@ public class HiddenPatternWithFallingReels extends SPPrototypeTemplate
     private void processTileClicked(Vector2 tileClicked) {
         int r = (int) tileClicked.y;
         int c = (int) tileClicked.x;
-        ReelTileGridValue[][] grid = levelCreator.populateMatchGrid(reelTiles, GAME_LEVEL_WIDTH, GAME_LEVEL_HEIGHT);
-        if (grid[r][c] != null) {
-            ReelTile reel = reelTiles.get(grid[r][c].index);
-            AnimatedReel animatedReel = levelCreator.getAnimatedReels().get(grid[r][c].index);
-            processReelClicked(reel, animatedReel);
+        if (r>=0 && r<GAME_LEVEL_HEIGHT && c>=0 && c<GAME_LEVEL_WIDTH) {
+            ReelTileGridValue[][] grid = levelCreator.populateMatchGrid(reelTiles, GAME_LEVEL_WIDTH, GAME_LEVEL_HEIGHT);
+            if (grid[r][c] != null) {
+                ReelTile reel = reelTiles.get(grid[r][c].index);
+                AnimatedReel animatedReel = levelCreator.getAnimatedReels().get(grid[r][c].index);
+                processReelClicked(reel, animatedReel);
+            }
         }
     }
 

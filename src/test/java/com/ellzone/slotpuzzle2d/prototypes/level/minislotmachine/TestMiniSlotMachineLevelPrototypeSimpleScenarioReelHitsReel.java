@@ -36,7 +36,6 @@ import org.powermock.modules.junit4.PowerMockRunner;
 import org.powermock.reflect.Whitebox;
 
 import static org.easymock.EasyMock.capture;
-import static org.easymock.EasyMock.captureFloat;
 import static org.easymock.EasyMock.captureInt;
 import static org.easymock.EasyMock.expect;
 import static org.hamcrest.CoreMatchers.equalTo;
@@ -160,8 +159,6 @@ public class TestMiniSlotMachineLevelPrototypeSimpleScenarioReelHitsReel {
 
     private void setExpectations() throws Exception {
         setExpectsRowColumn(3, 2, 2,2 );
-        setExpectsProcessReelTileHit(reelTileAMock);
-        setExpectsProcessReelTileHit(reelTileBMock);
         setExpectsFlashing();
     }
 
@@ -174,16 +171,6 @@ public class TestMiniSlotMachineLevelPrototypeSimpleScenarioReelHitsReel {
         expect(reelTileBMock.getDestinationY()).andReturn(10.0f);
         expect(PuzzleGridTypeReelTile.getColumnFromLevel(10.0f)).andReturn(cB);
         expect(reelTileBMock.getDestinationX()).andReturn(10.0f);
-    }
-
-
-    private void setExpectsProcessReelTileHit(ReelTile reelTileMock) {
-        reelTileMock.setY(captureFloat(captureReelSetY));
-        expect(reelTileMock.getDestinationY()).andReturn(10.0f);
-        expect(reelBoxesMock.get(0)).andReturn(reelBoxMock);
-        expect(reelTileMock.getIndex()).andReturn(0);
-        expect(PhysicsManagerCustomBodies.isStopped(reelBoxMock)).andReturn(true);
-        expect(levelCreatorMock.getPlayState()).andReturn(PlayStates.INTRO_SPINNING);
     }
 
     private void setExpectsFlashing() throws Exception {

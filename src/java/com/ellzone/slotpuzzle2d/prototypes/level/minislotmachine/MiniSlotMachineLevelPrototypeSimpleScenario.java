@@ -493,14 +493,10 @@ public class MiniSlotMachineLevelPrototypeSimpleScenario extends SPPrototypeTemp
         rB = PuzzleGridTypeReelTile.getRowFromLevel(reelTileB.getDestinationY(), GAME_LEVEL_HEIGHT);
         cB = PuzzleGridTypeReelTile.getColumnFromLevel(reelTileB.getDestinationX());
 
-//        if ((Math.abs(rA - rB) == 1) & (cA == cB))
-//            processReelTileHit(reelTileA);
-//
-//        if ((Math.abs(rA - rB) == 1) & (cA == cB))
-//            processReelTileHit(reelTileB);
-
-        if ((levelCreator.getPlayState() == PlayStates.INTRO_FLASHING) |
-            (levelCreator.getPlayState() == PlayStates.REELS_FLASHING)) {
+        if (levelCreator.getPlayState() == PlayStates.INTRO_SPINNING ||
+            levelCreator.getPlayState() == PlayStates.INTRO_FLASHING ||
+            levelCreator.getPlayState() == PlayStates.REELS_FLASHING ||
+            levelCreator.getPlayState() == PlayStates.PLAYING) {
             if  (cA == cB) {
                 if (Math.abs(rA - rB) > 1)
                     processTileHittingTile(reelTileA, reelTileB, rA, cA, rB, cA);
@@ -514,15 +510,6 @@ public class MiniSlotMachineLevelPrototypeSimpleScenario extends SPPrototypeTemp
             }
         }
     }
-
-//    private void processReelTileHit(ReelTile reelTile) {
-//        reelTile.setY(reelTile.getDestinationY());
-//        Body reelbox = reelBoxes.get(reelTile.getIndex());
-//        if (PhysicsManagerCustomBodies.isStopped(reelbox)) {
-//            if (levelCreator.getPlayState() == PlayStates.INTRO_SPINNING)
-//                numberOfReelsAboveHitsIntroSpinning++;
-//        }
-//    }
 
     private void processTileHittingTile(ReelTile reelTileA, ReelTile reelTileB, int rA, int cA, int rB, int cB) {
         if (rA > rB) {

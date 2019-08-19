@@ -526,6 +526,9 @@ public class LevelCreatorSimple {
                                 else
                                 if (reelsToFall.size == 0)
                                     createReplacementReelBoxes();
+                            } else {
+                                System.out.println("What happends when I get here!");
+//                                flashSlots(reelTiles, levelWidth, levelHeight);
                             }
                         }
                     }
@@ -663,8 +666,8 @@ public class LevelCreatorSimple {
 
     private Array<Integer> filterReelBoxesByDifficultyLevel(Array<Integer> deletedReelBoxes, float difficultyLevelFactor) {
         Array<Integer> filterReplacementReelBoxes = new Array<>();
-//        int numberOfReelBoxesToBeSelected = (int) Math.ceil(deletedReelBoxes.size * 0.1f);
-        int numberOfReelBoxesToBeSelected = 1;
+        int numberOfReelBoxesToBeSelected = (int) Math.ceil(deletedReelBoxes.size * 0.1f);
+//        int numberOfReelBoxesToBeSelected = 1;
         do {
             int next = Random.getInstance().nextInt(deletedReelBoxes.size);
             int nextIndex = deletedReelBoxes.get(next);
