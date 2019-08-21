@@ -70,7 +70,7 @@ public class LevelCreatorSimple {
     private PlayStates playState;
     private boolean win = false, gameOver = false;
     private Array<Score> scores;
-    private boolean hitSinkBottom = false, dropReplacementReelBoxes = false;
+    private boolean hitSinkBottom = false;
     private Array<Body> reelBoxes;
     private Array<Body> reelBoxesCollided;
     public Array<Integer> replacementReelBoxes;
@@ -156,8 +156,6 @@ public class LevelCreatorSimple {
         reelTiles = populateLevel(level, reelTiles, levelWidth, levelHeight);
         reelTiles = checkLevel(reelTiles, levelWidth, levelHeight);
         reelTiles = adjustForAnyLonelyReels(reelTiles, levelWidth, levelHeight);
-//        for (ReelTile reelTile : reelTiles)
-//            reelTile.setEndReel(scenario1Reels[reelTile.getIndex()]);
 
         return reelTiles;
     }
@@ -642,12 +640,13 @@ public class LevelCreatorSimple {
         for (Integer reelBoxIndex : replacementReelBoxes)
             createReplacementReelBox(reelBoxIndex);
 
+        if (replacementReelBoxes.size == 0) {
+            reelsSpinning = 0;
+            return;
+        }
         reelsSpinning = replacementReelBoxes.size - 1;
         replacementReelBoxes.removeRange(0, replacementReelBoxes.size - 1);
-        System.out.println("replacementReelBoxes.size="+replacementReelBoxes.size);
-        if (replacementReelBoxes.size > 0)
-            System.out.println("replacementReelBoxes.size="+replacementReelBoxes.size);
-        dropReplacementReelBoxes = false;
+
         if (playState == PlayStates.INTRO_FLASHING)
             playState = PlayStates.INTRO_SPINNING;
 
@@ -666,8 +665,10 @@ public class LevelCreatorSimple {
 
     private Array<Integer> filterReelBoxesByDifficultyLevel(Array<Integer> deletedReelBoxes, float difficultyLevelFactor) {
         Array<Integer> filterReplacementReelBoxes = new Array<>();
+        if (deletedReelBoxes.size == 0)
+            return filterReplacementReelBoxes;
         int numberOfReelBoxesToBeSelected = (int) Math.ceil(deletedReelBoxes.size * 0.1f);
-//        int numberOfReelBoxesToBeSelected = 1;
+
         do {
             int next = Random.getInstance().nextInt(deletedReelBoxes.size);
             int nextIndex = deletedReelBoxes.get(next);
