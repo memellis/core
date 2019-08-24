@@ -156,7 +156,6 @@ public class LevelCreatorSimple {
         reelTiles = populateLevel(level, reelTiles, levelWidth, levelHeight);
         reelTiles = checkLevel(reelTiles, levelWidth, levelHeight);
         reelTiles = adjustForAnyLonelyReels(reelTiles, levelWidth, levelHeight);
-
         return reelTiles;
     }
 
@@ -404,8 +403,8 @@ public class LevelCreatorSimple {
                         if (grid[r][c] != null)
                             if (!reelTiles.get(grid[r][c].getIndex()).isReelTileDeleted())
                                 hiddenPlayingCardsRevealed = false;
-                    } else
-                        Gdx.app.debug(SlotPuzzleConstants.SLOT_PUZZLE, "I don't respond to r=" + r + "c=" + c);
+                    } //else
+//                        Gdx.app.debug(SlotPuzzleConstants.SLOT_PUZZLE, "I don't respond to r=" + r + "c=" + c);
                 }
             }
         }
@@ -422,8 +421,8 @@ public class LevelCreatorSimple {
                 if (grid[r][c] != null)
                     if (!reelTiles.get(grid[r][c].getIndex()).isReelTileDeleted())
                         hiddenPattern = false;
-            } else
-                Gdx.app.debug(SlotPuzzleConstants.SLOT_PUZZLE, "I don't respond to r=" + r + "c=" + c);
+            } //else
+//                Gdx.app.debug(SlotPuzzleConstants.SLOT_PUZZLE, "I don't respond to r=" + r + "c=" + c);
         }
         return hiddenPattern;
     }
@@ -453,9 +452,13 @@ public class LevelCreatorSimple {
         return this.reelBoxes;
     }
 
+    public void setReelBoxes(Array<Body> reelBoxes) { this.reelBoxes = reelBoxes; }
+
     public Array<AnimatedReel> getAnimatedReels() {
         return animatedReels;
     }
+
+    public void setAnimatedReels(Array<AnimatedReel> animatedReels) { this.animatedReels = animatedReels; }
 
     private void reelScoreAnimation(ReelTile source) {
         Score score = new Score(source.getX(), source.getY(), (source.getEndReel() + 1) * source.getScore());
@@ -478,7 +481,6 @@ public class LevelCreatorSimple {
                 case TweenCallback.COMPLETE:
                     Score score = (Score) source.getUserData();
                     scores.removeValue(score, false);
-
             }
         }
     };
@@ -675,8 +677,6 @@ public class LevelCreatorSimple {
             if (!filterReplacementReelBoxes.contains(nextIndex, true))
                 filterReplacementReelBoxes.add(nextIndex);
         } while (filterReplacementReelBoxes.size < numberOfReelBoxesToBeSelected);
-        for (Integer frrb : filterReplacementReelBoxes)
-            System.out.println("frrb="+frrb+" isDeleted="+reelTiles.get(frrb).isReelTileDeleted());
         return filterReplacementReelBoxes;
     }
 

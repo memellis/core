@@ -291,7 +291,6 @@ public class TestHiddenPlayingCard {
         return inputMatrix.readMatrix();
     }
 
-
     private void setExpectations(boolean expectCardRevealed) {
         setExpectationsLevelMaxRectangleMapObjects();
         setExpectationsSetNumberOfCardsForTheLevel(2);

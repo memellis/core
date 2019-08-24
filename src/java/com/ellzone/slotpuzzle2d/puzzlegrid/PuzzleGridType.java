@@ -160,7 +160,6 @@ public class PuzzleGridType {
         return matchedSlots;
     }
 
-
     public TupleValueIndex[][] initialiseGrid(TupleValueIndex[][] workingGrid, TupleValueIndex[][] puzzleGrid) {
         for (int r = 0; r < workingGrid.length; r++) {
             for (int c = 0; c < workingGrid[r].length; c++) {

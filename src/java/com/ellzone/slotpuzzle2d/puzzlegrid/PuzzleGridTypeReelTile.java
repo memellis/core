@@ -22,14 +22,13 @@ import com.badlogic.gdx.utils.GdxRuntimeException;
 import com.ellzone.slotpuzzle2d.SlotPuzzleConstants;
 import com.ellzone.slotpuzzle2d.screens.PlayScreen;
 import com.ellzone.slotpuzzle2d.sprites.ReelTile;
+
 import java.text.MessageFormat;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.Stack;
 
-import static com.ellzone.slotpuzzle2d.puzzlegrid.ReelTileGridValue.*;
-import static com.ellzone.slotpuzzle2d.screens.PlayScreen.GAME_LEVEL_HEIGHT;
-import static com.ellzone.slotpuzzle2d.screens.PlayScreen.GAME_LEVEL_WIDTH;
+import static com.ellzone.slotpuzzle2d.puzzlegrid.ReelTileGridValue.Compass;
 
 public class PuzzleGridTypeReelTile {
     public static final float FLOAT_ROUNDING_DELTA_FOR_BOX2D = 1.0f;
@@ -572,7 +571,7 @@ public class PuzzleGridTypeReelTile {
                               i,
                               reelLevel.get(i).getEndReel()));
             } else
-                Gdx.app.debug(SlotPuzzleConstants.SLOT_PUZZLE, "I don't respond to r="+r+" c="+c);
+                Gdx.app.debug(SlotPuzzleConstants.SLOT_PUZZLE, "I don't respond to ***r="+r+" c="+c);
         }
         return matchGrid;
     }
