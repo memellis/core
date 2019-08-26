@@ -681,6 +681,12 @@ public class LevelCreatorSimple {
     }
 
     private void createReplacementReelBox(Integer reelBoxIndex) {
+        ReelTile reelTile = updateReplacementReelTile(reelBoxIndex);
+        createReplacementBody(reelBoxIndex, reelTile);
+        updateReplacementAnimatedReel(reelBoxIndex);
+    }
+
+    private ReelTile updateReplacementReelTile(Integer reelBoxIndex) {
         ReelTile reelTile = reelTiles.get(reelBoxIndex.intValue());
         reelTile.unDeleteReelTile();
         reelTile.setScale(1.0f);
@@ -689,6 +695,10 @@ public class LevelCreatorSimple {
         reelTile.setColor(reelTileColor);
         reelTile.setEndReel(Random.getInstance().nextInt( reelTile.getNumberOfReelsInTexture() - 1));
         reelTile.resetReel();
+        return reelTile;
+    }
+
+    private void createReplacementBody(Integer reelBoxIndex, ReelTile reelTile) {
         Body reelTileBody = physics.createBoxBody(BodyDef.BodyType.DynamicBody,
                 reelTile.getDestinationX() + 20,
                 reelTile.getDestinationY() + 360,
@@ -697,10 +707,12 @@ public class LevelCreatorSimple {
                 true);
         reelTileBody.setUserData(reelTile);
         reelBoxes.set(reelBoxIndex, reelTileBody);
+    }
+
+    private void updateReplacementAnimatedReel(Integer reelBoxIndex) {
         AnimatedReel animatedReel = animatedReels.get(reelBoxIndex);
         animatedReel.reinitialise();
     }
-
 
     public void setHitSinkBottom(boolean hitSinkBottom) {
         this.hitSinkBottom = hitSinkBottom;

@@ -26,6 +26,8 @@ import net.dermetfan.gdx.assets.AnnotationAssetManager;
 
 import org.easymock.Capture;
 import org.easymock.EasyMock;
+import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.powermock.api.easymock.PowerMock;
@@ -85,9 +87,19 @@ public class TestLevelCreatorSimpleCreatedReplacementBoxes {
     private Array<Body> reelBoxes;
     private AnimatedReel animatedReelMock;
 
+    @Before
+    public void setUp() {
+        setUpMocks();
+    }
+
+    @After
+    public void tearDown() {
+        tearDownMocks();
+    }
+
     @Test
     public void testCreateReplacementBoxes_WithNoReelTiles() throws Exception {
-        setUp();
+        setUpExpectations();
         replayAll();
         LevelCreatorSimple levelCreatorSimple = new LevelCreatorSimple(
                 levelDoorMock,
@@ -165,8 +177,15 @@ public class TestLevelCreatorSimpleCreatedReplacementBoxes {
     }
 
     private void createReplacementBoxesExpectations() {
-        expect(reelTileMock.isReelTileDeleted()).andReturn(true);
-        expect(reelTileMock.getIndex()).andReturn(0);
+        filterExpectations();
+        updateReplacementReelTileExpectations();
+        replacementReelBodyExpectations();
+        updateReplacementAnimatedReelExpectations();
+    }
+
+
+
+    private void updateReplacementReelTileExpectations() {
         reelTileMock.unDeleteReelTile();
         reelTileMock.setScale(1.0f);
         Color color = new Color();
@@ -175,6 +194,8 @@ public class TestLevelCreatorSimpleCreatedReplacementBoxes {
         expect(reelTileMock.getNumberOfReelsInTexture()).andReturn(8);
         expectRandomNextInt();
         reelTileMock.resetReel();
+    }
+    private void replacementReelBodyExpectations() {
         expect(physicsMock.createBoxBody(
                 BodyDef.BodyType.DynamicBody,
                 REEL_TILE_C_IS_0 + 20,
@@ -185,8 +206,16 @@ public class TestLevelCreatorSimpleCreatedReplacementBoxes {
         bodyMock.setUserData(reelTileMock);
         reelBoxes = new Array<>();
         reelBoxes.add(bodyMock);
+    }
+
+    private void updateReplacementAnimatedReelExpectations() {
         animatedReels.add(animatedReelMock);
         animatedReelMock.reinitialise();
+    }
+
+    private void filterExpectations() {
+        expect(reelTileMock.isReelTileDeleted()).andReturn(true);
+        expect(reelTileMock.getIndex()).andReturn(0);
     }
 
     private void populateMatchGridExpectations() {
@@ -203,11 +232,6 @@ public class TestLevelCreatorSimpleCreatedReplacementBoxes {
         expect(randomMock.nextInt(1)).andReturn(0);
         expect(randomMock.nextInt(7)).andReturn(1);
         reelTileMock.setEndReel(1);
-    }
-
-    private void setUp() {
-        setUpMocks();
-        setUpExpectations();
     }
 
     private void setUpMocks() {
@@ -294,5 +318,45 @@ public class TestLevelCreatorSimpleCreatedReplacementBoxes {
         mapProperties1.put(HEIGHT, GAME_LEVEL_WIDTH);
         mapProperties1.put(ROTATION, 0f);
         return mapProperties1;
+    }
+
+    private void tearDownMocks() {
+        tearDownLevelCreatorArgumentMocks();
+        tearDownLevelCreatorMocks();
+        tearDownMockGdx();
+        tearDownCaptureArguments();
+    }
+
+    private void tearDownLevelCreatorArgumentMocks() {
+        levelDoorMock = null;
+        animatedReels = null;
+        reelTilesMock = null;
+        levelMock = null;
+        annotationAssetManagerMock = null;
+        cardDeckAtlasMock = null;
+        tweenManagerMock = null;
+        physicsMock = null;
+        playState = null;
+        reelTileMock = null;
+        randomMock = null;
+        bodyMock = null;
+        animatedReelMock = null;
+    }
+
+    private void tearDownLevelCreatorMocks() {
+        mapLayersMock = createMock(MapLayers.class);
+        mapLayerMock = createMock(MapLayer.class);
+        mapObjectsMock = createMock(MapObjects.class);
+        rectangleMapObjectsMock = new Array<>();
+        applicationMock = createMock(Application.class);
+    }
+
+    private void tearDownMockGdx() {
+        Gdx.app = null;
+    }
+
+    private void tearDownCaptureArguments() {
+        debugCaptureArgument1 = EasyMock.newCapture();
+        debugCaptureArgument2 = EasyMock.newCapture();
     }
 }
