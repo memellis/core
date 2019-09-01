@@ -123,13 +123,13 @@ public class TestMiniSlotMachineLevelPrototypeSimpleScenarioHandleInput {
         setUp();
         expectations(playState);
         replayAll();
-        inokeHandleInput();
+        invokeHandleInput();
         assertThat(logCaptureArgument2.getValue(), CoreMatchers.equalTo(playState.toString()));
         verifyAll();
         tearDown();
     }
 
-    private void inokeHandleInput() {
+    private void invokeHandleInput() {
         Whitebox.setInternalState(partialMockMiniSlotMachineLevelPrototypeSimpleScenario, VIEWPORT_FIELD_NAME, mockViewPort);
         Whitebox.setInternalState(partialMockMiniSlotMachineLevelPrototypeSimpleScenario, LEVEL_CREATOR_FIELD_NAME, levelCreatorSimpleScenarioMock);
         partialMockMiniSlotMachineLevelPrototypeSimpleScenario.handleInput();

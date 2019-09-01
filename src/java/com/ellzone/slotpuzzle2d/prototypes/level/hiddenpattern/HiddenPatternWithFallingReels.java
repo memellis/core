@@ -64,9 +64,9 @@ import static com.ellzone.slotpuzzle2d.SlotPuzzleConstants.PIXELS_PER_METER;
 import static com.ellzone.slotpuzzle2d.SlotPuzzleConstants.VIRTUAL_HEIGHT;
 import static com.ellzone.slotpuzzle2d.SlotPuzzleConstants.VIRTUAL_WIDTH;
 import static com.ellzone.slotpuzzle2d.level.creator.LevelCreatorSimpleScenario.BONUS_LEVEL_TYPE;
+import static com.ellzone.slotpuzzle2d.level.creator.LevelCreatorSimpleScenario.REELS_LAYER_NAME;
 import static com.ellzone.slotpuzzle2d.prototypes.level.minislotmachine.MiniSlotMachineLevelPrototypeWithLevelCreator.MINI_SLOT_MACHINE_LEVEL_NAME;
 import static com.ellzone.slotpuzzle2d.prototypes.level.minislotmachine.MiniSlotMachineLevelPrototypeWithLevelCreator.numberOfReelsToHitSinkBottom;
-import static com.ellzone.slotpuzzle2d.prototypes.screens.PlayScreenPrototype.SLOT_REEL_OBJECT_LAYER;
 import static com.ellzone.slotpuzzle2d.screens.PlayScreen.GAME_LEVEL_HEIGHT;
 import static com.ellzone.slotpuzzle2d.screens.PlayScreen.GAME_LEVEL_WIDTH;
 
@@ -215,7 +215,7 @@ public class HiddenPatternWithFallingReels extends SPPrototypeTemplate
     }
 
     private Array<RectangleMapObject> getRectangleMapObjectsFromLevel(TiledMap level) {
-        return level.getLayers().get(SLOT_REEL_OBJECT_LAYER).getObjects().getByType(RectangleMapObject.class);
+        return level.getLayers().get(REELS_LAYER_NAME).getObjects().getByType(RectangleMapObject.class);
     }
 
     @Override
@@ -692,6 +692,10 @@ public class HiddenPatternWithFallingReels extends SPPrototypeTemplate
     @Override
     public ReelSprites getReelSprites() {
         return reelSprites;
+    }
+
+    public void setReelSprites(ReelSprites reelSprites ) {
+        this.reelSprites = reelSprites;
     }
 
     @Override

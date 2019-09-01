@@ -1,3 +1,19 @@
+/*
+ Copyright 2011 See AUTHORS file.
+
+ Licensed under the Apache License, Version 2.0 (the "License");
+ you may not use this file except in compliance with the License.
+ You may obtain a copy of the License at
+
+ http://www.apache.org/licenses/LICENSE-2.0
+
+ Unless required by applicable law or agreed to in writing, software
+ distributed under the License is distributed on an "AS IS" BASIS,
+ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ See the License for the specific language governing permissions and
+ limitations under the License.
+ */
+
 package com.ellzone.slotpuzzle2d.prototypes.level.hiddenpattern;
 
 import com.badlogic.gdx.Application;
@@ -183,8 +199,6 @@ public class TestLevelCreatorSimpleCreatedReplacementBoxes {
         updateReplacementAnimatedReelExpectations();
     }
 
-
-
     private void updateReplacementReelTileExpectations() {
         reelTileMock.unDeleteReelTile();
         reelTileMock.setScale(1.0f);
@@ -279,13 +293,6 @@ public class TestLevelCreatorSimpleCreatedReplacementBoxes {
         expectCheckLevelDebug();
         expectCheckLevelDebug();
         setUpGetMapProperties();
-    }
-
-    private void expectMatrixDebug() {
-        for (int r = 0; r < GAME_LEVEL_HEIGHT; r++)
-            for (int c = 0; c < GAME_LEVEL_WIDTH; c++)
-                if (r != 8 && c !=0)
-                    applicationMock.debug(capture(debugCaptureArgument1), capture(debugCaptureArgument2));
     }
 
     private void expectCheckLevelDebug() {

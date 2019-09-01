@@ -185,16 +185,47 @@ public class LevelCreatorSimple {
 
     private void adjustAnyLonelyTileAtEdge(Array<ReelTile> levelReel, TupleValueIndex[][] grid, TupleValueIndex lonelyTile) {
         if (lonelyTile.r == 0) {
-            levelReel.get(grid[lonelyTile.r][lonelyTile.c].index).setEndReel(levelReel.get(grid[lonelyTile.r + 1][lonelyTile.c].index).getEndReel());
+            adjustAdjacentTileEndReel(
+                    levelReel.get(grid[lonelyTile.r][lonelyTile.c].index),
+                    levelReel,
+                    grid,
+                    lonelyTile.r + 1,
+                    lonelyTile.c);
         } else if (lonelyTile.c == 0) {
-            levelReel.get(grid[lonelyTile.r][lonelyTile.c].index).setEndReel(levelReel.get(grid[lonelyTile.r][lonelyTile.c + 1].index).getEndReel());
+            adjustAdjacentTileEndReel(
+                    levelReel.get(grid[lonelyTile.r][lonelyTile.c].index),
+                    levelReel,
+                    grid,
+                    lonelyTile.r,
+                    lonelyTile.c + 1);
         } else if (lonelyTile.r == levelHeight - 1) {
-            levelReel.get(grid[lonelyTile.r][lonelyTile.c].index).setEndReel(levelReel.get(grid[lonelyTile.r - 1][lonelyTile.c].index).getEndReel());
+            adjustAdjacentTileEndReel(
+                    levelReel.get(grid[lonelyTile.r][lonelyTile.c].index),
+                    levelReel,
+                    grid,
+                    lonelyTile.r - 1,
+                    lonelyTile.c);
         } else if (lonelyTile.c == levelWidth - 1) {
-            levelReel.get(grid[lonelyTile.r][lonelyTile.c].index).setEndReel(levelReel.get(grid[lonelyTile.r][lonelyTile.c - 1].index).getEndReel());
+            adjustAdjacentTileEndReel(
+                    levelReel.get(grid[lonelyTile.r][lonelyTile.c].index),
+                    levelReel,
+                    grid,
+                    lonelyTile.r,
+                    lonelyTile.c - 1);
         } else {
             adjustAnyLoneyAdjacentTile(levelReel, grid, lonelyTile);
         }
+    }
+
+    private void adjustAdjacentTileEndReel(
+            ReelTile currentReelTile,
+            Array<ReelTile> reelTiles,
+            TupleValueIndex[][] grid,
+            int adjacentR,
+            int adjacentC) {
+        if (grid[adjacentR][adjacentC] == null)
+            return;
+        currentReelTile.setEndReel(reelTiles.get(grid[adjacentR][adjacentC].index).getEndReel());
     }
 
     private void adjustAnyLoneyAdjacentTile(Array<ReelTile> levelReel, TupleValueIndex[][] grid, TupleValueIndex lonelyTile) {
@@ -251,7 +282,8 @@ public class LevelCreatorSimple {
     }
 
     private void setUpRelatedReelTileBody(ReelTile reelTile) {
-        Body reelTileBody = physics.createBoxBody(BodyDef.BodyType.DynamicBody,
+        Body reelTileBody = physics.createBoxBody(
+                 BodyDef.BodyType.DynamicBody,
                 reelTile.getX() + 20,
                 reelTile.getY() + 360,
                 19,
@@ -448,11 +480,17 @@ public class LevelCreatorSimple {
         return this.reelTiles;
     }
 
+    public void setReelTiles(Array<ReelTile> reelTiles) {
+        this.reelTiles = reelTiles;
+    }
+
     public Array<Body> getReelBoxes() {
         return this.reelBoxes;
     }
 
     public void setReelBoxes(Array<Body> reelBoxes) { this.reelBoxes = reelBoxes; }
+
+
 
     public Array<AnimatedReel> getAnimatedReels() {
         return animatedReels;
