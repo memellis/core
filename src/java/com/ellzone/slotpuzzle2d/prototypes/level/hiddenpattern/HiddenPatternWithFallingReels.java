@@ -684,6 +684,10 @@ public class HiddenPatternWithFallingReels extends SPPrototypeTemplate
         hud.addScore(score);
     }
 
+    public LevelCreatorSimple getLevelCreator() {
+        return levelCreator;
+    }
+
     @Override
     public AnnotationAssetManager getAnnotationAssetManager() {
         return annotationAssetManager;

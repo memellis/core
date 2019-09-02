@@ -26,7 +26,6 @@ import com.badlogic.gdx.maps.objects.RectangleMapObject;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.GdxRuntimeException;
-import com.ellzone.slotpuzzle2d.level.creator.LevelCreatorInjectionInterface;
 import com.ellzone.slotpuzzle2d.sprites.ReelSprites;
 import com.ellzone.slotpuzzle2d.tweenengine.TweenManager;
 import com.ellzone.slotpuzzle2d.utils.AssetsAnnotation;
@@ -252,7 +251,6 @@ public class LevelObjectCreator {
                 MessageFormat.format(COULD_NOT_EXTRACT_OBJECT_FROM_MESSAGE,
                                          parts[1]));
     }
-
 
     private void verifyThereAreTwoParts(String[] parts) {
         if (parts.length != LENGTH_TWO)

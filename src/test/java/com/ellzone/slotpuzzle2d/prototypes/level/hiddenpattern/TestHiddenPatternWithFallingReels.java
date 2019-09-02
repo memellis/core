@@ -33,6 +33,7 @@ import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.BodyDef;
 import com.badlogic.gdx.utils.Array;
+import com.ellzone.slotpuzzle2d.finitestatemachine.PlayStates;
 import com.ellzone.slotpuzzle2d.level.LevelDoor;
 import com.ellzone.slotpuzzle2d.level.card.Suit;
 import com.ellzone.slotpuzzle2d.level.creator.LevelCreator;
@@ -53,6 +54,8 @@ import net.dermetfan.gdx.assets.AnnotationAssetManager;
 
 import org.easymock.Capture;
 import org.easymock.EasyMock;
+import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.powermock.api.easymock.PowerMock;
@@ -71,9 +74,13 @@ import static com.ellzone.slotpuzzle2d.screens.PlayScreen.GAME_LEVEL_WIDTH;
 import static org.easymock.EasyMock.anyObject;
 import static org.easymock.EasyMock.capture;
 import static org.easymock.EasyMock.expect;
+import static org.hamcrest.CoreMatchers.equalTo;
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.powermock.api.easymock.PowerMock.createMock;
 import static org.powermock.api.easymock.PowerMock.expectNew;
 import static org.powermock.api.easymock.PowerMock.replayAll;
+import static org.powermock.api.easymock.PowerMock.verifyAll;
 
 @RunWith(PowerMockRunner.class)
 @PrepareForTest({HiddenPatternWithFallingReels.class,
@@ -112,6 +119,16 @@ public class TestHiddenPatternWithFallingReels {
     private Hud hudMock;
     private Array<AnimatedReel> animatedReelsMock;
 
+    @Before
+    public void setUp() {
+        createMocks();
+    }
+
+    @After
+    public void tearDown() {
+        teardownMocks();
+    }
+
     @Test
     public void testHiddenPatternWithFallingReels_WithNoReplacementReels() throws Exception {
         createMocks();
@@ -120,7 +137,20 @@ public class TestHiddenPatternWithFallingReels {
         replayAll();
         Whitebox.invokeMethod(partialHiddenPatternWithFallingReels, "loadlevel");
         partialHiddenPatternWithFallingReels.updateOverride(0);
-//        verifyAll();
+        assertThat(partialHiddenPatternWithFallingReels.getLevelCreator().getPlayState(), is(equalTo(PlayStates.INITIALISING)));
+        verifyAll();
+    }
+
+    @Test
+    public void testHiddenPatternWithFallingReels_WithTwoReplacementReels() throws Exception {
+        createMocks();
+        setUpPartialHiddenPatternWithFallingReelsFields();
+        setUpExpectations();
+        replayAll();
+        Whitebox.invokeMethod(partialHiddenPatternWithFallingReels, "loadlevel");
+        partialHiddenPatternWithFallingReels.updateOverride(0);
+        assertThat(partialHiddenPatternWithFallingReels.getLevelCreator().getPlayState(), is(equalTo(PlayStates.INITIALISING)));
+        verifyAll();
     }
 
     private void setUpExpectations() throws Exception {
@@ -317,6 +347,10 @@ public class TestHiddenPatternWithFallingReels {
                 "reelTiles",
                 reelTilesMock);
         Whitebox.setInternalState(
+                partialLevelObjectCreatorEntityHolder,
+                "reels",
+                animatedReelsMock);
+        Whitebox.setInternalState(
                 partialHiddenPatternWithFallingReels,
                 "reelSprites",
                 reelSpritesMock);
@@ -351,11 +385,7 @@ public class TestHiddenPatternWithFallingReels {
                 "initialiseOverride");
         partialLevelObjectCreatorEntityHolder = PowerMock.createPartialMock(
                 LevelObjectCreatorEntityHolder.class,
-                "getReelTiles"
-        );
-        partialLevelObjectCreatorEntityHolder = PowerMock.createPartialMock(
-                LevelObjectCreatorEntityHolder.class,
-                "getAnimatedReels"
+                "getReelTiles", "getAnimatedReels"
         );
     }
 
@@ -401,5 +431,33 @@ public class TestHiddenPatternWithFallingReels {
     private void setUpCaptureArguments() {
         debugCaptureArgument1 = EasyMock.newCapture();
         debugCaptureArgument2 = EasyMock.newCapture();
+    }
+
+    private void teardownMocks() {
+        applicationMock = null;
+        mockInput = null;
+        tweenManagerMock = null;
+        levelMock = null;
+        annotationAssetManagerMock = null;
+        tiledMapRendererMock = null;
+        mapLayersMock = null;
+        mapLayerMock = null;
+        mapObjectsMock = null;
+        rectangleMapObjectsMock = null;
+        cardDeckAtlasMock =  null;
+        levelDoorMock = null;
+        mapPropertiesMock = null;
+        randomMock = null;
+        spriteMock = null;
+        rectangleMapObjectMock = null;
+        reelTilesMock = null;
+        reelTileMock = null;
+        reelSpritesMock = null;
+        reelsMock = null;
+        reelTileListenerMock = null;
+        physicsMock = null;
+        bodyMock = null;
+        hudMock = null;
+        animatedReelsMock = null;
     }
 }
