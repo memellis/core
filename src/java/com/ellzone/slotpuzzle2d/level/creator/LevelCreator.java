@@ -61,6 +61,8 @@ import java.text.MessageFormat;
 import aurelienribon.tweenengine.equations.Quad;
 import aurelienribon.tweenengine.equations.Sine;
 
+import static com.ellzone.slotpuzzle2d.prototypes.level.minislotmachine.MiniSlotMachineLevelPrototypeWithLevelCreator.*;
+
 /*
 
 @startuml
@@ -702,7 +704,7 @@ public class LevelCreator {
             AnimatedReel animatedReel = animatedReelHelper.getAnimatedReels().get(reelBoxIndex);
             animatedReel.reinitialise();
         }
-        MiniSlotMachineLevelPrototypeWithLevelCreator.numberOfReelsToHitSinkBottom = replacementReelBoxes.size;
+        numberOfReelsToHitSinkBottom = replacementReelBoxes.size;
         replacementReelBoxes.removeRange(0, replacementReelBoxes.size - 1);
         dropReplacementReelBoxes = false;
         if (playState == PlayStates.INTRO_FLASHING)

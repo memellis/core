@@ -363,7 +363,6 @@ public class PuzzleGridType {
             } else {
                 Gdx.app.debug(SlotPuzzleConstants.SLOT_PUZZLE, "r="+matchSlot.r+" c="+matchSlot.c);
             }
-
         }
         return workingGrid;
     }
