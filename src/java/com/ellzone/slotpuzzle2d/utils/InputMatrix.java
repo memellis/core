@@ -33,19 +33,18 @@ public class InputMatrix {
         String ByX = scanner.next("x");
         int matrixHeight = scanner.nextByte();
         int[][] matrixInput = new int[matrixHeight][matrixWidth];
-        for (int r = 0; r < matrixHeight; r++) {
-            for (int c = 0; c < matrixWidth; c++) {
+        for (int r = 0; r < matrixHeight; r++)
+            for (int c = 0; c < matrixWidth; c++)
                 matrixInput[r][c] = scanner.nextInt();
-            }
-        }
+
         return matrixInput;
     }
 
     public void printMatrix(int[][] matrix) {
         for (int r = 0; r < matrix.length; r++) {
-            for (int c = 0; c < matrix[0].length; c++) {
+            for (int c = 0; c < matrix[0].length; c++)
                 System.out.print(matrix[r][c] + " ");
-            }
+
             System.out.println();
         }
     }

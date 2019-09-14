@@ -42,12 +42,14 @@ import com.ellzone.slotpuzzle2d.level.hidden.HiddenPlayingCard;
 import com.ellzone.slotpuzzle2d.level.hidden.Pip;
 import com.ellzone.slotpuzzle2d.physics.PhysicsManagerCustomBodies;
 import com.ellzone.slotpuzzle2d.scene.Hud;
+import com.ellzone.slotpuzzle2d.screens.PlayScreen;
 import com.ellzone.slotpuzzle2d.sprites.AnimatedReel;
 import com.ellzone.slotpuzzle2d.sprites.ReelSprites;
 import com.ellzone.slotpuzzle2d.sprites.ReelTile;
 import com.ellzone.slotpuzzle2d.sprites.ReelTileListener;
 import com.ellzone.slotpuzzle2d.tweenengine.TweenManager;
 import com.ellzone.slotpuzzle2d.utils.AssetsAnnotation;
+import com.ellzone.slotpuzzle2d.utils.InputMatrix;
 import com.ellzone.slotpuzzle2d.utils.Random;
 
 import net.dermetfan.gdx.assets.AnnotationAssetManager;
@@ -130,7 +132,6 @@ public class TestHiddenPatternWithFallingReels {
 
     @Test
     public void testHiddenPatternWithFallingReels_WithNoReplacementReels() throws Exception {
-        createMocks();
         setUpPartialHiddenPatternWithFallingReelsFields();
         setUpExpectations();
         replayAll();
@@ -142,7 +143,6 @@ public class TestHiddenPatternWithFallingReels {
 
     @Test
     public void testHiddenPatternWithFallingReels_WithTwoReplacementReels() throws Exception {
-        createMocks();
         setUpPartialHiddenPatternWithFallingReelsFields();
         setUpExpectations(2);
         replayAll();
@@ -151,6 +151,38 @@ public class TestHiddenPatternWithFallingReels {
         assertThat(partialHiddenPatternWithFallingReels.getLevelCreator().getPlayState(), is(equalTo(PlayStates.INITIALISING)));
         verifyAll();
     }
+
+    @Test
+    public void testHiddenPatternWithFallingReels_WithBottomRowReplacementReels() throws Exception {
+        int[][] testMatrix = createMatrixWithBottomRowFull();
+        reelTilesMock = createReelTilesFromMatrix(testMatrix);
+        assertReelTilesMockVsTestMatrix(testMatrix);
+    }
+
+    private void assertReelTilesMockVsTestMatrix(int[][] testMatrix) {
+        int startReel = 8 * testMatrix[0].length;
+        for (int c=0; c<GAME_LEVEL_WIDTH; c++)
+            assertThat((int) Whitebox.getInternalState(
+                    reelTilesMock.get(startReel + c), "endReel"),
+                    is(equalTo(testMatrix[8][c])));
+    }
+
+    private Array<ReelTile> createReelTilesFromMatrix(int[][] matrix) {
+        Array<ReelTile> reelTiles = new Array<>();
+        for (int r = 0; r < matrix.length; r++) {
+            for (int c = 0; c < matrix[0].length; c++) {
+                ReelTile reelTileMock = PowerMock.createMock(ReelTile.class);
+                Whitebox.setInternalState(reelTileMock,"x", PlayScreen.PUZZLE_GRID_START_X + (c * 40));
+                Whitebox.setInternalState(reelTileMock,"y",(r  * 40) + PlayScreen.PUZZLE_GRID_START_Y);
+                Whitebox.setInternalState(reelTileMock, "tileDeleted", matrix[r][c] < 0);
+                Whitebox.setInternalState(reelTileMock, "index", r * matrix[0].length + c);
+                Whitebox.setInternalState(reelTileMock, "endReel", matrix[r][c]);
+                reelTiles.add(reelTileMock);
+            }
+        }
+        return reelTiles;
+    }
+
 
     private void setUpExpectations() throws Exception {
         expectLoadlevel();
@@ -588,4 +620,20 @@ public class TestHiddenPatternWithFallingReels {
         hudMock = null;
         animatedReelsMock = null;
     }
+
+    private int[][] createMatrixWithBottomRowFull() {
+        String matrixToInput = "12 x 9\n"
+                + "-1 -1 -1 -1 -1 -1 -1 -1 -1 -1  -1  -1\n"
+                + "-1 -1 -1 -1 -1 -1 -1 -1 -1 -1  -1  -1\n"
+                + "-1 -1 -1 -1 -1 -1 -1 -1 -1 -1  -1  -1\n"
+                + "-1 -1 -1 -1 -1 -1 -1 -1 -1 -1  -1  -1\n"
+                + "-1 -1 -1 -1 -1 -1 -1 -1 -1 -1  -1  -1\n"
+                + "-1 -1 -1 -1 -1 -1 -1 -1 -1 -1  -1  -1\n"
+                + "-1 -1 -1 -1 -1 -1 -1 -1 -1 -1  -1  -1\n"
+                + "-1 -1 -1 -1 -1 -1 -1 -1 -1 -1  -1  -1\n"
+                + " 1  1  1  0  0  0  0  0  0  0   0   0\n";
+        InputMatrix inputMatrix = new InputMatrix(matrixToInput);
+        return inputMatrix.readMatrix();
+    }
+
 }
