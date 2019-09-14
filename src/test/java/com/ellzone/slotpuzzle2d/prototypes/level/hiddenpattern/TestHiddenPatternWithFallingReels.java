@@ -377,19 +377,6 @@ public class TestHiddenPatternWithFallingReels {
         return mapProperties;
     }
 
-    private void expectSetUpRelatedReelTileBody() {
-        expect(reelTileMock.getX()).andReturn(160.0f);
-        expect(reelTileMock.getY()).andReturn(40.0f);
-        expect(physicsMock.createBoxBody(
-                BodyDef.BodyType.DynamicBody,
-                180.0f,
-                400.0f,
-                19,
-                19,
-                true)).andReturn(bodyMock);
-        bodyMock.setUserData(reelTileMock);
-    }
-
     private void expectSetUpRelatedReelTileBody(int reelOffset) {
         expect(reelTilesMock.get(reelOffset).getX()).andReturn(160.0f + reelOffset * 40);
         expect(reelTilesMock.get(reelOffset).getY()).andReturn(40.0f + reelOffset * 40);
