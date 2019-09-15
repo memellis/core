@@ -54,6 +54,7 @@ import static com.ellzone.slotpuzzle2d.level.creator.LevelCreator.MINI_SLOT_MACH
 
 public class PlayScreenMiniSlotMachine extends PlayScreen {
 
+    public static final int LEVEL_TIME_LENGTH = 120;
     private int[][] reelGrid = new int[3][3];
     private Array<Array<Vector2>> rowMacthesToDraw;
     private ShapeRenderer shapeRenderer;
@@ -272,8 +273,7 @@ public class PlayScreenMiniSlotMachine extends PlayScreen {
         switch (type) {
             case TweenCallback.END:
                 playState = PlayStates.PLAYING;
-//                hud.resetWorldTime(LEVEL_TIME_LENGTH_IN_SECONDS);
-                hud.resetWorldTime(30);
+                hud.resetWorldTime(LEVEL_TIME_LENGTH);
                 hud.startWorldTimer();
                 if (levelDoor.getLevelType().equals(MINI_SLOT_MACHINE_LEVEL_TYPE))
                     matchReels();
@@ -340,6 +340,7 @@ public class PlayScreenMiniSlotMachine extends PlayScreen {
         game.batch.end();
         game.batch.begin();
         renderMatchedRows();
+        shapeRenderer.setProjectionMatrix(viewport.getCamera().combined);
         renderAnimatedReelsFlash();
         game.batch.end();
         renderLightButtons();

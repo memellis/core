@@ -270,7 +270,7 @@ public class PlayScreen implements Screen, PlayInterface, LevelCreatorInjectionI
     private LevelCallback stoppedSpinningCallback = new LevelCallback() {
         @Override
         public void onEvent (ReelTile source) {
-            reelStoppedSound.play();
+//            reelStoppedSound.play();
             reelsSpinning--;
             if (playStateMachine.getStateMachine().getCurrentState() == PlayState.PLAY) {
                 if (reelsSpinning < 1) {
@@ -421,8 +421,8 @@ public class PlayScreen implements Screen, PlayInterface, LevelCreatorInjectionI
     private void proceesDeleteReel(BaseTween<?> source) {
         ReelTile reel = (ReelTile) source.getUserData();
         hud.addScore((reel.getEndReel() + 1) * reel.getScore());
-        reelStoppedSound.play();
-        chaChingSound.play();
+//        reelStoppedSound.play();
+//        chaChingSound.play();
         reel.deleteReelTile();
         flashSlots.deleteAReel();
         if (levelDoor.getLevelType().equals(LevelCreator.PLAYING_CARD_LEVEL_TYPE))
@@ -538,7 +538,7 @@ public class PlayScreen implements Screen, PlayInterface, LevelCreatorInjectionI
         reel.setSy(0);
         animatedReel.reinitialise();
         hud.addScore(-1);
-        pullLeverSound.play();
+//        pullLeverSound.play();
     }
 
     protected void processReelTouchedWhileSpinning(ReelTile reel, int currentReel, int spinHelpSprite) {
@@ -546,8 +546,8 @@ public class PlayScreen implements Screen, PlayInterface, LevelCreatorInjectionI
         displaySpinHelp = true;
         displaySpinHelpSprite = spinHelpSprite;
         hud.addScore(-1);
-        pullLeverSound.play();
-        reelSpinningSound.play();
+//        pullLeverSound.play();
+//        reelSpinningSound.play();
     }
 
     protected TweenCallback levelOverCallback = new TweenCallback() {
@@ -852,7 +852,6 @@ public class PlayScreen implements Screen, PlayInterface, LevelCreatorInjectionI
     public void dispose() {
         stage.dispose();
         font.dispose();
-        chaChingSound.dispose();
     }
 
     private void drawPlayingCards(SpriteBatch spriteBatch) {
