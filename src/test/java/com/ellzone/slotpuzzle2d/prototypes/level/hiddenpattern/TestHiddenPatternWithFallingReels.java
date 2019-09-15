@@ -56,6 +56,7 @@ import net.dermetfan.gdx.assets.AnnotationAssetManager;
 
 import org.easymock.Capture;
 import org.easymock.EasyMock;
+import org.hamcrest.Matcher;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -75,9 +76,9 @@ import static com.ellzone.slotpuzzle2d.screens.PlayScreen.GAME_LEVEL_WIDTH;
 import static org.easymock.EasyMock.anyObject;
 import static org.easymock.EasyMock.capture;
 import static org.easymock.EasyMock.expect;
-import static org.hamcrest.CoreMatchers.equalTo;
-import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.core.IsEqual.equalTo;
 import static org.powermock.api.easymock.PowerMock.createMock;
 import static org.powermock.api.easymock.PowerMock.expectNew;
 import static org.powermock.api.easymock.PowerMock.replayAll;
@@ -137,7 +138,7 @@ public class TestHiddenPatternWithFallingReels {
         replayAll();
         Whitebox.invokeMethod(partialHiddenPatternWithFallingReels, "loadlevel");
         partialHiddenPatternWithFallingReels.updateOverride(0);
-        assertThat(partialHiddenPatternWithFallingReels.getLevelCreator().getPlayState(), is(equalTo(PlayStates.INITIALISING)));
+        assertThat(partialHiddenPatternWithFallingReels.getLevelCreator().getPlayState(), (Matcher<? super PlayStates>) is(equalTo(PlayStates.INITIALISING)));
         verifyAll();
     }
 
@@ -148,7 +149,7 @@ public class TestHiddenPatternWithFallingReels {
         replayAll();
         Whitebox.invokeMethod(partialHiddenPatternWithFallingReels, "loadlevel");
         partialHiddenPatternWithFallingReels.updateOverride(0);
-        assertThat(partialHiddenPatternWithFallingReels.getLevelCreator().getPlayState(), is(equalTo(PlayStates.INITIALISING)));
+        assertThat(partialHiddenPatternWithFallingReels.getLevelCreator().getPlayState(), (Matcher<? super PlayStates>) is(equalTo(PlayStates.INITIALISING)));
         verifyAll();
     }
 
@@ -164,7 +165,7 @@ public class TestHiddenPatternWithFallingReels {
         for (int c=0; c<GAME_LEVEL_WIDTH; c++)
             assertThat((int) Whitebox.getInternalState(
                     reelTilesMock.get(startReel + c), "endReel"),
-                    is(equalTo(testMatrix[8][c])));
+                    (Matcher<? super Integer>) is(equalTo(testMatrix[8][c])));
     }
 
     private Array<ReelTile> createReelTilesFromMatrix(int[][] matrix) {

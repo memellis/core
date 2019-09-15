@@ -104,7 +104,7 @@ public class PlayScreen implements Screen, PlayInterface, LevelCreatorInjectionI
     public static final float PUZZLE_GRID_START_X = 160.0f;
     public static final float PUZZLE_GRID_START_Y = 40.0f;
     public static final String SLOTPUZZLE_SCREEN = "PlayScreen";
-    public static final int LEVEL_TIME_LENGTH_IN_SECONDS = 30;
+    public static final int LEVEL_TIME_LENGTH_IN_SECONDS = 300;
     public static final String WIDTH_KEY = "width";
     public static final String HEIGHT_KEY = "height";
 
@@ -512,8 +512,7 @@ public class PlayScreen implements Screen, PlayInterface, LevelCreatorInjectionI
             switch (type) {
                 case TweenCallback.END:
                     playState = PlayStates.PLAYING;
-//                    hud.resetWorldTime(LEVEL_TIME_LENGTH_IN_SECONDS);
-                    hud.resetWorldTime(30);
+                    hud.resetWorldTime(LEVEL_TIME_LENGTH_IN_SECONDS);
                     hud.startWorldTimer();
                     if (levelDoor.getLevelType().equals(LevelCreator.HIDDEN_PATTERN_LEVEL_TYPE))
                         isHiddenPatternRevealed(reelTiles);
@@ -752,6 +751,7 @@ public class PlayScreen implements Screen, PlayInterface, LevelCreatorInjectionI
         renderSpinHelper();
         game.batch.end();
         game.batch.begin();
+        shapeRenderer.setProjectionMatrix(viewport.getCamera().combined);
         renderAnimatedReelsFlash();
         game.batch.end();
         renderWorld();
