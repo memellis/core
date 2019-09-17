@@ -50,6 +50,7 @@ import com.ellzone.slotpuzzle2d.prototypes.cylinder.Render3DCylinderModelAsWiref
 import com.ellzone.slotpuzzle2d.prototypes.cylinder.Render3DCylinderWithOptionalGrid;
 import com.ellzone.slotpuzzle2d.prototypes.events.GdxAiEntityMessaging;
 import com.ellzone.slotpuzzle2d.prototypes.framebuffer.FrameBufferParticleEffectSample;
+import com.ellzone.slotpuzzle2d.prototypes.gdxfreetype.GdxFreeType;
 import com.ellzone.slotpuzzle2d.prototypes.icons.DownloadMamuIcons;
 import com.ellzone.slotpuzzle2d.prototypes.level.hiddenpattern.HiddenPatternWithFallingReels;
 import com.ellzone.slotpuzzle2d.prototypes.level.minislotmachine.MiniSlotMachineLevelFallingReels;
@@ -129,6 +130,7 @@ public class SPPrototypes {
         EdgeShapesBigCatchBox.class,
 		FrameBufferParticleEffectSample.class,
         GdxAiEntityMessaging.class,
+        GdxFreeType.class,
         Light.class,
         SmoothScrollingWorldMap.class,
         SubPixelPerfectSmoothScrolling.class,

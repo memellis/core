@@ -117,8 +117,8 @@ public class ReelTile extends ReelSprite {
         region.setRegion((int) sx, (int) syModulus, (int)reelDisplayWidth, (int)reelDisplayHeight);
         setRegion(region);
         if (this.spinningSound != null) {
-        	this.spinngPitch = this.spinngPitch * 0.999f;
-        	this.spinningSound.setPitch(this.spinningSoundId, this.spinngPitch);
+//        	this.spinngPitch = this.spinngPitch * 0.999f;
+//        	this.spinningSound.setPitch(this.spinningSoundId, this.spinngPitch);
         }
  	}
 		
@@ -188,8 +188,8 @@ public class ReelTile extends ReelSprite {
 	
 	public void startSpinning() {
 		super.setSpinning(true);
-		if (this.spinningSound != null)
-			startSpinningSound();
+//		if (this.spinningSound != null)
+//			startSpinningSound();
 	}
 
 	private void startSpinningSound() {
@@ -200,13 +200,13 @@ public class ReelTile extends ReelSprite {
 	
 	public void stopSpinning() {
 		super.setSpinning(false);
-		if (this.spinningSound != null)
-			stopSpinningSound();
+//		if (this.spinningSound != null)
+//			stopSpinningSound();
 	}
 
 	public void stopSpinningSound() {
-        if (this.spinningSound != null)
-            this.spinningSound.stop(this.spinningSoundId);
+//        if (this.spinningSound != null)
+//            this.spinningSound.stop(this.spinningSoundId);
 	}
 	
 	public FlashState getFlashState() {

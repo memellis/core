@@ -120,7 +120,7 @@ public class AnimatedReel {
 		if (type == SPPhysicsCallback.PARTICLE_UPDATE) {
 			reel.stopSpinningSound();
 			if (this.stoppingSound != null) {
-				this.stoppingSound.play();
+//				this.stoppingSound.play();
 			}
 			DampenedSineParticle ds = (DampenedSineParticle)source.getSource();
 			ReelTile reel = (ReelTile)ds.getUserData();

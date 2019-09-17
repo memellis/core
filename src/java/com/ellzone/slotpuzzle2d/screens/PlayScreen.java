@@ -72,14 +72,15 @@ import com.ellzone.slotpuzzle2d.sprites.AnimatedReel;
 import com.ellzone.slotpuzzle2d.sprites.HoldLightButton;
 import com.ellzone.slotpuzzle2d.sprites.ReelSprites;
 import com.ellzone.slotpuzzle2d.sprites.ReelTile;
-import com.ellzone.slotpuzzle2d.sprites.score.Score;
 import com.ellzone.slotpuzzle2d.sprites.SlotHandleSprite;
+import com.ellzone.slotpuzzle2d.sprites.score.Score;
 import com.ellzone.slotpuzzle2d.tweenengine.BaseTween;
 import com.ellzone.slotpuzzle2d.tweenengine.SlotPuzzleTween;
 import com.ellzone.slotpuzzle2d.tweenengine.Timeline;
 import com.ellzone.slotpuzzle2d.tweenengine.TweenCallback;
 import com.ellzone.slotpuzzle2d.tweenengine.TweenManager;
 import com.ellzone.slotpuzzle2d.utils.AssetsAnnotation;
+import com.ellzone.slotpuzzle2d.utils.FrameRate;
 import com.ellzone.slotpuzzle2d.utils.PixmapProcessors;
 
 import net.dermetfan.gdx.assets.AnnotationAssetManager;
@@ -159,6 +160,7 @@ public class PlayScreen implements Screen, PlayInterface, LevelCreatorInjectionI
     private int[][] reelGrid = new int[3][3];
     private Array<Array<Vector2>> rowMacthesToDraw;
     private ShapeRenderer shapeRenderer;
+    private FrameRate framerate;
 
     public PlayScreen(SlotPuzzle game, LevelDoor levelDoor, MapTile mapTile) {
         this.game = game;
@@ -227,6 +229,7 @@ public class PlayScreen implements Screen, PlayInterface, LevelCreatorInjectionI
     private void initialiseHud() {
         hud = new Hud(game.batch);
         hud.setLevelName(levelDoor.getLevelName());
+        framerate = new FrameRate();
     }
 
     private void loadLevel() {
@@ -290,15 +293,16 @@ public class PlayScreen implements Screen, PlayInterface, LevelCreatorInjectionI
         public void onEvent(ReelTile source) {
             if ((levelDoor.getLevelType().equals(LevelCreator.HIDDEN_PATTERN_LEVEL_TYPE)) ||
                 (levelDoor.getLevelType().equals(PLAYING_CARD_LEVEL_TYPE))) {
-                if (testForAnyLonelyReels(reelTiles)) {
-                    win = false;
-                    if (hud.getLives() > 0) {
-                        playState = PlayStates.LEVEL_LOST;
-                        playScreenPopUps.setLevelLostSpritePositions();
-                        playScreenPopUps.getLevelLostPopUp().showLevelPopUp(null);
-                    } else
-                        gameOver = true;
-                }
+                if (playStateMachine.getStateMachine().getCurrentState() == PlayState.PLAY)
+                   if (testForAnyLonelyReels(reelTiles)) {
+                        win = false;
+                        if (hud.getLives() > 0) {
+                            playState = PlayStates.LEVEL_LOST;
+                            playScreenPopUps.setLevelLostSpritePositions();
+                            playScreenPopUps.getLevelLostPopUp().showLevelPopUp(null);
+                        } else
+                            gameOver = true;
+                    }
                 reelScoreAnimation(source);
                 deleteReelAnimation(source);
             }
@@ -399,8 +403,9 @@ public class PlayScreen implements Screen, PlayInterface, LevelCreatorInjectionI
     private void deleteReelAnimation(ReelTile source) {
         Timeline.createSequence()
             .beginParallel()
-            .push(SlotPuzzleTween.to(source, SpriteAccessor.SCALE_XY, 0.3f).target(6, 6).ease(Quad.IN))
-            .push(SlotPuzzleTween.to(source, SpriteAccessor.OPACITY, 0.3f).target(0).ease(Quad.IN))
+            .delay(random.nextFloat()*2.0f)
+            .push(SlotPuzzleTween.to(source, SpriteAccessor.SCALE_XY, 0.5f).target(6, 6).ease(Quad.IN))
+            .push(SlotPuzzleTween.to(source, SpriteAccessor.OPACITY, 0.5f).target(0).ease(Quad.IN))
             .end()
             .setUserData(source)
             .setCallback(deleteReelCallback)
@@ -425,10 +430,12 @@ public class PlayScreen implements Screen, PlayInterface, LevelCreatorInjectionI
 //        chaChingSound.play();
         reel.deleteReelTile();
         flashSlots.deleteAReel();
-        if (levelDoor.getLevelType().equals(LevelCreator.PLAYING_CARD_LEVEL_TYPE))
-            testPlayingCardLevelWon();
-        if (levelDoor.getLevelType().equals(LevelCreator.HIDDEN_PATTERN_LEVEL_TYPE))
-            testForHiddenPlatternLevelWon();
+        if (playStateMachine.getStateMachine().getCurrentState() == PlayState.PLAY) {
+            if (levelDoor.getLevelType().equals(LevelCreator.PLAYING_CARD_LEVEL_TYPE))
+                testPlayingCardLevelWon();
+            if (levelDoor.getLevelType().equals(LevelCreator.HIDDEN_PATTERN_LEVEL_TYPE))
+                testForHiddenPlatternLevelWon();
+        }
     }
 
     protected void reelScoreAnimation(ReelTile source) {
@@ -436,8 +443,9 @@ public class PlayScreen implements Screen, PlayInterface, LevelCreatorInjectionI
         scores.add(score);
         Timeline.createSequence()
                 .beginParallel()
-                .push(SlotPuzzleTween.to(score, ScoreAccessor.POS_XY, 2.0f).targetRelative(random.nextInt(20), random.nextInt(160)).ease(Quad.IN))
-                .push(SlotPuzzleTween.to(score, ScoreAccessor.SCALE_XY, 2.0f).target(2.0f, 2.0f).ease(Quad.IN))
+                .delay(random.nextFloat()*2.0f)
+                .push(SlotPuzzleTween.to(score, ScoreAccessor.POS_XY, 2.5f).targetRelative(random.nextInt(20), random.nextInt(160)).ease(Quad.IN))
+                .push(SlotPuzzleTween.to(score, ScoreAccessor.SCALE_XY, 2.5f).target(2.0f, 2.0f).ease(Quad.IN))
                 .end()
                 .setUserData(score)
                 .setCallback(deleteScoreCallback)
@@ -645,6 +653,7 @@ public class PlayScreen implements Screen, PlayInterface, LevelCreatorInjectionI
         hud.update(delta);
         if (hud.getWorldTime() == 0 && playState != PlayStates.BONUS_LEVEL_ENDED)
             weAreOutOfTime();
+        framerate.update();
         checkForGameOverCondition();
     }
 
@@ -699,6 +708,7 @@ public class PlayScreen implements Screen, PlayInterface, LevelCreatorInjectionI
         drawCurrentPlayState();
         renderHud();
         stage.draw();
+        framerate.render();
     }
 
     protected void handleInput() {

@@ -16,9 +16,6 @@
 
 package com.ellzone.slotpuzzle2d.screens;
 
-import java.io.IOException;
-import java.util.Random;
-import org.jrenner.smartfont.SmartFontGenerator;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.InputAdapter;
@@ -51,6 +48,7 @@ import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import com.ellzone.slotpuzzle2d.SlotPuzzle;
+import com.ellzone.slotpuzzle2d.SlotPuzzleConstants;
 import com.ellzone.slotpuzzle2d.Version;
 import com.ellzone.slotpuzzle2d.audio.MusicManager;
 import com.ellzone.slotpuzzle2d.audio.MusicPlayer;
@@ -75,9 +73,13 @@ import com.ellzone.slotpuzzle2d.tweenengine.TweenManager;
 import com.ellzone.slotpuzzle2d.utils.AssetsAnnotation;
 import com.ellzone.slotpuzzle2d.utils.FileUtils;
 import com.ellzone.slotpuzzle2d.utils.PixmapProcessors;
-import com.ellzone.slotpuzzle2d.SlotPuzzleConstants;
 
 import net.dermetfan.gdx.assets.AnnotationAssetManager;
+
+import org.jrenner.smartfont.SmartFontGenerator;
+
+import java.io.IOException;
+import java.util.Random;
 
 import aurelienribon.tweenengine.equations.Bounce;
 import aurelienribon.tweenengine.equations.Elastic;
