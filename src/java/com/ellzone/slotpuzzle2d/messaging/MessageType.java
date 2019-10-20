@@ -10,7 +10,9 @@ public enum MessageType {
     PauseMusic("PauseMusic", 6),
     GetCurrentMusicTrack("GetCurrentMusicTrack", 7),
     PlayAudio("PlayAudio", 8),
-    StopAudio("StopAudio", 9);
+    StopAudio("StopAudio", 9),
+    PauseAudio("PauseAudio", 10);
+
 
     public final String name;
     public final int index;

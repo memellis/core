@@ -88,4 +88,8 @@ public class AudioManager implements Telegraph {
         }
         return numberOfSoundsPlayedSince;
     }
+
+    public String[] getAudioTracksNames() {
+        return (String[]) audioLibrary.keySet().toArray(new String[audioLibrary.size()]);
+    }
 }
