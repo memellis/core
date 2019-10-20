@@ -91,57 +91,6 @@ public class MenuScreen implements Screen {
     }
 
     private void createButtons() {
-//        TextButton gdxButton = new TextButton("Get libGDX version", skin);
-//        gdxButton.setPosition(SPPrototypesGame.V_WIDTH / 2 - SPPrototypesGame.V_WIDTH / 8 , SPPrototypesGame.V_HEIGHT/2 - gdxButton.getHeight());
-//        stage.addActor(gdxButton);
-//        gdxButton.addListener(new ChangeListener() {
-//            @Override
-//	        public void changed(ChangeEvent event, Actor actor) {
-//                gdxVersion = SPPrototypesGame.gdxVersion.VERSION;
-//	        }
-//	    });
-		
-//		TextButton introScreenButton = new TextButton("IntroScreen Prototype", skin);
-//        introScreenButton.setPosition(SPPrototypesGame.V_WIDTH / 2 - SPPrototypesGame.V_WIDTH / 8, SPPrototypesGame.V_HEIGHT / 2 - 2 * introScreenButton.getHeight());
-//        this.stage.addActor(introScreenButton);
-//        introScreenButton.addListener(new ChangeListener() {
-//				@Override
-//				public void changed(ChangeEvent event, Actor actor) {
-//					introScreenPrototype = true;
-//				}
-//			});
-
-//        TextButton worldScreenButton = new TextButton("WorldMap Prototype", skin);
-//        worldScreenButton.setPosition(SPPrototypesGame.V_WIDTH / 2 - SPPrototypesGame.V_WIDTH / 8, SPPrototypesGame.V_HEIGHT / 2 - 3 * worldScreenButton.getHeight());
-//        this.stage.addActor(worldScreenButton);
-//        worldScreenButton.addListener(new ChangeListener() {
-//            @Override
-//            public void changed(ChangeEvent event, Actor actor) {
-//                worldScreenPrototype = true;
-//            }
-//        });
-
-//        TextButton playScreenButton = new TextButton("PlayScreen Prototype", skin);
-//        playScreenButton.setPosition(SPPrototypesGame.V_WIDTH / 2 - SPPrototypesGame.V_WIDTH / 8, SPPrototypesGame.V_HEIGHT / 2 - 4 * playScreenButton.getHeight());
-//        this.stage.addActor(playScreenButton);
-//        playScreenButton.addListener(new ChangeListener() {
-//            @Override
-//            public void changed(ChangeEvent event, Actor actor) {
-//                playScreenPrototype = true;
-//                setUpPlayScreenPrototye();
-//            }
-//        });
-
-//		final TextButton typeWriterButton = new TextButton("TypeWriter Prototype", skin);
-//        typeWriterButton.setPosition(SPPrototypesGame.V_WIDTH / 2 - SPPrototypesGame.V_WIDTH / 8, SPPrototypesGame.V_HEIGHT / 2 - 5 * typeWriterButton.getHeight());
-//        this.stage.addActor(typeWriterButton);
-//        typeWriterButton.addListener(new ChangeListener() {
-//				@Override
-//				public void changed(ChangeEvent event, Actor actor) {
-//					typeWriterPrototype = true;
-//				}
-//        });
-
         createButton("Get libGDX version", 1, new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {

@@ -31,9 +31,11 @@ import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.SelectBox;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
+import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.ellzone.slotpuzzle2d.audio.AudioManager;
 import com.ellzone.slotpuzzle2d.prototypes.SPPrototype;
+import com.ellzone.slotpuzzle2d.prototypes.SPPrototypesGame;
 import com.ellzone.slotpuzzle2d.utils.AssetsAnnotation;
 
 import net.dermetfan.gdx.assets.AnnotationAssetManager;
@@ -52,6 +54,7 @@ public class PlayAudio extends SPPrototype {
     private Stage stage;
     private SelectBox<String> audioBox;
     private String currentAudioTrack;
+    private boolean worldScreenPrototype = false;
 
     @Override
     public void create() {
@@ -79,6 +82,15 @@ public class PlayAudio extends SPPrototype {
 
         setAudioTrack(audioBox.getSelected());
 
+        createButton("Number of tracks played since last 30 seconds",
+                     1, new ChangeListener() {
+                    @Override
+                    public void changed(ChangeEvent event, Actor actor) {
+                        System.out.println("Was "+audioManager.getNumberSoundsPlayingSinceTimeInMilliSeconds(System.currentTimeMillis()-30000L));
+                    }
+                },
+                skin);
+
         Table table = new Table(skin);
         table.add(audioBox);
         table.setFillParent(true);
@@ -86,6 +98,15 @@ public class PlayAudio extends SPPrototype {
 
         Gdx.input.setInputProcessor(stage);
     }
+
+    private void createButton(String buttonText, int buttonPostion, ChangeListener buttonChangeListener, Skin skin) {
+        TextButton textButton = new TextButton(buttonText, skin);
+        textButton.setPosition(SPPrototypesGame.V_WIDTH / 2 - SPPrototypesGame.V_WIDTH / 8,
+                SPPrototypesGame.V_HEIGHT - buttonPostion * textButton.getHeight());
+        stage.addActor(textButton);
+        textButton.addListener(buttonChangeListener);
+    }
+
 
     private void setAudioTrack(String selected) {
         currentAudioTrack = selected;
@@ -104,7 +125,8 @@ public class PlayAudio extends SPPrototype {
         messageManager = MessageManager.getInstance();
         messageManager.addListeners(audioManager,
                 PlayAudio.index,
-                StopAudio.index);
+                StopAudio.index,
+                PauseAudio.index);
         return messageManager;
     }
 
