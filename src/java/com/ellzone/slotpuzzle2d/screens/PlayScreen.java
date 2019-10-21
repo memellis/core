@@ -18,6 +18,7 @@ package com.ellzone.slotpuzzle2d.screens;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
+import com.badlogic.gdx.ai.msg.MessageManager;
 import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
@@ -42,6 +43,7 @@ import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import com.ellzone.slotpuzzle2d.SlotPuzzle;
 import com.ellzone.slotpuzzle2d.SlotPuzzleConstants;
+import com.ellzone.slotpuzzle2d.audio.AudioManager;
 import com.ellzone.slotpuzzle2d.effects.ReelAccessor;
 import com.ellzone.slotpuzzle2d.effects.ScoreAccessor;
 import com.ellzone.slotpuzzle2d.effects.SpriteAccessor;
@@ -95,6 +97,9 @@ import static com.ellzone.slotpuzzle2d.SlotPuzzleConstants.VIRTUAL_HEIGHT;
 import static com.ellzone.slotpuzzle2d.SlotPuzzleConstants.VIRTUAL_WIDTH;
 import static com.ellzone.slotpuzzle2d.level.creator.LevelCreator.HIDDEN_PATTERN_LEVEL_TYPE;
 import static com.ellzone.slotpuzzle2d.level.creator.LevelCreator.PLAYING_CARD_LEVEL_TYPE;
+import static com.ellzone.slotpuzzle2d.messaging.MessageType.PauseAudio;
+import static com.ellzone.slotpuzzle2d.messaging.MessageType.PlayAudio;
+import static com.ellzone.slotpuzzle2d.messaging.MessageType.StopAudio;
 
 public class PlayScreen implements Screen, PlayInterface, LevelCreatorInjectionInterface {
     public static final int TILE_WIDTH = 40;
@@ -161,6 +166,8 @@ public class PlayScreen implements Screen, PlayInterface, LevelCreatorInjectionI
     private Array<Array<Vector2>> rowMacthesToDraw;
     private ShapeRenderer shapeRenderer;
     private FrameRate framerate;
+    private AudioManager audioManager;
+    private MessageManager messageManager;
 
     public PlayScreen(SlotPuzzle game, LevelDoor levelDoor, MapTile mapTile) {
         this.game = game;
@@ -191,6 +198,17 @@ public class PlayScreen implements Screen, PlayInterface, LevelCreatorInjectionI
         getAssets(game.annotationAssetManager);
         createSprites();
         slotReelScrollTexture = createSlotReelScrollTexture();
+        audioManager = new AudioManager(game.annotationAssetManager);
+        messageManager = setUpMessageManager();
+    }
+
+    private MessageManager setUpMessageManager() {
+        MessageManager messageManager = MessageManager.getInstance();
+        messageManager.addListeners(audioManager,
+                PlayAudio.index,
+                StopAudio.index,
+                PauseAudio.index);
+        return messageManager;
     }
 
     private void setupPlayScreen() {
@@ -273,7 +291,8 @@ public class PlayScreen implements Screen, PlayInterface, LevelCreatorInjectionI
     private LevelCallback stoppedSpinningCallback = new LevelCallback() {
         @Override
         public void onEvent (ReelTile source) {
-//            reelStoppedSound.play();
+            messageManager.dispatchMessage(PlayAudio.index, AssetsAnnotation.SOUND_REEL_STOPPED);
+
             reelsSpinning--;
             if (playStateMachine.getStateMachine().getCurrentState() == PlayState.PLAY) {
                 if (reelsSpinning < 1) {
@@ -426,8 +445,8 @@ public class PlayScreen implements Screen, PlayInterface, LevelCreatorInjectionI
     private void proceesDeleteReel(BaseTween<?> source) {
         ReelTile reel = (ReelTile) source.getUserData();
         hud.addScore((reel.getEndReel() + 1) * reel.getScore());
-//        reelStoppedSound.play();
-//        chaChingSound.play();
+        messageManager.dispatchMessage(PlayAudio.index, AssetsAnnotation.SOUND_REEL_STOPPED);
+        messageManager.dispatchMessage(PlayAudio.index, AssetsAnnotation.SOUND_CHA_CHING);
         reel.deleteReelTile();
         flashSlots.deleteAReel();
         if (playStateMachine.getStateMachine().getCurrentState() == PlayState.PLAY) {
@@ -546,7 +565,7 @@ public class PlayScreen implements Screen, PlayInterface, LevelCreatorInjectionI
         reel.setSy(0);
         animatedReel.reinitialise();
         hud.addScore(-1);
-//        pullLeverSound.play();
+        messageManager.dispatchMessage(PlayAudio.index, AssetsAnnotation.SOUND_PULL_LEVER);
     }
 
     protected void processReelTouchedWhileSpinning(ReelTile reel, int currentReel, int spinHelpSprite) {
@@ -554,8 +573,8 @@ public class PlayScreen implements Screen, PlayInterface, LevelCreatorInjectionI
         displaySpinHelp = true;
         displaySpinHelpSprite = spinHelpSprite;
         hud.addScore(-1);
-//        pullLeverSound.play();
-//        reelSpinningSound.play();
+        messageManager.dispatchMessage(PlayAudio.index, AssetsAnnotation.SOUND_PULL_LEVER);
+        messageManager.dispatchMessage(PlayAudio.index, AssetsAnnotation.SOUND_REEL_SPINNING);
     }
 
     protected TweenCallback levelOverCallback = new TweenCallback() {

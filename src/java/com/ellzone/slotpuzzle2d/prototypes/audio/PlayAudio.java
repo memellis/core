@@ -58,9 +58,18 @@ public class PlayAudio extends SPPrototype {
 
     @Override
     public void create() {
-        setUpAudio();
+        annotationAssetManager = loadAssets();
+        setUpAudio(annotationAssetManager);
         messageManager = setUpMessageManager();
         setUpUi();
+    }
+
+    private AnnotationAssetManager loadAssets() {
+        AnnotationAssetManager annotationAssetManager = new AnnotationAssetManager();
+        annotationAssetManager.setLoader(TiledMap .class, new TmxMapLoader(new InternalFileHandleResolver()));
+        annotationAssetManager.load(new AssetsAnnotation());
+        annotationAssetManager.finishLoading();
+        return annotationAssetManager;
     }
 
     private void setUpUi() {
@@ -112,12 +121,7 @@ public class PlayAudio extends SPPrototype {
         currentAudioTrack = selected;
     }
 
-    private void setUpAudio() {
-        annotationAssetManager = new AnnotationAssetManager();
-        annotationAssetManager.setLoader(TiledMap.class, new TmxMapLoader(new InternalFileHandleResolver()));
-        annotationAssetManager.load(new AssetsAnnotation());
-        annotationAssetManager.finishLoading();
-
+    private void setUpAudio(AnnotationAssetManager annotationAssetManager) {
         audioManager = new AudioManager(annotationAssetManager);
     }
 
