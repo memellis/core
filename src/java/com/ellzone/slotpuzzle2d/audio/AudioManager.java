@@ -33,6 +33,8 @@ public class AudioManager implements Telegraph {
     private Map<String, Sound> audioLibrary;
     private Map<Sound, String> audioLibraryToName;
     private Map<Long, Long> soundsPlayed = new HashMap<Long, Long>();
+    private int maxMessages = 20;
+    private long timeUnit = 1000L;
 
     public AudioManager(AnnotationAssetManager annotationAssetManager) {
         this.annotationAssetManager = annotationAssetManager;
@@ -70,6 +72,12 @@ public class AudioManager implements Telegraph {
     @Override
     public boolean handleMessage(Telegram message) {
         if (message.message == MessageType.PlayAudio.index) {
+            if (maxMessages > 0) {
+                int numberOfSoundsPlayingSinceTimeInMilliSeconds = getNumberSoundsPlayingSinceTimeInMilliSeconds(System.currentTimeMillis() - timeUnit);
+                if (numberOfSoundsPlayingSinceTimeInMilliSeconds > maxMessages)
+                    return true;
+            }
+
             String soundToPlay = (String) message.extraInfo;
             Sound sound = audioLibrary.get(soundToPlay);
             Long soundId = new Long(sound.play());
@@ -87,6 +95,10 @@ public class AudioManager implements Telegraph {
                 numberOfSoundsPlayedSince++;
         }
         return numberOfSoundsPlayedSince;
+    }
+
+    public void setMaxMessagesPerTimeUnit(int maxMessages, Long timeUnit) {
+
     }
 
     public String[] getAudioTracksNames() {
