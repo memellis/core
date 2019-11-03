@@ -5,9 +5,12 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Array;
 import com.ellzone.slotpuzzle2d.SlotPuzzleConstants;
 import com.ellzone.slotpuzzle2d.sprites.ReelTile;
+import com.ellzone.slotpuzzle2d.tweenengine.BaseTween;
 import com.ellzone.slotpuzzle2d.tweenengine.Timeline;
 import com.ellzone.slotpuzzle2d.tweenengine.TweenCallback;
 import com.ellzone.slotpuzzle2d.tweenengine.TweenManager;
+
+import java.sql.Timestamp;
 
 import static com.badlogic.gdx.math.MathUtils.random;
 
@@ -20,18 +23,29 @@ public abstract class IntroSequence {
         this.tweenManager = tweenManager;
     }
 
+    private TweenCallback startReelSpinningCallback = new TweenCallback() {
+        @Override
+        public void onEvent(int type, BaseTween<?> source) {
+            switch (type) {
+                case TweenCallback.BEGIN:
+                    System.out.println(new Timestamp(System.currentTimeMillis()));
+                    System.out.println("reelTile="+((ReelTile) source.getUserData()).getIndex());
+                    ((ReelTile) source.getUserData()).startSpinning();
+                    break;
+            }
+        }
+    };
+
     public void createReelIntroSequence(TweenCallback introSequenceCallback) {
         Timeline introSequence = Timeline.createParallel();
-        for(int i = 0; i < reelTiles.size; i++) {
+        for(int i = 0; i < reelTiles.size; i++)
             introSequence = introSequence
                     .push(buildSequence(reelTiles.get(i), i, random.nextFloat() * 3.0f, random.nextFloat() * 3.0f));
-        }
         introSequence.pushPause(0.3f)
                 .setCallback(introSequenceCallback)
                 .setCallbackTriggers(TweenCallback.END)
                 .start(tweenManager);
-        System.out.println("Intro sequence started...");
-    }
+   }
 
     protected Vector2 getRandomCorner() {
         int randomCorner = random.nextInt(4);

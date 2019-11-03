@@ -21,7 +21,6 @@ import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.utils.Array;
 import com.ellzone.slotpuzzle2d.level.LevelDoor;
 import com.ellzone.slotpuzzle2d.level.card.Card;
-import com.ellzone.slotpuzzle2d.level.creator.LevelCallback;
 import com.ellzone.slotpuzzle2d.level.hidden.HiddenPattern;
 import com.ellzone.slotpuzzle2d.level.hidden.HiddenPlayingCard;
 import com.ellzone.slotpuzzle2d.level.hidden.HiddenShape;
@@ -40,8 +39,8 @@ import com.ellzone.slotpuzzle2d.utils.Random;
 
 import net.dermetfan.gdx.assets.AnnotationAssetManager;
 
-import static com.ellzone.slotpuzzle2d.level.creator.LevelCreator.PLAYING_CARD_LEVEL_TYPE;
 import static com.ellzone.slotpuzzle2d.level.creator.LevelCreator.MINI_SLOT_MACHINE_LEVEL_TYPE;
+import static com.ellzone.slotpuzzle2d.level.creator.LevelCreator.PLAYING_CARD_LEVEL_TYPE;
 
 public class LevelLoader {
     private final AnnotationAssetManager annotationAssetManager;
@@ -121,10 +120,10 @@ public class LevelLoader {
             }
         );
         reelTile.unDeleteReelTile();
-        reelTile.startSpinning();
+//        reelTile.startSpinning();
         animatedReel.reinitialise();
+        reelTile.setSpinning(false);
         reelTiles.add(reelTile);
-        System.out.println("reelTiles.size="+reelTiles.size);
     }
 
     private void initialiseHiddenPlayingCards() {

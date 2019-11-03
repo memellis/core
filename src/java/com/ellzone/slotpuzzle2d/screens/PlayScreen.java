@@ -87,6 +87,7 @@ import com.ellzone.slotpuzzle2d.utils.PixmapProcessors;
 
 import net.dermetfan.gdx.assets.AnnotationAssetManager;
 
+import java.sql.Timestamp;
 import java.util.Random;
 
 import aurelienribon.tweenengine.equations.Quad;
@@ -292,7 +293,8 @@ public class PlayScreen implements Screen, PlayInterface, LevelCreatorInjectionI
         @Override
         public void onEvent (ReelTile source) {
             messageManager.dispatchMessage(PlayAudio.index, AssetsAnnotation.SOUND_REEL_STOPPED);
-
+            Timestamp timestamp = new Timestamp(System.currentTimeMillis());
+            System.out.println("reelSpinning="+reelsSpinning + " "+timestamp);
             reelsSpinning--;
             if (playStateMachine.getStateMachine().getCurrentState() == PlayState.PLAY) {
                 if (reelsSpinning < 1) {
@@ -389,13 +391,13 @@ public class PlayScreen implements Screen, PlayInterface, LevelCreatorInjectionI
     private TweenCallback introSequenceCallback = new TweenCallback() {
         @Override
         public void onEvent(int type, BaseTween<?> source) {
-            delegateIntroSequenceCallback(type);
+            delegateIntroSequenceCallback(type, (ReelTile) source.getUserData());
         }
     };
 
-    private void delegateIntroSequenceCallback(int type) {
+    private void delegateIntroSequenceCallback(int type, ReelTile reelTile) {
         switch (type) {
-            case TweenCallback.END:
+             case TweenCallback.END:
                 playState = PlayStates.INTRO_POPUP;
                 playScreenPopUps.setPopUpSpritePositions();
                 playScreenPopUps.getLevelPopUp().showLevelPopUp(null);
@@ -560,7 +562,7 @@ public class PlayScreen implements Screen, PlayInterface, LevelCreatorInjectionI
 
     private void startReelSpinning(ReelTile reel, AnimatedReel animatedReel) {
         reel.setEndReel(random.nextInt(sprites.length - 1));
-        reel.startSpinning();
+//        reel.startSpinning();
         reelsSpinning++;
         reel.setSy(0);
         animatedReel.reinitialise();

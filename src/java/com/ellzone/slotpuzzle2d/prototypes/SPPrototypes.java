@@ -95,6 +95,7 @@ import com.ellzone.slotpuzzle2d.prototypes.tween.Dynamic;
 import com.ellzone.slotpuzzle2d.prototypes.tween.Flash;
 import com.ellzone.slotpuzzle2d.prototypes.tween.GameOverPopUp;
 import com.ellzone.slotpuzzle2d.prototypes.tween.IntroSequence;
+import com.ellzone.slotpuzzle2d.prototypes.tween.IntroSequenceWithSpinningReels;
 import com.ellzone.slotpuzzle2d.prototypes.tween.LevelOverPopUpUsingLevelPopUp;
 import com.ellzone.slotpuzzle2d.prototypes.tween.LevelPopUp;
 import com.ellzone.slotpuzzle2d.prototypes.tween.LevelPopUpUsingLevelPopUp;
@@ -177,6 +178,7 @@ public class SPPrototypes {
         DelayFlash.class,
         GameOverPopUp.class,
         IntroSequence.class,
+        IntroSequenceWithSpinningReels.class,
         LevelOverPopUpUsingLevelPopUp.class,
         LevelPopUp.class,
         LevelPopUpUsingLevelPopUp.class,

@@ -16,7 +16,6 @@
 
 package com.ellzone.slotpuzzle2d.prototypes.tween;
 
-import java.util.Random;
 import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Sprite;
@@ -24,15 +23,18 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Array;
 import com.ellzone.slotpuzzle2d.effects.ReelAccessor;
 import com.ellzone.slotpuzzle2d.effects.SpriteAccessor;
+import com.ellzone.slotpuzzle2d.prototypes.SPPrototypeTemplate;
 import com.ellzone.slotpuzzle2d.sprites.ReelTile;
 import com.ellzone.slotpuzzle2d.tweenengine.SlotPuzzleTween;
 import com.ellzone.slotpuzzle2d.tweenengine.Timeline;
 import com.ellzone.slotpuzzle2d.utils.PixmapProcessors;
+
+import java.util.Random;
+
 import aurelienribon.tweenengine.equations.Back;
 import aurelienribon.tweenengine.equations.Cubic;
 import aurelienribon.tweenengine.equations.Quad;
 import aurelienribon.tweenengine.equations.Quart;
-import com.ellzone.slotpuzzle2d.prototypes.SPPrototypeTemplate;
 
 public class IntroSequence extends SPPrototypeTemplate {
 
@@ -50,7 +52,6 @@ public class IntroSequence extends SPPrototypeTemplate {
 
     @Override
     protected void initialiseScreenOverride() {
-
     }
 
     @Override

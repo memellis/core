@@ -31,7 +31,7 @@ import aurelienribon.tweenengine.equations.Quad;
 import aurelienribon.tweenengine.equations.Quart;
 
 public class PlayScreenIntroSequence extends IntroSequence {
-    public PlayScreenIntroSequence(Array<ReelTile> reelTiles, TweenManager tweenManager) {
+     public PlayScreenIntroSequence(Array<ReelTile> reelTiles, TweenManager tweenManager) {
         super(reelTiles, tweenManager);
     }
 
@@ -60,6 +60,7 @@ public class PlayScreenIntroSequence extends IntroSequence {
                 .beginParallel()
                 .push(SlotPuzzleTween.to(target, SpriteAccessor.OPACITY, 1.0f).target(1).ease(Quart.INOUT))
                 .push(SlotPuzzleTween.to(target, SpriteAccessor.SCALE_XY, 1.0f).target(1.0f, 1.0f).ease(Quart.INOUT))
+                .setUserData(target)
                 .end();
     }
 }

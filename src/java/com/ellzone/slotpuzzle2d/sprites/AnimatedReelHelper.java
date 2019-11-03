@@ -89,7 +89,7 @@ public class AnimatedReelHelper {
             AnimatedReel animatedReel = new AnimatedReel(slotReelScrollTexture, 0, 0, spriteWidth, spriteHeight, spriteWidth, reelDisplayHeight, 0, null, reelStoppingSound, tweenManager);
             animatedReel.setSx(0);
             animatedReel.setEndReel(Random.getInstance().nextInt(reelSprites.getSprites().length - 1));
-            animatedReel.getReel().startSpinning();
+//            animatedReel.getReel().startSpinning();
             animatedReels.add(animatedReel);
         }
     }
