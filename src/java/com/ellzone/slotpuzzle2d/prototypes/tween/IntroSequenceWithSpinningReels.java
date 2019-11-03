@@ -9,10 +9,11 @@ import com.badlogic.gdx.utils.Timer;
 import com.ellzone.slotpuzzle2d.effects.ReelAccessor;
 import com.ellzone.slotpuzzle2d.effects.SpriteAccessor;
 import com.ellzone.slotpuzzle2d.prototypes.SPPrototypeTemplate;
+import com.ellzone.slotpuzzle2d.sprites.AnimatedReel;
+import com.ellzone.slotpuzzle2d.sprites.AnimatedReelHelper;
 import com.ellzone.slotpuzzle2d.sprites.ReelTile;
 import com.ellzone.slotpuzzle2d.tweenengine.SlotPuzzleTween;
 import com.ellzone.slotpuzzle2d.tweenengine.Timeline;
-import com.ellzone.slotpuzzle2d.utils.PixmapProcessors;
 import com.ellzone.slotpuzzle2d.utils.TimeStamp;
 
 import java.util.Random;
@@ -26,13 +27,20 @@ public class IntroSequenceWithSpinningReels extends SPPrototypeTemplate {
     private Pixmap slotReelScrollPixmap;
     private Texture slotReelScrollTexture;
     private Random random;
+    AnimatedReelHelper animatedReelHelper;
     private Array<ReelTile> reels;
     private Timeline introSequence;
     private int currentReel = 0;
 
     @Override
     protected void initialiseOverride() {
-        initialiseReelSlots();
+        random = new Random();
+        animatedReelHelper = new AnimatedReelHelper(
+          annotationAssetManager,
+          tweenManager,
+          16
+        );
+        reels = animatedReelHelper.getReelTiles();
         createIntroSequence();
         createStartReelTimer();
     }
@@ -55,12 +63,10 @@ public class IntroSequenceWithSpinningReels extends SPPrototypeTemplate {
 
     @Override
     protected void renderOverride(float dt) {
+        animatedReelHelper.update(dt);
         batch.begin();
-        for (ReelTile reel : reels) {
+        for (AnimatedReel reel : animatedReelHelper.getAnimatedReels())
             reel.draw(batch);
-            sprites[reel.getEndReel()].setX(32);
-            sprites[reel.getEndReel()].draw(batch);
-        }
         batch.end();
     }
 
@@ -69,26 +75,9 @@ public class IntroSequenceWithSpinningReels extends SPPrototypeTemplate {
         SlotPuzzleTween.registerAccessor(ReelTile.class, new ReelAccessor());
     }
 
-    private void initialiseReelSlots() {
-        random = new Random();
-        reels = new Array<ReelTile>();
-        slotReelScrollPixmap = new Pixmap(spriteWidth, spriteHeight, Pixmap.Format.RGBA8888);
-        slotReelScrollPixmap = PixmapProcessors.createPixmapToAnimate(sprites);
-        slotReelScrollTexture = new Texture(slotReelScrollPixmap);
-        for (int i=0; i<15; i++) {
-            ReelTile reel = new ReelTile(slotReelScrollTexture, slotReelScrollTexture.getHeight(), 0, 0, spriteWidth, spriteHeight, spriteWidth, spriteHeight, 0, null);
-            reel.setX(i*spriteHeight);
-            reel.setY(i*spriteWidth);
-            reel.setSx(0);
-            reel.setSy(0);
-            reel.setEndReel(random.nextInt(sprites.length - 1));
-            reels.add(reel);
-        }
-    }
-
     private void createIntroSequence() {
         introSequence = Timeline.createParallel();
-        for(int i=0; i < reels.size; i++) {
+        for(int i = 0; i < reels.size; i++) {
             introSequence = introSequence
                     .push(buildSequence(reels.get(i), i, random.nextFloat() * 5.0f, random.nextFloat() * 5.0f));
         }
@@ -105,8 +94,8 @@ public class IntroSequenceWithSpinningReels extends SPPrototypeTemplate {
                               startAReel();
                           }
                       }
-                , 0.1f
-                , 0.1f
+                , 0.5f
+                , 0.3f
                 , 15
         );
     }
@@ -114,7 +103,7 @@ public class IntroSequenceWithSpinningReels extends SPPrototypeTemplate {
     private void startAReel() {
         System.out.println("startReel=" + currentReel + "@ " + TimeStamp.getTimeStamp());
         if (currentReel < reels.size)
-            reels.get(currentReel++).setSpinning(true);
+            animatedReelHelper.getAnimatedReels().get(currentReel++).getReel().setSpinning(true);
     }
 
     private Timeline buildSequence(Sprite target, int id, float delay1, float delay2) {
