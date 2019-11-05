@@ -29,7 +29,17 @@ public class DampenedSineParticle extends Particle {
 	private DSState dsState;
 	private boolean invokedCallback; 
 	
-	public DampenedSineParticle(float x, float y, float speed, float direction, float grav, Vector velocity, Vector velocityMin, Vector accelerator, Vector accelerate, float velocityFriction, float acceleratorFriction) {
+	public DampenedSineParticle(float x,
+								float y,
+								float speed,
+								float direction,
+								float grav,
+								Vector velocity,
+								Vector velocityMin,
+								Vector accelerator,
+								Vector accelerate,
+								float velocityFriction,
+								float acceleratorFriction) {
 		super(x, y, speed, direction, grav);
 		this.accelerator = accelerator;
 		this.accelerate(accelerate);

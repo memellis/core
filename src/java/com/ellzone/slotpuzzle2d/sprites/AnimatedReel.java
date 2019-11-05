@@ -103,7 +103,36 @@ public class AnimatedReel {
 		acceleratorFriction = 0.97f;
 		velocityFriction = 0.97f;
 		reelSlowingTargetTime = 3.0f;
-		dampenedSine = new DampenedSineParticle(0, reel.getSy(), 0, 0, 0, new Vector(0, velocityY), velocityMin, new Vector(0, acceleratorY), new Vector(0, accelerateY), velocityFriction, acceleratorFriction);
+//		dampenedSine = new DampenedSineParticle(
+//		        0,
+//                 reel.getSy(),
+//                0,
+//                0,
+//                0,
+//                 new Vector(0, velocityY),
+//                 velocityMin,
+//                 new Vector(0, acceleratorY),
+//                 new Vector(0, accelerateY),
+//                 velocityFriction,
+//                 acceleratorFriction);
+//		dampenedSine.setCallback(dsCallback);
+//		dampenedSine.setCallbackTriggers(SPPhysicsCallback.PARTICLE_UPDATE);
+//		dampenedSine.setUserData(reel);
+	}
+
+	public void start() {
+		dampenedSine = new DampenedSineParticle(
+		        0,
+                 reel.getSy(),
+                0,
+                0,
+                0,
+                 new Vector(0, velocityY),
+                 velocityMin,
+                 new Vector(0, acceleratorY),
+                 new Vector(0, accelerateY),
+                 velocityFriction,
+                 acceleratorFriction);
 		dampenedSine.setCallback(dsCallback);
 		dampenedSine.setCallbackTriggers(SPPhysicsCallback.PARTICLE_UPDATE);
 		dampenedSine.setUserData(reel);
@@ -122,8 +151,8 @@ public class AnimatedReel {
 			if (this.stoppingSound != null) {
 //				this.stoppingSound.play();
 			}
-			DampenedSineParticle ds = (DampenedSineParticle)source.getSource();
-			ReelTile reel = (ReelTile)ds.getUserData();
+			DampenedSineParticle ds = (DampenedSineParticle) source.getSource();
+			ReelTile reel = (ReelTile) ds.getUserData();
 			Timeline endReelSeq = Timeline.createSequence();
 			float endSy = (reel.getEndReel() * this.tileWidth) % this.reelScrollHeight;
 			reel.setSy(reel.getSy() % (this.reelScrollHeight));
@@ -186,6 +215,8 @@ public class AnimatedReel {
 	
 	public void update(float delta) {
 		reel.update(delta);
+		if (dampenedSine == null)
+			return;
 		dampenedSine.update();
 		if (dampenedSine.getDSState() == DampenedSineParticle.DSState.UPDATING_DAMPENED_SINE)
             reel.setSy(dampenedSine.position.y);
@@ -204,8 +235,10 @@ public class AnimatedReel {
 	}
 	
 	public void reinitialise() {
-        reel.setSpinning(true);
+//        reel.setSpinning(true);
         reel.clearReelFlashSegments();
+		if (dampenedSine == null)
+			return;
         dampenedSine.initialiseDampenedSine();
         dampenedSine.position.y = reel.getSy();
         dampenedSine.velocity = new Vector(0, velocityY);
@@ -217,7 +250,7 @@ public class AnimatedReel {
 	}
 	
 	public DampenedSineParticle.DSState getDampenedSineState() {
-		return dampenedSine.getDSState();
+		return dampenedSine == null ? null : dampenedSine.getDSState();
 	}
 
     private float getRandomVelocityMin() {

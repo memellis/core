@@ -39,6 +39,7 @@ import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.utils.Array;
+import com.badlogic.gdx.utils.Timer;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import com.ellzone.slotpuzzle2d.SlotPuzzle;
@@ -169,6 +170,7 @@ public class PlayScreen implements Screen, PlayInterface, LevelCreatorInjectionI
     private FrameRate framerate;
     private AudioManager audioManager;
     private MessageManager messageManager;
+    private int currentReel = 0;
 
     public PlayScreen(SlotPuzzle game, LevelDoor levelDoor, MapTile mapTile) {
         this.game = game;
@@ -383,10 +385,32 @@ public class PlayScreen implements Screen, PlayInterface, LevelCreatorInjectionI
     }
 
     private void createReelIntroSequence() {
+        createStartReelTimer();
         playState = PlayStates.INTRO_SEQUENCE;
         playScreenIntroSequence = new PlayScreenIntroSequence(reelTiles, tweenManager);
         playScreenIntroSequence.createReelIntroSequence(introSequenceCallback);
     }
+
+    private void createStartReelTimer() {
+        Timer.schedule(new Timer.Task(){
+                           @Override
+                           public void run() {
+                               startAReel();
+                           }
+                       }
+                , 0.0f
+                , 0.02f
+                , reelTiles.size
+        );
+    }
+
+    private void startAReel() {
+        if (currentReel < reelTiles.size) {
+            animatedReels.get(currentReel).start();
+            reelTiles.get(currentReel++).setSpinning(true);
+        }
+    }
+
 
     private TweenCallback introSequenceCallback = new TweenCallback() {
         @Override
@@ -562,7 +586,7 @@ public class PlayScreen implements Screen, PlayInterface, LevelCreatorInjectionI
 
     private void startReelSpinning(ReelTile reel, AnimatedReel animatedReel) {
         reel.setEndReel(random.nextInt(sprites.length - 1));
-//        reel.startSpinning();
+        reel.startSpinning();
         reelsSpinning++;
         reel.setSy(0);
         animatedReel.reinitialise();

@@ -275,7 +275,6 @@ public class IntroScreen extends InputAdapter implements Screen {
 
     private void initialiseIntroScreenText() {
         reelLetterTiles = new Array<AnimatedReel>();
-
         initialiseFontReel(SLOT_PUZZLE_REEL_TEXT, viewport.getWorldWidth() / 3.2f, viewport.getWorldHeight() / 2.0f + TEXT_SPACING_SIZE + 10);
     	initialiseFontReel(BY_TEXT, viewport.getWorldWidth() / 3.2f, viewport.getWorldHeight() / 2.0f + TEXT_SPACING_SIZE + 10);
     	initialiseFontReel(AUTHOR_TEXT, viewport.getWorldWidth() / 3.2f, viewport.getWorldHeight() / 2.0f + TEXT_SPACING_SIZE + 10);
@@ -289,6 +288,7 @@ public class IntroScreen extends InputAdapter implements Screen {
         Texture textTexture = initialiseFontTexture(reelText);
         for (int i = 0; i < reelText.length(); i++) {
             AnimatedReel reelLetterTile = new AnimatedReel(textTexture, (float)(x + i * REEL_WIDTH), y, (float)REEL_WIDTH, (float)REEL_HEIGHT, (float)REEL_WIDTH, (float)REEL_HEIGHT, i, tweenManager);
+            reelLetterTile.start();
             reelLetterTile.setSy(random.nextInt(reelText.length() - 1) * REEL_HEIGHT);
             reelLetterTile.getReel().addListener(reelTileListener);
             reelLetterTile.getReel().startSpinning();

@@ -59,11 +59,11 @@ public class IntroSequenceWithSpinningReels extends SPPrototypeTemplate {
 
     @Override
     protected void updateOverride(float dt) {
+        animatedReelHelper.update(dt);
     }
 
     @Override
     protected void renderOverride(float dt) {
-        animatedReelHelper.update(dt);
         batch.begin();
         for (AnimatedReel reel : animatedReelHelper.getAnimatedReels())
             reel.draw(batch);
@@ -72,6 +72,9 @@ public class IntroSequenceWithSpinningReels extends SPPrototypeTemplate {
 
     @Override
     protected void initialiseUniversalTweenEngineOverride() {
+        SlotPuzzleTween.setWaypointsLimit(10);
+        SlotPuzzleTween.setCombinedAttributesLimit(3);
+        SlotPuzzleTween.registerAccessor(Sprite.class, new SpriteAccessor());
         SlotPuzzleTween.registerAccessor(ReelTile.class, new ReelAccessor());
     }
 
@@ -94,16 +97,19 @@ public class IntroSequenceWithSpinningReels extends SPPrototypeTemplate {
                               startAReel();
                           }
                       }
-                , 0.5f
-                , 0.3f
-                , 15
+                , 1.0f
+                , 0.1f
+                , reels.size
         );
     }
 
     private void startAReel() {
-        System.out.println("startReel=" + currentReel + "@ " + TimeStamp.getTimeStamp());
-        if (currentReel < reels.size)
-            animatedReelHelper.getAnimatedReels().get(currentReel++).getReel().setSpinning(true);
+        if (currentReel < reels.size) {
+            System.out.println("startReel=" + currentReel + "@ " + TimeStamp.getTimeStamp());
+            animatedReelHelper.getAnimatedReels().get(currentReel).start();
+            animatedReelHelper.getAnimatedReels().get(currentReel).getReel().setSpinning(true);
+            currentReel++;
+        }
     }
 
     private Timeline buildSequence(Sprite target, int id, float delay1, float delay2) {
