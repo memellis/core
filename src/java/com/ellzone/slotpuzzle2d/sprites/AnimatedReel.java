@@ -103,24 +103,9 @@ public class AnimatedReel {
 		acceleratorFriction = 0.97f;
 		velocityFriction = 0.97f;
 		reelSlowingTargetTime = 3.0f;
-//		dampenedSine = new DampenedSineParticle(
-//		        0,
-//                 reel.getSy(),
-//                0,
-//                0,
-//                0,
-//                 new Vector(0, velocityY),
-//                 velocityMin,
-//                 new Vector(0, acceleratorY),
-//                 new Vector(0, accelerateY),
-//                 velocityFriction,
-//                 acceleratorFriction);
-//		dampenedSine.setCallback(dsCallback);
-//		dampenedSine.setCallbackTriggers(SPPhysicsCallback.PARTICLE_UPDATE);
-//		dampenedSine.setUserData(reel);
 	}
 
-	public void start() {
+	public void setupSpinning() {
 		dampenedSine = new DampenedSineParticle(
 		        0,
                  reel.getSy(),
@@ -235,7 +220,6 @@ public class AnimatedReel {
 	}
 	
 	public void reinitialise() {
-//        reel.setSpinning(true);
         reel.clearReelFlashSegments();
 		if (dampenedSine == null)
 			return;

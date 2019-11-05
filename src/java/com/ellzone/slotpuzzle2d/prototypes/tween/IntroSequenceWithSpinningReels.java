@@ -106,7 +106,7 @@ public class IntroSequenceWithSpinningReels extends SPPrototypeTemplate {
     private void startAReel() {
         if (currentReel < reels.size) {
             System.out.println("startReel=" + currentReel + "@ " + TimeStamp.getTimeStamp());
-            animatedReelHelper.getAnimatedReels().get(currentReel).start();
+            animatedReelHelper.getAnimatedReels().get(currentReel).setupSpinning();
             animatedReelHelper.getAnimatedReels().get(currentReel).getReel().setSpinning(true);
             currentReel++;
         }

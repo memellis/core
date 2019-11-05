@@ -288,7 +288,7 @@ public class IntroScreen extends InputAdapter implements Screen {
         Texture textTexture = initialiseFontTexture(reelText);
         for (int i = 0; i < reelText.length(); i++) {
             AnimatedReel reelLetterTile = new AnimatedReel(textTexture, (float)(x + i * REEL_WIDTH), y, (float)REEL_WIDTH, (float)REEL_HEIGHT, (float)REEL_WIDTH, (float)REEL_HEIGHT, i, tweenManager);
-            reelLetterTile.start();
+            reelLetterTile.setupSpinning();
             reelLetterTile.setSy(random.nextInt(reelText.length() - 1) * REEL_HEIGHT);
             reelLetterTile.getReel().addListener(reelTileListener);
             reelLetterTile.getReel().startSpinning();

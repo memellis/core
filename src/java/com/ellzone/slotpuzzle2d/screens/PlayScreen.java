@@ -406,7 +406,7 @@ public class PlayScreen implements Screen, PlayInterface, LevelCreatorInjectionI
 
     private void startAReel() {
         if (currentReel < reelTiles.size) {
-            animatedReels.get(currentReel).start();
+            animatedReels.get(currentReel).setupSpinning();
             reelTiles.get(currentReel++).setSpinning(true);
         }
     }
