@@ -216,6 +216,7 @@ public class HiddenPatternWithFallingReels extends SPPrototypeTemplate
 
     private Array<RectangleMapObject> getRectangleMapObjectsFromLevel(TiledMap level) {
         return level.getLayers().get(REELS_LAYER_NAME).getObjects().getByType(RectangleMapObject.class);
+
     }
 
     @Override

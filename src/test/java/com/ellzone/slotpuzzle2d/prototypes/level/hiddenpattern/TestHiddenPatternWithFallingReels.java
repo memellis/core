@@ -55,6 +55,7 @@ import com.ellzone.slotpuzzle2d.utils.Random;
 import net.dermetfan.gdx.assets.AnnotationAssetManager;
 
 import org.easymock.Capture;
+import org.easymock.CaptureType;
 import org.easymock.EasyMock;
 import org.hamcrest.Matcher;
 import org.junit.After;
@@ -78,6 +79,7 @@ import static org.easymock.EasyMock.capture;
 import static org.easymock.EasyMock.expect;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.lessThan;
 import static org.hamcrest.core.IsEqual.equalTo;
 import static org.powermock.api.easymock.PowerMock.createMock;
 import static org.powermock.api.easymock.PowerMock.expectNew;
@@ -144,12 +146,46 @@ public class TestHiddenPatternWithFallingReels {
 
     @Test
     public void testHiddenPatternWithFallingReels_WithTwoReplacementReels() throws Exception {
+        int[][] testMatrix = createMatrixWithNReplacementReels(2);
+        reelTilesMock = createReelTilesFromMatrix(testMatrix);
+        assertReelTilesMockVsTestMatrixRC(testMatrix);
         setUpPartialHiddenPatternWithFallingReelsFields();
         setUpExpectations(2);
+        replayAll(applicationMock);
+        Whitebox.invokeMethod(partialHiddenPatternWithFallingReels, "loadlevel");
+        partialHiddenPatternWithFallingReels.updateOverride(0);
+        assertThat(partialHiddenPatternWithFallingReels.getLevelCreator().getPlayState(),
+                (Matcher<? super PlayStates>) is(equalTo(PlayStates.INITIALISING)));
+        verifyAll();
+    }
+
+    @Test
+    public void testHiddenPatternWithFallingReels_WithMoreThanTwoReplacementReels() throws Exception {
+        int[][] testMatrix = createMatrixWithNReplacementReels(3);
+        reelTilesMock = createReelTilesFromMatrix(testMatrix);
+        assertReelTilesMockVsTestMatrixRC(testMatrix);
+        setUpPartialHiddenPatternWithFallingReelsFields();
+        setUpExpectations(3);
+        replayAll(applicationMock);
+        Whitebox.invokeMethod(partialHiddenPatternWithFallingReels, "loadlevel");
+        partialHiddenPatternWithFallingReels.updateOverride(0);
+        assertThat(partialHiddenPatternWithFallingReels.getLevelCreator().getPlayState(),
+                   (Matcher<? super PlayStates>) is(equalTo(PlayStates.INITIALISING)));
+        verifyAll();
+    }
+
+    @Test
+    public void testHiddenPatternWithFallingReels_With11ReplacementReels() throws Exception {
+        int[][] testMatrix = createMatrixWithNReplacementReels(12);
+        reelTilesMock = createReelTilesFromMatrix(testMatrix);
+        assertReelTilesMockVsTestMatrixRC(testMatrix);
+        setUpPartialHiddenPatternWithFallingReelsFields();
+        setUpExpectations(12);
         replayAll();
         Whitebox.invokeMethod(partialHiddenPatternWithFallingReels, "loadlevel");
         partialHiddenPatternWithFallingReels.updateOverride(0);
-        assertThat(partialHiddenPatternWithFallingReels.getLevelCreator().getPlayState(), (Matcher<? super PlayStates>) is(equalTo(PlayStates.INITIALISING)));
+        assertThat(partialHiddenPatternWithFallingReels.getLevelCreator().getPlayState(),
+                (Matcher<? super PlayStates>) is(equalTo(PlayStates.INITIALISING)));
         verifyAll();
     }
 
@@ -157,33 +193,52 @@ public class TestHiddenPatternWithFallingReels {
     public void testHiddenPatternWithFallingReels_WithBottomRowReplacementReels() throws Exception {
         int[][] testMatrix = createMatrixWithBottomRowFull();
         reelTilesMock = createReelTilesFromMatrix(testMatrix);
-        assertReelTilesMockVsTestMatrix(testMatrix);
+        assertReelTilesMockVsTestMatrixRC(testMatrix);
+        setUpPartialHiddenPatternWithFallingReelsFields();
+        setUpExpectations(12);
+        replayAll();
+        Whitebox.invokeMethod(partialHiddenPatternWithFallingReels, "loadlevel");
+        partialHiddenPatternWithFallingReels.updateOverride(0);
+        assertThat(partialHiddenPatternWithFallingReels.getLevelCreator().getPlayState(),
+                (Matcher<? super PlayStates>) is(equalTo(PlayStates.INITIALISING)));
+        verifyAll();
     }
 
-    private void assertReelTilesMockVsTestMatrix(int[][] testMatrix) {
-        int startReel = 8 * testMatrix[0].length;
-        for (int c=0; c<GAME_LEVEL_WIDTH; c++)
-            assertThat((int) Whitebox.getInternalState(
-                    reelTilesMock.get(startReel + c), "endReel"),
-                    (Matcher<? super Integer>) is(equalTo(testMatrix[8][c])));
+    private int[][] createMatrixWithNReplacementReels(int nReels) {
+        int[][] testMatrix = createEmptyMatrix();
+        assertThat(nReels - 1, is(lessThan(testMatrix[0].length)));
+        for (int j = 0; j < nReels; j++)
+            testMatrix[0][j] = 0;
+        return testMatrix;
+    }
+
+    private void assertReelTilesMockVsTestMatrixRC(int[][] testMatrix) {
+        int reelIndex = 0;
+        for (int r = 0; r < GAME_LEVEL_HEIGHT; r++)
+            for (int c = 0; c < GAME_LEVEL_WIDTH; c++)
+                if (testMatrix[r][c] > 0)
+                    assertThat((int) Whitebox.getInternalState(
+                            reelTilesMock.get(reelIndex++), "endReel"),
+                            (Matcher<? super Integer>) is(equalTo(testMatrix[r][c])));
     }
 
     private Array<ReelTile> createReelTilesFromMatrix(int[][] matrix) {
         Array<ReelTile> reelTiles = new Array<>();
         for (int r = 0; r < matrix.length; r++) {
             for (int c = 0; c < matrix[0].length; c++) {
-                ReelTile reelTileMock = PowerMock.createMock(ReelTile.class);
-                Whitebox.setInternalState(reelTileMock,"x", PlayScreen.PUZZLE_GRID_START_X + (c * 40));
-                Whitebox.setInternalState(reelTileMock,"y",(r  * 40) + PlayScreen.PUZZLE_GRID_START_Y);
-                Whitebox.setInternalState(reelTileMock, "tileDeleted", matrix[r][c] < 0);
-                Whitebox.setInternalState(reelTileMock, "index", r * matrix[0].length + c);
-                Whitebox.setInternalState(reelTileMock, "endReel", matrix[r][c]);
-                reelTiles.add(reelTileMock);
+                if (matrix[r][c] >= 0) {
+                    ReelTile reelTileMock = PowerMock.createMock(ReelTile.class);
+                    Whitebox.setInternalState(reelTileMock, "x", PlayScreen.PUZZLE_GRID_START_X + (c * 40));
+                    Whitebox.setInternalState(reelTileMock, "y", (r * 40) + PlayScreen.PUZZLE_GRID_START_Y);
+                    Whitebox.setInternalState(reelTileMock, "tileDeleted", matrix[r][c] < 0);
+                    Whitebox.setInternalState(reelTileMock, "index", r * matrix[0].length + c);
+                    Whitebox.setInternalState(reelTileMock, "endReel", matrix[r][c]);
+                    reelTiles.add(reelTileMock);
+                }
             }
         }
         return reelTiles;
     }
-
 
     private void setUpExpectations() throws Exception {
         expectLoadlevel();
@@ -227,17 +282,11 @@ public class TestHiddenPatternWithFallingReels {
         expectNew(OrthogonalTiledMapRenderer.class, levelMock).andReturn(tiledMapRendererMock);
         expectExtractLevelAssests(numberOfReplacementReels);
         expect(annotationAssetManagerMock.get(AssetsAnnotation.CARDDECK)).andReturn(cardDeckAtlasMock);
-        expectLevelCreatorCreateLevel(numberOfReplacementReels);
         expect(partialLevelObjectCreatorEntityHolder.getAnimatedReels()).andReturn(animatedReelsMock);
         expect(partialLevelObjectCreatorEntityHolder.getReelTiles()).andReturn(reelTilesMock);
         for (int i = 0; i<numberOfReplacementReels; i++)
-            expectInitialiseReel(reelTilesMock, i);
+            expectInitialiseReelFromMatrix(reelTilesMock, i);
         expectLevelCreatorSimpleCreateLevel(numberOfReplacementReels);
-    }
-
-    private void expectLevelCreatorCreateLevel(int numberOfReplacementReelBoxes) {
-        for(int i=0; i<numberOfReplacementReelBoxes; i++)
-            expect(rectangleMapObjectsMock.get(i).getProperties()).andReturn(createProperties());
     }
 
     private void expectNewLevelCreator() throws Exception {
@@ -248,7 +297,6 @@ public class TestHiddenPatternWithFallingReels {
                 null).
                 andReturn(partialLevelObjectCreatorEntityHolder);
     }
-
 
     private void expectLevelCreatorSimpleCreateLevel() throws Exception {
         expect(levelDoorMock.getLevelType()).andReturn(PLAYING_CARD_LEVEL_TYPE);
@@ -290,9 +338,9 @@ public class TestHiddenPatternWithFallingReels {
         if (rectangleMapObjectsMock.size > 0)
             return;
         for (int i=0; i<numberOfReplacementBoxes; i++) {
-            rectangleMapObjectsMock.add(createMock(RectangleMapObject.class));
-            expect(rectangleMapObjectsMock.get(i).getName()).andReturn("Reel").times(2);
-            expect(rectangleMapObjectsMock.get(i).getRectangle()).andReturn(new Rectangle(160 + i*40, 40, 40, 40));
+            RectangleMapObject rectangleMapObject = new RectangleMapObject(160 + i*40, 40, 40, 40);
+            rectangleMapObject.setName("Reel");
+            rectangleMapObjectsMock.add(rectangleMapObject);
         }
     }
 
@@ -356,8 +404,8 @@ public class TestHiddenPatternWithFallingReels {
         reelTileMock.setEndReel(0);
    }
 
-    private void expectInitialiseReel(Array<ReelTile> reelTiles, int reelOffSet) {
-        ReelTile reelTileMock = createMock(ReelTile.class);
+    private void expectInitialiseReelFromMatrix(Array<ReelTile> reelTiles, int reelOffSet) {
+        ReelTile reelTileMock = reelTiles.get(reelOffSet);
         reelTileMock.startSpinning();
         reelTileMock.setSx(0);
         expect(reelSpritesMock.getSprites()).andReturn(reelsMock);
@@ -370,7 +418,6 @@ public class TestHiddenPatternWithFallingReels {
         reelTileMock.setIndex(reelOffSet);
         reelTileMock.setSx(0);
         expect(reelTileMock.addListener(anyObject(ReelTileListener.class))).andReturn(true);
-        reelTiles.add(reelTileMock);
     }
 
     private MapProperties createProperties() {
@@ -399,7 +446,7 @@ public class TestHiddenPatternWithFallingReels {
     private void expectCheckLevel(int numberOfReplacementBoxes) {
         for (int i=0; i<numberOfReplacementBoxes; i++)
             expectPopulateMatchGrid(i);
-        expectCheckLevelDebugForTwoReels();
+        expectCheckLevelDebugForNReels(numberOfReplacementBoxes);
     }
 
     private void expectPopulateMatchGrid() {
@@ -444,23 +491,28 @@ public class TestHiddenPatternWithFallingReels {
     private void expectAdjustForAnyLonelyReels(int numberOfReplacementBoxes) {
         for (int i=0; i<numberOfReplacementBoxes; i++)
             expectPopulateMatchGrid(i);
-        expectGetLonelyTiles();
+        expectGetLonelyTiles(numberOfReplacementBoxes);
     }
 
-    private void expectGetLonelyTiles() {
-        expectMatchRowSlots();
-        expectCheckLevelDebugForTwoReels();
+    private void expectGetLonelyTiles(int numberOfReplacementReels) {
+        expectCheckLevelDebugForNReels(numberOfReplacementReels);
     }
 
-    private void expectMatchRowSlots() {
-        applicationMock.debug(capture(debugCaptureArgument1), capture(debugCaptureArgument2));
-    }
-
-    private void expectCheckLevelDebugForTwoReels() {
+    private void expectCheckLevelDebugForNReels(int numberOfReplacementReels) {
         for (int r = 0; r < GAME_LEVEL_HEIGHT; r++)
             for (int c = 0; c < GAME_LEVEL_WIDTH; c++)
-                if (!(r == 8 && (c == 0 || c == 1)))
+                if (!isReplacementReel(r, c))
                     applicationMock.debug(capture(debugCaptureArgument1), capture(debugCaptureArgument2));
+    }
+
+    private boolean isReplacementReel(int r, int c) {
+        for (RectangleMapObject rectangleMapObject : rectangleMapObjectsMock) {
+            int column = (int) (rectangleMapObject.getRectangle().x - 160) / 40;
+            int row = (int) ((int) GAME_LEVEL_HEIGHT - rectangleMapObject.getRectangle().y / 40);
+            if (r == row && c == column)
+                return true;
+        }
+        return false;
     }
 
     private void expectGetMapProperties() {
@@ -507,8 +559,7 @@ public class TestHiddenPatternWithFallingReels {
         Whitebox.setInternalState(
                 partialHiddenPatternWithFallingReels,
                 "physics",
-                physicsMock
-        );
+                physicsMock);
         Whitebox.setInternalState(
                 partialHiddenPatternWithFallingReels,
                 "hud",
@@ -579,7 +630,7 @@ public class TestHiddenPatternWithFallingReels {
 
     private void setUpCaptureArguments() {
         debugCaptureArgument1 = EasyMock.newCapture();
-        debugCaptureArgument2 = EasyMock.newCapture();
+        debugCaptureArgument2 = EasyMock.newCapture(CaptureType.ALL);
     }
 
     private void teardownMocks() {
@@ -619,9 +670,23 @@ public class TestHiddenPatternWithFallingReels {
                 + "-1 -1 -1 -1 -1 -1 -1 -1 -1 -1  -1  -1\n"
                 + "-1 -1 -1 -1 -1 -1 -1 -1 -1 -1  -1  -1\n"
                 + "-1 -1 -1 -1 -1 -1 -1 -1 -1 -1  -1  -1\n"
-                + " 1  1  1  0  0  0  0  0  0  0   0   0\n";
+                + " 0  0  0  0  0  0  0  0  0  0   0   0\n";
         InputMatrix inputMatrix = new InputMatrix(matrixToInput);
         return inputMatrix.readMatrix();
     }
 
+    private int[][] createEmptyMatrix() {
+        String matrixToInput = "12 x 9\n"
+                + "-1 -1 -1 -1 -1 -1 -1 -1 -1 -1  -1  -1\n"
+                + "-1 -1 -1 -1 -1 -1 -1 -1 -1 -1  -1  -1\n"
+                + "-1 -1 -1 -1 -1 -1 -1 -1 -1 -1  -1  -1\n"
+                + "-1 -1 -1 -1 -1 -1 -1 -1 -1 -1  -1  -1\n"
+                + "-1 -1 -1 -1 -1 -1 -1 -1 -1 -1  -1  -1\n"
+                + "-1 -1 -1 -1 -1 -1 -1 -1 -1 -1  -1  -1\n"
+                + "-1 -1 -1 -1 -1 -1 -1 -1 -1 -1  -1  -1\n"
+                + "-1 -1 -1 -1 -1 -1 -1 -1 -1 -1  -1  -1\n"
+                + "-1 -1 -1 -1 -1 -1 -1 -1 -1 -1  -1  -1\n";
+        InputMatrix inputMatrix = new InputMatrix(matrixToInput);
+        return inputMatrix.readMatrix();
+    }
 }

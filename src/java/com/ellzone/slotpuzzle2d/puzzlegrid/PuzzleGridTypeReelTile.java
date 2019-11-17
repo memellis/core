@@ -376,7 +376,6 @@ public class PuzzleGridTypeReelTile {
     public Array<ReelTile> adjustForAnyLonelyReels(Array<ReelTile> levelReel, int levelWidth, int levelHeight) {
         PuzzleGridType puzzleGrid = new PuzzleGridType();
         TupleValueIndex[][] grid = populateMatchGrid(levelReel, levelWidth, levelHeight);
-        PuzzleGridType.printGrid(grid);
         Array<TupleValueIndex> lonelyTiles = puzzleGrid.getLonelyTiles(grid);
         for (TupleValueIndex lonelyTile : lonelyTiles) {
             if (lonelyTile.r == 0) {
