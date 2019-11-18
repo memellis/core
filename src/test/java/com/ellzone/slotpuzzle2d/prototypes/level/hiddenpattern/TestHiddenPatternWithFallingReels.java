@@ -60,7 +60,6 @@ import org.easymock.EasyMock;
 import org.hamcrest.Matcher;
 import org.junit.After;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.powermock.api.easymock.PowerMock;
@@ -170,7 +169,6 @@ public class TestHiddenPatternWithFallingReels {
         verifyAll();
     }
 
-    @Ignore
     @Test
     public void testHiddenPatternWithFallingReels_WithBottomRowReplacementReels() throws Exception {
         int[][] testMatrix = createMatrixWithBottomRowFull();
@@ -692,6 +690,7 @@ public class TestHiddenPatternWithFallingReels {
 
     private int[][] createMatrixWithBottomRowFull() {
         String matrixToInput = "12 x 9\n"
+                + " 0  0  0  0  0  0  0  0  0  0   0   0\n"
                 + "-1 -1 -1 -1 -1 -1 -1 -1 -1 -1  -1  -1\n"
                 + "-1 -1 -1 -1 -1 -1 -1 -1 -1 -1  -1  -1\n"
                 + "-1 -1 -1 -1 -1 -1 -1 -1 -1 -1  -1  -1\n"
@@ -699,8 +698,7 @@ public class TestHiddenPatternWithFallingReels {
                 + "-1 -1 -1 -1 -1 -1 -1 -1 -1 -1  -1  -1\n"
                 + "-1 -1 -1 -1 -1 -1 -1 -1 -1 -1  -1  -1\n"
                 + "-1 -1 -1 -1 -1 -1 -1 -1 -1 -1  -1  -1\n"
-                + "-1 -1 -1 -1 -1 -1 -1 -1 -1 -1  -1  -1\n"
-                + " 0  0  0  0  0  0  0  0  0  0   0   0\n";
+                + "-1 -1 -1 -1 -1 -1 -1 -1 -1 -1  -1  -1\n";
         InputMatrix inputMatrix = new InputMatrix(matrixToInput);
         return inputMatrix.readMatrix();
     }
