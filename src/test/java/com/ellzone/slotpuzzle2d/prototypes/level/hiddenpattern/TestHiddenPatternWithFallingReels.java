@@ -80,6 +80,7 @@ import static org.easymock.EasyMock.expect;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.lessThan;
+import static org.hamcrest.Matchers.lessThanOrEqualTo;
 import static org.hamcrest.core.IsEqual.equalTo;
 import static org.powermock.api.easymock.PowerMock.createMock;
 import static org.powermock.api.easymock.PowerMock.expectNew;
@@ -140,7 +141,8 @@ public class TestHiddenPatternWithFallingReels {
         replayAll();
         Whitebox.invokeMethod(partialHiddenPatternWithFallingReels, "loadlevel");
         partialHiddenPatternWithFallingReels.updateOverride(0);
-        assertThat(partialHiddenPatternWithFallingReels.getLevelCreator().getPlayState(), (Matcher<? super PlayStates>) is(equalTo(PlayStates.INITIALISING)));
+        assertThat(partialHiddenPatternWithFallingReels.getLevelCreator().getPlayState(),
+                  (Matcher<? super PlayStates>) is(equalTo(PlayStates.INITIALISING)));
         verifyAll();
     }
 
@@ -150,23 +152,8 @@ public class TestHiddenPatternWithFallingReels {
     }
 
     @Test
-    public void testHiddenPatternWithFallingReels_WithMoreThanTwoReplacementReels() throws Exception {
-        testWithNumberOfReelsInARow(3);
-    }
-
-    @Test
-    public void testHiddenPatternWithFallingReels_WithAFullRowReplacementReels() throws Exception {
-        int[][] testMatrix = createMatrixWithNReplacementReels(13);
-        reelTilesMock = createReelTilesFromMatrix(testMatrix);
-        assertReelTilesMockVsTestMatrixRC(testMatrix);
-        setUpPartialHiddenPatternWithFallingReelsFields();
-        setUpExpectations(reelTilesMock.size);
-        replayAll();
-        Whitebox.invokeMethod(partialHiddenPatternWithFallingReels, "loadlevel");
-        partialHiddenPatternWithFallingReels.updateOverride(0);
-        assertThat(partialHiddenPatternWithFallingReels.getLevelCreator().getPlayState(),
-                (Matcher<? super PlayStates>) is(equalTo(PlayStates.INITIALISING)));
-        verifyAll();
+    public void testHiddenPatternWithFallingReels_WithAllReplacementReels() throws Exception {
+        testWithNumberOfReelsInARow(12*9);
     }
 
     @Test
@@ -184,12 +171,12 @@ public class TestHiddenPatternWithFallingReels {
         verifyAll();
     }
 
-    private void testWithNumberOfReelsInARow(int i) throws Exception {
-        int[][] testMatrix = createMatrixWithNReplacementReels(i);
+    private void testWithNumberOfReelsInARow(int numberOfReels) throws Exception {
+        int[][] testMatrix = createMatrixWithNReplacementReels(numberOfReels);
         reelTilesMock = createReelTilesFromMatrix(testMatrix);
         assertReelTilesMockVsTestMatrixRC(testMatrix);
         setUpPartialHiddenPatternWithFallingReelsFields();
-        setUpExpectations(i);
+        setUpExpectations(numberOfReels);
         replayAll(applicationMock);
         Whitebox.invokeMethod(partialHiddenPatternWithFallingReels, "loadlevel");
         partialHiddenPatternWithFallingReels.updateOverride(0);
@@ -202,7 +189,7 @@ public class TestHiddenPatternWithFallingReels {
         int[][] testMatrix = createEmptyMatrix();
         int numberOfRows = numberOfReels /  testMatrix[0].length;
         int numberOfRemainingReels = numberOfReels % testMatrix[0].length;
-        assertThat(numberOfRows, is(lessThan(testMatrix.length)));
+        assertThat(numberOfRows, is(lessThanOrEqualTo(testMatrix.length)));
         assertThat(numberOfRemainingReels, is(lessThan(testMatrix[0].length)));
         for(int r = 0; r < numberOfRows; r++)
             for (int c = 0; c < testMatrix[0].length; c++)
