@@ -162,7 +162,7 @@ public class TestHiddenPatternWithFallingReels {
         reelTilesMock = createReelTilesFromMatrix(testMatrix);
         assertReelTilesMockVsTestMatrixRC(testMatrix);
         setUpPartialHiddenPatternWithFallingReelsFields();
-        setUpExpectations(12);
+        setUpExpectations(12, testMatrix);
         replayAll();
         Whitebox.invokeMethod(partialHiddenPatternWithFallingReels, "loadlevel");
         partialHiddenPatternWithFallingReels.updateOverride(0);
@@ -176,7 +176,7 @@ public class TestHiddenPatternWithFallingReels {
         reelTilesMock = createReelTilesFromMatrix(testMatrix);
         assertReelTilesMockVsTestMatrixRC(testMatrix);
         setUpPartialHiddenPatternWithFallingReelsFields();
-        setUpExpectations(numberOfReels);
+        setUpExpectations(numberOfReels, testMatrix);
         replayAll(applicationMock);
         Whitebox.invokeMethod(partialHiddenPatternWithFallingReels, "loadlevel");
         partialHiddenPatternWithFallingReels.updateOverride(0);
@@ -234,8 +234,8 @@ public class TestHiddenPatternWithFallingReels {
         expectUpdateOverride();
     }
 
-    private void setUpExpectations(int numberOfReplacementReels) throws Exception {
-        expectLoadlevel(numberOfReplacementReels);
+    private void setUpExpectations(int numberOfReplacementReels, int[][] testMatrix) throws Exception {
+        expectLoadlevel(numberOfReplacementReels, testMatrix);
         expectUpdateOverride();
     }
 
@@ -259,21 +259,21 @@ public class TestHiddenPatternWithFallingReels {
         expectGetRectangleMapObjects(REELS_LAYER_NAME);
     }
 
-    private void expectExtractLevelAssests(int numberOfReplacementReelBoxes) {
-        expectGetRectangleMapObjects(REELS_LAYER_NAME, numberOfReplacementReelBoxes);
+    private void expectExtractLevelAssests(int numberOfReplacementReelBoxes, int[][] testMatrix) {
+        expectGetRectangleMapObjects(REELS_LAYER_NAME, numberOfReplacementReelBoxes, testMatrix);
     }
 
-    private void expectLoadlevel(int numberOfReplacementReels) throws Exception {
+    private void expectLoadlevel(int numberOfReplacementReels, int[][] testMatrix) throws Exception {
         expectNewLevelCreator();
         expectGetLevelAssets();
         expectNew(OrthogonalTiledMapRenderer.class, levelMock).andReturn(tiledMapRendererMock);
-        expectExtractLevelAssests(numberOfReplacementReels);
+        expectExtractLevelAssests(numberOfReplacementReels, testMatrix);
         expect(annotationAssetManagerMock.get(AssetsAnnotation.CARDDECK)).andReturn(cardDeckAtlasMock);
         expect(partialLevelObjectCreatorEntityHolder.getAnimatedReels()).andReturn(animatedReelsMock);
         expect(partialLevelObjectCreatorEntityHolder.getReelTiles()).andReturn(reelTilesMock);
         for (int i = 0; i<numberOfReplacementReels; i++)
             expectInitialiseReelFromMatrix(reelTilesMock, i);
-        expectLevelCreatorSimpleCreateLevel(numberOfReplacementReels);
+        expectLevelCreatorSimpleCreateLevel(numberOfReplacementReels, testMatrix);
     }
 
     private void expectNewLevelCreator() throws Exception {
@@ -295,12 +295,12 @@ public class TestHiddenPatternWithFallingReels {
         expectAdjustForAnyLonelyReels();
     }
 
-    private void expectLevelCreatorSimpleCreateLevel(int numberOfReplacementBoxes) throws Exception {
+    private void expectLevelCreatorSimpleCreateLevel(int numberOfReplacementBoxes, int[][] testMatrix) throws Exception {
         expect(levelDoorMock.getLevelType()).andReturn(PLAYING_CARD_LEVEL_TYPE);
         expectSetUpPlayingCards();
         expectInitialiseHiddenPlayingCards();
         expectAddACard();
-        expectPopulateLevel(numberOfReplacementBoxes);
+        expectPopulateLevel(numberOfReplacementBoxes, testMatrix);
         expectCheckLevel(numberOfReplacementBoxes);
         expectAdjustForAnyLonelyReels(numberOfReplacementBoxes);
         expectGetMapProperties();
@@ -317,17 +317,17 @@ public class TestHiddenPatternWithFallingReels {
         expect(mapObjectsMock.getByType(RectangleMapObject.class)).andReturn(rectangleMapObjectsMock);
     }
 
-    private void expectGetRectangleMapObjects(String layerName, int numberOfReplacementBoxes) {
+    private void expectGetRectangleMapObjects(String layerName, int numberOfReplacementBoxes, int[][] testMatrix) {
         expect(levelMock.getLayers()).andReturn(mapLayersMock);
         expect(mapLayersMock.get(layerName)).andReturn(mapLayerMock);
         expect(mapLayerMock.getObjects()).andReturn(mapObjectsMock);
         expect(mapObjectsMock.getByType(RectangleMapObject.class)).andReturn(rectangleMapObjectsMock);
         if (rectangleMapObjectsMock.size > 0)
             return;
-        int numberOfRows = numberOfReplacementBoxes / 12;
-        int numberOfRemainderReels = numberOfReplacementBoxes % 12;
+        int numberOfRows = numberOfReplacementBoxes / testMatrix[0].length;
+        int numberOfRemainderReels = numberOfReplacementBoxes % testMatrix[0].length;
         for (int r = 0; r < numberOfRows; r++)
-            for (int c=0; c < 12; c++) {
+            for (int c=0; c < testMatrix[0].length; c++) {
                 RectangleMapObject rectangleMapObject = new RectangleMapObject(160 + c*40, 40 + r * 40, 40, 40);
                 rectangleMapObject.setName("Reel");
                 rectangleMapObjectsMock.add(rectangleMapObject);
@@ -340,14 +340,14 @@ public class TestHiddenPatternWithFallingReels {
 
     }
 
-    private void expectPopulateLevel(int numberOfReplacementBoxes) {
-        expectGetRectangleMapObjects(REELS_LAYER_NAME, numberOfReplacementBoxes);
+    private void expectPopulateLevel(int numberOfReplacementBoxes, int[][] testMatrix) {
+        expectGetRectangleMapObjects(REELS_LAYER_NAME, numberOfReplacementBoxes, testMatrix);
         for (int i=0; i<numberOfReplacementBoxes; i++)
-            expectAddReel(i);
+            expectAddReel(i, testMatrix);
     }
 
-    private void expectAddReel(int reelOffset) {
-        expectSetUpRelatedReelTileBodyRC(reelOffset);
+    private void expectAddReel(int reelOffset, int[][] testMatrix) {
+        expectSetUpRelatedReelTileBodyRC(reelOffset, testMatrix);
     }
 
     private void expectSetUpPlayingCards() {
@@ -421,24 +421,9 @@ public class TestHiddenPatternWithFallingReels {
         return mapProperties;
     }
 
-    private void expectSetUpRelatedReelTileBody(int reelOffset) {
-        int r = reelOffset / 12;
-        int c = reelOffset % 12;
-        expect(reelTilesMock.get(reelOffset).getX()).andReturn(160.0f + reelOffset * 40);
-        expect(reelTilesMock.get(reelOffset).getY()).andReturn(40.0f + reelOffset * 40);
-        expect(physicsMock.createBoxBody(
-                BodyDef.BodyType.DynamicBody,
-                180 + reelOffset * 40,
-                400.0f + reelOffset * 40,
-                19,
-                19,
-                true)).andReturn(bodyMock);
-        bodyMock.setUserData(reelTilesMock.get(reelOffset));
-    }
-
-    private void expectSetUpRelatedReelTileBodyRC(int reelOffset) {
-        int r = reelOffset / 12;
-        int c = reelOffset % 12;
+    private void expectSetUpRelatedReelTileBodyRC(int reelOffset, int[][] testMatrix) {
+        int r = reelOffset / testMatrix[0].length;
+        int c = reelOffset % testMatrix[0].length;
         expect(reelTilesMock.get(reelOffset).getX()).andReturn(160.0f + c * 40);
         expect(reelTilesMock.get(reelOffset).getY()).andReturn(40.0f + r * 40);
         expect(physicsMock.createBoxBody(
