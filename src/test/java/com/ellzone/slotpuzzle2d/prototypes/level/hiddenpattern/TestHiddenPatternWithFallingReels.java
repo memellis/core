@@ -153,7 +153,7 @@ public class TestHiddenPatternWithFallingReels {
 
     @Test
     public void testHiddenPatternWithFallingReels_WithAllReplacementReels() throws Exception {
-        testWithNumberOfReelsInARow(12*9);
+        testWithNumberOfReelsInARow(9*12);
     }
 
     @Test
@@ -164,6 +164,21 @@ public class TestHiddenPatternWithFallingReels {
         setUpPartialHiddenPatternWithFallingReelsFields();
         setUpExpectations(12, testMatrix);
         replayAll();
+        Whitebox.invokeMethod(partialHiddenPatternWithFallingReels, "loadlevel");
+        partialHiddenPatternWithFallingReels.updateOverride(0);
+        assertThat(partialHiddenPatternWithFallingReels.getLevelCreator().getPlayState(),
+                  (Matcher<? super PlayStates>) is(equalTo(PlayStates.INITIALISING)));
+        verifyAll();
+    }
+
+    @Test
+    public void tesHiddenPatternWithFallingReels_WithReelHittingBottom() throws Exception {
+        int[][] testMatrix = createMatrixWithNReplacementReels(2);
+        reelTilesMock = createReelTilesFromMatrix(testMatrix);
+        assertReelTilesMockVsTestMatrixRC(testMatrix);
+        setUpPartialHiddenPatternWithFallingReelsFields();
+        setUpExpectations(2, testMatrix);
+        replayAll(applicationMock);
         Whitebox.invokeMethod(partialHiddenPatternWithFallingReels, "loadlevel");
         partialHiddenPatternWithFallingReels.updateOverride(0);
         assertThat(partialHiddenPatternWithFallingReels.getLevelCreator().getPlayState(),
@@ -302,7 +317,7 @@ public class TestHiddenPatternWithFallingReels {
         expectAddACard();
         expectPopulateLevel(numberOfReplacementBoxes, testMatrix);
         expectCheckLevel(numberOfReplacementBoxes);
-        expectAdjustForAnyLonelyReels(numberOfReplacementBoxes);
+        expectAdjustForAnyLonelyReels(numberOfReplacementBoxes, testMatrix);
         expectGetMapProperties();
     }
 
@@ -337,7 +352,6 @@ public class TestHiddenPatternWithFallingReels {
             rectangleMapObject.setName("Reel");
             rectangleMapObjectsMock.add(rectangleMapObject);
         }
-
     }
 
     private void expectPopulateLevel(int numberOfReplacementBoxes, int[][] testMatrix) {
@@ -488,14 +502,21 @@ public class TestHiddenPatternWithFallingReels {
         expectCheckLevelDebugForOneReel();
     }
 
-    private void expectAdjustForAnyLonelyReels(int numberOfReplacementBoxes) {
+    private void expectAdjustForAnyLonelyReels(int numberOfReplacementBoxes, int[][] testMatrix) {
         for (int i=0; i<numberOfReplacementBoxes; i++)
             expectPopulateMatchGridRC(i);
-        expectGetLonelyTiles(numberOfReplacementBoxes);
+        expectGetLonelyTiles(numberOfReplacementBoxes, testMatrix);
     }
 
-    private void expectGetLonelyTiles(int numberOfReplacementReels) {
+    private void expectGetLonelyTiles(int numberOfReplacementReels, int[][] testMatrix) {
+        expectMatchRowSlots(numberOfReplacementReels, testMatrix);
         expectCheckLevelDebugForNReels(numberOfReplacementReels);
+    }
+
+    private void expectMatchRowSlots(int numberOfReplacementReels, int[][] testMatrix) {
+        if (!(numberOfReplacementReels % testMatrix[0].length == 0)) {
+            applicationMock.debug(capture(debugCaptureArgument1), capture(debugCaptureArgument2));
+        }
     }
 
     private void expectCheckLevelDebugForNReels(int numberOfReplacementReels) {
