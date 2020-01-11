@@ -159,6 +159,7 @@ public class Box2dToggleActiveBoxBodies extends SPPrototype implements InputProc
             AnimatedReel animatedReel = new AnimatedReel(slotReelScrollTexture, 0, 0, spriteWidth, spriteHeight, spriteWidth, spriteHeight, 0, reelSpinningSound, reelStoppingSound, tweenManager);
             animatedReel.setSx(0);
             animatedReel.setEndReel(Random.getInstance().nextInt(reelSprites.getSprites().length - 1));
+            animatedReel.setupSpinning();
             animatedReel.getReel().startSpinning();
             animatedReels.add(animatedReel);
         }
@@ -303,11 +304,6 @@ public class Box2dToggleActiveBoxBodies extends SPPrototype implements InputProc
 
     @Override
     public boolean touchDown(int x, int y, int pointer, int button) {
-        if (button == Input.Buttons.LEFT)
-            System.out.println("Left button pressed");
-        if (button == Input.Buttons.MIDDLE)
-            System.out.println("Middle button pressed");
-
         testPoint.set(x, y, 0);
         camera.unproject(testPoint);
         hitBody = null;
