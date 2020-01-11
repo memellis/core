@@ -41,6 +41,7 @@ import com.ellzone.slotpuzzle2d.prototypes.box2d.CollidingFallingReels;
 import com.ellzone.slotpuzzle2d.prototypes.box2d.EdgeShapes;
 import com.ellzone.slotpuzzle2d.prototypes.box2d.EdgeShapesBigCatchBox;
 import com.ellzone.slotpuzzle2d.prototypes.box2d.Light;
+import com.ellzone.slotpuzzle2d.prototypes.box2d.collisions.Box2dToggleActiveBoxBodies;
 import com.ellzone.slotpuzzle2d.prototypes.cylinder.Render3DCylinder1;
 import com.ellzone.slotpuzzle2d.prototypes.cylinder.Render3DCylinder2;
 import com.ellzone.slotpuzzle2d.prototypes.cylinder.Render3DCylinder3;
@@ -123,6 +124,7 @@ public class SPPrototypes {
 		ButtonLightUsingLightButton.class,
         ButtonLightUsingLightButtonViaFrameBuffer.class,
         CollidingFallingReels.class,
+        Box2dToggleActiveBoxBodies.class,
         Box2DFallingTest.class,
         Box2DFallingReels.class,
         Box2dFallingReelsWithCatchBox.class,
