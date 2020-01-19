@@ -139,12 +139,12 @@ public class PhysicsManagerCustomBodies {
 
     public void deleteBody(Body body) {
         world.destroyBody(body);
-     }
+    }
 
     public boolean isBodyDestroyed(Body body) {
         Array<Body> bodies = new Array<Body>();
         world.getBodies(bodies);
-        return bodies.contains(body, true);
+        return !bodies.contains(body, true);
     }
 
     public Matrix4 getDebugMatrix() {

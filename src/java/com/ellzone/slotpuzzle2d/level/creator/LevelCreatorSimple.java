@@ -33,6 +33,7 @@ import com.ellzone.slotpuzzle2d.effects.SpriteAccessor;
 import com.ellzone.slotpuzzle2d.finitestatemachine.PlayStates;
 import com.ellzone.slotpuzzle2d.level.FlashSlots;
 import com.ellzone.slotpuzzle2d.level.LevelDoor;
+import com.ellzone.slotpuzzle2d.level.creator.utils.FilterReelBoxes;
 import com.ellzone.slotpuzzle2d.level.hidden.HiddenPlayingCard;
 import com.ellzone.slotpuzzle2d.physics.PhysicsManagerCustomBodies;
 import com.ellzone.slotpuzzle2d.puzzlegrid.PuzzleGridType;
@@ -67,6 +68,7 @@ public class LevelCreatorSimple {
     public static final String PLAYING_CARD_LEVEL_TYPE = "PlayingCard";
     public static final String BONUS_LEVEL_TYPE = "BonusLevelType";
     public static final String REELS_LAYER_NAME = "Reels";
+    public static final int OFF_PLAY_SCREEN_OFFSET = 420;
 
     private LevelDoor levelDoor;
     private TiledMap level;
@@ -90,6 +92,7 @@ public class LevelCreatorSimple {
     private Array<Body> reelBoxes;
     private Array<Body> reelBoxesCollided;
     public Array<Integer> replacementReelBoxes;
+    private Array<Integer> reelBoxesToDelete;
     private PuzzleGridTypeReelTile puzzleGridTypeReelTile;
     private int numberOfReelBoxesToReplace, numberOfReelBoxesToDelete;
     boolean matchedReels = false;
@@ -97,6 +100,7 @@ public class LevelCreatorSimple {
     Array<TupleValueIndex> reelsToFall;
     private int mapWidth, mapHeight;
     private FlashSlots flashSlots;
+    private boolean reelBoxesToBeCreated = false;
     private int debugNumberOfReelsDeleted = 0;
     private int debugNumberOfReelBoxesDeleted = 0;
 
@@ -128,8 +132,9 @@ public class LevelCreatorSimple {
 
     private void initialise(LevelDoor levelDoor, Array<ReelTile> reelTiles, TiledMap level, TweenManager tweenManager, int levelWidth, int levelHeight) {
         puzzleGridTypeReelTile = new PuzzleGridTypeReelTile();
-        reelBoxes = new Array<Body>();
-        replacementReelBoxes = new Array<Integer>();
+        reelBoxes = new Array<>();
+        replacementReelBoxes = new Array<>();
+        reelBoxesToDelete = new Array<>();
         reelTiles = createLevel(levelDoor, level, reelTiles, levelWidth, levelHeight);
         reelsSpinning = reelBoxes.size - 1;
         reelsFlashing = 0;
@@ -300,8 +305,8 @@ public class LevelCreatorSimple {
     private void setUpRelatedReelTileBody(ReelTile reelTile) {
         Body reelTileBody = physics.createBoxBody(
                  BodyDef.BodyType.DynamicBody,
-                reelTile.getX() + 20,
-                reelTile.getY() + 360,
+                reelTile.getDestinationX() + 20,
+                reelTile.getDestinationY() + OFF_PLAY_SCREEN_OFFSET,
                 19,
                 19,
                 true);
@@ -352,7 +357,6 @@ public class LevelCreatorSimple {
     }
 
     private void allReelsHaveStoppedSpinning() {
-        System.out.println("reelsSpinning="+reelsSpinning);
         if ((reelsSpinning <= -1) & (hitSinkBottom)) {
             if (levelDoor.getLevelType().equals(HIDDEN_PATTERN_LEVEL_TYPE)) {
                 if (testForHiddenPatternRevealed(reelTiles, levelWidth, levelHeight))
@@ -374,7 +378,9 @@ public class LevelCreatorSimple {
 
     private void actionReelStoppedFlashing(ReelTileEvent event, ReelTile reelTile) {
         if ((playState == PlayStates.INTRO_FLASHING) | (playState != PlayStates.REELS_FLASHING)) {
+            System.out.println("Testing to deal with numberOfReelsFlashing < 1 after a when a reel has stopped flashing - numberOfReelsFlashing="+flashSlots.getNumberOfReelsFlashing());
             if (flashSlots.getNumberOfReelsFlashing() < 1) {
+                System.out.println("Please deal with numberOfReelsFlashing < 1 after a when a reel has stopped flashing");
                 // When do I need to testForAnyLonelyReels?
                 //
                 /*if (testForAnyLonelyReels(reelTiles, this.levelWidth, this.levelHeight)) {
@@ -417,8 +423,6 @@ public class LevelCreatorSimple {
         matchedSlots.reverse();
         numberOfReelBoxesToReplace = matchedSlots.size - 1 - duplicateMatchedSlots.size / 2;
         numberOfReelBoxesToDelete = matchedSlots.size - 1 - duplicateMatchedSlots.size / 2;
-        if (numberOfReelBoxesToDelete == -1)
-            System.out.println("numberOfReelBoxesToDelete=-1");
 
         for (TupleValueIndex matchedSlot : matchedSlots)
             reelTiles.get(matchedSlot.index).setScore(matchedSlot.value);
@@ -469,9 +473,7 @@ public class LevelCreatorSimple {
                 if (grid[r][c] != null)
                     if (!reelTiles.get(grid[r][c].getIndex()).isReelTileDeleted())
                         hiddenPattern = false;
-            } //else
-//                Gdx.app.debug(SlotPuzzleConstants.SLOT_PUZZLE, "I don't respond to r=" + r + "c=" + c);
-        }
+            }         }
         return hiddenPattern;
     }
 
@@ -505,8 +507,6 @@ public class LevelCreatorSimple {
     }
 
     public void setReelBoxes(Array<Body> reelBoxes) { this.reelBoxes = reelBoxes; }
-
-
 
     public Array<AnimatedReel> getAnimatedReels() {
         return animatedReels;
@@ -556,45 +556,47 @@ public class LevelCreatorSimple {
         public void onEvent(int type, BaseTween<?> source) {
             switch (type) {
                 case TweenCallback.COMPLETE:
-                    ReelTile reel = (ReelTile) source.getUserData();
-                    int reelTilesIndex = reelTiles.indexOf(reel, true);
-                    //hudAddScore((reel.getEndReel() + 1) * reel.getScore());
-                    //playSound(reelStoppedSound);
-                    //playSound(chaChingSound);
-
-                    reel.deleteReelTile();
-                    debugNumberOfReelsDeleted++;
-                    physics.deleteBody(reelBoxes.get(reelTilesIndex));
-
-                    replacementReelBoxes.add(reelTilesIndex);
-                    flashSlots.setNumberOfReelsFlashing(flashSlots.getNumberOfReelsFlashing() - 1);
-                    numberOfReelBoxesToDelete--;
+                    deleteReel(source);
                     System.out.println("numberOfReelBoxesToDelete="+numberOfReelBoxesToDelete);
-                    if (numberOfReelBoxesToDelete < 1) {
-                        if ((playState == PlayStates.INTRO_FLASHING) | (playState == PlayStates.REELS_FLASHING)) {
-                            findReelsAboveMe();
-                            matchedReels = isThereMatchedSlots();
-                            if (!matchedReels) {
-                                if (replacementReelBoxes.size == 0)
-                                    playState = PlayStates.PLAYING;
-                                else
-                                if (reelsToFall.size == 0)
-                                    createReplacementReelBoxes();
-                            } else {
-                                System.out.println("What happends when I get here!");
-//                                flashSlots(reelTiles, levelWidth, levelHeight);
-                            }
-                        }
-                    }
+                    if (numberOfReelBoxesToDelete < 1)
+                        processCurrentMatchedReelsDeleted();
 
                     if (levelDoor.getLevelType().equals(PLAYING_CARD_LEVEL_TYPE))
                         testPlayingCardLevelWon(levelWidth, levelHeight);
-                    else
                     if (levelDoor.getLevelType().equals(HIDDEN_PATTERN_LEVEL_TYPE))
                         testForHiddenPlatternLevelWon(levelWidth, levelHeight);
+                    if (levelDoor.getLevelType().equals(BONUS_LEVEL_TYPE))
+                        testForBonusLevelWon(levelWidth, levelHeight);
             }
         }
     };
+
+    private void processCurrentMatchedReelsDeleted() {
+        if ((playState == PlayStates.INTRO_FLASHING) | (playState == PlayStates.REELS_FLASHING)) {
+            findReelsAboveMe();
+            if (isThereMatchedSlots())
+                flashSlots(reelTiles, levelWidth, levelHeight);
+            else
+                if (replacementReelBoxes.size == 0)
+                    playState = PlayStates.PLAYING;
+        }
+    }
+
+    private void deleteReel(BaseTween<?> source) {
+        ReelTile reel = (ReelTile) source.getUserData();
+        int reelTilesIndex = reelTiles.indexOf(reel, true);
+        //hudAddScore((reel.getEndReel() + 1) * reel.getScore());
+        //playSound(reelStoppedSound);
+        //playSound(chaChingSound);
+
+        reel.deleteReelTile();
+        debugNumberOfReelsDeleted++;
+        reelBoxesToDelete.add(reelTilesIndex);
+        if (!replacementReelBoxes.contains(reelTilesIndex, true))
+            replacementReelBoxes.add(reelTilesIndex);
+        flashSlots.setNumberOfReelsFlashing(flashSlots.getNumberOfReelsFlashing() - 1);
+        numberOfReelBoxesToDelete--;
+    }
 
     private boolean isThereMatchedSlots() {
         ReelTileGridValue[][] puzzleGrid = puzzleGridTypeReelTile.populateMatchGrid(reelTiles, levelWidth, levelHeight);
@@ -606,6 +608,7 @@ public class LevelCreatorSimple {
         matchedSlots = PuzzleGridTypeReelTile.adjustMatchSlotDuplicates(matchedSlots, duplicateMatchedSlots);
         if (matchedSlots.size > 0) {
             matchedSlots.reverse();
+
             numberOfReelBoxesToReplace = matchedSlots.size - 1 - duplicateMatchedSlots.size / 2;
             numberOfReelBoxesToDelete = matchedSlots.size - 1 - duplicateMatchedSlots.size / 2;
 
@@ -634,48 +637,24 @@ public class LevelCreatorSimple {
             iWonTheLevel();
     }
 
+    private void testForBonusLevelWon(int levelWidth, int levelHeight) {
+        PuzzleGridType puzzleGrid = new PuzzleGridType();
+        TupleValueIndex[][] matchGrid = puzzleGridTypeReelTile.populateMatchGrid(reelTiles, levelWidth, levelHeight);
+        puzzleGrid.matchGridSlots(matchGrid);
+        if (hiddenPatternRevealed(matchGrid))
+            iWonTheLevel();
+    }
+
     public void update(float dt) {
+        findReelsAboveMe();
         if ((playState == PlayStates.INTRO_FLASHING) | (playState == PlayStates.REELS_FLASHING)) {
             if ((reelsAboveHaveFallen) & (reelsToFall.size==0) & (flashSlots.getNumberOfReelsFlashing() == 0)) {
-                matchedReels = isThereMatchedSlots();
-                if (!matchedReels) {
-                    if (replacementReelBoxes.size == 0)
-                        playState = PlayStates.PLAYING;
-                    else
-                    if (reelsToFall.size == 0) {
-                        System.out.println("I was calling createReplacementReelBoxes from here! 1");
-                        createReplacementReelBoxes();
-                    }
-                    reelsAboveHaveFallen = false;
-                }
+                processReelsAboveHaveFallenWithNoReelsToFallNoReelsFlashingState();
             } else {
-                if ((playState == PlayStates.INTRO_FLASHING) | (playState == PlayStates.REELS_FLASHING) | playState == PlayStates.PLAYING) {
-                    if ((numberOfReelBoxesToDelete < 0) &
-                            (!matchedReels) &
-                            (reelsToFall.size == 0) &
-                            (replacementReelBoxes.size > 0) &
-                            (flashSlots.getNumberOfReelsFlashing() == 0)) {
-                        matchedReels = isThereMatchedSlots();
-                        if (!matchedReels) {
-                            if ((numberOfReelBoxesToDelete < 0) &
-                                    (reelsToFall.size == 0) &
-                                    (replacementReelBoxes.size > 0)) {
-                                System.out.println("I was calling createReplacementReelBoxes from here! 2");
-                                createReplacementReelBoxes();
-                            }
-                        } else {
-                            if (playState == PlayStates.REELS_FLASHING)
-                                playState = PlayStates.PLAYING;
-                        }
-                    } else {
-                        if ((numberOfReelBoxesToDelete < 0) &
-                                (!matchedReels) &
-                                (reelsToFall.size == 0) &
-                                (replacementReelBoxes.size == 0)) {
-                            playState = PlayStates.PLAYING;
-                        }
-                    }
-                }
+                if ((playState == PlayStates.INTRO_FLASHING) |
+                    (playState == PlayStates.REELS_FLASHING) |
+                    (playState == PlayStates.PLAYING))
+                    processNoReelBoxesToDeleteAnyMatchedReels();
             }
         }
         if ((playState == PlayStates.INTRO_SPINNING) | (playState == PlayStates.REELS_SPINNING)) {
@@ -687,21 +666,66 @@ public class LevelCreatorSimple {
 
         physics.update(dt);
         updateReelBoxes();
+        deleteReelBoxes(reelBoxesToDelete);
+        if (reelBoxesToBeCreated) {
+            createReplacementReelBoxes();
+            reelBoxesToBeCreated = false;
+        }
+    }
+
+    private void processNoReelBoxesToDeleteAnyMatchedReels() {
+        if ((numberOfReelBoxesToDelete < 0) &
+                (reelsToFall.size == 0) &
+                (replacementReelBoxes.size > 0) &
+                (flashSlots.getNumberOfReelsFlashing() == 0)) {
+            matchedReels = isThereMatchedSlots();
+            if (!matchedReels) {
+                if ((numberOfReelBoxesToDelete < 0) &
+                        (reelsToFall.size == 0) &
+                        (replacementReelBoxes.size > 0)) {
+                    System.out.println("I was calling createReplacementReelBoxes from here! 2");
+                    reelBoxesToBeCreated = true;
+                }
+            } else {
+                if (playState == PlayStates.REELS_FLASHING)
+                    playState = PlayStates.PLAYING;
+            }
+        } else {
+            if ((numberOfReelBoxesToDelete < 0) &
+                    (!matchedReels) &
+                    (reelsToFall.size == 0) &
+                    (replacementReelBoxes.size == 0)) {
+                playState = PlayStates.PLAYING;
+            }
+        }
+    }
+
+    private void processReelsAboveHaveFallenWithNoReelsToFallNoReelsFlashingState() {
+        if (!isThereMatchedSlots()) {
+            if (replacementReelBoxes.size == 0)
+                playState = PlayStates.PLAYING;
+            else
+            if (reelsToFall.size == 0)
+                reelBoxesToBeCreated = true;
+            reelsAboveHaveFallen = false;
+        }
     }
 
     private void createReplacementReelBoxes() {
+
         System.out.println();
         printMatchGrid(reelTiles, 12, 9);
-        replacementReelBoxes = filterReelBoxesByDifficultyLevel(getDeletedReelTiles(), 0.1f);
-        for (Integer reelBoxIndex : replacementReelBoxes)
+
+        Array<Integer> reelBoxesToReplace = FilterReelBoxes.filterReelBoxesByDifficultyLevel(replacementReelBoxes, 0.1f);
+
+        for (Integer reelBoxIndex : reelBoxesToReplace)
             createReplacementReelBox(reelBoxIndex);
 
-        if (replacementReelBoxes.size == 0) {
+       if (replacementReelBoxes.size == 0) {
             reelsSpinning = 0;
             return;
         }
         reelsSpinning = replacementReelBoxes.size - 1;
-        replacementReelBoxes.removeRange(0, replacementReelBoxes.size - 1);
 
         if (playState == PlayStates.INTRO_FLASHING)
             playState = PlayStates.INTRO_SPINNING;
@@ -719,28 +743,13 @@ public class LevelCreatorSimple {
         return deleteReelTiles;
     }
 
-    private Array<Integer> filterReelBoxesByDifficultyLevel(Array<Integer> deletedReelBoxes, float difficultyLevelFactor) {
-        Array<Integer> filterReplacementReelBoxes = new Array<>();
-        if (deletedReelBoxes.size == 0)
-            return filterReplacementReelBoxes;
-        int numberOfReelBoxesToBeSelected = (int) Math.ceil(deletedReelBoxes.size * 0.1f);
-
-        do {
-            int next = Random.getInstance().nextInt(deletedReelBoxes.size);
-            int nextIndex = deletedReelBoxes.get(next);
-            if (!filterReplacementReelBoxes.contains(nextIndex, true))
-                filterReplacementReelBoxes.add(nextIndex);
-        } while (filterReplacementReelBoxes.size < numberOfReelBoxesToBeSelected);
-        return filterReplacementReelBoxes;
-    }
-
     private void createReplacementReelBox(Integer reelBoxIndex) {
-        ReelTile reelTile = updateReplacementReelTile(reelBoxIndex);
-        createReplacementBody(reelBoxIndex, reelTile);
+        updateReplacementReelTile(reelBoxIndex);
+        updateReplacementBody(reelBoxIndex);
         updateReplacementAnimatedReel(reelBoxIndex);
     }
 
-    private ReelTile updateReplacementReelTile(Integer reelBoxIndex) {
+    private void updateReplacementReelTile(Integer reelBoxIndex) {
         ReelTile reelTile = reelTiles.get(reelBoxIndex.intValue());
         reelTile.unDeleteReelTile();
         reelTile.setScale(1.0f);
@@ -749,23 +758,23 @@ public class LevelCreatorSimple {
         reelTile.setColor(reelTileColor);
         reelTile.setEndReel(Random.getInstance().nextInt( reelTile.getNumberOfReelsInTexture() - 1));
         reelTile.resetReel();
-        return reelTile;
+        reelTile.setSpinning(true);
     }
 
-    private void createReplacementBody(Integer reelBoxIndex, ReelTile reelTile) {
-        Body reelTileBody = physics.createBoxBody(BodyDef.BodyType.DynamicBody,
-                reelTile.getDestinationX() + 20,
-                reelTile.getDestinationY() + 360,
-                19,
-                19,
-                true);
-        reelTileBody.setUserData(reelTile);
-        reelBoxes.set(reelBoxIndex, reelTileBody);
+    private void updateReplacementBody(Integer reelBoxIndex) {
+        Body reelTileBody = reelBoxes.get(reelBoxIndex);
+        ReelTile reelTile = (ReelTile) reelTileBody.getUserData();
+        reelTileBody.setTransform(
+                (reelTile.getDestinationX() + 20) / 100,
+                (reelTile.getDestinationY() + OFF_PLAY_SCREEN_OFFSET) / 100,
+                0);
+        reelTileBody.setActive(true);
     }
 
     private void updateReplacementAnimatedReel(Integer reelBoxIndex) {
         AnimatedReel animatedReel = animatedReels.get(reelBoxIndex);
         animatedReel.reinitialise();
+        animatedReel.setupSpinning();
     }
 
     public void setHitSinkBottom(boolean hitSinkBottom) {
@@ -822,6 +831,18 @@ public class LevelCreatorSimple {
         this.reelsAboveHaveFallen = reelsAboveHaveFallen;
     }
 
+    public void setNumberOfReelBoxesToDelete(int numberOfReelBoxesToDelete) {
+        this.numberOfReelBoxesToDelete = numberOfReelBoxesToDelete;
+    }
+
+    public int getNumberOfReelBoxesToDelete() {
+        return numberOfReelBoxesToDelete;
+    }
+
+    public int getNumberOfReelsFlashing() {
+        return flashSlots.getNumberOfReelsFlashing();
+    }
+
     private void updateReelBoxes() {
         if ((reelBoxesCollided != null) && (reelBoxesCollided.size > 0)) {
             for (Body reelBoxCollided : reelBoxesCollided) {
@@ -832,9 +853,18 @@ public class LevelCreatorSimple {
         }
     }
 
+    private void deleteReelBoxes(Array<Integer> reelBoxesToDelete) {
+        for (Integer reelBoxToDelete : reelBoxesToDelete) {
+            ReelTile reelTile = (ReelTile) reelBoxes.get(reelBoxToDelete).getUserData();
+            reelBoxes.get(reelBoxToDelete).setTransform(
+                    reelTile.getDestinationX() + 20 / 100,
+                    reelTile.getDestinationY() + OFF_PLAY_SCREEN_OFFSET / 100, 0);
+            reelBoxes.get(reelBoxToDelete).setActive(false);
+        }
+        reelBoxesToDelete.clear();
+    }
+
     public void undeleteReelBox(int reelTileIndex) {
-//        replacementReelBoxes.removeValue(reelTileIndex, true);
-        printMatchGrid(reelTiles, 12, 9);
-        System.out.println("I want to undeleteReelBox x="+reelTiles.get(reelTileIndex).getX()+" y="+reelTiles.get(reelTileIndex).getY());
+        replacementReelBoxes.removeValue(reelTileIndex, true);
     }
 }

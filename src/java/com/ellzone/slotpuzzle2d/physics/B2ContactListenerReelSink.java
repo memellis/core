@@ -74,5 +74,4 @@ public class B2ContactListenerReelSink implements ContactListener {
     @Override
     public void postSolve(Contact contact, ContactImpulse impulse) {
     }
-
 }

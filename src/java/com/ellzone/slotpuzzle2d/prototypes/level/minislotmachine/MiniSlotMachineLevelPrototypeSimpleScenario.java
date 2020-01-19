@@ -167,14 +167,14 @@ public class MiniSlotMachineLevelPrototypeSimpleScenario extends SPPrototypeTemp
 
     private void initialiseLevel() {
         levelCreator = new LevelCreatorSimpleScenario(levelDoor,
-                                                 miniSlotMachineLevel,
-                                                 annotationAssetManager,
-                                                 carddeckAtlas,
-                                                 tweenManager,
-                                                 physics,
-                                                 GAME_LEVEL_WIDTH,
-                                                 GAME_LEVEL_HEIGHT,
-                                                 PlayStates.INITIALISING);
+                miniSlotMachineLevel,
+                annotationAssetManager,
+                carddeckAtlas,
+                tweenManager,
+                physics,
+                GAME_LEVEL_WIDTH,
+                GAME_LEVEL_HEIGHT,
+                PlayStates.INITIALISING);
         levelCreator.setPlayState(PlayStates.INITIALISING);
         reelTiles = levelCreator.getReelTiles();
         animatedReels = levelCreator.getAnimatedReels();
@@ -324,8 +324,8 @@ public class MiniSlotMachineLevelPrototypeSimpleScenario extends SPPrototypeTemp
                 if (animatedReel.getDampenedSineState() == DampenedSineParticle.DSState.UPDATING_DAMPENED_SINE)
                     setEndReelWithCurrentReel(reel);
             } else
-                if (!reel.getFlashTween()) {
-                    startReelSpinning(reel, animatedReel);
+            if (!reel.getFlashTween()) {
+                startReelSpinning(reel, animatedReel);
             }
         }
     }
@@ -349,7 +349,7 @@ public class MiniSlotMachineLevelPrototypeSimpleScenario extends SPPrototypeTemp
         if (pullLeverSound != null)
             pullLeverSound.play();
     }
-    
+
     @Override
     protected void loadAssetsOverride() {
     }
@@ -472,7 +472,7 @@ public class MiniSlotMachineLevelPrototypeSimpleScenario extends SPPrototypeTemp
             levelCreator.setHitSinkBottom(true);
 
         if ((getPlayState() == PlayStates.INTRO_FLASHING) |
-            (getPlayState() == PlayStates.REELS_FLASHING)) {
+                (getPlayState() == PlayStates.REELS_FLASHING)) {
 
             int r = PuzzleGridTypeReelTile.getRowFromLevel(reelTile.getDestinationY(), GAME_LEVEL_HEIGHT);
             int c = PuzzleGridTypeReelTile.getColumnFromLevel(reelTile.getDestinationX());
@@ -494,9 +494,9 @@ public class MiniSlotMachineLevelPrototypeSimpleScenario extends SPPrototypeTemp
         cB = PuzzleGridTypeReelTile.getColumnFromLevel(reelTileB.getDestinationX());
 
         if (levelCreator.getPlayState() == PlayStates.INTRO_SPINNING ||
-            levelCreator.getPlayState() == PlayStates.INTRO_FLASHING ||
-            levelCreator.getPlayState() == PlayStates.REELS_FLASHING ||
-            levelCreator.getPlayState() == PlayStates.PLAYING) {
+                levelCreator.getPlayState() == PlayStates.INTRO_FLASHING ||
+                levelCreator.getPlayState() == PlayStates.REELS_FLASHING ||
+                levelCreator.getPlayState() == PlayStates.PLAYING) {
             if  (cA == cB) {
                 if (Math.abs(rA - rB) > 1)
                     processTileHittingTile(reelTileA, reelTileB, rA, cA, rB, cA);

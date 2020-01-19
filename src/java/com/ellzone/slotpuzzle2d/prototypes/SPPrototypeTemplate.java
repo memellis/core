@@ -1,12 +1,9 @@
 /*
  Copyright 2011 See AUTHORS file.
-
  Licensed under the Apache License, Version 2.0 (the "License");
  you may not use this file except in compliance with the License.
  You may obtain a copy of the License at
-
  http://www.apache.org/licenses/LICENSE-2.0
-
  Unless required by applicable law or agreed to in writing, software
  distributed under the License is distributed on an "AS IS" BASIS,
  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -46,15 +43,15 @@ public abstract class SPPrototypeTemplate extends SPPrototype {
     protected AnnotationAssetManager annotationAssetManager;
     protected ReelSprites reelSprites;
     protected Sprite[] sprites;
-	protected int spriteWidth, spriteHeight;
+    protected int spriteWidth, spriteHeight;
     protected PerspectiveCamera cam;
     protected OrthographicCamera orthographicCamera;
     protected SpriteBatch batch;
     protected BitmapFont font;
-	protected FitViewport viewport;
-	protected Stage stage;
-	protected int displayWindowHeight;
-	protected int displayWindowWidth;
+    protected FitViewport viewport;
+    protected Stage stage;
+    protected int displayWindowHeight;
+    protected int displayWindowWidth;
 
     protected abstract void initialiseOverride();
     protected abstract void initialiseScreenOverride();
@@ -72,8 +69,8 @@ public abstract class SPPrototypeTemplate extends SPPrototype {
         }
 
         initialiseLibGdx();
-		initialiseScreen();
-		initialiseCamera();
+        initialiseScreen();
+        initialiseCamera();
         annotationAssetManager = loadAssets();
         loadAssetsOverride();
         reelSprites = initialiseReels(annotationAssetManager);
@@ -111,13 +108,13 @@ public abstract class SPPrototypeTemplate extends SPPrototype {
 
         return reelSprites;
     }
-	
+
     protected void initialiseCamera() {
         cam = new PerspectiveCamera();
         cam.position.set(0, 0, 10);
         cam.lookAt(0, 0, 0);
         cam.update();
-		displayWindowWidth = SlotPuzzleConstants.VIRTUAL_WIDTH;
+        displayWindowWidth = SlotPuzzleConstants.VIRTUAL_WIDTH;
         displayWindowHeight = SlotPuzzleConstants.VIRTUAL_HEIGHT;
     }
 
@@ -126,14 +123,14 @@ public abstract class SPPrototypeTemplate extends SPPrototype {
         this.font = new BitmapFont();
     }
 
-	protected void initialiseScreen() {
+    protected void initialiseScreen() {
         this.orthographicCamera = new OrthographicCamera();
         viewport = new FitViewport(SlotPuzzleConstants.VIRTUAL_WIDTH, SlotPuzzleConstants.VIRTUAL_HEIGHT, orthographicCamera);
-		stage = new Stage(viewport, batch);
+        stage = new Stage(viewport, batch);
 
         initialiseScreenOverride();
-	}
-	
+    }
+
     protected void initialiseUniversalTweenEngine() {
         SlotPuzzleTween.setWaypointsLimit(10);
         SlotPuzzleTween.setCombinedAttributesLimit(3);
@@ -152,7 +149,7 @@ public abstract class SPPrototypeTemplate extends SPPrototype {
         cam.position.set(0, 0, distance);
         cam.lookAt(0, 0, 0);
         cam.update();
-		viewport.update(width, height);
+        viewport.update(width, height);
     }
 
     private void update(float delta) {
@@ -171,7 +168,7 @@ public abstract class SPPrototypeTemplate extends SPPrototype {
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT | GL20.GL_DEPTH_BUFFER_BIT);
         update(delta);
         renderOverride(delta);
-		stage.draw();
+        stage.draw();
     }
 
     @Override
@@ -192,9 +189,9 @@ public abstract class SPPrototypeTemplate extends SPPrototype {
         if (this.batch != null) {
             this.batch.dispose();
         }
-		if (this.stage != null) {
-			this.stage.dispose();
-		}
+        if (this.stage != null) {
+            this.stage.dispose();
+        }
         this.annotationAssetManager.dispose();
 
         disposeOverride();
