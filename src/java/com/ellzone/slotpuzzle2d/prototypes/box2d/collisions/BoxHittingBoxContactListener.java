@@ -47,9 +47,6 @@ public class BoxHittingBoxContactListener implements ContactListener {
     private boolean isSameColumn(AnimatedReel animatedReelA, AnimatedReel animatedReelB) {
         ReelTile reelA = animatedReelA.getReel();
         ReelTile reelB = animatedReelB.getReel();
-        System.out.println(reelA.getX());
-        System.out.println(reelB.getX());
-
         return getColumn(reelA) == getColumn(reelB);
     }
 
@@ -61,6 +58,7 @@ public class BoxHittingBoxContactListener implements ContactListener {
         System.out.println("process rows");
         System.out.println(animatedReelA.getReel().getY());
         System.out.println(animatedReelB.getReel().getY());
+        System.out.println(animatedReelA.getReel().getY() - animatedReelB.getReel().getY());
     }
 
     private AnimatedReel getAnimatedReel(Fixture fixture) {
@@ -69,6 +67,7 @@ public class BoxHittingBoxContactListener implements ContactListener {
 
     String getBodyClassNameFromFixture(Fixture fixture) {
         Object userData = fixture.getBody().getUserData();
+        System.out.println(userData == null ? "" : userData.getClass().getName());
         return userData == null ? "" : userData.getClass().getName();
     }
 

@@ -31,6 +31,22 @@ public class ReelSink {
                                int reelSinkWidth,
                                int reelSinkHeight,
                                int reelWidth,
+                               int reelHeight) {
+        createReelSink(
+                centreX,
+                centreY,
+                reelSinkWidth,
+                reelSinkHeight,
+                reelWidth,
+                reelHeight,
+                this);
+    }
+
+    public void createReelSink(float centreX,
+                               float centreY,
+                               int reelSinkWidth,
+                               int reelSinkHeight,
+                               int reelWidth,
                                int reelHeight,
                                Object userData) {
         Body reelSinkBottom = createReelSinkBottom(centreX, centreY, reelSinkWidth, reelSinkHeight, reelWidth, reelHeight);
