@@ -198,6 +198,9 @@ public class Box2DOneBoxFallsOntoOneBox extends SPPrototype implements InputProc
 
     private AnimatedReel createAnimatedReel(int x, int y, int endReel) {
         AnimatedReel animatedReel = new AnimatedReel(slotReelScrollTexture, x, y, spriteWidth, spriteHeight, spriteWidth, spriteHeight, 0, reelSpinningSound, reelStoppingSound, tweenManager);
+        ReelTile reelTile = animatedReel.getReel();
+        reelTile.setDestinationX(reelTile.getX());
+        reelTile.setDestinationY(reelTile.getY());
         animatedReel.setSx(0);
         animatedReel.setEndReel(endReel);
         animatedReel.setupSpinning();
@@ -319,19 +322,22 @@ public class Box2DOneBoxFallsOntoOneBox extends SPPrototype implements InputProc
         for (Body reelBox : reelBoxes) {
             if (reelBox != null) {
                 float angle = MathUtils.radiansToDegrees * reelBox.getAngle();
-                if (index < animatedReels.size) {
-                    ReelTile reelTile = animatedReels.get(index).getReel();
-                    reelTile.setPosition(reelBox.getPosition().x * 100 - 20, reelBox.getPosition().y * 100 - 20);
-                    reelTile.updateReelFlashSegments(reelBox.getPosition().x * 100 - 20, reelBox.getPosition().y * 100 - 20);
-                    reelTile.setOrigin(0, 0);
-                    reelTile.setSize(40, 40);
-                    reelTile.setRotation(angle);
-                    reelTile.draw(batch);
-                }
+                if (index < animatedReels.size)
+                    renderReel(animatedReels, batch, index, reelBox, angle);
                 index++;
             }
         }
         batch.end();
+    }
+
+    private void renderReel(Array<AnimatedReel> animatedReels, SpriteBatch batch, int index, Body reelBox, float angle) {
+        ReelTile reelTile = animatedReels.get(index).getReel();
+        reelTile.setPosition(reelBox.getPosition().x * 100 - 20, reelBox.getPosition().y * 100 - 20);
+        reelTile.updateReelFlashSegments(reelBox.getPosition().x * 100 - 20, reelBox.getPosition().y * 100 - 20);
+        reelTile.setOrigin(0, 0);
+        reelTile.setSize(40, 40);
+        reelTile.setRotation(angle);
+        reelTile.draw(batch);
     }
 
     Matrix4 transform = new Matrix4();
@@ -384,6 +390,9 @@ public class Box2DOneBoxFallsOntoOneBox extends SPPrototype implements InputProc
     private void reCreateBoxes() {
         for (AnimatedReel animatedReel : animatedReels) {
             animatedReel.reinitialise();
+            ReelTile reelTile = animatedReel.getReel();
+            reelTile.setX(reelTile.getDestinationX());
+            reelTile.setY(reelTile.getDestinationY());
             animatedReel.getReel().startSpinning();
         }
         for (Body boxBody : reelBoxBodies)
