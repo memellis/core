@@ -71,6 +71,7 @@ import net.dermetfan.gdx.assets.AnnotationAssetManager;
 
 public class Box2DOneBoxFallsOntoOneBox extends SPPrototype implements InputProcessor {
     public static final int NUMBER_OF_BOXES = 2;
+    public static final int SCREEN_OFFSET = 400;
     private OrthographicCamera camera;
     private ShapeRenderer renderer;
     private Box2DDebugRenderer debugRenderer;
@@ -180,7 +181,7 @@ public class Box2DOneBoxFallsOntoOneBox extends SPPrototype implements InputProc
                     animatedReels.add(
                             createAnimatedReel(
                                     (int) PlayScreen.PUZZLE_GRID_START_X + (c * 40),
-                                    ((slotPuzzleMatrix.length - 1 - r) * 40) + 40 + 400,
+                                    ((slotPuzzleMatrix.length - 1 - r) * 40) + 40,
                                     slotPuzzleMatrix[r][c])
                     );
                     numberOfAnimatedReelsCreated++;
@@ -201,6 +202,7 @@ public class Box2DOneBoxFallsOntoOneBox extends SPPrototype implements InputProc
         ReelTile reelTile = animatedReel.getReel();
         reelTile.setDestinationX(reelTile.getX());
         reelTile.setDestinationY(reelTile.getY());
+        reelTile.setY(reelTile.getY() + SCREEN_OFFSET);
         animatedReel.setSx(0);
         animatedReel.setEndReel(endReel);
         animatedReel.setupSpinning();

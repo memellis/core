@@ -6,8 +6,13 @@ import com.badlogic.gdx.physics.box2d.ContactImpulse;
 import com.badlogic.gdx.physics.box2d.ContactListener;
 import com.badlogic.gdx.physics.box2d.Fixture;
 import com.badlogic.gdx.physics.box2d.Manifold;
+import com.ellzone.slotpuzzle2d.puzzlegrid.PuzzleGridTypeReelTile;
 import com.ellzone.slotpuzzle2d.sprites.AnimatedReel;
 import com.ellzone.slotpuzzle2d.sprites.ReelTile;
+
+import java.text.MessageFormat;
+
+import static com.ellzone.slotpuzzle2d.screens.PlayScreen.GAME_LEVEL_HEIGHT;
 
 public class BoxHittingBoxContactListener implements ContactListener {
     public static final String ANIMATED_REEL_CLASS_NAME = "com.ellzone.slotpuzzle2d.sprites.AnimatedReel";
@@ -55,10 +60,18 @@ public class BoxHittingBoxContactListener implements ContactListener {
     }
 
     private void processRows(AnimatedReel animatedReelA, AnimatedReel animatedReelB) {
-        System.out.println("process rows");
-        System.out.println(animatedReelA.getReel().getY());
-        System.out.println(animatedReelB.getReel().getY());
-        System.out.println(animatedReelA.getReel().getY() - animatedReelB.getReel().getY());
+        int rA, cA, rB, cB;
+
+        rA = PuzzleGridTypeReelTile.getRowFromLevel(
+                animatedReelA.getReel().getDestinationY(), GAME_LEVEL_HEIGHT);
+        cA = PuzzleGridTypeReelTile.getColumnFromLevel(
+                animatedReelA.getReel().getDestinationX());
+        rB = PuzzleGridTypeReelTile.getRowFromLevel(
+                animatedReelB.getReel().getDestinationY(), GAME_LEVEL_HEIGHT);
+        cB = PuzzleGridTypeReelTile.getColumnFromLevel(
+                animatedReelB.getReel().getDestinationX());
+
+        processReelHittingReel(rA, cA, rB, cB);
     }
 
     private AnimatedReel getAnimatedReel(Fixture fixture) {
@@ -67,11 +80,14 @@ public class BoxHittingBoxContactListener implements ContactListener {
 
     String getBodyClassNameFromFixture(Fixture fixture) {
         Object userData = fixture.getBody().getUserData();
-        System.out.println(userData == null ? "" : userData.getClass().getName());
         return userData == null ? "" : userData.getClass().getName();
     }
 
     Boolean isAnimatedReel(String className) {
         return className.equalsIgnoreCase(ANIMATED_REEL_CLASS_NAME);
+    }
+
+    void processReelHittingReel(int rA, int cA, int rB, int cB) {
+        System.out.println(MessageFormat.format("rA={0} cA={1} rB={2} cB={3}", rA, cA, rB, cB));
     }
 }
