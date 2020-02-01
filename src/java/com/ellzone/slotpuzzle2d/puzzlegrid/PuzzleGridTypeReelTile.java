@@ -575,6 +575,30 @@ public class PuzzleGridTypeReelTile {
         return matchGrid;
     }
 
+    public static ReelTileGridValue[][] populateMatchGridStatic(Array<ReelTile> reelLevel, int gridWidth, int gridHeight) {
+        ReelTileGridValue[][] matchGrid = new ReelTileGridValue[gridHeight][gridWidth];
+        int r, c;
+        for (int i = 0; i < reelLevel.size; i++) {
+            c = getColumnFromLevel(reelLevel.get(i).getDestinationX());
+            r = getRowFromLevel(reelLevel.get(i).getDestinationY(), gridHeight);
+            if ((r >= 0) & (r <= gridHeight) & (c >= 0) & (c <= gridWidth)) {
+                if (reelLevel.get(i).isReelTileDeleted())
+                    matchGrid[r][c] = new ReelTileGridValue(r, c, i, -1);
+                else
+                    matchGrid[r][c] = new ReelTileGridValue(reelLevel.get(i), r, c, i, reelLevel.get(i).getEndReel());
+
+                Gdx.app.debug(SlotPuzzleConstants.SLOT_PUZZLE, MessageFormat.format("r={0} c={1} x={2} y={3} dx={4} dy={5} i={6} v={7}",
+                        r, c,
+                        reelLevel.get(i).getX(), reelLevel.get(i).getY(),
+                        reelLevel.get(i).getDestinationX(), reelLevel.get(i).getDestinationY(),
+                        i,
+                        reelLevel.get(i).getEndReel()));
+            } else
+                Gdx.app.debug(SlotPuzzleConstants.SLOT_PUZZLE, "I don't respond to ***r="+r+" c="+c);
+        }
+        return matchGrid;
+    }
+
     public ReelTileGridValue[][] populateMatchGrid(int[][] puzzleGrid) {
         ReelTileGridValue[][] matchGrid = new ReelTileGridValue[puzzleGrid.length][puzzleGrid[0].length];
         for (int r = 0; r < puzzleGrid.length; r++) {

@@ -196,6 +196,7 @@ public class MiniSlotMachineLevelPrototypeWithLevelCreator extends SPPrototypeTe
         reelBoxes = levelCreator.getReelBoxes();
         hud.setLevelName(levelDoor.getLevelName());
         hud.startWorldTimer();
+        startReelsSpinning(animatedReels, reelTiles);
         levelCreator.setPlayState(PlayStates.INTRO_SPINNING);
     }
 
@@ -246,6 +247,13 @@ public class MiniSlotMachineLevelPrototypeWithLevelCreator extends SPPrototypeTe
         slotReelScrollPixmap = PixmapProcessors.createPixmapToAnimate(reelSprites.getSprites());
         slotReelScrollTexture = new Texture(slotReelScrollPixmap);
         slotReelScrollheight = slotReelScrollTexture.getHeight();
+    }
+
+    private void startReelsSpinning(Array<AnimatedReel> animatedReels, Array<ReelTile> reelTiles) {
+        for(AnimatedReel animatedReel : animatedReels) {
+            animatedReel.setupSpinning();
+            animatedReel.getReel().startSpinning();
+        }
     }
 
     @Override
