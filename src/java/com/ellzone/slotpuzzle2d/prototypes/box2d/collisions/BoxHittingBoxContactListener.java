@@ -5,11 +5,13 @@ import com.badlogic.gdx.physics.box2d.ContactImpulse;
 import com.badlogic.gdx.physics.box2d.ContactListener;
 import com.badlogic.gdx.physics.box2d.Fixture;
 import com.badlogic.gdx.physics.box2d.Manifold;
+import com.ellzone.slotpuzzle2d.physics.ReelSink;
 import com.ellzone.slotpuzzle2d.sprites.AnimatedReel;
 import com.ellzone.slotpuzzle2d.sprites.ReelTile;
 
 public class BoxHittingBoxContactListener implements ContactListener {
     public static final String ANIMATED_REEL_CLASS_NAME = "com.ellzone.slotpuzzle2d.sprites.AnimatedReel";
+    private static final String REEL_SINK_CLASS_NAME = "com.ellzone.slotpuzzle2d.physics.ReelSink";
 
     @Override
     public void endContact(Contact contact) {
@@ -29,9 +31,59 @@ public class BoxHittingBoxContactListener implements ContactListener {
         System.out.println("Begin contact");
         Fixture fixtureA = contact.getFixtureA();
         Fixture fixtureB = contact.getFixtureB();
-        if (isAnimatedReel(getBodyClassNameFromFixture(fixtureA)) &
-                isAnimatedReel(getBodyClassNameFromFixture(fixtureB)))
+        dealWithContacts(fixtureA, fixtureB);
+    }
+
+    private void dealWithContacts(Fixture fixtureA, Fixture fixtureB) {
+        if (isContactBetweenTwoReels(fixtureA, fixtureB))
             dealWithTwoReelBoxesHittingEachOther(fixtureA, fixtureB);
+        if (isContactBetweenReelAndReelSink(fixtureA, fixtureB))
+            dealWithReelBoxHittingReelSink(fixtureA, fixtureB);
+        if (isContactBetweenReelSinkAndReel(fixtureA, fixtureB))
+            dealWithReelSinkHittingReelBox(fixtureA, fixtureB);
+    }
+
+    private boolean isContactBetweenReelAndReelSink(Fixture fixtureA, Fixture fixtureB) {
+        if (isAnimatedReel(getBodyClassNameFromFixture(fixtureA)) &
+            isReelSink(getBodyClassNameFromFixture(fixtureB)))
+            return true;
+        return false;
+    }
+
+    private boolean isContactBetweenReelSinkAndReel(Fixture fixtureA, Fixture fixtureB) {
+        if (isReelSink(getBodyClassNameFromFixture(fixtureA)) &
+            isAnimatedReel(getBodyClassNameFromFixture(fixtureB)))
+            return true;
+        return false;
+    }
+
+    private void dealWithReelBoxHittingReelSink(Fixture fixtureA, Fixture fixtureB) {
+        System.out.println("dealWithReelBoxHittingReelSink");
+        AnimatedReel animatedReel = getAnimatedReel(fixtureA);
+        ReelSink reelSink = getReelSink(fixtureB);
+        FallenReel fallenReel = new FallenReel(animatedReel, reelSink);
+        fallenReel.processFallenReelHittingReelSink();
+    }
+
+    private void dealWithReelSinkHittingReelBox(Fixture fixtureA, Fixture fixtureB) {
+        System.out.println("dealWithReelBoxHittingReelSink");
+        AnimatedReel animatedReel = getAnimatedReel(fixtureB);
+        ReelSink reelSink = getReelSink(fixtureA);
+        FallenReel fallenReel = new FallenReel(animatedReel, reelSink);
+        fallenReel.processFallenReelHittingReelSink();
+    }
+
+    private ReelSink getReelSink(Fixture fixture) {
+        return (ReelSink) fixture.getBody().getUserData();
+    }
+
+    private Boolean isReelSink(String className) {
+        return className.equalsIgnoreCase(REEL_SINK_CLASS_NAME);
+    }
+
+    private boolean isContactBetweenTwoReels(Fixture fixtureA, Fixture fixtureB) {
+        return isAnimatedReel(getBodyClassNameFromFixture(fixtureA)) &
+            isAnimatedReel(getBodyClassNameFromFixture(fixtureB));
     }
 
     private void dealWithTwoReelBoxesHittingEachOther(Fixture fixtureA, Fixture fixtureB) {

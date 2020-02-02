@@ -51,6 +51,10 @@ public class AnimatedReelsManager implements Telegraph {
 
             return true;
         }
+        if (message.message == MessageType.ReelsLeftToFall.index) {
+            reelsLeftToFall();
+            return true;
+        }
         return false;
     }
 
@@ -126,5 +130,9 @@ public class AnimatedReelsManager implements Telegraph {
             findReelIndex++;
         }
         return -1;
+    }
+
+    private void reelsLeftToFall() {
+        System.out.println("reelsLeftToFall");
     }
 }

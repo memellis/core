@@ -71,6 +71,7 @@ import com.ellzone.slotpuzzle2d.utils.Random;
 
 import net.dermetfan.gdx.assets.AnnotationAssetManager;
 
+import static com.ellzone.slotpuzzle2d.messaging.MessageType.ReelsLeftToFall;
 import static com.ellzone.slotpuzzle2d.messaging.MessageType.SwapReelsAboveMe;
 
 public class Box2DOneBoxFallsOntoOneBox extends SPPrototype implements InputProcessor {
@@ -168,7 +169,10 @@ public class Box2DOneBoxFallsOntoOneBox extends SPPrototype implements InputProc
 
     private MessageManager setUpMessageManager() {
         messageManager = MessageManager.getInstance();
-        messageManager.addListeners(animatedReelsManager, SwapReelsAboveMe.index);
+        messageManager.addListeners(
+                animatedReelsManager,
+                SwapReelsAboveMe.index,
+                ReelsLeftToFall.index);
         return messageManager;
     }
 

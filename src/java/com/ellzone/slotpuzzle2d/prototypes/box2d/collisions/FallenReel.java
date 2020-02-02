@@ -19,15 +19,18 @@ package com.ellzone.slotpuzzle2d.prototypes.box2d.collisions;
 import com.badlogic.gdx.ai.msg.MessageManager;
 import com.badlogic.gdx.utils.Array;
 import com.ellzone.slotpuzzle2d.messaging.MessageType;
+import com.ellzone.slotpuzzle2d.physics.ReelSink;
 import com.ellzone.slotpuzzle2d.puzzlegrid.PuzzleGridTypeReelTile;
 import com.ellzone.slotpuzzle2d.sprites.AnimatedReel;
-import com.ellzone.slotpuzzle2d.sprites.ReelTile;
 
 import static com.ellzone.slotpuzzle2d.screens.PlayScreen.GAME_LEVEL_HEIGHT;
 
 public class FallenReel {
-    private final AnimatedReel animatedReelA;
-    private final AnimatedReel animatedReelB;
+    private AnimatedReel animatedReelA;
+    private AnimatedReel animatedReelB;
+    private AnimatedReel animatedReel;
+    private ReelSink reelSink;
+
     private MessageManager messageManager;
     private AnimatedReelsManager animatedReelsManager;
 
@@ -35,6 +38,12 @@ public class FallenReel {
     public FallenReel(AnimatedReel animatedReelA, AnimatedReel animatedReelB) {
         this.animatedReelA = animatedReelA;
         this.animatedReelB = animatedReelB;
+        messageManager = setUpMessageManager();
+    }
+
+    public FallenReel(AnimatedReel animatedReel, ReelSink reelSink) {
+        this.animatedReel = animatedReel;
+        this.reelSink = reelSink;
         messageManager = setUpMessageManager();
     }
 
@@ -53,6 +62,10 @@ public class FallenReel {
         processReelHittingReel(rowA, rowB);
     }
 
+    public void processFallenReelHittingReelSink() {
+        messageManager.dispatchMessage(MessageType.ReelsLeftToFall.index);
+    }
+
     private void processReelHittingReel(int rowA, int rowB) {
         if (isFallenGapGreaterThanOneReel(rowA, rowB))
             processReelsFallenMoreThanOneTile(rowA, rowB);
@@ -61,7 +74,6 @@ public class FallenReel {
     private boolean isFallenGapGreaterThanOneReel(int rowA, int rowB) {
         return Math.abs(rowA - rowB) > 1;
     }
-
 
      private void processReelsFallenMoreThanOneTile(int rowA, int rowB) {
          if (rowA > rowB)
