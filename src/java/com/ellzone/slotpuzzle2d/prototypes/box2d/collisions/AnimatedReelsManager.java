@@ -40,7 +40,6 @@ public class AnimatedReelsManager implements Telegraph {
     @Override
     public boolean handleMessage(Telegram message) {
         if (message.message == MessageType.SwapReelsAboveMe.index) {
-            System.out.println("handle SwapReelsAboveMe");
             Array<AnimatedReel> reelsAB = (Array<AnimatedReel>) message.extraInfo;
 
             AnimatedReel animatedReelA = reelsAB.get(0);

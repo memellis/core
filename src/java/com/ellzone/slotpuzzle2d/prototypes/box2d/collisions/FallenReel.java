@@ -54,27 +54,21 @@ public class FallenReel {
     }
 
     private void processReelHittingReel(int rowA, int rowB) {
-        if (isFallenGapOneReel(rowA, rowB))
-            processReelsFallenOneTile(rowA, rowB);
         if (isFallenGapGreaterThanOneReel(rowA, rowB))
             processReelsFallenMoreThanOneTile(rowA, rowB);
-    }
-
-    private boolean isFallenGapOneReel(int rowA, int rowB) {
-        return Math.abs(rowA - rowB) == 1;
     }
 
     private boolean isFallenGapGreaterThanOneReel(int rowA, int rowB) {
         return Math.abs(rowA - rowB) > 1;
     }
 
-    private void processReelsFallenOneTile(int rowA, int rowB) {
-        System.out.println("Reel fallen by one tile");
-        if (rowA > rowB)
-            swapReelsAboveMeBA();
-        else
-            swapReelsAboveMeAB();
-    }
+
+     private void processReelsFallenMoreThanOneTile(int rowA, int rowB) {
+         if (rowA > rowB)
+             swapReelsAboveMeBA();
+         else
+             swapReelsAboveMeAB();
+     }
 
     private void swapReelsAboveMeAB() {
         Array<AnimatedReel> reelsAB = new Array<>();
@@ -83,19 +77,10 @@ public class FallenReel {
         messageManager.dispatchMessage(MessageType.SwapReelsAboveMe.index, reelsAB);
     }
 
-
     private void swapReelsAboveMeBA() {
         Array<AnimatedReel> reelsAB = new Array<>();
         reelsAB.add(animatedReelB);
         reelsAB.add(animatedReelA);
         messageManager.dispatchMessage(MessageType.SwapReelsAboveMe.index, reelsAB);
     }
-
-     private void processReelsFallenMoreThanOneTile(int rowA, int rowB) {
-        System.out.println("Reel fallen by more than one tile");
-         if (rowA > rowB)
-             swapReelsAboveMeBA();
-         else
-             swapReelsAboveMeAB();
-     }
 }
