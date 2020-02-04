@@ -89,6 +89,7 @@ public class BoxHittingBoxContactListener implements ContactListener {
     private void dealWithTwoReelBoxesHittingEachOther(Fixture fixtureA, Fixture fixtureB) {
         System.out.println("Two reels hit each other");
 
+
         AnimatedReel animatedReelA = getAnimatedReel(fixtureA);
         AnimatedReel animatedReelB = getAnimatedReel(fixtureB);
 

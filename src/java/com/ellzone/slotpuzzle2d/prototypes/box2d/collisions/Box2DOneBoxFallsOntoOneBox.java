@@ -71,6 +71,8 @@ import com.ellzone.slotpuzzle2d.utils.Random;
 
 import net.dermetfan.gdx.assets.AnnotationAssetManager;
 
+import java.text.MessageFormat;
+
 import static com.ellzone.slotpuzzle2d.messaging.MessageType.ReelsLeftToFall;
 import static com.ellzone.slotpuzzle2d.messaging.MessageType.SwapReelsAboveMe;
 
@@ -90,7 +92,8 @@ public class Box2DOneBoxFallsOntoOneBox extends SPPrototype implements InputProc
     private MouseJoint mouseJoint = null;
     private Body hitBody = null;
     private TweenManager tweenManager = new TweenManager();
-    Array<AnimatedReel> animatedReels;
+    private Array<AnimatedReel> animatedReels;
+    private int numberOfReelsToFall;
     private ReelSprites reelSprites;
     private Pixmap slotReelScrollPixmap;
     private Texture slotReelScrollTexture;
@@ -102,7 +105,7 @@ public class Box2DOneBoxFallsOntoOneBox extends SPPrototype implements InputProc
     private Stage stage;
     private PhysicsManagerCustomBodies physicsEngine;
     private MessageManager messageManager;
-    private Telegraph animatedReelsManager;
+    private AnimatedReelsManager animatedReelsManager;
 
     @Override
     public void create() {
@@ -114,6 +117,7 @@ public class Box2DOneBoxFallsOntoOneBox extends SPPrototype implements InputProc
         initialiseUniversalTweenEngine();
         initialiseReelSlots();
         animatedReelsManager = new AnimatedReelsManager(animatedReels);
+        animatedReelsManager.setNumberOfReelsToFall(numberOfReelsToFall);
         messageManager = setUpMessageManager();
         createPhysicsWorld();
     }
@@ -202,6 +206,8 @@ public class Box2DOneBoxFallsOntoOneBox extends SPPrototype implements InputProc
                                 slotPuzzleMatrix[r][c]));
                 if (slotPuzzleMatrix[r][c] < 0)
                     animatedReels.get(numberOfAnimatedReelsCreated).getReel().deleteReelTile();
+                else
+                    numberOfReelsToFall++;
                 numberOfAnimatedReelsCreated++;
             }
         }
@@ -409,13 +415,18 @@ public class Box2DOneBoxFallsOntoOneBox extends SPPrototype implements InputProc
     }
 
     private void reCreateBoxes() {
+        numberOfReelsToFall = 0;
         for (AnimatedReel animatedReel : animatedReels) {
             animatedReel.reinitialise();
             ReelTile reelTile = animatedReel.getReel();
             reelTile.setX(reelTile.getDestinationX());
             reelTile.setY(reelTile.getDestinationY() + SCREEN_OFFSET);
-            animatedReel.getReel().startSpinning();
+            if (!animatedReel.getReel().isReelTileDeleted()) {
+                animatedReel.getReel().startSpinning();
+                numberOfReelsToFall++;
+            }
         }
+        animatedReelsManager.setNumberOfReelsToFall(numberOfReelsToFall);
         for (Body boxBody : reelBoxBodies)
             physicsEngine.deleteBody(boxBody);
         reelBoxBodies.clear();

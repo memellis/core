@@ -19,6 +19,7 @@ import com.badlogic.gdx.ai.msg.Telegram;
 import com.badlogic.gdx.ai.msg.Telegraph;
 import com.badlogic.gdx.utils.Array;
 import com.ellzone.slotpuzzle2d.messaging.MessageType;
+import com.ellzone.slotpuzzle2d.physics.ReelSink;
 import com.ellzone.slotpuzzle2d.puzzlegrid.PuzzleGridType;
 import com.ellzone.slotpuzzle2d.puzzlegrid.PuzzleGridTypeReelTile;
 import com.ellzone.slotpuzzle2d.puzzlegrid.TupleValueIndex;
@@ -29,12 +30,17 @@ import static com.ellzone.slotpuzzle2d.screens.PlayScreen.GAME_LEVEL_HEIGHT;
 import static com.ellzone.slotpuzzle2d.screens.PlayScreen.GAME_LEVEL_WIDTH;
 
 public class AnimatedReelsManager implements Telegraph {
-    Array<AnimatedReel> animatedReels;
-    Array<ReelTile> reelTiles;
+    private Array<AnimatedReel> animatedReels;
+    private Array<ReelTile> reelTiles;
+    private int numberOfReelsToFall = 0;
 
     AnimatedReelsManager(Array<AnimatedReel> animatedReels) {
         this.animatedReels = animatedReels;
         reelTiles = getReelTilesFromAnimatedReels(animatedReels);
+    }
+
+    public void setNumberOfReelsToFall(int numberOfReelsToFall) {
+        this.numberOfReelsToFall = numberOfReelsToFall;
     }
 
     @Override
@@ -133,6 +139,7 @@ public class AnimatedReelsManager implements Telegraph {
     }
 
     private void reelsLeftToFall() {
-        System.out.println("reelsLeftToFall");
+        numberOfReelsToFall--;
+        System.out.println("reelsLeftToFall=" + numberOfReelsToFall);
     }
 }

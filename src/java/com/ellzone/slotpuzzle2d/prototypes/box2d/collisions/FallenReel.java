@@ -23,6 +23,8 @@ import com.ellzone.slotpuzzle2d.physics.ReelSink;
 import com.ellzone.slotpuzzle2d.puzzlegrid.PuzzleGridTypeReelTile;
 import com.ellzone.slotpuzzle2d.sprites.AnimatedReel;
 
+import java.text.MessageFormat;
+
 import static com.ellzone.slotpuzzle2d.screens.PlayScreen.GAME_LEVEL_HEIGHT;
 
 public class FallenReel {
@@ -52,14 +54,32 @@ public class FallenReel {
     }
 
     public void processRows() {
-        int rowA, rowB;
+        int destinationRowA, destinationRowB;
+        int currentRowA, currentRowB;
 
-        rowA = PuzzleGridTypeReelTile.getRowFromLevel(
+        destinationRowA = PuzzleGridTypeReelTile.getRowFromLevel(
                 animatedReelA.getReel().getDestinationY(), GAME_LEVEL_HEIGHT);
-        rowB = PuzzleGridTypeReelTile.getRowFromLevel(
+        destinationRowB = PuzzleGridTypeReelTile.getRowFromLevel(
                 animatedReelB.getReel().getDestinationY(), GAME_LEVEL_HEIGHT);
 
-        processReelHittingReel(rowA, rowB);
+        currentRowA = PuzzleGridTypeReelTile.getRowFromLevel(
+                animatedReelA.getReel().getY(), GAME_LEVEL_HEIGHT);
+        currentRowB = PuzzleGridTypeReelTile.getRowFromLevel(
+                animatedReelB.getReel().getY(), GAME_LEVEL_HEIGHT);
+
+        System.out.println(
+                MessageFormat.format("currentRowA={0};currentRowB={1}", currentRowA, currentRowB));
+        System.out.println(
+                MessageFormat.format("destinationRowA={0};destinationRowB={1}", destinationRowA, destinationRowB));
+        System.out.println(
+                MessageFormat.format("reelA.y={0};reelB.y={1}", animatedReelA.getReel().getY(), animatedReelB.getReel().getY()));
+        System.out.println(
+                MessageFormat.format("reelA.position{0};reelB.position={1}",
+                        animatedReelA.getReel().getBoundingRectangle(),
+                        animatedReelB.getReel().getBoundingRectangle()));
+
+
+                processReelHittingReel(destinationRowA, destinationRowB);
     }
 
     public void processFallenReelHittingReelSink() {
@@ -67,6 +87,7 @@ public class FallenReel {
     }
 
     private void processReelHittingReel(int rowA, int rowB) {
+        messageManager.dispatchMessage(MessageType.ReelsLeftToFall.index);
         if (isFallenGapGreaterThanOneReel(rowA, rowB))
             processReelsFallenMoreThanOneTile(rowA, rowB);
     }
