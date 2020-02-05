@@ -19,7 +19,6 @@ import com.badlogic.gdx.ai.msg.Telegram;
 import com.badlogic.gdx.ai.msg.Telegraph;
 import com.badlogic.gdx.utils.Array;
 import com.ellzone.slotpuzzle2d.messaging.MessageType;
-import com.ellzone.slotpuzzle2d.physics.ReelSink;
 import com.ellzone.slotpuzzle2d.puzzlegrid.PuzzleGridType;
 import com.ellzone.slotpuzzle2d.puzzlegrid.PuzzleGridTypeReelTile;
 import com.ellzone.slotpuzzle2d.puzzlegrid.TupleValueIndex;

@@ -68,18 +68,18 @@ public class FallenReel {
                 animatedReelB.getReel().getY(), GAME_LEVEL_HEIGHT);
 
         System.out.println(
-                MessageFormat.format("currentRowA={0};currentRowB={1}", currentRowA, currentRowB));
-        System.out.println(
-                MessageFormat.format("destinationRowA={0};destinationRowB={1}", destinationRowA, destinationRowB));
-        System.out.println(
-                MessageFormat.format("reelA.y={0};reelB.y={1}", animatedReelA.getReel().getY(), animatedReelB.getReel().getY()));
-        System.out.println(
-                MessageFormat.format("reelA.position{0};reelB.position={1}",
-                        animatedReelA.getReel().getBoundingRectangle(),
-                        animatedReelB.getReel().getBoundingRectangle()));
+                MessageFormat.format(
+                        "reelAdestY={0}; reelBdestY={1}; reelAy={2}; reelBy={3}",
+                        destinationRowA, destinationRowB, currentRowA, currentRowB
+                ));
 
+        if (isTileFallenToDestinationRow(destinationRowA, destinationRowB, currentRowA, currentRowB))
+            processReelHittingReel(destinationRowA, destinationRowB);
+    }
 
-                processReelHittingReel(destinationRowA, destinationRowB);
+    private boolean isTileFallenToDestinationRow(int destinationRowA, int destinationRowB, int currentRowA, int currentRowB) {
+        return Math.abs(currentRowA - destinationRowA) <= 1 &&
+            Math.abs(currentRowB - destinationRowB) <= 1;
     }
 
     public void processFallenReelHittingReelSink() {

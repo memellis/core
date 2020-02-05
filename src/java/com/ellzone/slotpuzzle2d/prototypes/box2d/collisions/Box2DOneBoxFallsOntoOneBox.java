@@ -20,7 +20,6 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.ai.msg.MessageManager;
-import com.badlogic.gdx.ai.msg.Telegraph;
 import com.badlogic.gdx.assets.loaders.resolvers.InternalFileHandleResolver;
 import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.Color;
@@ -349,16 +348,16 @@ public class Box2DOneBoxFallsOntoOneBox extends SPPrototype implements InputProc
         for (Body reelBox : reelBoxes) {
             if (reelBox != null) {
                 float angle = MathUtils.radiansToDegrees * reelBox.getAngle();
+                AnimatedReel animatedReel = (AnimatedReel) reelBox.getUserData();
                 if (index < animatedReels.size)
-                    renderReel(animatedReels, batch, index, reelBox, angle);
+                    renderReel(animatedReel.getReel(), batch, reelBox, angle);
                 index++;
             }
         }
         batch.end();
     }
 
-    private void renderReel(Array<AnimatedReel> animatedReels, SpriteBatch batch, int index, Body reelBox, float angle) {
-        ReelTile reelTile = animatedReels.get(index).getReel();
+    private void renderReel(ReelTile reelTile, SpriteBatch batch, Body reelBox, float angle) {
         reelTile.setPosition(reelBox.getPosition().x * 100 - 20, reelBox.getPosition().y * 100 - 20);
         reelTile.updateReelFlashSegments(reelBox.getPosition().x * 100 - 20, reelBox.getPosition().y * 100 - 20);
         reelTile.setOrigin(0, 0);
