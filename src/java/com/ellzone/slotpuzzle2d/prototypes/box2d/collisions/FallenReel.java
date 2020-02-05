@@ -78,8 +78,10 @@ public class FallenReel {
     }
 
     private boolean isTileFallenToDestinationRow(int destinationRowA, int destinationRowB, int currentRowA, int currentRowB) {
-        return Math.abs(currentRowA - destinationRowA) <= 1 &&
-            Math.abs(currentRowB - destinationRowB) <= 1;
+        return
+            Math.abs(currentRowA - destinationRowA) <= 1 &&
+            Math.abs(currentRowB - destinationRowB) <= 1 &&
+            Math.abs(destinationRowA - destinationRowB) > 1;
     }
 
     public void processFallenReelHittingReelSink() {
