@@ -68,6 +68,7 @@ public class AnimatedReelsManager implements Telegraph {
     }
 
     private void reelSinkeelsLeftToFall(AnimatedReel animatedReel) {
+        decrementReelsLeftToFall();
         ReelTile reelTile = animatedReel.getReel();
         TupleValueIndex[] reelsAboveMe = PuzzleGridType.getReelsAboveMe(
                 PuzzleGridTypeReelTile.populateMatchGridStatic(
@@ -77,7 +78,7 @@ public class AnimatedReelsManager implements Telegraph {
                 PuzzleGridTypeReelTile.getRowFromLevel(reelTile.getDestinationY(), GAME_LEVEL_HEIGHT),
                 PuzzleGridTypeReelTile.getColumnFromLevel(reelTile.getDestinationX()));
         if(isReelInContactWith(reelTile, reelsAboveMe))
-            decreaseReelsLeftToFallBy(2);
+            decrementReelsLeftToFall();
     }
 
     private boolean isReelInContactWith(ReelTile reelTile, TupleValueIndex[] reelsAboveMe) {
