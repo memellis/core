@@ -72,6 +72,7 @@ import net.dermetfan.gdx.assets.AnnotationAssetManager;
 
 import java.text.MessageFormat;
 
+import static com.ellzone.slotpuzzle2d.messaging.MessageType.ReelSinkReelsLeftToFall;
 import static com.ellzone.slotpuzzle2d.messaging.MessageType.ReelsLeftToFall;
 import static com.ellzone.slotpuzzle2d.messaging.MessageType.SwapReelsAboveMe;
 
@@ -175,7 +176,8 @@ public class Box2DOneBoxFallsOntoOneBox extends SPPrototype implements InputProc
         messageManager.addListeners(
                 animatedReelsManager,
                 SwapReelsAboveMe.index,
-                ReelsLeftToFall.index);
+                ReelsLeftToFall.index,
+                ReelSinkReelsLeftToFall.index);
         return messageManager;
     }
 

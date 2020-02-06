@@ -57,8 +57,34 @@ public class AnimatedReelsManager implements Telegraph {
             return true;
         }
         if (message.message == MessageType.ReelsLeftToFall.index) {
-            reelsLeftToFall();
+            decrementReelsLeftToFall();
             return true;
+        }
+        if (message.message == MessageType.ReelSinkReelsLeftToFall.index) {
+            AnimatedReel animatedReel = (AnimatedReel) message.extraInfo;
+            reelSinkeelsLeftToFall(animatedReel);
+        }
+        return false;
+    }
+
+    private void reelSinkeelsLeftToFall(AnimatedReel animatedReel) {
+        ReelTile reelTile = animatedReel.getReel();
+        TupleValueIndex[] reelsAboveMe = PuzzleGridType.getReelsAboveMe(
+                PuzzleGridTypeReelTile.populateMatchGridStatic(
+                        reelTiles,
+                        GAME_LEVEL_WIDTH,
+                        GAME_LEVEL_HEIGHT),
+                PuzzleGridTypeReelTile.getRowFromLevel(reelTile.getDestinationY(), GAME_LEVEL_HEIGHT),
+                PuzzleGridTypeReelTile.getColumnFromLevel(reelTile.getDestinationX()));
+        if(isReelInContactWith(reelTile, reelsAboveMe))
+            decreaseReelsLeftToFallBy(2);
+    }
+
+    private boolean isReelInContactWith(ReelTile reelTile, TupleValueIndex[] reelsAboveMe) {
+        for (int i = 0; i < reelsAboveMe.length; i++) {
+            if (PuzzleGridTypeReelTile.getRowFromLevel(
+                    reelTile.getDestinationY(), GAME_LEVEL_HEIGHT)- 1 == reelsAboveMe[i].getR())
+                return true;
         }
         return false;
     }
@@ -137,8 +163,14 @@ public class AnimatedReelsManager implements Telegraph {
         return -1;
     }
 
-    private void reelsLeftToFall() {
+    private void decrementReelsLeftToFall() {
         numberOfReelsToFall--;
         System.out.println("reelsLeftToFall=" + numberOfReelsToFall);
     }
+
+    private void decreaseReelsLeftToFallBy(int decreaseValue) {
+        numberOfReelsToFall -= decreaseValue;
+        System.out.println("reelsLeftToFall=" + numberOfReelsToFall);
+    }
+
 }

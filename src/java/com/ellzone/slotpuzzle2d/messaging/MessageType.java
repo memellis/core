@@ -28,7 +28,8 @@ public enum MessageType {
     StopAudio("StopAudio", 9),
     PauseAudio("PauseAudio", 10),
     SwapReelsAboveMe("SwapReelsAboveMe", 11),
-    ReelsLeftToFall("ReelsLeftToFall", 12);
+    ReelsLeftToFall("ReelsLeftToFall", 12),
+    ReelSinkReelsLeftToFall("ReelSinkReelsLeftToFall", 13);
 
     public final String name;
     public final int index;

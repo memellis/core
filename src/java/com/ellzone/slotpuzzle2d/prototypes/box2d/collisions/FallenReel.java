@@ -85,7 +85,7 @@ public class FallenReel {
     }
 
     public void processFallenReelHittingReelSink() {
-        messageManager.dispatchMessage(MessageType.ReelsLeftToFall.index);
+        messageManager.dispatchMessage(MessageType.ReelSinkReelsLeftToFall.index, animatedReel);
     }
 
     private void processReelHittingReel(int rowA, int rowB) {
