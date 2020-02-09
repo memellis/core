@@ -143,7 +143,7 @@ public class AnimatedReelsManager implements Telegraph {
         for (int reelsAboveMeIndex = 0; reelsAboveMeIndex < reelsAboveMe.length; reelsAboveMeIndex++)
             recordDecrementReelsLeftToFall(
                     animatedReels.get(reelsAboveMe[reelsAboveMeIndex].getIndex()).getReel());
-        
+
     }
 
     private ReelTile swapReels(TupleValueIndex tupleValueIndex, ReelTile currentReel) {
