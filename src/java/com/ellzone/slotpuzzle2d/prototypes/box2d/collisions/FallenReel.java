@@ -83,7 +83,7 @@ public class FallenReel {
     }
 
     private void processReelHittingReel(int rowA, int rowB) {
-        messageManager.dispatchMessage(MessageType.ReelsLeftToFall.index);
+        messageManager.dispatchMessage(MessageType.ReelsLeftToFall.index, animatedReelA);
         if (isFallenGapGreaterThanOneReel(rowA, rowB))
             processReelsFallenMoreThanOneTile(rowA, rowB);
     }
