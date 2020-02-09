@@ -75,7 +75,6 @@ import static com.ellzone.slotpuzzle2d.messaging.MessageType.ReelsLeftToFall;
 import static com.ellzone.slotpuzzle2d.messaging.MessageType.SwapReelsAboveMe;
 
 public class Box2DOneBoxFallsOntoOneBox extends SPPrototype implements InputProcessor {
-    public static final int NUMBER_OF_BOXES = 2;
     public static final int SCREEN_OFFSET = 400;
     private OrthographicCamera camera;
     private ShapeRenderer renderer;
