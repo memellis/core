@@ -70,8 +70,6 @@ import com.ellzone.slotpuzzle2d.utils.Random;
 
 import net.dermetfan.gdx.assets.AnnotationAssetManager;
 
-import java.text.MessageFormat;
-
 import static com.ellzone.slotpuzzle2d.messaging.MessageType.ReelSinkReelsLeftToFall;
 import static com.ellzone.slotpuzzle2d.messaging.MessageType.ReelsLeftToFall;
 import static com.ellzone.slotpuzzle2d.messaging.MessageType.SwapReelsAboveMe;
@@ -192,7 +190,7 @@ public class Box2DOneBoxFallsOntoOneBox extends SPPrototype implements InputProc
         animatedReels = new Array<AnimatedReel>();
         createScrollReelTexture();
         creaateAnimatedReelsFromSlotPuzzleMatrix(
-                SlotPuzzleMatrices.createMatrixWithOneBoxOnOneBox());
+                SlotPuzzleMatrices.createMatrixWithTwoBoxesOnOneBox());
     }
 
     private Array<AnimatedReel> creaateAnimatedReelsFromSlotPuzzleMatrix(int[][] slotPuzzleMatrix) {
@@ -227,6 +225,7 @@ public class Box2DOneBoxFallsOntoOneBox extends SPPrototype implements InputProc
         reelTile.setDestinationX(reelTile.getX());
         reelTile.setDestinationY(reelTile.getY());
         reelTile.setY(reelTile.getY() + SCREEN_OFFSET);
+        reelTile.setIsFallen(false);
         animatedReel.setSx(0);
         animatedReel.setEndReel(endReel);
         animatedReel.setupSpinning();
@@ -288,6 +287,10 @@ public class Box2DOneBoxFallsOntoOneBox extends SPPrototype implements InputProc
         physicsEngine.update(dt);
         for (AnimatedReel reel : animatedReels)
             reel.update(dt);
+//        if (animatedReelsManager.getNumberOfReelsToFall()==0)
+//            creaateAnimatedReelsFromSlotPuzzleMatrix(
+//                    SlotPuzzleMatrices.createMatrixWithTwoBoxesOnOneBox());
+
     }
 
     @Override
@@ -301,7 +304,6 @@ public class Box2DOneBoxFallsOntoOneBox extends SPPrototype implements InputProc
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
         stage.draw();
         camera.update();
-
 
         renderReelBoxes(batch, reelBoxBodies);
         physicsEngine.draw(batch);
@@ -417,21 +419,26 @@ public class Box2DOneBoxFallsOntoOneBox extends SPPrototype implements InputProc
 
     private void reCreateBoxes() {
         numberOfReelsToFall = 0;
-        for (AnimatedReel animatedReel : animatedReels) {
-            animatedReel.reinitialise();
-            ReelTile reelTile = animatedReel.getReel();
-            reelTile.setX(reelTile.getDestinationX());
-            reelTile.setY(reelTile.getDestinationY() + SCREEN_OFFSET);
-            if (!animatedReel.getReel().isReelTileDeleted()) {
-                animatedReel.getReel().startSpinning();
-                numberOfReelsToFall++;
-            }
-        }
+        for (AnimatedReel animatedReel : animatedReels)
+            reinitialiseAnimatedReel(animatedReel);
         animatedReelsManager.setNumberOfReelsToFall(numberOfReelsToFall);
+        System.out.println("numberOfReelsToFall="+numberOfReelsToFall);
         for (Body boxBody : reelBoxBodies)
             physicsEngine.deleteBody(boxBody);
         reelBoxBodies.clear();
         reelBoxBodies = createBoxeBodiesFromAnimatedReels(animatedReels);
+    }
+
+    private void reinitialiseAnimatedReel(AnimatedReel animatedReel) {
+        animatedReel.reinitialise();
+        ReelTile reelTile = animatedReel.getReel();
+        reelTile.setX(reelTile.getDestinationX());
+        reelTile.setY(reelTile.getDestinationY() + SCREEN_OFFSET);
+        reelTile.setIsFallen(false);
+        if (!animatedReel.getReel().isReelTileDeleted()) {
+            animatedReel.getReel().startSpinning();
+            numberOfReelsToFall++;
+        }
     }
 
     private void addAMouseJoint() {

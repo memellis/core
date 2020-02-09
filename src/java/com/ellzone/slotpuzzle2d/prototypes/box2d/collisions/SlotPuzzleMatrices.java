@@ -17,4 +17,19 @@ public class SlotPuzzleMatrices {
         InputMatrix inputMatrix = new InputMatrix(matrixToInput);
         return inputMatrix.readMatrix();
     }
+    public static int[][] createMatrixWithTwoBoxesOnOneBox() {
+        String matrixToInput = "12 x 9\n"
+                + "-1 -1 -1 -1 -1 -1 -1 -1 -1 -1  -1  -1\n"
+                + "-1 -1 -1 -1 -1 -1 -1 -1 -1 -1  -1  -1\n"
+                + "-1 -1 -1 -1 -1 -1 -1 -1 -1 -1  -1  -1\n"
+                + "-1 -1 -1 -1 -1 -1 -1 -1 -1 -1  -1  -1\n"
+                + "-1 -1 -1 -1 -1 -1 -1 -1 -1 -1  -1  -1\n"
+                + "-1 -1 -1 -1  0 -1 -1 -1 -1 -1  -1  -1\n"
+                + "-1 -1 -1 -1  0 -1 -1 -1 -1 -1  -1  -1\n"
+                + "-1 -1 -1 -1 -1 -1 -1 -1 -1 -1  -1  -1\n"
+                + "-1 -1 -1 -1  0 -1 -1 -1 -1 -1  -1  -1\n";
+        InputMatrix inputMatrix = new InputMatrix(matrixToInput);
+        return inputMatrix.readMatrix();
+    }
+
 }

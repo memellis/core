@@ -44,6 +44,7 @@ public class ReelTile extends ReelSprite {
 	private boolean tileDeleted;
 	private boolean reelFlash;
 	private boolean reelFlashTween;
+	private boolean isFallen;
 	public enum FlashState {FLASH_OFF, FLASH_ON};
 	private FlashState reelFlashState;
 	private Color flashColor;
@@ -101,6 +102,7 @@ public class ReelTile extends ReelSprite {
 		reelFlashState = FlashState.FLASH_OFF;
   		flashColor = Color.RED;
         tileDeleted = false;
+        isFallen = true;
     }
 
 	@Override
@@ -185,6 +187,14 @@ public class ReelTile extends ReelSprite {
 	}
 
 	public void unDeleteReelTile() { this.tileDeleted = false; }
+
+	public void setIsFallen (boolean isFallen) {
+        this.isFallen = isFallen;
+    }
+
+    public boolean isFallen() {
+        return isFallen;
+    }
 	
 	public void startSpinning() {
 		super.setSpinning(true);

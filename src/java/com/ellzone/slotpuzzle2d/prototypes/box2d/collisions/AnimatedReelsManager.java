@@ -42,6 +42,10 @@ public class AnimatedReelsManager implements Telegraph {
         this.numberOfReelsToFall = numberOfReelsToFall;
     }
 
+    public int getNumberOfReelsToFall() {
+        return numberOfReelsToFall;
+    }
+
     @Override
     public boolean handleMessage(Telegram message) {
         if (message.message == MessageType.SwapReelsAboveMe.index) {
@@ -62,14 +66,17 @@ public class AnimatedReelsManager implements Telegraph {
         }
         if (message.message == MessageType.ReelSinkReelsLeftToFall.index) {
             AnimatedReel animatedReel = (AnimatedReel) message.extraInfo;
-            reelSinkeelsLeftToFall(animatedReel);
+            reelSinkReelsLeftToFall(animatedReel);
         }
         return false;
     }
 
-    private void reelSinkeelsLeftToFall(AnimatedReel animatedReel) {
-        decrementReelsLeftToFall();
+    private void reelSinkReelsLeftToFall(AnimatedReel animatedReel) {
         ReelTile reelTile = animatedReel.getReel();
+        if (!reelTile.isFallen()) {
+            reelTile.setIsFallen(true);
+            decrementReelsLeftToFall();
+        }
         TupleValueIndex[] reelsAboveMe = PuzzleGridType.getReelsAboveMe(
                 PuzzleGridTypeReelTile.populateMatchGridStatic(
                         reelTiles,
@@ -77,17 +84,21 @@ public class AnimatedReelsManager implements Telegraph {
                         GAME_LEVEL_HEIGHT),
                 PuzzleGridTypeReelTile.getRowFromLevel(reelTile.getDestinationY(), GAME_LEVEL_HEIGHT),
                 PuzzleGridTypeReelTile.getColumnFromLevel(reelTile.getDestinationX()));
-        if(isReelInContactWith(reelTile, reelsAboveMe))
-            decrementReelsLeftToFall();
-    }
+        markAllReelsAvoveInContactAsFallen(reelTile, reelsAboveMe);
+     }
 
-    private boolean isReelInContactWith(ReelTile reelTile, TupleValueIndex[] reelsAboveMe) {
+    private void markAllReelsAvoveInContactAsFallen(ReelTile reelTile, TupleValueIndex[] reelsAboveMe) {
+        ReelTile currentReelTile = reelTile;
         for (int i = 0; i < reelsAboveMe.length; i++) {
             if (PuzzleGridTypeReelTile.getRowFromLevel(
-                    reelTile.getDestinationY(), GAME_LEVEL_HEIGHT)- 1 == reelsAboveMe[i].getR())
-                return true;
+                    currentReelTile.getDestinationY(), GAME_LEVEL_HEIGHT)- 1 == reelsAboveMe[i].getR()) {
+                currentReelTile = animatedReels.get(reelsAboveMe[i].index).getReel();
+                if (!currentReelTile.isFallen()) {
+                    currentReelTile.setIsFallen(true);
+                    decrementReelsLeftToFall();
+                }
+            }
         }
-        return false;
     }
 
     private void swapReelsAboveMe(ReelTile reelTileA,

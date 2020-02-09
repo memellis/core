@@ -67,12 +67,6 @@ public class FallenReel {
         currentRowB = PuzzleGridTypeReelTile.getRowFromLevel(
                 animatedReelB.getReel().getY(), GAME_LEVEL_HEIGHT);
 
-        System.out.println(
-                MessageFormat.format(
-                        "reelAdestY={0}; reelBdestY={1}; reelAy={2}; reelBy={3}",
-                        destinationRowA, destinationRowB, currentRowA, currentRowB
-                ));
-
         if (isTileFallenToDestinationRow(destinationRowA, destinationRowB, currentRowA, currentRowB))
             processReelHittingReel(destinationRowA, destinationRowB);
     }
