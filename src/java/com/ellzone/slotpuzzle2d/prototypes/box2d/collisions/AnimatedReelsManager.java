@@ -17,8 +17,10 @@ package com.ellzone.slotpuzzle2d.prototypes.box2d.collisions;
 
 import com.badlogic.gdx.ai.msg.Telegram;
 import com.badlogic.gdx.ai.msg.Telegraph;
+import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.utils.Array;
 import com.ellzone.slotpuzzle2d.messaging.MessageType;
+import com.ellzone.slotpuzzle2d.physics.PhysicsManagerCustomBodies;
 import com.ellzone.slotpuzzle2d.puzzlegrid.PuzzleGridType;
 import com.ellzone.slotpuzzle2d.puzzlegrid.PuzzleGridTypeReelTile;
 import com.ellzone.slotpuzzle2d.puzzlegrid.TupleValueIndex;
@@ -30,20 +32,33 @@ import static com.ellzone.slotpuzzle2d.screens.PlayScreen.GAME_LEVEL_WIDTH;
 
 public class AnimatedReelsManager implements Telegraph {
     private Array<AnimatedReel> animatedReels;
+    private Array<Body> reelBodies;
     private Array<ReelTile> reelTiles;
     private int numberOfReelsToFall = 0;
+    private int reelsStoppedFalling = 0;
 
     AnimatedReelsManager(Array<AnimatedReel> animatedReels) {
         this.animatedReels = animatedReels;
         reelTiles = getReelTilesFromAnimatedReels(animatedReels);
     }
 
+    AnimatedReelsManager(Array<AnimatedReel> animatedReels,
+                         Array<Body> reelBodies) {
+        this(animatedReels);
+        this.reelBodies = reelBodies;
+    }
+
     public void setNumberOfReelsToFall(int numberOfReelsToFall) {
         this.numberOfReelsToFall = numberOfReelsToFall;
+        this.reelsStoppedFalling = numberOfReelsToFall;
     }
 
     public int getNumberOfReelsToFall() {
         return numberOfReelsToFall;
+    }
+
+    public int getReelsStoppedFalling() {
+        return reelsStoppedFalling;
     }
 
     @Override
@@ -75,6 +90,15 @@ public class AnimatedReelsManager implements Telegraph {
     private void reelsLeftToFall(AnimatedReel animatedReel) {
         ReelTile reelTile = animatedReel.getReel();
         recordDecrementReelsLeftToFall(reelTile);
+        recordIfReelHasStoppedFalling(reelTile);
+    }
+
+    private void recordIfReelHasStoppedFalling(ReelTile reelTile) {
+        Body reelBody = reelBodies.get(reelTile.getIndex());
+        if(!reelBody.isAwake()) {
+            System.out.println("reelTile x="+reelTile.getY()+"has stopped falling");
+            reelsStoppedFalling--;
+        }
     }
 
     private void recordDecrementReelsLeftToFall(ReelTile reelTile) {
@@ -87,6 +111,7 @@ public class AnimatedReelsManager implements Telegraph {
     private void reelSinkReelsLeftToFall(AnimatedReel animatedReel) {
         ReelTile reelTile = animatedReel.getReel();
         recordDecrementReelsLeftToFall(reelTile);
+        recordIfReelHasStoppedFalling(reelTile);
         TupleValueIndex[] reelsAboveMe = PuzzleGridType.getReelsAboveMe(
                 PuzzleGridTypeReelTile.populateMatchGridStatic(
                         reelTiles,
@@ -104,6 +129,7 @@ public class AnimatedReelsManager implements Telegraph {
                     currentReelTile.getDestinationY(), GAME_LEVEL_HEIGHT) - 1 == reelsAboveMe[i].getR()) {
                 currentReelTile = animatedReels.get(reelsAboveMe[i].index).getReel();
                 recordDecrementReelsLeftToFall(currentReelTile);
+                recordIfReelHasStoppedFalling(currentReelTile);
             }
         }
     }
@@ -143,7 +169,6 @@ public class AnimatedReelsManager implements Telegraph {
         for (int reelsAboveMeIndex = 0; reelsAboveMeIndex < reelsAboveMe.length; reelsAboveMeIndex++)
             recordDecrementReelsLeftToFall(
                     animatedReels.get(reelsAboveMe[reelsAboveMeIndex].getIndex()).getReel());
-
     }
 
     private ReelTile swapReels(TupleValueIndex tupleValueIndex, ReelTile currentReel) {
@@ -206,4 +231,17 @@ public class AnimatedReelsManager implements Telegraph {
         System.out.println("reelsLeftToFall=" + numberOfReelsToFall);
     }
 
+    public void checkForReelsStoppedFalling() {
+        for (Body reelBoxBody : reelBodies) {
+            if (reelBoxBody != null)
+                if (PhysicsManagerCustomBodies.isStopped(reelBoxBody)) {
+                    AnimatedReel animatedReel = (AnimatedReel) reelBoxBody.getUserData();
+                    if (!animatedReel.getReel().isStoppedFalling()) {
+                        animatedReel.getReel().setIsStoppedFalling(true);
+                        reelsStoppedFalling--;
+                        System.out.println("reelsStoppedFalling="+reelsStoppedFalling);
+                    }
+                }
+        }
+    }
 }

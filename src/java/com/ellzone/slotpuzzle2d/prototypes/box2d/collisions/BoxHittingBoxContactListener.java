@@ -35,12 +35,18 @@ public class BoxHittingBoxContactListener implements ContactListener {
     }
 
     private void dealWithContacts(Fixture fixtureA, Fixture fixtureB) {
-        if (isContactBetweenTwoReels(fixtureA, fixtureB))
+        if (isContactBetweenTwoReels(fixtureA, fixtureB)) {
             dealWithTwoReelBoxesHittingEachOther(fixtureA, fixtureB);
-        if (isContactBetweenReelAndReelSink(fixtureA, fixtureB))
+            return;
+        }
+        if (isContactBetweenReelAndReelSink(fixtureA, fixtureB)) {
             dealWithReelBoxHittingReelSink(fixtureA, fixtureB);
-        if (isContactBetweenReelSinkAndReel(fixtureA, fixtureB))
-            dealWithReelSinkHittingReelBox(fixtureA, fixtureB);
+            return;
+        }
+        if (isContactBetweenReelSinkAndReel(fixtureA, fixtureB)) {
+            dealWithReelBoxHittingReelSink(fixtureB, fixtureA);
+            return;
+        }
     }
 
     private boolean isContactBetweenReelAndReelSink(Fixture fixtureA, Fixture fixtureB) {
@@ -65,13 +71,13 @@ public class BoxHittingBoxContactListener implements ContactListener {
         fallenReel.processFallenReelHittingReelSink();
     }
 
-    private void dealWithReelSinkHittingReelBox(Fixture fixtureA, Fixture fixtureB) {
-        System.out.println("dealWithReelBoxHittingReelSink");
-        AnimatedReel animatedReel = getAnimatedReel(fixtureB);
-        ReelSink reelSink = getReelSink(fixtureA);
-        FallenReel fallenReel = new FallenReel(animatedReel, reelSink);
-        fallenReel.processFallenReelHittingReelSink();
-    }
+//    private void dealWithReelSinkHittingReelBox(Fixture fixtureA, Fixture fixtureB) {
+//        System.out.println("dealWithReelBoxHittingReelSink");
+//        AnimatedReel animatedReel = getAnimatedReel(fixtureB);
+//        ReelSink reelSink = getReelSink(fixtureA);
+//        FallenReel fallenReel = new FallenReel(animatedReel, reelSink);
+//        fallenReel.processFallenReelHittingReelSink();
+//    }
 
     private ReelSink getReelSink(Fixture fixture) {
         return (ReelSink) fixture.getBody().getUserData();
@@ -88,7 +94,6 @@ public class BoxHittingBoxContactListener implements ContactListener {
 
     private void dealWithTwoReelBoxesHittingEachOther(Fixture fixtureA, Fixture fixtureB) {
         System.out.println("Two reels hit each other");
-
 
         AnimatedReel animatedReelA = getAnimatedReel(fixtureA);
         AnimatedReel animatedReelB = getAnimatedReel(fixtureB);
