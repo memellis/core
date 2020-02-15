@@ -99,15 +99,6 @@ public class AnimatedReelsManager implements Telegraph {
     private void reelsLeftToFall(AnimatedReel animatedReel) {
         ReelTile reelTile = animatedReel.getReel();
         recordDecrementReelsLeftToFall(reelTile);
-        recordIfReelHasStoppedFalling(reelTile);
-    }
-
-    private void recordIfReelHasStoppedFalling(ReelTile reelTile) {
-        Body reelBody = reelBodies.get(reelTile.getIndex());
-        if(!reelBody.isAwake()) {
-            System.out.println("reelTile x="+reelTile.getY()+"has stopped falling");
-            reelsStoppedFalling--;
-        }
     }
 
     private void recordDecrementReelsLeftToFall(ReelTile reelTile) {
@@ -120,7 +111,6 @@ public class AnimatedReelsManager implements Telegraph {
     private void reelSinkReelsLeftToFall(AnimatedReel animatedReel) {
         ReelTile reelTile = animatedReel.getReel();
         recordDecrementReelsLeftToFall(reelTile);
-        recordIfReelHasStoppedFalling(reelTile);
 
         PuzzleGridTypeReelTile.printGrid(
                 PuzzleGridTypeReelTile.populateMatchGridStatic(
@@ -145,7 +135,6 @@ public class AnimatedReelsManager implements Telegraph {
                     currentReelTile.getDestinationY(), GAME_LEVEL_HEIGHT) - 1 == reelsAboveMe[i].getR()) {
                 currentReelTile = animatedReels.get(reelsAboveMe[i].index).getReel();
                 recordDecrementReelsLeftToFall(currentReelTile);
-                recordIfReelHasStoppedFalling(currentReelTile);
             }
         }
     }
