@@ -71,14 +71,6 @@ public class BoxHittingBoxContactListener implements ContactListener {
         fallenReel.processFallenReelHittingReelSink();
     }
 
-//    private void dealWithReelSinkHittingReelBox(Fixture fixtureA, Fixture fixtureB) {
-//        System.out.println("dealWithReelBoxHittingReelSink");
-//        AnimatedReel animatedReel = getAnimatedReel(fixtureB);
-//        ReelSink reelSink = getReelSink(fixtureA);
-//        FallenReel fallenReel = new FallenReel(animatedReel, reelSink);
-//        fallenReel.processFallenReelHittingReelSink();
-//    }
-
     private ReelSink getReelSink(Fixture fixture) {
         return (ReelSink) fixture.getBody().getUserData();
     }

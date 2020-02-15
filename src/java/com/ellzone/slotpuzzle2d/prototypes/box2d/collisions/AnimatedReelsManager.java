@@ -48,6 +48,15 @@ public class AnimatedReelsManager implements Telegraph {
         this.reelBodies = reelBodies;
     }
 
+    public void setAnimatedReels(Array<AnimatedReel> animatedReels) {
+        this.animatedReels = animatedReels;
+        reelTiles = getReelTilesFromAnimatedReels(animatedReels);
+    }
+
+    public void setReelBodies(Array<Body> reelBodies) {
+        this.reelBodies = reelBodies;
+    }
+
     public void setNumberOfReelsToFall(int numberOfReelsToFall) {
         this.numberOfReelsToFall = numberOfReelsToFall;
         this.reelsStoppedFalling = numberOfReelsToFall;
@@ -112,6 +121,13 @@ public class AnimatedReelsManager implements Telegraph {
         ReelTile reelTile = animatedReel.getReel();
         recordDecrementReelsLeftToFall(reelTile);
         recordIfReelHasStoppedFalling(reelTile);
+
+        PuzzleGridTypeReelTile.printGrid(
+                PuzzleGridTypeReelTile.populateMatchGridStatic(
+                        reelTiles,
+                        GAME_LEVEL_WIDTH,
+                        GAME_LEVEL_HEIGHT));
+
         TupleValueIndex[] reelsAboveMe = PuzzleGridType.getReelsAboveMe(
                 PuzzleGridTypeReelTile.populateMatchGridStatic(
                         reelTiles,

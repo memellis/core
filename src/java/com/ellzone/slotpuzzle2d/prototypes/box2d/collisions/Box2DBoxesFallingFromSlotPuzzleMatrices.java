@@ -103,6 +103,7 @@ public class Box2DBoxesFallingFromSlotPuzzleMatrices extends SPPrototype impleme
     private PhysicsManagerCustomBodies physicsEngine;
     private MessageManager messageManager;
     private AnimatedReelsManager animatedReelsManager;
+    private int slotMatrixCycleIndex;
 
     @Override
     public void create() {
@@ -112,6 +113,7 @@ public class Box2DBoxesFallingFromSlotPuzzleMatrices extends SPPrototype impleme
         loadAssets();
         setUpReelSprites();
         initialiseUniversalTweenEngine();
+        slotMatrixCycleIndex = 0;
         initialiseReelSlots();
         createPhysicsWorld();
         animatedReelsManager = new AnimatedReelsManager(animatedReels, reelBoxBodies);
@@ -187,8 +189,16 @@ public class Box2DBoxesFallingFromSlotPuzzleMatrices extends SPPrototype impleme
 
     private void initialiseReelSlots() {
         createScrollReelTexture();
-        animatedReels = createAnimatedReelsFromSlotPuzzleMatrix(
-                SlotPuzzleMatrices.createMatrixWithOneBox());
+        cycleSlotMatrix();
+    }
+
+    private void cycleSlotMatrix() {
+        if (slotMatrixCycleIndex < SlotPuzzleMatrices.getSlotMatrices().size)
+            animatedReels = createAnimatedReelsFromSlotPuzzleMatrix(
+                    SlotPuzzleMatrices.getSlotMatrices().get(slotMatrixCycleIndex)
+            );
+        slotMatrixCycleIndex++;
+        slotMatrixCycleIndex %= SlotPuzzleMatrices.getSlotMatrices().size;
     }
 
     private Array<AnimatedReel> createAnimatedReelsFromSlotPuzzleMatrix(int[][] slotPuzzleMatrix) {
@@ -291,13 +301,11 @@ public class Box2DBoxesFallingFromSlotPuzzleMatrices extends SPPrototype impleme
         physicsEngine.update(dt);
         updateAnimatedReels(dt);
         updateReelBoxes();
-//        if (animatedReelsManager.getNumberOfReelsToFall()==0) {
-//            numberOfReelsToFall = 0;
-//            animatedReels = createAnimatedReelsFromSlotPuzzleMatrix(
-//                    SlotPuzzleMatrices.createMatrixWithTwoBoxesOnOneBox());
-//            animatedReelsManager = new AnimatedReelsManager(animatedReels);
-//            animatedReelsManager.setNumberOfReelsToFall(numberOfReelsToFall);
-//        }
+        if (animatedReelsManager.getReelsStoppedFalling() == 0) {
+            numberOfReelsToFall = 0;
+            cycleSlotMatrix();
+            animatedReelsManager.setNumberOfReelsToFall(numberOfReelsToFall);
+        }
     }
 
     private void updateReelBoxes() {
@@ -449,6 +457,8 @@ public class Box2DBoxesFallingFromSlotPuzzleMatrices extends SPPrototype impleme
         reelBoxBodies = createBoxBodiesFromAnimatedReels(
                     animatedReels,
                     reelBoxBodies);
+        animatedReelsManager.setAnimatedReels(animatedReels);
+        animatedReelsManager.setReelBodies(reelBoxBodies);
     }
 
     private void reinitialiseAnimatedReel(AnimatedReel animatedReel) {
@@ -456,9 +466,10 @@ public class Box2DBoxesFallingFromSlotPuzzleMatrices extends SPPrototype impleme
         ReelTile reelTile = animatedReel.getReel();
         reelTile.setX(reelTile.getDestinationX());
         reelTile.setY(reelTile.getDestinationY() + SCREEN_OFFSET);
-        reelTile.setIsFallen(false);
-        reelTile.setIsStoppedFalling(false);
         if (!animatedReel.getReel().isReelTileDeleted()) {
+            reelTile.setIsFallen(false);
+            reelTile.setIsStoppedFalling(false);
+            animatedReel.setupSpinning();
             animatedReel.getReel().startSpinning();
             numberOfReelsToFall++;
         }
