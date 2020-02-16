@@ -14,13 +14,14 @@
  limitations under the License.
  */
 
-package com.ellzone.slotpuzzle2d.physics;
+package com.ellzone.slotpuzzle2d.physics.contact;
 
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.Contact;
 import com.badlogic.gdx.physics.box2d.ContactImpulse;
 import com.badlogic.gdx.physics.box2d.ContactListener;
 import com.badlogic.gdx.physics.box2d.Manifold;
+import com.ellzone.slotpuzzle2d.physics.ReelSinkInterface;
 import com.ellzone.slotpuzzle2d.sprites.ReelTile;
 
 public class B2ContactListenerReelSink implements ContactListener {

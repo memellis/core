@@ -14,7 +14,7 @@
  limitations under the License.
  */
 
-package com.ellzone.slotpuzzle2d.physics;
+package com.ellzone.slotpuzzle2d.physics.contact;
 
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.Contact;

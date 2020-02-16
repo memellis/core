@@ -26,6 +26,7 @@ import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer;
 import com.badlogic.gdx.physics.box2d.Joint;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.utils.Array;
+import com.ellzone.slotpuzzle2d.physics.contact.B2dContactListenerSimpleScenario;
 
 public class PhysicsManagerCustomBodies {
     BoxBodyBuilder bodyFactory;

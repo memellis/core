@@ -1,4 +1,4 @@
-package com.ellzone.slotpuzzle2d.prototypes.box2d.collisions;
+package com.ellzone.slotpuzzle2d.physics.contact;
 
 import com.badlogic.gdx.physics.box2d.Contact;
 import com.badlogic.gdx.physics.box2d.ContactImpulse;
@@ -6,6 +6,7 @@ import com.badlogic.gdx.physics.box2d.ContactListener;
 import com.badlogic.gdx.physics.box2d.Fixture;
 import com.badlogic.gdx.physics.box2d.Manifold;
 import com.ellzone.slotpuzzle2d.physics.ReelSink;
+import com.ellzone.slotpuzzle2d.prototypes.box2d.collisions.FallenReel;
 import com.ellzone.slotpuzzle2d.sprites.AnimatedReel;
 import com.ellzone.slotpuzzle2d.sprites.ReelTile;
 

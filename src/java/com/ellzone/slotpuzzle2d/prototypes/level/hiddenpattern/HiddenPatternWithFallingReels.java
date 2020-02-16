@@ -34,7 +34,7 @@ import com.ellzone.slotpuzzle2d.level.creator.LevelCreatorSimple;
 import com.ellzone.slotpuzzle2d.level.creator.LevelObjectCreatorEntityHolder;
 import com.ellzone.slotpuzzle2d.level.map.MapLevelNameComparator;
 import com.ellzone.slotpuzzle2d.level.sequence.PlayScreenIntroSequence;
-import com.ellzone.slotpuzzle2d.physics.B2ContactListenerReelSink;
+import com.ellzone.slotpuzzle2d.physics.contact.B2ContactListenerReelSink;
 import com.ellzone.slotpuzzle2d.physics.DampenedSineParticle;
 import com.ellzone.slotpuzzle2d.physics.PhysicsManagerCustomBodies;
 import com.ellzone.slotpuzzle2d.physics.ReelSink;
