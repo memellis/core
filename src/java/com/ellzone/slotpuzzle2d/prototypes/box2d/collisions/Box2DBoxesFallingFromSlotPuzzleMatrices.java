@@ -276,6 +276,41 @@ public class Box2DBoxesFallingFromSlotPuzzleMatrices extends SPPrototype impleme
         return reelBoxBodies;
     }
 
+    private Array<Body> updateBoxBodiesFromAnimatedReels(
+            Array<AnimatedReel> animatedReels,
+            Array<Body> reelBoxBodies) {
+        for (AnimatedReel animatedReel : animatedReels) {
+            if (!animatedReel.getReel().isReelTileDeleted()) {
+                if (reelBoxBodies.get(animatedReel.getReel().getIndex()) == null)
+                    reelBoxBodies.set(
+                            animatedReel.getReel().getIndex(),
+                            createBoxBody(animatedReel, false));
+                else
+                    updateBoxBody(
+                            animatedReel,
+                            false,
+                            reelBoxBodies.get(animatedReel.getReel().getIndex()));
+            } else {
+                if (reelBoxBodies.get(animatedReel.getReel().getIndex()) != null)
+                    updateBoxBody(
+                            animatedReel,
+                            false,
+                            reelBoxBodies.get(animatedReel.getReel().getIndex()));
+            }
+        }
+
+        return reelBoxBodies;
+    }
+
+    private void updateBoxBody(AnimatedReel animatedReel, boolean isActive, Body reelTileBody) {
+        reelTileBody.setTransform(
+                animatedReel.getReel().getX() / 100,
+                animatedReel.getReel().getY() / 100,
+                0);
+        reelTileBody.setActive(isActive);
+        reelTileBody.setUserData(animatedReel);
+    }
+
     private Body createBoxBody(AnimatedReel animatedReel, boolean isActive) {
         Body reelTileBody = createReelTileBodyAt(
                 (int) animatedReel.getReel().getX(),
@@ -301,11 +336,15 @@ public class Box2DBoxesFallingFromSlotPuzzleMatrices extends SPPrototype impleme
         physicsEngine.update(dt);
         updateAnimatedReels(dt);
         updateReelBoxes();
-        if (animatedReelsManager.getReelsStoppedFalling() == 0) {
+        if (isaReelsStoppedFalling()) {
             numberOfReelsToFall = 0;
             cycleSlotMatrix();
             animatedReelsManager.setNumberOfReelsToFall(numberOfReelsToFall);
         }
+    }
+
+    private boolean isaReelsStoppedFalling() {
+        return animatedReelsManager.getReelsStoppedFalling() == 0;
     }
 
     private void updateReelBoxes() {
@@ -382,7 +421,8 @@ public class Box2DBoxesFallingFromSlotPuzzleMatrices extends SPPrototype impleme
             if (reelBox != null) {
                 float angle = MathUtils.radiansToDegrees * reelBox.getAngle();
                 AnimatedReel animatedReel = (AnimatedReel) reelBox.getUserData();
-                renderReel(animatedReel.getReel(), batch, reelBox, angle);
+                if (!animatedReel.getReel().isReelTileDeleted())
+                    renderReel(animatedReel.getReel(), batch, reelBox, angle);
             }
         }
         batch.end();
@@ -437,8 +477,11 @@ public class Box2DBoxesFallingFromSlotPuzzleMatrices extends SPPrototype impleme
 
     private void setBoxesActive() {
         for (Body boxBody : reelBoxBodies)
-            if (boxBody != null)
-                boxBody.setActive(true);
+            if (boxBody != null) {
+                AnimatedReel animatedReel = (AnimatedReel) boxBody.getUserData();
+                if (!animatedReel.getReel().isReelTileDeleted())
+                    boxBody.setActive(true);
+            }
     }
 
     private void toggleBoxActive() {
@@ -450,11 +493,7 @@ public class Box2DBoxesFallingFromSlotPuzzleMatrices extends SPPrototype impleme
         for (AnimatedReel animatedReel : animatedReels)
             reinitialiseAnimatedReel(animatedReel);
         animatedReelsManager.setNumberOfReelsToFall(numberOfReelsToFall);
-        for (Body boxBody : reelBoxBodies)
-           if (boxBody != null)
-                physicsEngine.deleteBody(boxBody);
-        reelBoxBodies.clear();
-        reelBoxBodies = createBoxBodiesFromAnimatedReels(
+        reelBoxBodies = updateBoxBodiesFromAnimatedReels(
                     animatedReels,
                     reelBoxBodies);
         animatedReelsManager.setAnimatedReels(animatedReels);

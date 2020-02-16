@@ -241,11 +241,12 @@ public class AnimatedReelsManager implements Telegraph {
             if (reelBoxBody != null)
                 if (PhysicsManagerCustomBodies.isStopped(reelBoxBody)) {
                     AnimatedReel animatedReel = (AnimatedReel) reelBoxBody.getUserData();
-                    if (!animatedReel.getReel().isStoppedFalling()) {
-                        animatedReel.getReel().setIsStoppedFalling(true);
-                        reelsStoppedFalling--;
-                        System.out.println("reelsStoppedFalling="+reelsStoppedFalling);
-                    }
+                    if (!animatedReel.getReel().isReelTileDeleted())
+                        if (!animatedReel.getReel().isStoppedFalling()) {
+                            animatedReel.getReel().setIsStoppedFalling(true);
+                            reelsStoppedFalling--;
+                            System.out.println("reelsStoppedFalling="+reelsStoppedFalling);
+                        }
                 }
         }
     }
