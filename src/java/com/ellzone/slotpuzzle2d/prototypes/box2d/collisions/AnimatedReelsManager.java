@@ -162,6 +162,7 @@ public class AnimatedReelsManager implements Telegraph {
         for (int reelsAboveMeIndex = 0; reelsAboveMeIndex < reelsAboveMe.length; reelsAboveMeIndex++)
             currentReel = swapReels(reelsAboveMe[reelsAboveMeIndex], currentReel);
 
+        recordDecrementReelsLeftToFall(reelTileA);
 
         reelsAboveMe = PuzzleGridType.getReelsAboveMe(
                 PuzzleGridTypeReelTile.populateMatchGridStatic(
@@ -174,6 +175,15 @@ public class AnimatedReelsManager implements Telegraph {
         for (int reelsAboveMeIndex = 0; reelsAboveMeIndex < reelsAboveMe.length; reelsAboveMeIndex++)
             recordDecrementReelsLeftToFall(
                     animatedReels.get(reelsAboveMe[reelsAboveMeIndex].getIndex()).getReel());
+
+        System.out.println("After swap reels above me");
+
+        PuzzleGridTypeReelTile.printGrid(
+                PuzzleGridTypeReelTile.populateMatchGridStatic(
+                        reelTiles,
+                        GAME_LEVEL_WIDTH,
+                        GAME_LEVEL_HEIGHT));
+
     }
 
     private ReelTile swapReels(TupleValueIndex tupleValueIndex, ReelTile currentReel) {

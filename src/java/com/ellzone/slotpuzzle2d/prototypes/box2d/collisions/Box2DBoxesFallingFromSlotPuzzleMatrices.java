@@ -291,9 +291,8 @@ public class Box2DBoxesFallingFromSlotPuzzleMatrices extends SPPrototype impleme
     private Array<Body> updateBoxBodiesFromAnimatedReels(
             Array<AnimatedReel> animatedReels,
             Array<Body> reelBoxBodies) {
-        for (AnimatedReel animatedReel : animatedReels) {
+        for (AnimatedReel animatedReel : animatedReels)
             updateBoxBodyFromAnimatedReel(reelBoxBodies, animatedReel);
-        }
 
         return reelBoxBodies;
     }

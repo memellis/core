@@ -126,14 +126,21 @@ public class SlotPuzzleMatrices {
 
     public static Array<int[][]> getSlotMatrices() {
         Array<int[][]> slotMatrices = new Array<>();
+        slotMatrices.add(createMatrixWithFillColumnNineBoxes());
+        slotMatrices.add(createMatrixWithThreeBoxesOnOneBox());
+        slotMatrices.add(createMatrixWithThreeBoxesOnOneBox());
+        slotMatrices.add(createMatrixWithThreeBoxesOnOneBox());
+        slotMatrices.add(createMatrixWithOneBoxOnOneBox());
+        slotMatrices.add(createMatrixWithTwoBoxesOnOneBox());
+        slotMatrices.add(createMatrixWithThreeBoxesOnOneBox());
+        slotMatrices.add(createMatrixWithOneBoxOnOneBox());
+        slotMatrices.add(createMatrixWithTwoBoxesOnOneBox());
+        slotMatrices.add(createMatrixWithThreeBoxesOnOneBox());
         slotMatrices.add(createMatrixWithTwoByOnOneBox());
         slotMatrices.add(createMatrixWithOneBox());
         slotMatrices.add(createMatrixWithTwoBoxes());
         slotMatrices.add(createMatrixWithThreeBoxes());
         slotMatrices.add(createMatrixWithFillColumnNineBoxes());
-        slotMatrices.add(createMatrixWithOneBoxOnOneBox());
-        slotMatrices.add(createMatrixWithTwoBoxesOnOneBox());
-        slotMatrices.add(createMatrixWithThreeBoxesOnOneBox());
         return slotMatrices;
     }
 }

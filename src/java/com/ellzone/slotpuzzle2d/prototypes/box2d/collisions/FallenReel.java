@@ -84,6 +84,10 @@ public class FallenReel {
 
     private void processReelHittingReel(int rowA, int rowB) {
         messageManager.dispatchMessage(MessageType.ReelsLeftToFall.index, animatedReelA);
+        if (animatedReelA.getReel().isStoppedFalling())
+            return;
+        if (animatedReelB.getReel().isStoppedFalling())
+            return;
         if (isFallenGapGreaterThanOneReel(rowA, rowB))
             processReelsFallenMoreThanOneTile(rowA, rowB);
     }
