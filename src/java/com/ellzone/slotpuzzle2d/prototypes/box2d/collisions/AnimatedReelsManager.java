@@ -23,6 +23,7 @@ import com.ellzone.slotpuzzle2d.messaging.MessageType;
 import com.ellzone.slotpuzzle2d.physics.PhysicsManagerCustomBodies;
 import com.ellzone.slotpuzzle2d.puzzlegrid.PuzzleGridType;
 import com.ellzone.slotpuzzle2d.puzzlegrid.PuzzleGridTypeReelTile;
+import com.ellzone.slotpuzzle2d.puzzlegrid.ReelTileGridValue;
 import com.ellzone.slotpuzzle2d.puzzlegrid.TupleValueIndex;
 import com.ellzone.slotpuzzle2d.sprites.AnimatedReel;
 import com.ellzone.slotpuzzle2d.sprites.ReelTile;
@@ -112,12 +113,6 @@ public class AnimatedReelsManager implements Telegraph {
         ReelTile reelTile = animatedReel.getReel();
         recordDecrementReelsLeftToFall(reelTile);
 
-        PuzzleGridTypeReelTile.printGrid(
-                PuzzleGridTypeReelTile.populateMatchGridStatic(
-                        reelTiles,
-                        GAME_LEVEL_WIDTH,
-                        GAME_LEVEL_HEIGHT));
-
         TupleValueIndex[] reelsAboveMe = PuzzleGridType.getReelsAboveMe(
                 PuzzleGridTypeReelTile.populateMatchGridStatic(
                         reelTiles,
@@ -125,7 +120,8 @@ public class AnimatedReelsManager implements Telegraph {
                         GAME_LEVEL_HEIGHT),
                 PuzzleGridTypeReelTile.getRowFromLevel(reelTile.getDestinationY(), GAME_LEVEL_HEIGHT),
                 PuzzleGridTypeReelTile.getColumnFromLevel(reelTile.getDestinationX()));
-        markAllReelsAvoveInContactAsFallen(reelTile, reelsAboveMe);
+
+       markAllReelsAvoveInContactAsFallen(reelTile, reelsAboveMe);
      }
 
     private void markAllReelsAvoveInContactAsFallen(ReelTile reelTile, TupleValueIndex[] reelsAboveMe) {
@@ -133,19 +129,14 @@ public class AnimatedReelsManager implements Telegraph {
         for (int i = 0; i < reelsAboveMe.length; i++) {
             if (PuzzleGridTypeReelTile.getRowFromLevel(
                     currentReelTile.getDestinationY(), GAME_LEVEL_HEIGHT) - 1 == reelsAboveMe[i].getR()) {
-                currentReelTile = animatedReels.get(reelsAboveMe[i].index).getReel();
-                recordDecrementReelsLeftToFall(currentReelTile);
+                recordDecrementReelsLeftToFall(animatedReels.get(reelsAboveMe[i].index).getReel());
             }
+            currentReelTile = animatedReels.get(reelsAboveMe[i].index).getReel();
         }
     }
 
     private void swapReelsAboveMe(ReelTile reelTileA,
                                   ReelTile reelTileB) {
-        PuzzleGridTypeReelTile.printGrid(
-                PuzzleGridTypeReelTile.populateMatchGridStatic(
-                        reelTiles,
-                        GAME_LEVEL_WIDTH,
-                        GAME_LEVEL_HEIGHT));
 
         swapReels(reelTileA, reelTileB);
 
@@ -175,15 +166,6 @@ public class AnimatedReelsManager implements Telegraph {
         for (int reelsAboveMeIndex = 0; reelsAboveMeIndex < reelsAboveMe.length; reelsAboveMeIndex++)
             recordDecrementReelsLeftToFall(
                     animatedReels.get(reelsAboveMe[reelsAboveMeIndex].getIndex()).getReel());
-
-        System.out.println("After swap reels above me");
-
-        PuzzleGridTypeReelTile.printGrid(
-                PuzzleGridTypeReelTile.populateMatchGridStatic(
-                        reelTiles,
-                        GAME_LEVEL_WIDTH,
-                        GAME_LEVEL_HEIGHT));
-
     }
 
     private ReelTile swapReels(TupleValueIndex tupleValueIndex, ReelTile currentReel) {
@@ -241,11 +223,6 @@ public class AnimatedReelsManager implements Telegraph {
         System.out.println("reelsLeftToFall=" + numberOfReelsToFall);
     }
 
-    private void decreaseReelsLeftToFallBy(int decreaseValue) {
-        numberOfReelsToFall -= decreaseValue;
-        System.out.println("reelsLeftToFall=" + numberOfReelsToFall);
-    }
-
     public void checkForReelsStoppedFalling() {
         for (Body reelBoxBody : reelBodies) {
             if (reelBoxBody != null)
@@ -259,5 +236,41 @@ public class AnimatedReelsManager implements Telegraph {
                         }
                 }
         }
+    }
+
+    private boolean isReelsFallenInColumn(ReelTileGridValue[][] matchGrid, int column) {
+        if (column>=matchGrid[0].length)
+            return false;
+        if (column<0)
+            return false;
+        int firstDeletedReel = findDeletedReel(matchGrid, column, matchGrid.length - 1);
+        if (firstDeletedReel<0)
+            return false;
+        int nextDeletedReel = findNonDeletedReel(matchGrid, column, firstDeletedReel-1);
+        if (nextDeletedReel>0)
+            return true;
+        return false;
+    }
+
+    private int findDeletedReel(ReelTileGridValue[][] matchGrid, int column, int startRow) {
+        if (startRow>=matchGrid.length)
+            return -1;
+        if (startRow<0)
+            return -1;
+        for (int rowIndex = startRow; rowIndex >= 0; rowIndex--) {
+            if (matchGrid[rowIndex][column].value<0)
+                return rowIndex;
+        }
+        return -1;
+    }
+
+    private int findNonDeletedReel(ReelTileGridValue[][] matchGrid, int column, int startRow) {
+        if (startRow>=matchGrid.length)
+            return -1;
+        for (int rowIndex = startRow; rowIndex >= 0; rowIndex--) {
+            if (matchGrid[rowIndex][column].value>=0)
+                return rowIndex;
+        }
+        return -1;
     }
 }

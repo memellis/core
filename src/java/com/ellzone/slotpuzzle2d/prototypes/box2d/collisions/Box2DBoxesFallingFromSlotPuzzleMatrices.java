@@ -106,6 +106,9 @@ public class Box2DBoxesFallingFromSlotPuzzleMatrices extends SPPrototype impleme
     private AnimatedReelsManager animatedReelsManager;
     private int slotMatrixCycleIndex;
     private Boolean isAutoFall;
+    private boolean startAutoFallDelay = false;
+    private float autoFallDelayCount = 0;
+    private float autoFallDelayThreshold = 1000;
 
     @Override
     public void create() {
@@ -268,7 +271,7 @@ public class Box2DBoxesFallingFromSlotPuzzleMatrices extends SPPrototype impleme
     private void createReelSink() {
         ReelSink reelSink = new ReelSink(physicsEngine);
         reelSink.createReelSink(
-                SlotPuzzleConstants.VIRTUAL_WIDTH / 2,
+                SlotPuzzleConstants.VIRTUAL_WIDTH / 2 + 20,
                 SlotPuzzleConstants.VIRTUAL_HEIGHT / 2 + 20,
                 12,
                 9,
@@ -356,11 +359,10 @@ public class Box2DBoxesFallingFromSlotPuzzleMatrices extends SPPrototype impleme
             numberOfReelsToFall = 0;
             cycleSlotMatrix();
             animatedReelsManager.setNumberOfReelsToFall(numberOfReelsToFall);
-            if (isAutoFall) {
-                reCreateBoxes();
-                setBoxesActive();
-            }
+            if (isAutoFall)
+                startAutoFallDelay = true;
         }
+        updateAutoFallDelay(dt);
     }
 
     private boolean isaReelsStoppedFalling() {
@@ -380,6 +382,18 @@ public class Box2DBoxesFallingFromSlotPuzzleMatrices extends SPPrototype impleme
     private void updateAnimatedReels(float dt) {
         for (AnimatedReel reel : animatedReels)
             reel.update(dt);
+    }
+
+    private void updateAutoFallDelay(float dt) {
+        if (startAutoFallDelay) {
+            autoFallDelayCount += dt;
+            if (autoFallDelayCount > 1.5f) {
+                reCreateBoxes();
+                setBoxesActive();
+                autoFallDelayCount = 0;
+                startAutoFallDelay = false;
+            }
+        }
     }
 
     @Override
@@ -475,22 +489,22 @@ public class Box2DBoxesFallingFromSlotPuzzleMatrices extends SPPrototype impleme
 
     @Override
     public boolean touchDown(int x, int y, int pointer, int button) {
-        testPoint.set(x, y, 0);
-        camera.unproject(testPoint);
-        hitBody = null;
-        world.QueryAABB(isCollidedCallback, testPoint.x - 0.1f, testPoint.y - 0.1f, testPoint.x + 0.1f, testPoint.y + 0.1f);
-
-        if (hitBody != null) {
-            if (button == Input.Buttons.LEFT)
-                addAMouseJoint();
-            else
-                toggleBoxActive();
-        } else {
+//        testPoint.set(x, y, 0);
+//        camera.unproject(testPoint);
+//        hitBody = null;
+//        world.QueryAABB(isCollidedCallback, testPoint.x - 0.1f, testPoint.y - 0.1f, testPoint.x + 0.1f, testPoint.y + 0.1f);
+//
+//        if (hitBody != null) {
+//            if (button == Input.Buttons.LEFT)
+//                addAMouseJoint();
+//            else
+//                toggleBoxActive();
+//        } else {
             if (button == Input.Buttons.LEFT)
                 reCreateBoxes();
             else
                 setBoxesActive();
-        }
+//        }
         return false;
     }
 
@@ -498,6 +512,10 @@ public class Box2DBoxesFallingFromSlotPuzzleMatrices extends SPPrototype impleme
     public boolean keyDown(int keycode) {
         if (keycode == Input.Keys.A) {
             isAutoFall = !isAutoFall;
+            return true;
+        }
+        if (keycode == Input.Keys.D) {
+            System.out.println("Debug");
             return true;
         }
         return false;
@@ -533,9 +551,9 @@ public class Box2DBoxesFallingFromSlotPuzzleMatrices extends SPPrototype impleme
         ReelTile reelTile = animatedReel.getReel();
         reelTile.setX(reelTile.getDestinationX());
         reelTile.setY(reelTile.getDestinationY() + SCREEN_OFFSET);
+        reelTile.setIsFallen(false);
+        reelTile.setIsStoppedFalling(false);
         if (!animatedReel.getReel().isReelTileDeleted()) {
-            reelTile.setIsFallen(false);
-            reelTile.setIsStoppedFalling(false);
             animatedReel.setupSpinning();
             animatedReel.getReel().startSpinning();
             numberOfReelsToFall++;

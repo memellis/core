@@ -1,14 +1,18 @@
 package com.ellzone.slotpuzzle2d.physics.contact;
 
+import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.Contact;
 import com.badlogic.gdx.physics.box2d.ContactImpulse;
 import com.badlogic.gdx.physics.box2d.ContactListener;
 import com.badlogic.gdx.physics.box2d.Fixture;
 import com.badlogic.gdx.physics.box2d.Manifold;
+import com.ellzone.slotpuzzle2d.messaging.MessageType;
 import com.ellzone.slotpuzzle2d.physics.ReelSink;
 import com.ellzone.slotpuzzle2d.prototypes.box2d.collisions.FallenReel;
 import com.ellzone.slotpuzzle2d.sprites.AnimatedReel;
 import com.ellzone.slotpuzzle2d.sprites.ReelTile;
+
+import java.text.MessageFormat;
 
 public class BoxHittingBoxContactListener implements ContactListener {
     public static final String ANIMATED_REEL_CLASS_NAME = "com.ellzone.slotpuzzle2d.sprites.AnimatedReel";
@@ -17,14 +21,30 @@ public class BoxHittingBoxContactListener implements ContactListener {
     @Override
     public void endContact(Contact contact) {
         System.out.println("End contact");
+        Fixture fixtureA = contact.getFixtureA();
+        Fixture fixtureB = contact.getFixtureB();
+        printBodyObject(fixtureA);
+        printBodyObject(fixtureB);
     }
 
     @Override
     public void preSolve(Contact contact, Manifold oldManifold) {
+//        System.out.println("preSolve");
+        Fixture fixtureA = contact.getFixtureA();
+        Fixture fixtureB = contact.getFixtureB();
+        printBodyObject(fixtureA);
+        printBodyObject(fixtureB);
+        fixtureA.setRestitution(0);
+        fixtureB.setRestitution(0);
     }
 
     @Override
     public void postSolve(Contact contact, ContactImpulse impulse) {
+//        System.out.println("postSolve");
+        Fixture fixtureA = contact.getFixtureA();
+        Fixture fixtureB = contact.getFixtureB();
+        printBodyObject(fixtureA);
+        printBodyObject(fixtureB);
     }
 
     @Override
@@ -32,7 +52,19 @@ public class BoxHittingBoxContactListener implements ContactListener {
         System.out.println("Begin contact");
         Fixture fixtureA = contact.getFixtureA();
         Fixture fixtureB = contact.getFixtureB();
+        printBodyObject(fixtureA);
+        printBodyObject(fixtureB);
         dealWithContacts(fixtureA, fixtureB);
+    }
+
+    private void printBodyObject(Fixture fixture) {
+//        Body body = fixture.getBody();
+//        System.out.println(
+//                MessageFormat.format(
+//                        "bodyObject={0} (x={1},y={2})",
+//                        body.getUserData(),
+//                        body.getPosition().x * 100 - 20,
+//                        body.getPosition().y * 100 - 20));
     }
 
     private void dealWithContacts(Fixture fixtureA, Fixture fixtureB) {
@@ -67,6 +99,9 @@ public class BoxHittingBoxContactListener implements ContactListener {
     private void dealWithReelBoxHittingReelSink(Fixture fixtureA, Fixture fixtureB) {
         System.out.println("dealWithReelBoxHittingReelSink");
         AnimatedReel animatedReel = getAnimatedReel(fixtureA);
+        System.out.println(MessageFormat.format("animatedReel.getReel().getY()={0}",animatedReel.getReel().getY()));
+        System.out.println(MessageFormat.format("fixtureA.getBody.getPosition().y={0}",fixtureA.getBody().getPosition().y*100-20));
+
         ReelSink reelSink = getReelSink(fixtureB);
         FallenReel fallenReel = new FallenReel(animatedReel, reelSink);
         fallenReel.processFallenReelHittingReelSink();
