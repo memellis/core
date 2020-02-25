@@ -20,51 +20,21 @@ public class BoxHittingBoxContactListener implements ContactListener {
 
     @Override
     public void endContact(Contact contact) {
-        System.out.println("End contact");
-        Fixture fixtureA = contact.getFixtureA();
-        Fixture fixtureB = contact.getFixtureB();
-        printBodyObject(fixtureA);
-        printBodyObject(fixtureB);
     }
 
     @Override
     public void preSolve(Contact contact, Manifold oldManifold) {
-//        System.out.println("preSolve");
-        Fixture fixtureA = contact.getFixtureA();
-        Fixture fixtureB = contact.getFixtureB();
-        printBodyObject(fixtureA);
-        printBodyObject(fixtureB);
-        fixtureA.setRestitution(0);
-        fixtureB.setRestitution(0);
     }
 
     @Override
     public void postSolve(Contact contact, ContactImpulse impulse) {
-//        System.out.println("postSolve");
-        Fixture fixtureA = contact.getFixtureA();
-        Fixture fixtureB = contact.getFixtureB();
-        printBodyObject(fixtureA);
-        printBodyObject(fixtureB);
     }
 
     @Override
     public void beginContact(Contact contact) {
-        System.out.println("Begin contact");
         Fixture fixtureA = contact.getFixtureA();
         Fixture fixtureB = contact.getFixtureB();
-        printBodyObject(fixtureA);
-        printBodyObject(fixtureB);
         dealWithContacts(fixtureA, fixtureB);
-    }
-
-    private void printBodyObject(Fixture fixture) {
-//        Body body = fixture.getBody();
-//        System.out.println(
-//                MessageFormat.format(
-//                        "bodyObject={0} (x={1},y={2})",
-//                        body.getUserData(),
-//                        body.getPosition().x * 100 - 20,
-//                        body.getPosition().y * 100 - 20));
     }
 
     private void dealWithContacts(Fixture fixtureA, Fixture fixtureB) {
@@ -97,11 +67,7 @@ public class BoxHittingBoxContactListener implements ContactListener {
     }
 
     private void dealWithReelBoxHittingReelSink(Fixture fixtureA, Fixture fixtureB) {
-        System.out.println("dealWithReelBoxHittingReelSink");
         AnimatedReel animatedReel = getAnimatedReel(fixtureA);
-        System.out.println(MessageFormat.format("animatedReel.getReel().getY()={0}",animatedReel.getReel().getY()));
-        System.out.println(MessageFormat.format("fixtureA.getBody.getPosition().y={0}",fixtureA.getBody().getPosition().y*100-20));
-
         ReelSink reelSink = getReelSink(fixtureB);
         FallenReel fallenReel = new FallenReel(animatedReel, reelSink);
         fallenReel.processFallenReelHittingReelSink();
@@ -121,8 +87,6 @@ public class BoxHittingBoxContactListener implements ContactListener {
     }
 
     private void dealWithTwoReelBoxesHittingEachOther(Fixture fixtureA, Fixture fixtureB) {
-        System.out.println("Two reels hit each other");
-
         AnimatedReel animatedReelA = getAnimatedReel(fixtureA);
         AnimatedReel animatedReelB = getAnimatedReel(fixtureB);
 
@@ -156,4 +120,3 @@ public class BoxHittingBoxContactListener implements ContactListener {
         return className.equalsIgnoreCase(ANIMATED_REEL_CLASS_NAME);
     }
 }
-

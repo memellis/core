@@ -106,9 +106,8 @@ public class Box2DBoxesFallingFromSlotPuzzleMatrices extends SPPrototype impleme
     private AnimatedReelsManager animatedReelsManager;
     private int slotMatrixCycleIndex;
     private Boolean isAutoFall;
-    private boolean startAutoFallDelay = false;
-    private float autoFallDelayCount = 0;
-    private float autoFallDelayThreshold = 1000;
+    private int numberOfReelBoxesAsleep = 0;
+    private int numberOfReelBoxesCreated = 0;
 
     @Override
     public void create() {
@@ -355,17 +354,14 @@ public class Box2DBoxesFallingFromSlotPuzzleMatrices extends SPPrototype impleme
         physicsEngine.update(dt);
         updateAnimatedReels(dt);
         updateReelBoxes();
-        if (isaReelsStoppedFalling()) {
+        if (isAllReelsStoppedFalling()) {
             numberOfReelsToFall = 0;
             cycleSlotMatrix();
             animatedReelsManager.setNumberOfReelsToFall(numberOfReelsToFall);
-            if (isAutoFall)
-                startAutoFallDelay = true;
         }
-        updateAutoFallDelay(dt);
     }
 
-    private boolean isaReelsStoppedFalling() {
+    private boolean isAllReelsStoppedFalling() {
         return animatedReelsManager.getReelsStoppedFalling() == 0;
     }
 
@@ -384,18 +380,6 @@ public class Box2DBoxesFallingFromSlotPuzzleMatrices extends SPPrototype impleme
             reel.update(dt);
     }
 
-    private void updateAutoFallDelay(float dt) {
-        if (startAutoFallDelay) {
-            autoFallDelayCount += dt;
-            if (autoFallDelayCount > 1.5f) {
-                reCreateBoxes();
-                setBoxesActive();
-                autoFallDelayCount = 0;
-                startAutoFallDelay = false;
-            }
-        }
-    }
-
     @Override
     public void render() {
         long start = TimeUtils.nanoTime();
@@ -409,10 +393,15 @@ public class Box2DBoxesFallingFromSlotPuzzleMatrices extends SPPrototype impleme
         camera.update();
 
         renderReelBoxes(batch, reelBoxBodies);
+        if (numberOfReelBoxesAsleep == numberOfReelBoxesCreated) {
+            if (isAutoFall) {
+                reCreateBoxes();
+                setBoxesActive();
+            }
+        }
         physicsEngine.draw(batch);
 
         renderWorld();
-        renderContactPoints();
         renderFps(updateTime);
     }
 
@@ -451,12 +440,18 @@ public class Box2DBoxesFallingFromSlotPuzzleMatrices extends SPPrototype impleme
     private void renderReelBoxes(SpriteBatch batch, Array<Body> reelBoxes) {
         batch.begin();
         batch.setProjectionMatrix(viewport.getCamera().combined);
+        numberOfReelBoxesCreated = 0;
+        numberOfReelBoxesAsleep = 0;
         for (Body reelBox : reelBoxes) {
             if (reelBox != null) {
                 float angle = MathUtils.radiansToDegrees * reelBox.getAngle();
                 AnimatedReel animatedReel = (AnimatedReel) reelBox.getUserData();
-                if (!animatedReel.getReel().isReelTileDeleted())
+                if (!animatedReel.getReel().isReelTileDeleted()) {
                     renderReel(animatedReel.getReel(), batch, reelBox, angle);
+                    numberOfReelBoxesCreated++;
+                }
+                if (!reelBox.isAwake())
+                    numberOfReelBoxesAsleep++;
             }
         }
         batch.end();

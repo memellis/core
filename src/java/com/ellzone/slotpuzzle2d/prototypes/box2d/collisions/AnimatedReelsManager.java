@@ -220,7 +220,6 @@ public class AnimatedReelsManager implements Telegraph {
 
     private void decrementReelsLeftToFall() {
         numberOfReelsToFall--;
-        System.out.println("reelsLeftToFall=" + numberOfReelsToFall);
     }
 
     public void checkForReelsStoppedFalling() {
@@ -232,45 +231,8 @@ public class AnimatedReelsManager implements Telegraph {
                         if (!animatedReel.getReel().isStoppedFalling()) {
                             animatedReel.getReel().setIsStoppedFalling(true);
                             reelsStoppedFalling--;
-                            System.out.println("reelsStoppedFalling="+reelsStoppedFalling);
                         }
                 }
         }
-    }
-
-    private boolean isReelsFallenInColumn(ReelTileGridValue[][] matchGrid, int column) {
-        if (column>=matchGrid[0].length)
-            return false;
-        if (column<0)
-            return false;
-        int firstDeletedReel = findDeletedReel(matchGrid, column, matchGrid.length - 1);
-        if (firstDeletedReel<0)
-            return false;
-        int nextDeletedReel = findNonDeletedReel(matchGrid, column, firstDeletedReel-1);
-        if (nextDeletedReel>0)
-            return true;
-        return false;
-    }
-
-    private int findDeletedReel(ReelTileGridValue[][] matchGrid, int column, int startRow) {
-        if (startRow>=matchGrid.length)
-            return -1;
-        if (startRow<0)
-            return -1;
-        for (int rowIndex = startRow; rowIndex >= 0; rowIndex--) {
-            if (matchGrid[rowIndex][column].value<0)
-                return rowIndex;
-        }
-        return -1;
-    }
-
-    private int findNonDeletedReel(ReelTileGridValue[][] matchGrid, int column, int startRow) {
-        if (startRow>=matchGrid.length)
-            return -1;
-        for (int rowIndex = startRow; rowIndex >= 0; rowIndex--) {
-            if (matchGrid[rowIndex][column].value>=0)
-                return rowIndex;
-        }
-        return -1;
     }
 }
