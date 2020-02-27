@@ -124,6 +124,66 @@ public class SlotPuzzleMatrices {
         return inputMatrix.readMatrix();
     }
 
+    public static int[][] createMatrixWithTwoByOnTwoBoxes() {
+        String matrixToInput = "12 x 9\n"
+                + "-1 -1 -1 -1 -1 -1 -1 -1 -1 -1  -1  -1\n"
+                + "-1 -1 -1 -1 -1 -1 -1 -1 -1 -1  -1  -1\n"
+                + "-1 -1 -1 -1 -1 -1 -1 -1 -1 -1  -1  -1\n"
+                + "-1 -1 -1 -1 -1 -1 -1 -1 -1 -1  -1  -1\n"
+                + "-1 -1 -1 -1 -1 -1 -1 -1 -1 -1  -1  -1\n"
+                + "-1 -1 -1 -1 -1 -1 -1 -1 -1 -1  -1  -1\n"
+                + "-1 -1 -1 -1 -1 -1 -1 -1 -1 -1  -1  -1\n"
+                + "-1 -1 -1 -1  0  0 -1 -1 -1 -1  -1  -1\n"
+                + "-1 -1 -1 -1  0  0 -1 -1 -1 -1  -1  -1\n";
+        InputMatrix inputMatrix = new InputMatrix(matrixToInput);
+        return inputMatrix.readMatrix();
+    }
+
+    public static int[][] createMatrixWithTwoByOnThreeBoxes() {
+        String matrixToInput = "12 x 9\n"
+                + "-1 -1 -1 -1 -1 -1 -1 -1 -1 -1  -1  -1\n"
+                + "-1 -1 -1 -1 -1 -1 -1 -1 -1 -1  -1  -1\n"
+                + "-1 -1 -1 -1 -1 -1 -1 -1 -1 -1  -1  -1\n"
+                + "-1 -1 -1 -1 -1 -1 -1 -1 -1 -1  -1  -1\n"
+                + "-1 -1 -1 -1 -1 -1 -1 -1 -1 -1  -1  -1\n"
+                + "-1 -1 -1 -1 -1 -1 -1 -1 -1 -1  -1  -1\n"
+                + "-1 -1 -1 -1  0  0 -1 -1 -1 -1  -1  -1\n"
+                + "-1 -1 -1 -1  0  0 -1 -1 -1 -1  -1  -1\n"
+                + "-1 -1 -1 -1  0  0 -1 -1 -1 -1  -1  -1\n";
+        InputMatrix inputMatrix = new InputMatrix(matrixToInput);
+        return inputMatrix.readMatrix();
+    }
+
+    public static int[][] createMatrixWithTwoByOnTFourBoxes() {
+        String matrixToInput = "12 x 9\n"
+                + "-1 -1 -1 -1 -1 -1 -1 -1 -1 -1  -1  -1\n"
+                + "-1 -1 -1 -1 -1 -1 -1 -1 -1 -1  -1  -1\n"
+                + "-1 -1 -1 -1 -1 -1 -1 -1 -1 -1  -1  -1\n"
+                + "-1 -1 -1 -1 -1 -1 -1 -1 -1 -1  -1  -1\n"
+                + "-1 -1 -1 -1 -1 -1 -1 -1 -1 -1  -1  -1\n"
+                + "-1 -1 -1 -1  0  0 -1 -1 -1 -1  -1  -1\n"
+                + "-1 -1 -1 -1  0  0 -1 -1 -1 -1  -1  -1\n"
+                + "-1 -1 -1 -1  0  0 -1 -1 -1 -1  -1  -1\n"
+                + "-1 -1 -1 -1  0  0 -1 -1 -1 -1  -1  -1\n";
+        InputMatrix inputMatrix = new InputMatrix(matrixToInput);
+        return inputMatrix.readMatrix();
+    }
+
+    public static int[][] createMatrixWithTwoFillColumnNineBoxes() {
+        String matrixToInput = "12 x 9\n"
+                + "-1 -1 -1 -1  0  0 -1 -1 -1 -1  -1  -1\n"
+                + "-1 -1 -1 -1  0  0 -1 -1 -1 -1  -1  -1\n"
+                + "-1 -1 -1 -1  0  0 -1 -1 -1 -1  -1  -1\n"
+                + "-1 -1 -1 -1  0  0 -1 -1 -1 -1  -1  -1\n"
+                + "-1 -1 -1 -1  0  0 -1 -1 -1 -1  -1  -1\n"
+                + "-1 -1 -1 -1  0  0 -1 -1 -1 -1  -1  -1\n"
+                + "-1 -1 -1 -1  0  0 -1 -1 -1 -1  -1  -1\n"
+                + "-1 -1 -1 -1  0  0 -1 -1 -1 -1  -1  -1\n"
+                + "-1 -1 -1 -1  0  0 -1 -1 -1 -1  -1  -1\n";
+        InputMatrix inputMatrix = new InputMatrix(matrixToInput);
+        return inputMatrix.readMatrix();
+    }
+
     public static int[][] createMatrixWithOneBoxGapTwoOnOneBox() {
         String matrixToInput = "12 x 9\n"
                 + "-1 -1 -1 -1 -1 -1 -1 -1 -1 -1  -1  -1\n"
@@ -139,10 +199,26 @@ public class SlotPuzzleMatrices {
         return inputMatrix.readMatrix();
     }
 
+    public static int[][] createMatrixWithOneBoxGapThreeOnOneBox() {
+        String matrixToInput = "12 x 9\n"
+                + "-1 -1 -1 -1 -1 -1 -1 -1 -1 -1  -1  -1\n"
+                + "-1 -1 -1 -1 -1 -1 -1 -1 -1 -1  -1  -1\n"
+                + "-1 -1 -1 -1 -1 -1 -1 -1 -1 -1  -1  -1\n"
+                + "-1 -1 -1 -1 -1 -1 -1 -1 -1 -1  -1  -1\n"
+                + "-1 -1 -1 -1  0 -1 -1 -1 -1 -1  -1  -1\n"
+                + "-1 -1 -1 -1 -1 -1 -1 -1 -1 -1  -1  -1\n"
+                + "-1 -1 -1 -1 -1 -1 -1 -1 -1 -1  -1  -1\n"
+                + "-1 -1 -1 -1 -1 -1 -1 -1 -1 -1  -1  -1\n"
+                + "-1 -1 -1 -1  0 -1 -1 -1 -1 -1  -1  -1\n";
+        InputMatrix inputMatrix = new InputMatrix(matrixToInput);
+        return inputMatrix.readMatrix();
+    }
+
     public static Array<int[][]> getSlotMatrices() {
         Array<int[][]> slotMatrices = new Array<>();
-        slotMatrices.add(createMatrixWithFillColumnNineBoxes());
+        slotMatrices.add(createMatrixWithOneBoxGapThreeOnOneBox());
         slotMatrices.add(createMatrixWithOneBoxGapTwoOnOneBox());
+        slotMatrices.add(createMatrixWithFillColumnNineBoxes());
         slotMatrices.add(createMatrixWithThreeBoxesOnOneBox());
         slotMatrices.add(createMatrixWithThreeBoxesOnOneBox());
         slotMatrices.add(createMatrixWithThreeBoxesOnOneBox());
@@ -153,6 +229,10 @@ public class SlotPuzzleMatrices {
         slotMatrices.add(createMatrixWithTwoBoxesOnOneBox());
         slotMatrices.add(createMatrixWithThreeBoxesOnOneBox());
         slotMatrices.add(createMatrixWithTwoByOnOneBox());
+        slotMatrices.add(createMatrixWithTwoByOnTwoBoxes());
+        slotMatrices.add(createMatrixWithTwoByOnThreeBoxes());
+        slotMatrices.add(createMatrixWithTwoByOnTFourBoxes());
+        slotMatrices.add(createMatrixWithTwoFillColumnNineBoxes());
         slotMatrices.add(createMatrixWithOneBox());
         slotMatrices.add(createMatrixWithTwoBoxes());
         slotMatrices.add(createMatrixWithThreeBoxes());
