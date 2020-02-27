@@ -55,26 +55,13 @@ public class FallenReel {
 
     public void processRows() {
         int destinationRowA, destinationRowB;
-        int currentRowA, currentRowB;
 
         destinationRowA = PuzzleGridTypeReelTile.getRowFromLevel(
                 animatedReelA.getReel().getDestinationY(), GAME_LEVEL_HEIGHT);
         destinationRowB = PuzzleGridTypeReelTile.getRowFromLevel(
                 animatedReelB.getReel().getDestinationY(), GAME_LEVEL_HEIGHT);
 
-        currentRowA = PuzzleGridTypeReelTile.getRowFromLevel(
-                animatedReelA.getReel().getY(), GAME_LEVEL_HEIGHT);
-        currentRowB = PuzzleGridTypeReelTile.getRowFromLevel(
-                animatedReelB.getReel().getY(), GAME_LEVEL_HEIGHT);
-
-        if (isTileFallenToDestinationRow(destinationRowA, destinationRowB, currentRowA, currentRowB))
-            processReelHittingReel(destinationRowA, destinationRowB);
-    }
-
-    private boolean isTileFallenToDestinationRow(int destinationRowA, int destinationRowB, int currentRowA, int currentRowB) {
-        return
-            Math.abs(currentRowA - destinationRowA) <= 1 &&
-            Math.abs(currentRowB - destinationRowB) <= 1;
+        processReelHittingReel(destinationRowA, destinationRowB);
     }
 
     public void processFallenReelHittingReelSink() {

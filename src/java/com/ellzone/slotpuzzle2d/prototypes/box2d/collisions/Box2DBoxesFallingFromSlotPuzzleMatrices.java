@@ -35,19 +35,12 @@ import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.TmxMapLoader;
 import com.badlogic.gdx.math.MathUtils;
-import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.BodyDef;
 import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer;
-import com.badlogic.gdx.physics.box2d.Contact;
-import com.badlogic.gdx.physics.box2d.Fixture;
-import com.badlogic.gdx.physics.box2d.QueryCallback;
 import com.badlogic.gdx.physics.box2d.World;
-import com.badlogic.gdx.physics.box2d.WorldManifold;
 import com.badlogic.gdx.physics.box2d.joints.MouseJoint;
-import com.badlogic.gdx.physics.box2d.joints.MouseJointDef;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.TimeUtils;
@@ -416,27 +409,6 @@ public class Box2DBoxesFallingFromSlotPuzzleMatrices extends SPPrototype impleme
         debugRenderer.render(world, viewport.getCamera().combined);
     }
 
-    private void renderContactPoints() {
-        renderer.setProjectionMatrix(camera.combined);
-        renderer.begin(ShapeRenderer.ShapeType.Point);
-        renderer.setColor(0, 1, 0, 1);
-        for (int i = 0; i < world.getContactCount(); i++)
-            processContact(i);
-        renderer.end();
-    }
-
-    private void processContact(int i) {
-        Contact contact = world.getContactList().get(i);
-        if (contact.isTouching()) {
-            WorldManifold manifold = contact.getWorldManifold();
-            int numContactPoints = manifold.getNumberOfContactPoints();
-            for (int j = 0; j < numContactPoints; j++) {
-                Vector2 point = manifold.getPoints()[j];
-                renderer.point(point.x, point.y, 0);
-            }
-        }
-    }
-
     private void renderReelBoxes(SpriteBatch batch, Array<Body> reelBoxes) {
         batch.begin();
         batch.setProjectionMatrix(viewport.getCamera().combined);
@@ -466,41 +438,13 @@ public class Box2DBoxesFallingFromSlotPuzzleMatrices extends SPPrototype impleme
         reelTile.draw(batch);
     }
 
-    Matrix4 transform = new Matrix4();
-
-    Vector3 testPoint = new Vector3();
-    QueryCallback isCollidedCallback = new QueryCallback() {
-        @Override
-        public boolean reportFixture(Fixture fixture) {
-            if (fixture.getBody() == groundBody) return true;
-
-            if (fixture.testPoint(testPoint.x, testPoint.y)) {
-                hitBody = fixture.getBody();
-                return false;
-            } else
-                return true;
-        }
-    };
-
     @Override
     public boolean touchDown(int x, int y, int pointer, int button) {
-//        testPoint.set(x, y, 0);
-//        camera.unproject(testPoint);
-//        hitBody = null;
-//        world.QueryAABB(isCollidedCallback, testPoint.x - 0.1f, testPoint.y - 0.1f, testPoint.x + 0.1f, testPoint.y + 0.1f);
-//
-//        if (hitBody != null) {
-//            if (button == Input.Buttons.LEFT)
-//                addAMouseJoint();
-//            else
-//                toggleBoxActive();
-//        } else {
-            if (button == Input.Buttons.LEFT)
-                reCreateBoxes();
-            else
-                setBoxesActive();
-//        }
-        return false;
+        if (button == Input.Buttons.LEFT)
+            reCreateBoxes();
+        else
+            setBoxesActive();
+        return true;
     }
 
     @Override
@@ -523,10 +467,6 @@ public class Box2DBoxesFallingFromSlotPuzzleMatrices extends SPPrototype impleme
                 if (!animatedReel.getReel().isReelTileDeleted())
                     boxBody.setActive(true);
             }
-    }
-
-    private void toggleBoxActive() {
-        hitBody.setActive(!hitBody.isActive());
     }
 
     private void reCreateBoxes() {
@@ -553,38 +493,6 @@ public class Box2DBoxesFallingFromSlotPuzzleMatrices extends SPPrototype impleme
             animatedReel.getReel().startSpinning();
             numberOfReelsToFall++;
         }
-    }
-
-    private void addAMouseJoint() {
-        MouseJointDef def = new MouseJointDef();
-        def.bodyA = groundBody;
-        def.bodyB = hitBody;
-        def.collideConnected = true;
-        def.target.set(testPoint.x, testPoint.y);
-        def.maxForce = 1000.0f * hitBody.getMass();
-
-        mouseJoint = (MouseJoint) world.createJoint(def);
-        hitBody.setAwake(true);
-    }
-
-    Vector2 target = new Vector2();
-
-    @Override
-    public boolean touchDragged(int x, int y, int pointer) {
-        if (mouseJoint != null) {
-            camera.unproject(testPoint.set(x, y, 0));
-            mouseJoint.setTarget(target.set(testPoint.x, testPoint.y));
-        }
-        return false;
-    }
-
-    @Override
-    public boolean touchUp(int x, int y, int pointer, int button) {
-        if (mouseJoint != null) {
-            world.destroyJoint(mouseJoint);
-            mouseJoint = null;
-        }
-        return false;
     }
 
     @Override
