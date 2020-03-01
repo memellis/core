@@ -214,6 +214,23 @@ public class SlotPuzzleMatrices {
         return inputMatrix.readMatrix();
     }
 
+    public static int[][] createDynamicMatrix(int[] matrixIdentifier,
+                                              int width,
+                                              int height) {
+        int[][] dynamicMatrix = new int[height][width];
+
+        for (int r = 0; r < dynamicMatrix.length; r++)
+            for (int c = 0; c < dynamicMatrix[0].length; c++) {
+                dynamicMatrix[r][c] =  extractBitAt(matrixIdentifier[c], r) == 0 ? -1 : 0;
+            }
+
+        return dynamicMatrix;
+    }
+
+    public static int extractBitAt(int number, int position) {
+        return (number >> position) & 1;
+    }
+
     public static Array<int[][]> getSlotMatrices() {
         Array<int[][]> slotMatrices = new Array<>();
         slotMatrices.add(createMatrixWithOneBoxGapThreeOnOneBox());
@@ -239,4 +256,5 @@ public class SlotPuzzleMatrices {
         slotMatrices.add(createMatrixWithFillColumnNineBoxes());
         return slotMatrices;
     }
+
 }
