@@ -4,6 +4,82 @@ import com.badlogic.gdx.utils.Array;
 import com.ellzone.slotpuzzle2d.utils.InputMatrix;
 
 public class SlotPuzzleMatrices {
+
+    public static int[][] createMatrixMimicingDynamicMatrixDebug2() {
+        String matrixToInput = "12 x 9\n"
+                + " 0  0 -1  0 -1 -1 -1 -1 -1 -1  -1  -1\n"
+                + " 0 -1  0  0 -1 -1 -1 -1 -1 -1  -1  -1\n"
+                + " 0  0  0 -1 -1 -1 -1 -1 -1 -1  -1  -1\n"
+                + "-1 -1 -1 -1 -1 -1 -1 -1 -1 -1  -1  -1\n"
+                + "-1 -1 -1 -1 -1 -1 -1 -1 -1 -1  -1  -1\n"
+                + "-1 -1 -1 -1 -1 -1 -1 -1 -1 -1  -1  -1\n"
+                + "-1 -1 -1 -1 -1 -1 -1 -1 -1 -1  -1  -1\n"
+                + "-1 -1 -1 -1 -1 -1 -1 -1 -1 -1  -1  -1\n"
+                + "-1 -1 -1 -1 -1 -1 -1 -1 -1 -1  -1  -1\n";
+        InputMatrix inputMatrix = new InputMatrix(matrixToInput);
+        return inputMatrix.readMatrix();
+    }
+
+    public static int[][] createMatrixMimicingDynamicMatrixDebug1() {
+        String matrixToInput = "12 x 9\n"
+                + "-1  0 -1  0 -1  0 -1  0 -1  0  -1   0\n"
+                + "-1  0  0  0 -1 -1  0  0 -1 -1   0   0\n"
+                + "-1  0 -1 -1  0  0  0  0 -1 -1  -1  -1\n"
+                + "-1 -1 -1 -1 -1 -1 -1 -1  0  0   0   0\n"
+                + "-1 -1 -1 -1 -1 -1 -1 -1 -1 -1  -1  -1\n"
+                + "-1 -1 -1 -1 -1 -1 -1 -1 -1 -1  -1  -1\n"
+                + "-1 -1 -1 -1 -1 -1 -1 -1 -1 -1  -1  -1\n"
+                + "-1 -1 -1 -1 -1 -1 -1 -1 -1 -1  -1  -1\n"
+                + "-1 -1 -1 -1 -1 -1 -1 -1 -1 -1  -1  -1\n";
+        InputMatrix inputMatrix = new InputMatrix(matrixToInput);
+        return inputMatrix.readMatrix();
+    }
+
+    public static int[][] createMatrixMimicingDynamicMatrixDebug() {
+        String matrixToInput = "12 x 9\n"
+                + "-1  0 -1  0 -1 -1 -1 -1 -1  0  -1   0\n"
+                + "-1 -1  0  0 -1 -1  0 -1 -1 -1   0   0\n"
+                + "-1 -1 -1 -1  0 -1  0 -1 -1 -1  -1  -1\n"
+                + "-1 -1 -1 -1 -1 -1 -1 -1  0  0   0  -1\n"
+                + "-1 -1 -1 -1 -1 -1 -1 -1 -1 -1  -1  -1\n"
+                + "-1 -1 -1 -1 -1 -1 -1 -1 -1 -1  -1  -1\n"
+                + "-1 -1 -1 -1 -1 -1 -1 -1 -1 -1  -1  -1\n"
+                + "-1 -1 -1 -1 -1 -1 -1 -1 -1 -1  -1  -1\n"
+                + "-1 -1 -1 -1 -1 -1 -1 -1 -1 -1  -1  -1\n";
+        InputMatrix inputMatrix = new InputMatrix(matrixToInput);
+        return inputMatrix.readMatrix();
+    }
+
+    public static int[][] createMatrixMimicingDynamicMatrix() {
+        String matrixToInput = "12 x 9\n"
+                + "-1  0 -1  0 -1  0 -1  0 -1  0  -1   0\n"
+                + "-1 -1  0  0 -1 -1  0  0 -1 -1   0   0\n"
+                + "-1 -1 -1 -1  0  0  0  0 -1 -1  -1  -1\n"
+                + "-1 -1 -1 -1 -1 -1 -1 -1  0  0   0   0\n"
+                + "-1 -1 -1 -1 -1 -1 -1 -1 -1 -1  -1  -1\n"
+                + "-1 -1 -1 -1 -1 -1 -1 -1 -1 -1  -1  -1\n"
+                + "-1 -1 -1 -1 -1 -1 -1 -1 -1 -1  -1  -1\n"
+                + "-1 -1 -1 -1 -1 -1 -1 -1 -1 -1  -1  -1\n"
+                + "-1 -1 -1 -1 -1 -1 -1 -1 -1 -1  -1  -1\n";
+        InputMatrix inputMatrix = new InputMatrix(matrixToInput);
+        return inputMatrix.readMatrix();
+    }
+
+    public static int[][] createMatrixWithNoBoxes() {
+        String matrixToInput = "12 x 9\n"
+                + "-1 -1 -1 -1 -1 -1 -1 -1 -1 -1  -1  -1\n"
+                + "-1 -1 -1 -1 -1 -1 -1 -1 -1 -1  -1  -1\n"
+                + "-1 -1 -1 -1 -1 -1 -1 -1 -1 -1  -1  -1\n"
+                + "-1 -1 -1 -1 -1 -1 -1 -1 -1 -1  -1  -1\n"
+                + "-1 -1 -1 -1 -1 -1 -1 -1 -1 -1  -1  -1\n"
+                + "-1 -1 -1 -1 -1 -1 -1 -1 -1 -1  -1  -1\n"
+                + "-1 -1 -1 -1 -1 -1 -1 -1 -1 -1  -1  -1\n"
+                + "-1 -1 -1 -1 -1 -1 -1 -1 -1 -1  -1  -1\n"
+                + "-1 -1 -1 -1 -1 -1 -1 -1 -1 -1  -1  -1\n";
+        InputMatrix inputMatrix = new InputMatrix(matrixToInput);
+        return inputMatrix.readMatrix();
+    }
+
     public static int[][] createMatrixWithOneBox() {
         String matrixToInput = "12 x 9\n"
                 + "-1 -1 -1 -1 -1 -1 -1 -1 -1 -1  -1  -1\n"
@@ -14,7 +90,7 @@ public class SlotPuzzleMatrices {
                 + "-1 -1 -1 -1 -1 -1 -1 -1 -1 -1  -1  -1\n"
                 + "-1 -1 -1 -1 -1 -1 -1 -1 -1 -1  -1  -1\n"
                 + "-1 -1 -1 -1 -1 -1 -1 -1 -1 -1  -1  -1\n"
-                + "-1 -1 -1 -1  0 -1 -1 -1 -1 -1  -1  -1\n";
+                + " 0 -1 -1 -1 -1 -1 -1 -1 -1 -1  -1  -1\n";
         InputMatrix inputMatrix = new InputMatrix(matrixToInput);
         return inputMatrix.readMatrix();
     }
@@ -28,8 +104,8 @@ public class SlotPuzzleMatrices {
                 + "-1 -1 -1 -1 -1 -1 -1 -1 -1 -1  -1  -1\n"
                 + "-1 -1 -1 -1 -1 -1 -1 -1 -1 -1  -1  -1\n"
                 + "-1 -1 -1 -1 -1 -1 -1 -1 -1 -1  -1  -1\n"
-                + "-1 -1 -1 -1  0 -1 -1 -1 -1 -1  -1  -1\n"
-                + "-1 -1 -1 -1  0 -1 -1 -1 -1 -1  -1  -1\n";
+                + " 0 -1 -1 -1 -1 -1 -1 -1 -1 -1  -1  -1\n"
+                + " 0  -1 -1 -1 -1 -1 -1 -1 -1 -1  -1  -1\n";
         InputMatrix inputMatrix = new InputMatrix(matrixToInput);
         return inputMatrix.readMatrix();
     }
@@ -42,24 +118,24 @@ public class SlotPuzzleMatrices {
                 + "-1 -1 -1 -1 -1 -1 -1 -1 -1 -1  -1  -1\n"
                 + "-1 -1 -1 -1 -1 -1 -1 -1 -1 -1  -1  -1\n"
                 + "-1 -1 -1 -1 -1 -1 -1 -1 -1 -1  -1  -1\n"
-                + "-1 -1 -1 -1  0 -1 -1 -1 -1 -1  -1  -1\n"
-                + "-1 -1 -1 -1  0 -1 -1 -1 -1 -1  -1  -1\n"
-                + "-1 -1 -1 -1  0 -1 -1 -1 -1 -1  -1  -1\n";
+                + " 0 -1 -1 -1  0 -1 -1 -1 -1 -1  -1  -1\n"
+                + " 0 -1 -1 -1  0 -1 -1 -1 -1 -1  -1  -1\n"
+                + " 0 -1 -1 -1  0 -1 -1 -1 -1 -1  -1  -1\n";
         InputMatrix inputMatrix = new InputMatrix(matrixToInput);
         return inputMatrix.readMatrix();
     }
 
     public static int[][] createMatrixWithFillColumnNineBoxes() {
         String matrixToInput = "12 x 9\n"
-                + "-1 -1 -1 -1  0 -1 -1 -1 -1 -1  -1  -1\n"
-                + "-1 -1 -1 -1  0 -1 -1 -1 -1 -1  -1  -1\n"
-                + "-1 -1 -1 -1  0 -1 -1 -1 -1 -1  -1  -1\n"
-                + "-1 -1 -1 -1  0 -1 -1 -1 -1 -1  -1  -1\n"
-                + "-1 -1 -1 -1  0 -1 -1 -1 -1 -1  -1  -1\n"
-                + "-1 -1 -1 -1  0 -1 -1 -1 -1 -1  -1  -1\n"
-                + "-1 -1 -1 -1  0 -1 -1 -1 -1 -1  -1  -1\n"
-                + "-1 -1 -1 -1  0 -1 -1 -1 -1 -1  -1  -1\n"
-                + "-1 -1 -1 -1  0 -1 -1 -1 -1 -1  -1  -1\n";
+                + " 0 -1 -1 -1 -1 -1 -1 -1 -1 -1  -1  -1\n"
+                + " 0 -1 -1 -1 -1 -1 -1 -1 -1 -1  -1  -1\n"
+                + " 0 -1 -1 -1 -1 -1 -1 -1 -1 -1  -1  -1\n"
+                + " 0 -1 -1 -1 -1 -1 -1 -1 -1 -1  -1  -1\n"
+                + " 0 -1 -1 -1 -1 -1 -1 -1 -1 -1  -1  -1\n"
+                + " 0 -1 -1 -1 -1 -1 -1 -1 -1 -1  -1  -1\n"
+                + " 0 -1 -1 -1 -1 -1 -1 -1 -1 -1  -1  -1\n"
+                + " 0 -1 -1 -1 -1 -1 -1 -1 -1 -1  -1  -1\n"
+                + " 0 -1 -1 -1 -1 -1 -1 -1 -1 -1  -1  -1\n";
         InputMatrix inputMatrix = new InputMatrix(matrixToInput);
         return inputMatrix.readMatrix();
     }
@@ -72,9 +148,9 @@ public class SlotPuzzleMatrices {
                 + "-1 -1 -1 -1 -1 -1 -1 -1 -1 -1  -1  -1\n"
                 + "-1 -1 -1 -1 -1 -1 -1 -1 -1 -1  -1  -1\n"
                 + "-1 -1 -1 -1 -1 -1 -1 -1 -1 -1  -1  -1\n"
-                + "-1 -1 -1 -1  0 -1 -1 -1 -1 -1  -1  -1\n"
+                + " 0 -1 -1 -1 -1 -1 -1 -1 -1 -1  -1  -1\n"
                 + "-1 -1 -1 -1 -1 -1 -1 -1 -1 -1  -1  -1\n"
-                + "-1 -1 -1 -1  0 -1 -1 -1 -1 -1  -1  -1\n";
+                + " 0 -1 -1 -1 -1 -1 -1 -1 -1 -1  -1  -1\n";
         InputMatrix inputMatrix = new InputMatrix(matrixToInput);
         return inputMatrix.readMatrix();
     }
@@ -86,10 +162,10 @@ public class SlotPuzzleMatrices {
                 + "-1 -1 -1 -1 -1 -1 -1 -1 -1 -1  -1  -1\n"
                 + "-1 -1 -1 -1 -1 -1 -1 -1 -1 -1  -1  -1\n"
                 + "-1 -1 -1 -1 -1 -1 -1 -1 -1 -1  -1  -1\n"
-                + "-1 -1 -1 -1  0 -1 -1 -1 -1 -1  -1  -1\n"
-                + "-1 -1 -1 -1  0 -1 -1 -1 -1 -1  -1  -1\n"
+                + " 0 -1 -1 -1 -1 -1 -1 -1 -1 -1  -1  -1\n"
+                + " 0 -1 -1 -1 -1 -1 -1 -1 -1 -1  -1  -1\n"
                 + "-1 -1 -1 -1 -1 -1 -1 -1 -1 -1  -1  -1\n"
-                + "-1 -1 -1 -1  0 -1 -1 -1 -1 -1  -1  -1\n";
+                + " 0 -1 -1 -1 -1 -1 -1 -1 -1 -1  -1  -1\n";
         InputMatrix inputMatrix = new InputMatrix(matrixToInput);
         return inputMatrix.readMatrix();
     }
@@ -100,11 +176,11 @@ public class SlotPuzzleMatrices {
                 + "-1 -1 -1 -1 -1 -1 -1 -1 -1 -1  -1  -1\n"
                 + "-1 -1 -1 -1 -1 -1 -1 -1 -1 -1  -1  -1\n"
                 + "-1 -1 -1 -1 -1 -1 -1 -1 -1 -1  -1  -1\n"
-                + "-1 -1 -1 -1  0 -1 -1 -1 -1 -1  -1  -1\n"
-                + "-1 -1 -1 -1  0 -1 -1 -1 -1 -1  -1  -1\n"
-                + "-1 -1 -1 -1  0 -1 -1 -1 -1 -1  -1  -1\n"
+                + " 0 -1 -1 -1 -1 -1 -1 -1 -1 -1  -1  -1\n"
+                + " 0 -1 -1 -1 -1 -1 -1 -1 -1 -1  -1  -1\n"
+                + " 0 -1 -1 -1 -1 -1 -1 -1 -1 -1  -1  -1\n"
                 + "-1 -1 -1 -1 -1 -1 -1 -1 -1 -1  -1  -1\n"
-                + "-1 -1 -1 -1  0 -1 -1 -1 -1 -1  -1  -1\n";
+                + " 0 -1 -1 -1 -1 -1 -1 -1 -1 -1  -1  -1\n";
         InputMatrix inputMatrix = new InputMatrix(matrixToInput);
         return inputMatrix.readMatrix();
     }
@@ -119,7 +195,7 @@ public class SlotPuzzleMatrices {
                 + "-1 -1 -1 -1 -1 -1 -1 -1 -1 -1  -1  -1\n"
                 + "-1 -1 -1 -1 -1 -1 -1 -1 -1 -1  -1  -1\n"
                 + "-1 -1 -1 -1 -1 -1 -1 -1 -1 -1  -1  -1\n"
-                + "-1 -1 -1 -1  0  0 -1 -1 -1 -1  -1  -1\n";
+                + " 0  0 -1 -1 -1 -1 -1 -1 -1 -1  -1  -1\n";
         InputMatrix inputMatrix = new InputMatrix(matrixToInput);
         return inputMatrix.readMatrix();
     }
@@ -133,8 +209,8 @@ public class SlotPuzzleMatrices {
                 + "-1 -1 -1 -1 -1 -1 -1 -1 -1 -1  -1  -1\n"
                 + "-1 -1 -1 -1 -1 -1 -1 -1 -1 -1  -1  -1\n"
                 + "-1 -1 -1 -1 -1 -1 -1 -1 -1 -1  -1  -1\n"
-                + "-1 -1 -1 -1  0  0 -1 -1 -1 -1  -1  -1\n"
-                + "-1 -1 -1 -1  0  0 -1 -1 -1 -1  -1  -1\n";
+                + " 0  0 -1 -1 -1 -1 -1 -1 -1 -1  -1  -1\n"
+                + " 0  0 -1 -1 -1 -1 -1 -1 -1 -1  -1  -1\n";
         InputMatrix inputMatrix = new InputMatrix(matrixToInput);
         return inputMatrix.readMatrix();
     }
@@ -147,9 +223,9 @@ public class SlotPuzzleMatrices {
                 + "-1 -1 -1 -1 -1 -1 -1 -1 -1 -1  -1  -1\n"
                 + "-1 -1 -1 -1 -1 -1 -1 -1 -1 -1  -1  -1\n"
                 + "-1 -1 -1 -1 -1 -1 -1 -1 -1 -1  -1  -1\n"
-                + "-1 -1 -1 -1  0  0 -1 -1 -1 -1  -1  -1\n"
-                + "-1 -1 -1 -1  0  0 -1 -1 -1 -1  -1  -1\n"
-                + "-1 -1 -1 -1  0  0 -1 -1 -1 -1  -1  -1\n";
+                + " 0  0 -1 -1 -1 -1 -1 -1 -1 -1  -1  -1\n"
+                + " 0  0 -1 -1 -1 -1 -1 -1 -1 -1  -1  -1\n"
+                + " 0  0 -1 -1 -1 -1 -1 -1 -1 -1  -1  -1\n";
         InputMatrix inputMatrix = new InputMatrix(matrixToInput);
         return inputMatrix.readMatrix();
     }
@@ -161,25 +237,25 @@ public class SlotPuzzleMatrices {
                 + "-1 -1 -1 -1 -1 -1 -1 -1 -1 -1  -1  -1\n"
                 + "-1 -1 -1 -1 -1 -1 -1 -1 -1 -1  -1  -1\n"
                 + "-1 -1 -1 -1 -1 -1 -1 -1 -1 -1  -1  -1\n"
-                + "-1 -1 -1 -1  0  0 -1 -1 -1 -1  -1  -1\n"
-                + "-1 -1 -1 -1  0  0 -1 -1 -1 -1  -1  -1\n"
-                + "-1 -1 -1 -1  0  0 -1 -1 -1 -1  -1  -1\n"
-                + "-1 -1 -1 -1  0  0 -1 -1 -1 -1  -1  -1\n";
+                + " 0 -0 -1 -1 -1 -1 -1 -1 -1 -1  -1  -1\n"
+                + " 0  0 -1 -1 -1 -1 -1 -1 -1 -1  -1  -1\n"
+                + " 0  0 -1 -1 -1 -1 -1 -1 -1 -1  -1  -1\n"
+                + " 0  0 -1 -1 -1 -1 -1 -1 -1 -1  -1  -1\n";
         InputMatrix inputMatrix = new InputMatrix(matrixToInput);
         return inputMatrix.readMatrix();
     }
 
     public static int[][] createMatrixWithTwoFillColumnNineBoxes() {
         String matrixToInput = "12 x 9\n"
-                + "-1 -1 -1 -1  0  0 -1 -1 -1 -1  -1  -1\n"
-                + "-1 -1 -1 -1  0  0 -1 -1 -1 -1  -1  -1\n"
-                + "-1 -1 -1 -1  0  0 -1 -1 -1 -1  -1  -1\n"
-                + "-1 -1 -1 -1  0  0 -1 -1 -1 -1  -1  -1\n"
-                + "-1 -1 -1 -1  0  0 -1 -1 -1 -1  -1  -1\n"
-                + "-1 -1 -1 -1  0  0 -1 -1 -1 -1  -1  -1\n"
-                + "-1 -1 -1 -1  0  0 -1 -1 -1 -1  -1  -1\n"
-                + "-1 -1 -1 -1  0  0 -1 -1 -1 -1  -1  -1\n"
-                + "-1 -1 -1 -1  0  0 -1 -1 -1 -1  -1  -1\n";
+                + " 0  0 -1 -1 -1 -1 -1 -1 -1 -1  -1  -1\n"
+                + " 0  0 -1 -1 -1 -1 -1 -1 -1 -1  -1  -1\n"
+                + " 0  0 -1 -1 -1 -1 -1 -1 -1 -1  -1  -1\n"
+                + " 0  0 -1 -1 -1 -1 -1 -1 -1 -1  -1  -1\n"
+                + " 0  0 -1 -1 -1 -1 -1 -1 -1 -1  -1  -1\n"
+                + " 0  0 -1 -1 -1 -1 -1 -1 -1 -1  -1  -1\n"
+                + " 0  0 -1 -1 -1 -1 -1 -1 -1 -1  -1  -1\n"
+                + " 0  0 -1 -1 -1 -1 -1 -1 -1 -1  -1  -1\n"
+                + " 0  0 -1 -1 -1 -1 -1 -1 -1 -1  -1  -1\n";
         InputMatrix inputMatrix = new InputMatrix(matrixToInput);
         return inputMatrix.readMatrix();
     }
@@ -191,10 +267,10 @@ public class SlotPuzzleMatrices {
                 + "-1 -1 -1 -1 -1 -1 -1 -1 -1 -1  -1  -1\n"
                 + "-1 -1 -1 -1 -1 -1 -1 -1 -1 -1  -1  -1\n"
                 + "-1 -1 -1 -1 -1 -1 -1 -1 -1 -1  -1  -1\n"
-                + "-1 -1 -1 -1  0 -1 -1 -1 -1 -1  -1  -1\n"
+                + " 0 -1 -1 -1 -1 -1 -1 -1 -1 -1  -1  -1\n"
                 + "-1 -1 -1 -1 -1 -1 -1 -1 -1 -1  -1  -1\n"
                 + "-1 -1 -1 -1 -1 -1 -1 -1 -1 -1  -1  -1\n"
-                + "-1 -1 -1 -1  0 -1 -1 -1 -1 -1  -1  -1\n";
+                + " 0 -1 -1 -1 -1 -1 -1 -1 -1 -1  -1  -1\n";
         InputMatrix inputMatrix = new InputMatrix(matrixToInput);
         return inputMatrix.readMatrix();
     }
@@ -205,11 +281,11 @@ public class SlotPuzzleMatrices {
                 + "-1 -1 -1 -1 -1 -1 -1 -1 -1 -1  -1  -1\n"
                 + "-1 -1 -1 -1 -1 -1 -1 -1 -1 -1  -1  -1\n"
                 + "-1 -1 -1 -1 -1 -1 -1 -1 -1 -1  -1  -1\n"
-                + "-1 -1 -1 -1  0 -1 -1 -1 -1 -1  -1  -1\n"
+                + " 0 -1 -1 -1 -1 -1 -1 -1 -1 -1  -1  -1\n"
                 + "-1 -1 -1 -1 -1 -1 -1 -1 -1 -1  -1  -1\n"
                 + "-1 -1 -1 -1 -1 -1 -1 -1 -1 -1  -1  -1\n"
                 + "-1 -1 -1 -1 -1 -1 -1 -1 -1 -1  -1  -1\n"
-                + "-1 -1 -1 -1  0 -1 -1 -1 -1 -1  -1  -1\n";
+                + " 0 -1 -1 -1  0 -1 -1 -1 -1 -1  -1  -1\n";
         InputMatrix inputMatrix = new InputMatrix(matrixToInput);
         return inputMatrix.readMatrix();
     }
@@ -233,6 +309,12 @@ public class SlotPuzzleMatrices {
 
     public static Array<int[][]> getSlotMatrices() {
         Array<int[][]> slotMatrices = new Array<>();
+        slotMatrices.add(createMatrixMimicingDynamicMatrixDebug2());
+        slotMatrices.add(createMatrixMimicingDynamicMatrixDebug1());
+        slotMatrices.add(createMatrixMimicingDynamicMatrixDebug());
+        slotMatrices.add(createMatrixMimicingDynamicMatrix());
+        slotMatrices.add(createMatrixWithNoBoxes());
+        slotMatrices.add(createMatrixWithOneBox());
         slotMatrices.add(createMatrixWithOneBoxGapThreeOnOneBox());
         slotMatrices.add(createMatrixWithOneBoxGapTwoOnOneBox());
         slotMatrices.add(createMatrixWithFillColumnNineBoxes());

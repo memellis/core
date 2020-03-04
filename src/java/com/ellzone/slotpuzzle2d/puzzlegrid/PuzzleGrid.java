@@ -159,9 +159,8 @@ public class PuzzleGrid {
 	
 	public static void printGrid(int[][] puzzleGrid){
 		for(int r = 0; r < puzzleGrid.length; r++){
-			for (int c = 0; c < puzzleGrid[r].length; c++) {
-				System.out.print(puzzleGrid[r][c] + " ");
-			}
+			for (int c = 0; c < puzzleGrid[r].length; c++)
+				System.out.print(String.format("%3d", puzzleGrid[r][c]));
 			System.out.println();
 		}
 	}

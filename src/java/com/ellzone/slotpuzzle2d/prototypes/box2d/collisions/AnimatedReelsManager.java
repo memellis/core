@@ -121,18 +121,50 @@ public class AnimatedReelsManager implements Telegraph {
                 PuzzleGridTypeReelTile.getRowFromLevel(reelTile.getDestinationY(), GAME_LEVEL_HEIGHT),
                 PuzzleGridTypeReelTile.getColumnFromLevel(reelTile.getDestinationX()));
 
-       markAllReelsAvoveInContactAsFallen(reelTile, reelsAboveMe);
+        markAllReelsAvoveInContactAsFallen(reelTile, reelsAboveMe);
+        PuzzleGridTypeReelTile.printGrid(
+               PuzzleGridTypeReelTile.populateMatchGridStatic(
+                       reelTiles,
+                       GAME_LEVEL_WIDTH,
+                       GAME_LEVEL_HEIGHT)
+        );
+        System.out.println();
      }
 
     private void markAllReelsAvoveInContactAsFallen(ReelTile reelTile, TupleValueIndex[] reelsAboveMe) {
         ReelTile currentReelTile = reelTile;
+        int currentRow = PuzzleGridTypeReelTile.getRowFromLevel(currentReelTile.getY(), GAME_LEVEL_HEIGHT);
+        int destinationRow = PuzzleGridTypeReelTile.getRowFromLevel(currentReelTile.getDestinationY(), GAME_LEVEL_HEIGHT);
+        if (destinationRow < currentRow) {
+            processReelFallenBelowDestinationRow(reelTile, reelsAboveMe);
+            return;
+        }
         for (int i = 0; i < reelsAboveMe.length; i++) {
             if (PuzzleGridTypeReelTile.getRowFromLevel(
                     currentReelTile.getDestinationY(), GAME_LEVEL_HEIGHT) - 1 == reelsAboveMe[i].getR()) {
+                System.out.println("currentRow="+
+                        PuzzleGridTypeReelTile.getRowFromLevel(currentReelTile.getY(), GAME_LEVEL_HEIGHT));
+                System.out.println("destinationRow="+
+                        PuzzleGridTypeReelTile.getRowFromLevel(currentReelTile.getDestinationY(), GAME_LEVEL_HEIGHT));
                 recordDecrementReelsLeftToFall(animatedReels.get(reelsAboveMe[i].index).getReel());
             }
             currentReelTile = animatedReels.get(reelsAboveMe[i].index).getReel();
         }
+    }
+
+    private void processReelFallenBelowDestinationRow(ReelTile reelTile, TupleValueIndex[] reelsAboveMe) {
+        ReelTile bottomDeletedReel = reelTiles.get(findReel((int) reelTile.getDestinationX(), 40));
+        swapReelsForFallenReel(reelTile, bottomDeletedReel);
+        for (int i=0; i<reelsAboveMe.length; i++) {
+            bottomDeletedReel = reelTiles.get(findReel((int) reelTile.getDestinationX(), 40 + 40 * (i+1)));
+            swapReelsB(reelTiles.get(reelsAboveMe[i].index), bottomDeletedReel);
+        }
+        PuzzleGridTypeReelTile.printGrid(
+                PuzzleGridTypeReelTile.populateMatchGridStatic(
+                        reelTiles,
+                        GAME_LEVEL_WIDTH,
+                        GAME_LEVEL_HEIGHT)
+        );
     }
 
     private void swapReelsAboveMe(ReelTile reelTileA,
@@ -191,12 +223,20 @@ public class AnimatedReelsManager implements Telegraph {
         int reelHasFallenFrom = findReel((int)reelTileB.getDestinationX(), (int) reelTileB.getDestinationY() + 40);
         ReelTile deletedReel = reelTiles.get(reelHasFallenFrom);
 
-        reelTileA.setDestinationY(reelTileB.getDestinationY() + 40);
-        reelTileA.setY(reelTileB.getDestinationY() + 40);
+        reelTileA.setDestinationY(reelTileB.getDestinationY());
+        reelTileA.setY(reelTileB.getDestinationY());
         reelTileA.unDeleteReelTile();
 
         deletedReel.setDestinationY(savedDestinationY);
         deletedReel.deleteReelTile();
+    }
+
+    private void swapReelsForFallenReel(ReelTile reelTileA, ReelTile reelTileB) {
+        float savedDestinationY = reelTileA.getDestinationY();
+        reelTileA.setDestinationY(reelTileB.getDestinationY());
+        reelTileA.setY(reelTileB.getDestinationY());
+        reelTileA.unDeleteReelTile();
+        reelTileB.setDestinationY(savedDestinationY);
     }
 
     private Array<ReelTile> getReelTilesFromAnimatedReels(Array<AnimatedReel> animatedReels) {

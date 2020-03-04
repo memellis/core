@@ -52,6 +52,7 @@ import com.ellzone.slotpuzzle2d.physics.PhysicsManagerCustomBodies;
 import com.ellzone.slotpuzzle2d.physics.ReelSink;
 import com.ellzone.slotpuzzle2d.physics.contact.BoxHittingBoxContactListener;
 import com.ellzone.slotpuzzle2d.prototypes.SPPrototype;
+import com.ellzone.slotpuzzle2d.puzzlegrid.PuzzleGrid;
 import com.ellzone.slotpuzzle2d.screens.PlayScreen;
 import com.ellzone.slotpuzzle2d.sprites.AnimatedReel;
 import com.ellzone.slotpuzzle2d.sprites.ReelSprites;
@@ -101,6 +102,7 @@ public class Box2DBoxesFallingFromSlotPuzzleMatrices extends SPPrototype impleme
     private Boolean isAutoFall;
     private int numberOfReelBoxesAsleep = 0;
     private int numberOfReelBoxesCreated = 0;
+    int[] matrixIdentifier = new int[PlayScreen.GAME_LEVEL_WIDTH];
 
     @Override
     public void create() {
@@ -197,7 +199,24 @@ public class Box2DBoxesFallingFromSlotPuzzleMatrices extends SPPrototype impleme
             );
         slotMatrixCycleIndex++;
         slotMatrixCycleIndex %= SlotPuzzleMatrices.getSlotMatrices().size;
+//        setColumnValues(matrixIdentifier, slotMatrixCycleIndex);
+//        int dynamicGrid[][] = SlotPuzzleMatrices.createDynamicMatrix(
+//                matrixIdentifier,
+//                PlayScreen.GAME_LEVEL_WIDTH,
+//                PlayScreen.GAME_LEVEL_HEIGHT);
+//        PuzzleGrid.printGrid(dynamicGrid);
+//        System.out.println();
+//        animatedReels = createAnimatedReelsFromSlotPuzzleMatrix(dynamicGrid);
+//        slotMatrixCycleIndex++;
+//        slotMatrixCycleIndex %= pow(2, PlayScreen.GAME_LEVEL_HEIGHT);
+//        System.out.println("numberOfReelsToFall="+numberOfReelsToFall);
     }
+
+    private void setColumnValues(int[] matrixIdentifier, int matrixValue) {
+        for (int i=0; i<matrixIdentifier.length; i++)
+            matrixIdentifier[i]=matrixValue + i;
+    }
+
 
     private Array<AnimatedReel> createAnimatedReelsFromSlotPuzzleMatrix(int[][] slotPuzzleMatrix) {
         animatedReels = new Array<AnimatedReel>();
@@ -263,8 +282,8 @@ public class Box2DBoxesFallingFromSlotPuzzleMatrices extends SPPrototype impleme
     private void createReelSink() {
         ReelSink reelSink = new ReelSink(physicsEngine);
         reelSink.createReelSink(
-                SlotPuzzleConstants.VIRTUAL_WIDTH / 2 + 20,
-                SlotPuzzleConstants.VIRTUAL_HEIGHT / 2 + 20,
+                SlotPuzzleConstants.VIRTUAL_WIDTH / 2 - 20,
+                SlotPuzzleConstants.VIRTUAL_HEIGHT / 2,
                 12,
                 9,
                 40,
