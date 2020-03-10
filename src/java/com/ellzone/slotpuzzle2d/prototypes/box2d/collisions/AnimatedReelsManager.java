@@ -23,11 +23,13 @@ import com.ellzone.slotpuzzle2d.messaging.MessageType;
 import com.ellzone.slotpuzzle2d.physics.PhysicsManagerCustomBodies;
 import com.ellzone.slotpuzzle2d.puzzlegrid.PuzzleGridType;
 import com.ellzone.slotpuzzle2d.puzzlegrid.PuzzleGridTypeReelTile;
-import com.ellzone.slotpuzzle2d.puzzlegrid.ReelTileGridValue;
 import com.ellzone.slotpuzzle2d.puzzlegrid.TupleValueIndex;
 import com.ellzone.slotpuzzle2d.sprites.AnimatedReel;
 import com.ellzone.slotpuzzle2d.sprites.ReelTile;
 
+import java.text.MessageFormat;
+
+import static com.ellzone.slotpuzzle2d.prototypes.box2d.collisions.Box2DBoxesFallingFromSlotPuzzleMatrices.SCREEN_OFFSET;
 import static com.ellzone.slotpuzzle2d.screens.PlayScreen.GAME_LEVEL_HEIGHT;
 import static com.ellzone.slotpuzzle2d.screens.PlayScreen.GAME_LEVEL_WIDTH;
 
@@ -39,6 +41,8 @@ public class AnimatedReelsManager implements Telegraph {
     private int reelsStoppedFalling = 0;
 
     AnimatedReelsManager(Array<AnimatedReel> animatedReels) {
+        if (animatedReels == null)
+            throw new IllegalArgumentException("animatedReels is null");
         this.animatedReels = animatedReels;
         reelTiles = getReelTilesFromAnimatedReels(animatedReels);
     }
@@ -52,6 +56,14 @@ public class AnimatedReelsManager implements Telegraph {
     public void setAnimatedReels(Array<AnimatedReel> animatedReels) {
         this.animatedReels = animatedReels;
         reelTiles = getReelTilesFromAnimatedReels(animatedReels);
+    }
+
+    public Array<AnimatedReel> getAnimatedReels() {
+        return animatedReels;
+    }
+
+    public Array<ReelTile> getReelTiles() {
+        return reelTiles;
     }
 
     public void setReelBodies(Array<Body> reelBodies) {
@@ -73,8 +85,16 @@ public class AnimatedReelsManager implements Telegraph {
 
     @Override
     public boolean handleMessage(Telegram message) {
+        if (message == null) {
+            throw new IllegalArgumentException("message is null");
+        }
+
         if (message.message == MessageType.SwapReelsAboveMe.index) {
             Array<AnimatedReel> reelsAB = (Array<AnimatedReel>) message.extraInfo;
+            if (reelsAB == null)
+                throw new IllegalArgumentException("message.extrainfo is null");
+            if (reelsAB.size != 2)
+                throw new IllegalArgumentException("message.extrainfo does have a two AnimatedReels");
 
             AnimatedReel animatedReelA = reelsAB.get(0);
             AnimatedReel animatedReelB = reelsAB.get(1);
@@ -157,7 +177,7 @@ public class AnimatedReelsManager implements Telegraph {
         swapReelsForFallenReel(reelTile, bottomDeletedReel);
         for (int i=0; i<reelsAboveMe.length; i++) {
             bottomDeletedReel = reelTiles.get(findReel((int) reelTile.getDestinationX(), 40 + 40 * (i+1)));
-            swapReelsB(reelTiles.get(reelsAboveMe[i].index), bottomDeletedReel);
+            swapReelsForFallenReel(reelTiles.get(reelsAboveMe[i].index), bottomDeletedReel);
         }
         PuzzleGridTypeReelTile.printGrid(
                 PuzzleGridTypeReelTile.populateMatchGridStatic(
@@ -165,11 +185,13 @@ public class AnimatedReelsManager implements Telegraph {
                         GAME_LEVEL_WIDTH,
                         GAME_LEVEL_HEIGHT)
         );
+        System.out.println();
     }
 
     private void swapReelsAboveMe(ReelTile reelTileA,
                                   ReelTile reelTileB) {
 
+        printReelsAB(reelTileA, reelTileB);
         swapReels(reelTileA, reelTileB);
 
         TupleValueIndex[] reelsAboveMe = PuzzleGridType.getReelsAboveMe(
@@ -200,12 +222,68 @@ public class AnimatedReelsManager implements Telegraph {
                     animatedReels.get(reelsAboveMe[reelsAboveMeIndex].getIndex()).getReel());
     }
 
+    private void printReelsAB(ReelTile reelTileA, ReelTile reelTileB) {
+        System.out.println(
+                MessageFormat.format(
+                        "rA.dest({0},{1})", reelTileA.getDestinationX(), reelTileA.getDestinationY()
+                )
+        );
+        System.out.println(
+                MessageFormat.format(
+                        "rA.XY({0},{1})", reelTileA.getX(), reelTileA.getY()
+                )
+        );
+        System.out.println(
+                MessageFormat.format(
+                        "rA.destrc({0},{1})",
+                        PuzzleGridTypeReelTile.getRowFromLevel(reelTileA.getDestinationY(), GAME_LEVEL_HEIGHT),
+                        PuzzleGridTypeReelTile.getColumnFromLevel(reelTileA.getDestinationX())
+                )
+        );
+        System.out.println(
+                MessageFormat.format(
+                        "rB.destrc({0},{1})",
+                        PuzzleGridTypeReelTile.getRowFromLevel(reelTileB.getDestinationY(), GAME_LEVEL_HEIGHT),
+                        PuzzleGridTypeReelTile.getColumnFromLevel(reelTileB.getDestinationX())
+                )
+        );
+        System.out.println(
+                MessageFormat.format(
+                        "rA.xyrc({0},{1})",
+                        PuzzleGridTypeReelTile.getRowFromLevel(reelTileA.getY(), GAME_LEVEL_HEIGHT),
+                        PuzzleGridTypeReelTile.getColumnFromLevel(reelTileA.getX())
+                )
+        );
+        System.out.println(
+                MessageFormat.format(
+                        "rB.xyrc({0},{1})",
+                        PuzzleGridTypeReelTile.getRowFromLevel(reelTileB.getY(), GAME_LEVEL_HEIGHT),
+                        PuzzleGridTypeReelTile.getColumnFromLevel(reelTileB.getX())
+                )
+        );
+        System.out.println(
+                MessageFormat.format(
+                        "rB.dest({0},{1})", reelTileB.getDestinationX(), reelTileB.getDestinationY()
+                )
+        );
+        System.out.println(
+                MessageFormat.format(
+                        "rB.XY({0},{1})", reelTileB.getX(), reelTileB.getY()
+                )
+        );
+    }
+
     private ReelTile swapReels(TupleValueIndex tupleValueIndex, ReelTile currentReel) {
         float savedDestinationY;
         int reelHasFallenFrom;
+
+        if (currentReel==null)
+            return null;
         ReelTile deletedReel;
         savedDestinationY = reelTiles.get(tupleValueIndex.getIndex()).getDestinationY();
         reelHasFallenFrom = findReel((int) currentReel.getDestinationX(), (int) currentReel.getDestinationY() + 40);
+        if (reelHasFallenFrom<0)
+            return null;
         deletedReel = reelTiles.get(reelHasFallenFrom);
 
         reelTiles.get(tupleValueIndex.getIndex()).setDestinationY(currentReel.getDestinationY() + 40);
@@ -221,6 +299,9 @@ public class AnimatedReelsManager implements Telegraph {
     private void swapReels(ReelTile reelTileA, ReelTile reelTileB) {
         float savedDestinationY = reelTileA.getDestinationY();
         int reelHasFallenFrom = findReel((int)reelTileB.getDestinationX(), (int) reelTileB.getDestinationY() + 40);
+        if (reelHasFallenFrom<0)
+            return;
+        System.out.println("reelHasFallenFrom"+reelHasFallenFrom);
         ReelTile deletedReel = reelTiles.get(reelHasFallenFrom);
 
         reelTileA.setDestinationY(reelTileB.getDestinationY());
@@ -249,13 +330,18 @@ public class AnimatedReelsManager implements Telegraph {
     private int findReel(int destinationX, int destinationY) {
         int findReelIndex = 0;
         while (findReelIndex < reelTiles.size) {
-            if ((reelTiles.get(findReelIndex).getDestinationX() == destinationX) &
-                    (reelTiles.get(findReelIndex).getDestinationY() == destinationY)) {
+            if (isReelFound(destinationX, destinationY, findReelIndex)) {
                 return findReelIndex;
             }
             findReelIndex++;
         }
         return -1;
+    }
+
+    private boolean isReelFound(int destinationX, int destinationY, int findReelIndex) {
+        return (reelTiles.get(findReelIndex).getDestinationX() == destinationX) &
+                ((reelTiles.get(findReelIndex).getDestinationY() == destinationY) |
+                 (reelTiles.get(findReelIndex).getDestinationY()+SCREEN_OFFSET == destinationY));
     }
 
     private void decrementReelsLeftToFall() {
