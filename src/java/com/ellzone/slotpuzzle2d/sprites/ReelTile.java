@@ -84,25 +84,27 @@ public class ReelTile extends ReelSprite {
 
     private void defineReelSlotTileScroll() {
     	setPosition((int) x, (int) y);
-        scrollTexture.setWrap(Texture.TextureWrap.Repeat, Texture.TextureWrap.Repeat);
-        region = new TextureRegion(scrollTexture);
-        int randomSy = 0;
-        if (numberOfReelsInTexture > 0) {
-            randomSy = Random.getInstance().nextInt(numberOfReelsInTexture) * (int)tileHeight;
-            sy = randomSy;
+        if (scrollTexture != null) {
+            scrollTexture.setWrap(Texture.TextureWrap.Repeat, Texture.TextureWrap.Repeat);
+            region = new TextureRegion(scrollTexture);
+            int randomSy = 0;
+            if (numberOfReelsInTexture > 0) {
+                randomSy = Random.getInstance().nextInt(numberOfReelsInTexture) * (int) tileHeight;
+                sy = randomSy;
+            }
+            if ((reelDisplayWidth == 0) && (reelDisplayHeight == 0)) {
+                region.setRegion((int) 0, randomSy, (int) tileWidth, (int) tileHeight);
+                setBounds((int) x, (int) y, (int) tileWidth, (int) tileHeight);
+            } else {
+                region.setRegion((int) 0, randomSy, (int) reelDisplayWidth, (int) reelDisplayHeight);
+                setBounds((int) x, (int) y, (int) reelDisplayWidth, (int) reelDisplayHeight);
+            }
+            setRegion(region);
         }
-        if ((reelDisplayWidth == 0) && (reelDisplayHeight == 0)) {
-            region.setRegion((int) 0, randomSy, (int) tileWidth, (int) tileHeight);
-            setBounds((int) x, (int) y, (int) tileWidth, (int) tileHeight);
-        } else {
-            region.setRegion((int) 0, randomSy, (int) reelDisplayWidth, (int) reelDisplayHeight);
-            setBounds((int) x, (int) y, (int) reelDisplayWidth, (int) reelDisplayHeight);
-        }
-        setRegion(region);
         reelFlash = false;
-		reelFlashTween = false;
-		reelFlashState = FlashState.FLASH_OFF;
-  		flashColor = Color.RED;
+        reelFlashTween = false;
+        reelFlashState = FlashState.FLASH_OFF;
+        flashColor = Color.RED;
         tileDeleted = false;
         isFallen = true;
         isStoppedFalling = true;

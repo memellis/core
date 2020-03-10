@@ -83,7 +83,7 @@ public class AnimatedReel {
 	private void initialiseAnimatedReel() {
 		reel = new ReelTile(
 		        texture,
-                (int) (texture.getHeight() / tileWidth),
+                (int) (texture == null ? 0 : texture.getHeight() / tileWidth),
                 x,
                 y,
                 tileWidth,
@@ -92,7 +92,7 @@ public class AnimatedReel {
                 reelDisplayHeight,
                 endReel,
                 spinningSound);
-		reelScrollHeight = this.texture.getHeight();
+		reelScrollHeight = texture == null ? 0 : texture.getHeight();
 		reel.setSpinning(false);
 		velocityY = 4.0f;
 		velocityYMin = getRandomVelocityMin();
