@@ -27,8 +27,7 @@ import com.ellzone.slotpuzzle2d.puzzlegrid.TupleValueIndex;
 import com.ellzone.slotpuzzle2d.sprites.AnimatedReel;
 import com.ellzone.slotpuzzle2d.sprites.ReelTile;
 
-import java.text.MessageFormat;
-
+import static com.ellzone.slotpuzzle2d.prototypes.assets.CreateLevelReels.REEL_WIDTH;
 import static com.ellzone.slotpuzzle2d.prototypes.box2d.collisions.Box2DBoxesFallingFromSlotPuzzleMatrices.SCREEN_OFFSET;
 import static com.ellzone.slotpuzzle2d.screens.PlayScreen.GAME_LEVEL_HEIGHT;
 import static com.ellzone.slotpuzzle2d.screens.PlayScreen.GAME_LEVEL_WIDTH;
@@ -97,11 +96,9 @@ public class AnimatedReelsManager implements Telegraph {
                 throw new IllegalArgumentException("message.extrainfo does have a two AnimatedReels");
 
             AnimatedReel animatedReelA = reelsAB.get(0);
-            AnimatedReel animatedReelB = reelsAB.get(1);
-
-            swapReelsAboveMe(
+            swapReelsAboveReel(
                     animatedReelA.getReel(),
-                    animatedReelB.getReel());
+                    swapReelActionStoppedFalling);
 
             return true;
         }
@@ -115,6 +112,53 @@ public class AnimatedReelsManager implements Telegraph {
             reelSinkReelsLeftToFall(animatedReel);
         }
         return false;
+    }
+
+    private SwapReelAction swapReelActionStoppedFalling = new SwapReelAction() {
+        @Override
+        public void doAction(ReelTile reelTile) {
+            reelTile.setIsStoppedFalling(true);
+        }
+    };
+
+    private void swapReelsAboveReel(ReelTile reelBelow, SwapReelAction swapReelAction) {
+        TupleValueIndex[] reelsAboveMe = getReelsAboveMe(reelBelow);
+        ReelTile currentReelBelow = reelBelow;
+        for (TupleValueIndex reel : reelsAboveMe) {
+            if (!isReelAtDestination(currentReelBelow, reel)) {
+                swapReelDestination(currentReelBelow, reel);
+                if (swapReelAction != null)
+                    swapReelAction.doAction(currentReelBelow);
+                currentReelBelow = reelTiles.get(reel.index);
+            }
+        }
+    }
+
+    private void swapReelDestination(ReelTile currentReelBelow, TupleValueIndex reel) {
+        int deletedReelIndex = findReel(
+                (int) currentReelBelow.getDestinationX(),
+                (int) currentReelBelow.getDestinationY() + 40);
+        if (deletedReelIndex >= 0) {
+            ReelTile reelTile = reelTiles.get(reel.index);
+            ReelTile deletedReelTile = reelTiles.get(deletedReelIndex);
+            deletedReelTile.setY(reelTile.getDestinationY() + SCREEN_OFFSET);
+            deletedReelTile.setDestinationY(deletedReelTile.getDestinationY() + 40);
+            reelTile.setDestinationY(currentReelBelow.getDestinationY() + 40);
+        }
+    }
+
+    private TupleValueIndex[] getReelsAboveMe(ReelTile reelTile) {
+        return PuzzleGridType.getReelsAboveMe(
+            PuzzleGridTypeReelTile.populateMatchGridStatic(
+                    reelTiles,
+                    GAME_LEVEL_WIDTH,
+                    GAME_LEVEL_HEIGHT),
+            PuzzleGridTypeReelTile.getRowFromLevel(reelTile.getDestinationY(), GAME_LEVEL_HEIGHT),
+            PuzzleGridTypeReelTile.getColumnFromLevel(reelTile.getDestinationX()));
+    }
+
+    private boolean isReelAtDestination(ReelTile currentReelBelow, TupleValueIndex reel) {
+        return currentReelBelow.getDestinationY() + REEL_WIDTH == reelTiles.get(reel.index).getDestinationY();
     }
 
     private void reelsLeftToFall(AnimatedReel animatedReel) {
@@ -186,130 +230,6 @@ public class AnimatedReelsManager implements Telegraph {
                         GAME_LEVEL_HEIGHT)
         );
         System.out.println();
-    }
-
-    private void swapReelsAboveMe(ReelTile reelTileA,
-                                  ReelTile reelTileB) {
-
-        printReelsAB(reelTileA, reelTileB);
-        swapReels(reelTileA, reelTileB);
-
-        TupleValueIndex[] reelsAboveMe = PuzzleGridType.getReelsAboveMe(
-                PuzzleGridTypeReelTile.populateMatchGridStatic(
-                        reelTiles,
-                        GAME_LEVEL_WIDTH,
-                        GAME_LEVEL_HEIGHT),
-                PuzzleGridTypeReelTile.getRowFromLevel(reelTileA.getDestinationY(), GAME_LEVEL_HEIGHT),
-                PuzzleGridTypeReelTile.getColumnFromLevel(reelTileA.getDestinationX()));
-
-        ReelTile currentReel = reelTileA;
-
-        for (int reelsAboveMeIndex = 0; reelsAboveMeIndex < reelsAboveMe.length; reelsAboveMeIndex++)
-            currentReel = swapReels(reelsAboveMe[reelsAboveMeIndex], currentReel);
-
-        recordDecrementReelsLeftToFall(reelTileA);
-
-        reelsAboveMe = PuzzleGridType.getReelsAboveMe(
-                PuzzleGridTypeReelTile.populateMatchGridStatic(
-                        reelTiles,
-                        GAME_LEVEL_WIDTH,
-                        GAME_LEVEL_HEIGHT),
-                PuzzleGridTypeReelTile.getRowFromLevel(reelTileA.getDestinationY(), GAME_LEVEL_HEIGHT),
-                PuzzleGridTypeReelTile.getColumnFromLevel(reelTileA.getDestinationX()));
-
-        for (int reelsAboveMeIndex = 0; reelsAboveMeIndex < reelsAboveMe.length; reelsAboveMeIndex++)
-            recordDecrementReelsLeftToFall(
-                    animatedReels.get(reelsAboveMe[reelsAboveMeIndex].getIndex()).getReel());
-    }
-
-    private void printReelsAB(ReelTile reelTileA, ReelTile reelTileB) {
-        System.out.println(
-                MessageFormat.format(
-                        "rA.dest({0},{1})", reelTileA.getDestinationX(), reelTileA.getDestinationY()
-                )
-        );
-        System.out.println(
-                MessageFormat.format(
-                        "rA.XY({0},{1})", reelTileA.getX(), reelTileA.getY()
-                )
-        );
-        System.out.println(
-                MessageFormat.format(
-                        "rA.destrc({0},{1})",
-                        PuzzleGridTypeReelTile.getRowFromLevel(reelTileA.getDestinationY(), GAME_LEVEL_HEIGHT),
-                        PuzzleGridTypeReelTile.getColumnFromLevel(reelTileA.getDestinationX())
-                )
-        );
-        System.out.println(
-                MessageFormat.format(
-                        "rB.destrc({0},{1})",
-                        PuzzleGridTypeReelTile.getRowFromLevel(reelTileB.getDestinationY(), GAME_LEVEL_HEIGHT),
-                        PuzzleGridTypeReelTile.getColumnFromLevel(reelTileB.getDestinationX())
-                )
-        );
-        System.out.println(
-                MessageFormat.format(
-                        "rA.xyrc({0},{1})",
-                        PuzzleGridTypeReelTile.getRowFromLevel(reelTileA.getY(), GAME_LEVEL_HEIGHT),
-                        PuzzleGridTypeReelTile.getColumnFromLevel(reelTileA.getX())
-                )
-        );
-        System.out.println(
-                MessageFormat.format(
-                        "rB.xyrc({0},{1})",
-                        PuzzleGridTypeReelTile.getRowFromLevel(reelTileB.getY(), GAME_LEVEL_HEIGHT),
-                        PuzzleGridTypeReelTile.getColumnFromLevel(reelTileB.getX())
-                )
-        );
-        System.out.println(
-                MessageFormat.format(
-                        "rB.dest({0},{1})", reelTileB.getDestinationX(), reelTileB.getDestinationY()
-                )
-        );
-        System.out.println(
-                MessageFormat.format(
-                        "rB.XY({0},{1})", reelTileB.getX(), reelTileB.getY()
-                )
-        );
-    }
-
-    private ReelTile swapReels(TupleValueIndex tupleValueIndex, ReelTile currentReel) {
-        float savedDestinationY;
-        int reelHasFallenFrom;
-
-        if (currentReel==null)
-            return null;
-        ReelTile deletedReel;
-        savedDestinationY = reelTiles.get(tupleValueIndex.getIndex()).getDestinationY();
-        reelHasFallenFrom = findReel((int) currentReel.getDestinationX(), (int) currentReel.getDestinationY() + 40);
-        if (reelHasFallenFrom<0)
-            return null;
-        deletedReel = reelTiles.get(reelHasFallenFrom);
-
-        reelTiles.get(tupleValueIndex.getIndex()).setDestinationY(currentReel.getDestinationY() + 40);
-        reelTiles.get(tupleValueIndex.getIndex()).setY(currentReel.getDestinationY() + 40);
-
-        deletedReel.setDestinationY(savedDestinationY);
-        deletedReel.setY(savedDestinationY);
-
-        currentReel = reelTiles.get(tupleValueIndex.getIndex());
-        return currentReel;
-    }
-
-    private void swapReels(ReelTile reelTileA, ReelTile reelTileB) {
-        float savedDestinationY = reelTileA.getDestinationY();
-        int reelHasFallenFrom = findReel((int)reelTileB.getDestinationX(), (int) reelTileB.getDestinationY() + 40);
-        if (reelHasFallenFrom<0)
-            return;
-        System.out.println("reelHasFallenFrom"+reelHasFallenFrom);
-        ReelTile deletedReel = reelTiles.get(reelHasFallenFrom);
-
-        reelTileA.setDestinationY(reelTileB.getDestinationY());
-        reelTileA.setY(reelTileB.getDestinationY());
-        reelTileA.unDeleteReelTile();
-
-        deletedReel.setDestinationY(savedDestinationY);
-        deletedReel.deleteReelTile();
     }
 
     private void swapReelsForFallenReel(ReelTile reelTileA, ReelTile reelTileB) {
