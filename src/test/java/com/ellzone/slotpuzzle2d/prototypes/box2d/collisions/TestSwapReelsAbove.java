@@ -27,6 +27,7 @@ import com.ellzone.slotpuzzle2d.sprites.ReelTile;
 
 import org.junit.Test;
 
+import static com.ellzone.slotpuzzle2d.prototypes.assets.CreateLevelReels.REEL_HEIGHT;
 import static com.ellzone.slotpuzzle2d.prototypes.box2d.collisions.Box2DBoxesFallingFromSlotPuzzleMatrices.SCREEN_OFFSET;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.is;
@@ -120,8 +121,13 @@ public class TestSwapReelsAbove {
         Array<AnimatedReel> animatedReels = new Array<>();
         animatedReels = createAnimatedReelsFromSlotPuzzleMatrix(
             SlotPuzzleMatrices.createMatrixWithThreeBoxes());
-        animatedReels.get(84).getReel().setDestinationY(120);
-        animatedReels.get(72).getReel().setDestinationY(160);
+        animatedReelsSetDestinationY(
+                animatedReels,
+                72,
+                160.0f,
+                2,
+                12,
+                -REEL_HEIGHT);
         animatedReels.get(60).getReel().setDestinationY(80);
         animatedReels.get(60).getReel().setY(80 + SCREEN_OFFSET);
         animatedReels.get(60).getReel().deleteReelTile();
@@ -130,10 +136,14 @@ public class TestSwapReelsAbove {
                 sendSwapReelsAboveMessage(animatedReels, 96, 84);
 
         Array<AnimatedReel> swappedReelsAboveAnimatedReels = animatedReelsManager.getAnimatedReels();
-        assertThat(swappedReelsAboveAnimatedReels.get(96).getReel().getDestinationY(), is(equalTo(40f)));
-        assertThat(swappedReelsAboveAnimatedReels.get(84).getReel().getDestinationY(), is(equalTo(80f)));
-        assertThat(swappedReelsAboveAnimatedReels.get(72).getReel().getDestinationY(), is(equalTo(120f)));
-        assertThat(swappedReelsAboveAnimatedReels.get(60).getReel().getDestinationY(), is(equalTo(160f)));
+
+        assertDestinationY(
+                swappedReelsAboveAnimatedReels,
+                60,
+                160.0f,
+                4,
+                12,
+                -REEL_HEIGHT);
         assertThat(swappedReelsAboveAnimatedReels.get(60).getReel().isReelTileDeleted(), is(true));
     }
 
@@ -143,9 +153,14 @@ public class TestSwapReelsAbove {
         Array<AnimatedReel> animatedReels = new Array<>();
         animatedReels = createAnimatedReelsFromSlotPuzzleMatrix(
                 SlotPuzzleMatrices.createMatrixWithFourBoxes());
-        animatedReels.get(84).getReel().setDestinationY(120);
-        animatedReels.get(72).getReel().setDestinationY(160);
-        animatedReels.get(60).getReel().setDestinationY(200);
+        animatedReelsSetDestinationY(
+                animatedReels,
+                60,
+                200.0f,
+                3,
+                12,
+                -REEL_HEIGHT);
+
         animatedReels.get(48).getReel().setDestinationY(80);
         animatedReels.get(48).getReel().setY(80 + SCREEN_OFFSET);
         animatedReels.get(48).getReel().deleteReelTile();
@@ -154,11 +169,14 @@ public class TestSwapReelsAbove {
                 sendSwapReelsAboveMessage(animatedReels, 96, 84);
 
         Array<AnimatedReel> swappedReelsAboveAnimatedReels = animatedReelsManager.getAnimatedReels();
-        assertThat(swappedReelsAboveAnimatedReels.get(96).getReel().getDestinationY(), is(equalTo(40f)));
-        assertThat(swappedReelsAboveAnimatedReels.get(84).getReel().getDestinationY(), is(equalTo(80f)));
-        assertThat(swappedReelsAboveAnimatedReels.get(72).getReel().getDestinationY(), is(equalTo(120f)));
-        assertThat(swappedReelsAboveAnimatedReels.get(60).getReel().getDestinationY(), is(equalTo(160f)));
-        assertThat(swappedReelsAboveAnimatedReels.get(48).getReel().getDestinationY(), is(equalTo(200f)));
+
+        assertDestinationY(
+                swappedReelsAboveAnimatedReels,
+                48,
+                200.0f,
+                5,
+                12,
+                -REEL_HEIGHT);
         assertThat(swappedReelsAboveAnimatedReels.get(48).getReel().isReelTileDeleted(), is(true));
     }
 
@@ -168,9 +186,13 @@ public class TestSwapReelsAbove {
         Array<AnimatedReel> animatedReels = new Array<>();
         animatedReels = createAnimatedReelsFromSlotPuzzleMatrix(
                 SlotPuzzleMatrices.createMatrixWithFourBoxes());
-        animatedReels.get(84).getReel().setDestinationY(120);
-        animatedReels.get(72).getReel().setDestinationY(160);
-        animatedReels.get(60).getReel().setDestinationY(200);
+        animatedReelsSetDestinationY(
+                animatedReels,
+                60,
+                200.0f,
+                3,
+                12,
+                -REEL_HEIGHT);
         animatedReels.get(48).getReel().setDestinationY(80);
         animatedReels.get(48).getReel().setY(80 + SCREEN_OFFSET);
         animatedReels.get(48).getReel().deleteReelTile();
@@ -179,15 +201,32 @@ public class TestSwapReelsAbove {
                 sendSwapReelsAboveMessage(animatedReels, 96, 84);
 
         Array<AnimatedReel> swappedReelsAboveAnimatedReels = animatedReelsManager.getAnimatedReels();
-        assertThat(swappedReelsAboveAnimatedReels.get(96).getReel().getDestinationY(), is(equalTo(40f)));
+        assertDestinationY(
+                swappedReelsAboveAnimatedReels,
+                48,
+                200.0f,
+                5,
+                12,
+                -REEL_HEIGHT);
         assertThat(swappedReelsAboveAnimatedReels.get(96).getReel().isStoppedFalling(), is(true));
-        assertThat(swappedReelsAboveAnimatedReels.get(84).getReel().getDestinationY(), is(equalTo(80f)));
         assertThat(swappedReelsAboveAnimatedReels.get(84).getReel().isStoppedFalling(), is(true));
-        assertThat(swappedReelsAboveAnimatedReels.get(72).getReel().getDestinationY(), is(equalTo(120f)));
         assertThat(swappedReelsAboveAnimatedReels.get(72).getReel().isStoppedFalling(), is(true));
-        assertThat(swappedReelsAboveAnimatedReels.get(60).getReel().getDestinationY(), is(equalTo(160f)));
+        assertThat(swappedReelsAboveAnimatedReels.get(60).getReel().isStoppedFalling(), is(true));
         assertThat(swappedReelsAboveAnimatedReels.get(48).getReel().getDestinationY(), is(equalTo(200f)));
-        assertThat(swappedReelsAboveAnimatedReels.get(48).getReel().isReelTileDeleted(), is(true));
+    }
+
+    @Test
+    public void testSwapReelsFallenWithFillColumnNineBoxes() {
+        Gdx.app = new MyGDXApplication();
+        Array<AnimatedReel> animatedReels = new Array<>();
+        animatedReels = createAnimatedReelsFromSlotPuzzleMatrix(
+                SlotPuzzleMatrices.createMatrixWithFourBoxes());
+
+        AnimatedReelsManager animatedReelsManager =
+                sendSwapReelsAboveMessage(animatedReels, 96, 84);
+        Array<AnimatedReel> swappedReelsAboveAnimatedReels = animatedReelsManager.getAnimatedReels();
+        for (int currentReel = 0; currentReel < animatedReels.size; currentReel++)
+            assertAnimatedReelNotSwapped(animatedReels, swappedReelsAboveAnimatedReels, currentReel);
     }
 
     private AnimatedReelsManager sendSwapReelsAboveMessage(
@@ -222,6 +261,36 @@ public class TestSwapReelsAbove {
             }
         }
         return animatedReels;
+    }
+
+    private void animatedReelsSetDestinationY(
+            Array<AnimatedReel> animatedReels,
+            int startIndex,
+            float startY,
+            int numberOfReels,
+            int step,
+            int reelHeight) {
+        int count = 0;
+        for (int index = startIndex; index < startIndex + numberOfReels*step ; index+=step) {
+            animatedReels.get(index).getReel().setDestinationY(startY + count * reelHeight);
+            count++;
+        }
+    }
+
+    private void assertDestinationY(
+            Array<AnimatedReel> animatedReels,
+            int startIndex,
+            float startY,
+            int numberOfReels,
+            int step,
+            int reelHeight) {
+        int count = 0;
+        for (int index = startIndex; index < startIndex + numberOfReels * step; index+=step) {
+            assertThat(
+                    animatedReels.get(index).getReel().getDestinationY(),
+                    is(equalTo(startY + count * reelHeight)));
+            count++;
+        }
     }
 
     private AnimatedReel createAnimatedReel(int x, int y, int endReel, int index) {

@@ -105,7 +105,7 @@ public class SlotPuzzleMatrices {
                 + "-1 -1 -1 -1 -1 -1 -1 -1 -1 -1  -1  -1\n"
                 + "-1 -1 -1 -1 -1 -1 -1 -1 -1 -1  -1  -1\n"
                 + " 0 -1 -1 -1 -1 -1 -1 -1 -1 -1  -1  -1\n"
-                + " 0  -1 -1 -1 -1 -1 -1 -1 -1 -1  -1  -1\n";
+                + " 0 -1 -1 -1 -1 -1 -1 -1 -1 -1  -1  -1\n";
         InputMatrix inputMatrix = new InputMatrix(matrixToInput);
         return inputMatrix.readMatrix();
     }

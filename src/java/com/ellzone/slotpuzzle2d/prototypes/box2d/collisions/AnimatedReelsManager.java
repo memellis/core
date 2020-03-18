@@ -104,11 +104,15 @@ public class AnimatedReelsManager implements Telegraph {
         }
         if (message.message == MessageType.ReelsLeftToFall.index) {
             AnimatedReel animatedReel = (AnimatedReel) message.extraInfo;
+            if (animatedReel == null)
+                throw new IllegalArgumentException("message.extrainfo is null");
             reelsLeftToFall(animatedReel);
             return true;
         }
         if (message.message == MessageType.ReelSinkReelsLeftToFall.index) {
             AnimatedReel animatedReel = (AnimatedReel) message.extraInfo;
+            if (animatedReel == null)
+                throw new IllegalArgumentException("message.extrainfo is null");
             reelSinkReelsLeftToFall(animatedReel);
         }
         return false;
@@ -177,14 +181,7 @@ public class AnimatedReelsManager implements Telegraph {
         ReelTile reelTile = animatedReel.getReel();
         recordDecrementReelsLeftToFall(reelTile);
 
-        TupleValueIndex[] reelsAboveMe = PuzzleGridType.getReelsAboveMe(
-                PuzzleGridTypeReelTile.populateMatchGridStatic(
-                        reelTiles,
-                        GAME_LEVEL_WIDTH,
-                        GAME_LEVEL_HEIGHT),
-                PuzzleGridTypeReelTile.getRowFromLevel(reelTile.getDestinationY(), GAME_LEVEL_HEIGHT),
-                PuzzleGridTypeReelTile.getColumnFromLevel(reelTile.getDestinationX()));
-
+        TupleValueIndex[] reelsAboveMe = getReelsAboveMe(reelTile);
         markAllReelsAvoveInContactAsFallen(reelTile, reelsAboveMe);
         PuzzleGridTypeReelTile.printGrid(
                PuzzleGridTypeReelTile.populateMatchGridStatic(
