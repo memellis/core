@@ -84,14 +84,59 @@ public class TestReelSinkReelsLeftToFall {
             testReelSinkToFallSlotMatrix(slotMatrix, animatedReels);
     }
 
+    @Test
+    public void testReelSinkToFallReelsHitBotomm() {
+        Gdx.app = new MyGDXApplication();
+        Array<AnimatedReel> animatedReels = new Array<>();
+        Array<int[][]> slotMatrices = SlotPuzzleMatrices.getSlotMatricesTouchingBottom();
+        for (int[][] slotMatrix : slotMatrices)
+            testTReelSinkToFallSlotMatrixHitBottom(slotMatrix, animatedReels);
+    }
+
+    private void testTReelSinkToFallSlotMatrixHitBottom(
+            int[][] slotMatrix,
+            Array<AnimatedReel> animatedReels) {
+        animatedReels = createAnimatedReelsFromSlotPuzzleMatrix(slotMatrix);
+        for (int matrixColumn = 0; matrixColumn < slotMatrix[0].length; matrixColumn++) {
+            int bottomReelForColumn = (slotMatrix.length - 1) * slotMatrix[0].length + matrixColumn;
+            if (!animatedReels.get(bottomReelForColumn).getReel().isReelTileDeleted()) {
+                AnimatedReelsManager animatedReelsManager = sendReelSinkReelsLeftToFallMessage(
+                        animatedReels,
+                        (slotMatrix.length - 1) * slotMatrix[0].length + matrixColumn);
+                Array<AnimatedReel> swappedReelsAboveAnimatedReels = animatedReelsManager.getAnimatedReels();
+                assertMatrixColumnReelsAtDestinationRow(
+                        slotMatrix,
+                        swappedReelsAboveAnimatedReels,
+                        matrixColumn);
+            }
+        }
+    }
+
+    private void assertMatrixColumnReelsAtDestinationRow(
+            int[][] slotMatrix,
+            Array<AnimatedReel> swappedReelsAboveAnimatedReels,
+            int column) {
+        for (int r = 0; r < slotMatrix.length; r++) {
+            int index = r * slotMatrix[0].length + column;
+            float x = PlayScreen.PUZZLE_GRID_START_X + (column * 40);
+            float y = ((slotMatrix.length - 1 - r) * 40) + 40;
+            assertThat(swappedReelsAboveAnimatedReels.get(index).getReel().getX(), is(equalTo(x)));
+            assertThat(swappedReelsAboveAnimatedReels.get(index).getReel().getY(), is(equalTo(y)));
+            assertThat(swappedReelsAboveAnimatedReels.get(index).getReel().getDestinationX(), is(equalTo(x)));
+            assertThat(swappedReelsAboveAnimatedReels.get(index).getReel().getDestinationY(), is(equalTo(y)));
+            if (!swappedReelsAboveAnimatedReels.get(index).getReel().isReelTileDeleted())
+                assertThat(swappedReelsAboveAnimatedReels.get(index).getReel().isFallen(), is(true));
+        }
+    }
+
     private void testReelSinkToFallSlotMatrix(
             int[][] slotMatrix,
             Array<AnimatedReel> animatedReels) {
         animatedReels = createAnimatedReelsFromSlotPuzzleMatrix(slotMatrix);
-        for (int column = 0; column < slotMatrix[0].length; column++) {
+        for (int matrixColumn = 0; matrixColumn < slotMatrix[0].length; matrixColumn++) {
             AnimatedReelsManager animatedReelsManager = sendReelSinkReelsLeftToFallMessage(
                     animatedReels,
-                    (slotMatrix.length - 1) * slotMatrix[0].length + column);
+                    (slotMatrix.length - 1) * slotMatrix[0].length + matrixColumn);
             Array<AnimatedReel> swappedReelsAboveAnimatedReels = animatedReelsManager.getAnimatedReels();
             assertSlotMatrix(slotMatrix, swappedReelsAboveAnimatedReels);
         }

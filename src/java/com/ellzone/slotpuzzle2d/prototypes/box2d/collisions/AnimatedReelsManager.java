@@ -33,6 +33,7 @@ import static com.ellzone.slotpuzzle2d.screens.PlayScreen.GAME_LEVEL_HEIGHT;
 import static com.ellzone.slotpuzzle2d.screens.PlayScreen.GAME_LEVEL_WIDTH;
 
 public class AnimatedReelsManager implements Telegraph {
+    private static final float BOTTOM_ROW = 40.0f;
     private Array<AnimatedReel> animatedReels;
     private Array<Body> reelBodies;
     private Array<ReelTile> reelTiles;
@@ -165,6 +166,45 @@ public class AnimatedReelsManager implements Telegraph {
         return currentReelBelow.getDestinationY() + REEL_WIDTH == reelTiles.get(reel.index).getDestinationY();
     }
 
+    private boolean isReelAtDestination(ReelTile currentReel, float destinationY) {
+        return currentReel.getDestinationY() == destinationY;
+    }
+
+    private void reelSinkReelsLeftToFall(AnimatedReel animatedReel) {
+        ReelTile reelTile = animatedReel.getReel();
+        if (!isReelAtDestination(reelTile, BOTTOM_ROW))
+            return;
+
+        recordDecrementReelsLeftToFall(reelTile);
+        markAllReelsAvoveInContactAsFallen(reelTile);
+
+        printSlotMatrix();
+    }
+
+    private void markAllReelsAvoveInContactAsFallen(ReelTile reelTile) {
+        TupleValueIndex[] reelsAboveMe = getReelsAboveMe(reelTile);
+        if (isReelFallenBelowDestinationRow(reelTile))
+            processReelFallenBelowDestinationRow(reelTile, reelsAboveMe);
+        else
+            processReelsLeftToFall(reelTile, reelsAboveMe);
+    }
+
+    private void processReelsLeftToFall(ReelTile currentReelTile, TupleValueIndex[] reelsAboveMe) {
+        for (int i = 0; i < reelsAboveMe.length; i++) {
+            if (PuzzleGridTypeReelTile.getRowFromLevel(
+                    currentReelTile.getDestinationY(), GAME_LEVEL_HEIGHT) - 1 == reelsAboveMe[i].getR()) {
+                recordDecrementReelsLeftToFall(animatedReels.get(reelsAboveMe[i].index).getReel());
+            }
+            currentReelTile = animatedReels.get(reelsAboveMe[i].index).getReel();
+        }
+    }
+
+    private boolean isReelFallenBelowDestinationRow(ReelTile currentReelTile) {
+        int currentRow = PuzzleGridTypeReelTile.getRowFromLevel(currentReelTile.getY(), GAME_LEVEL_HEIGHT);
+        int destinationRow = PuzzleGridTypeReelTile.getRowFromLevel(currentReelTile.getDestinationY(), GAME_LEVEL_HEIGHT);
+        return destinationRow < currentRow;
+    }
+
     private void reelsLeftToFall(AnimatedReel animatedReel) {
         ReelTile reelTile = animatedReel.getReel();
         recordDecrementReelsLeftToFall(reelTile);
@@ -177,42 +217,6 @@ public class AnimatedReelsManager implements Telegraph {
         }
     }
 
-    private void reelSinkReelsLeftToFall(AnimatedReel animatedReel) {
-        ReelTile reelTile = animatedReel.getReel();
-        recordDecrementReelsLeftToFall(reelTile);
-
-        TupleValueIndex[] reelsAboveMe = getReelsAboveMe(reelTile);
-        markAllReelsAvoveInContactAsFallen(reelTile, reelsAboveMe);
-        PuzzleGridTypeReelTile.printGrid(
-               PuzzleGridTypeReelTile.populateMatchGridStatic(
-                       reelTiles,
-                       GAME_LEVEL_WIDTH,
-                       GAME_LEVEL_HEIGHT)
-        );
-        System.out.println();
-     }
-
-    private void markAllReelsAvoveInContactAsFallen(ReelTile reelTile, TupleValueIndex[] reelsAboveMe) {
-        ReelTile currentReelTile = reelTile;
-        int currentRow = PuzzleGridTypeReelTile.getRowFromLevel(currentReelTile.getY(), GAME_LEVEL_HEIGHT);
-        int destinationRow = PuzzleGridTypeReelTile.getRowFromLevel(currentReelTile.getDestinationY(), GAME_LEVEL_HEIGHT);
-        if (destinationRow < currentRow) {
-            processReelFallenBelowDestinationRow(reelTile, reelsAboveMe);
-            return;
-        }
-        for (int i = 0; i < reelsAboveMe.length; i++) {
-            if (PuzzleGridTypeReelTile.getRowFromLevel(
-                    currentReelTile.getDestinationY(), GAME_LEVEL_HEIGHT) - 1 == reelsAboveMe[i].getR()) {
-                System.out.println("currentRow="+
-                        PuzzleGridTypeReelTile.getRowFromLevel(currentReelTile.getY(), GAME_LEVEL_HEIGHT));
-                System.out.println("destinationRow="+
-                        PuzzleGridTypeReelTile.getRowFromLevel(currentReelTile.getDestinationY(), GAME_LEVEL_HEIGHT));
-                recordDecrementReelsLeftToFall(animatedReels.get(reelsAboveMe[i].index).getReel());
-            }
-            currentReelTile = animatedReels.get(reelsAboveMe[i].index).getReel();
-        }
-    }
-
     private void processReelFallenBelowDestinationRow(ReelTile reelTile, TupleValueIndex[] reelsAboveMe) {
         ReelTile bottomDeletedReel = reelTiles.get(findReel((int) reelTile.getDestinationX(), 40));
         swapReelsForFallenReel(reelTile, bottomDeletedReel);
@@ -220,13 +224,7 @@ public class AnimatedReelsManager implements Telegraph {
             bottomDeletedReel = reelTiles.get(findReel((int) reelTile.getDestinationX(), 40 + 40 * (i+1)));
             swapReelsForFallenReel(reelTiles.get(reelsAboveMe[i].index), bottomDeletedReel);
         }
-        PuzzleGridTypeReelTile.printGrid(
-                PuzzleGridTypeReelTile.populateMatchGridStatic(
-                        reelTiles,
-                        GAME_LEVEL_WIDTH,
-                        GAME_LEVEL_HEIGHT)
-        );
-        System.out.println();
+        printSlotMatrix();
     }
 
     private void swapReelsForFallenReel(ReelTile reelTileA, ReelTile reelTileB) {
@@ -277,5 +275,15 @@ public class AnimatedReelsManager implements Telegraph {
                         }
                 }
         }
+    }
+
+    private void printSlotMatrix() {
+        PuzzleGridTypeReelTile.printGrid(
+                PuzzleGridTypeReelTile.populateMatchGridStatic(
+                        reelTiles,
+                        GAME_LEVEL_WIDTH,
+                        GAME_LEVEL_HEIGHT)
+        );
+        System.out.println();
     }
 }
