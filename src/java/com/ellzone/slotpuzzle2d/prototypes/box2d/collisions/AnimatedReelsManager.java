@@ -137,6 +137,7 @@ public class AnimatedReelsManager implements Telegraph {
                 currentReelBelow = reelTiles.get(reel.index);
             }
         }
+        swapReelAction.doAction(currentReelBelow);
     }
 
     private void swapReelDestination(ReelTile currentReelBelow, TupleValueIndex reel) {
@@ -172,13 +173,11 @@ public class AnimatedReelsManager implements Telegraph {
 
     private void reelSinkReelsLeftToFall(AnimatedReel animatedReel) {
         ReelTile reelTile = animatedReel.getReel();
-        if (!isReelAtDestination(reelTile, BOTTOM_ROW))
-            return;
-
-        recordDecrementReelsLeftToFall(reelTile);
-        markAllReelsAvoveInContactAsFallen(reelTile);
-
-        printSlotMatrix();
+        if (isReelAtDestination(reelTile, BOTTOM_ROW)) {
+            recordDecrementReelsLeftToFall(reelTile);
+            markAllReelsAvoveInContactAsFallen(reelTile);
+            printSlotMatrix();
+        }
     }
 
     private void markAllReelsAvoveInContactAsFallen(ReelTile reelTile) {
