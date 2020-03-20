@@ -103,6 +103,7 @@ public class Box2DBoxesFallingFromSlotPuzzleMatrices extends SPPrototype impleme
     private int numberOfReelBoxesAsleep = 0;
     private int numberOfReelBoxesCreated = 0;
     int[] matrixIdentifier = new int[PlayScreen.GAME_LEVEL_WIDTH];
+    private boolean cycleDynamic = false;
 
     @Override
     public void create() {
@@ -193,23 +194,33 @@ public class Box2DBoxesFallingFromSlotPuzzleMatrices extends SPPrototype impleme
     }
 
     private void cycleSlotMatrix() {
+        if (cycleDynamic)
+            cycleDynamicSlotMatrix();
+        else
+            cycleStaticSlotMatrices();
+    }
+
+    private void cycleStaticSlotMatrices() {
         if (slotMatrixCycleIndex < SlotPuzzleMatrices.getSlotMatrices().size)
             animatedReels = createAnimatedReelsFromSlotPuzzleMatrix(
                     SlotPuzzleMatrices.getSlotMatrices().get(slotMatrixCycleIndex)
             );
         slotMatrixCycleIndex++;
         slotMatrixCycleIndex %= SlotPuzzleMatrices.getSlotMatrices().size;
-//        setColumnValues(matrixIdentifier, slotMatrixCycleIndex);
-//        int dynamicGrid[][] = SlotPuzzleMatrices.createDynamicMatrix(
-//                matrixIdentifier,
-//                PlayScreen.GAME_LEVEL_WIDTH,
-//                PlayScreen.GAME_LEVEL_HEIGHT);
-//        PuzzleGrid.printGrid(dynamicGrid);
-//        System.out.println();
-//        animatedReels = createAnimatedReelsFromSlotPuzzleMatrix(dynamicGrid);
-//        slotMatrixCycleIndex++;
-//        slotMatrixCycleIndex %= pow(2, PlayScreen.GAME_LEVEL_HEIGHT);
-//        System.out.println("numberOfReelsToFall="+numberOfReelsToFall);
+    }
+
+    private void cycleDynamicSlotMatrix() {
+        setColumnValues(matrixIdentifier, slotMatrixCycleIndex);
+        int dynamicGrid[][] = SlotPuzzleMatrices.createDynamicMatrix(
+                matrixIdentifier,
+                PlayScreen.GAME_LEVEL_WIDTH,
+                PlayScreen.GAME_LEVEL_HEIGHT);
+        PuzzleGrid.printGrid(dynamicGrid);
+        System.out.println();
+        animatedReels = createAnimatedReelsFromSlotPuzzleMatrix(dynamicGrid);
+        slotMatrixCycleIndex++;
+        slotMatrixCycleIndex %= Math.pow(2, PlayScreen.GAME_LEVEL_HEIGHT);
+        System.out.println("numberOfReelsToFall="+numberOfReelsToFall);
     }
 
     private void setColumnValues(int[] matrixIdentifier, int matrixValue) {
@@ -366,15 +377,6 @@ public class Box2DBoxesFallingFromSlotPuzzleMatrices extends SPPrototype impleme
         physicsEngine.update(dt);
         updateAnimatedReels(dt);
         updateReelBoxes();
-        if (isAllReelsStoppedFalling()) {
-            numberOfReelsToFall = 0;
-            cycleSlotMatrix();
-            animatedReelsManager.setNumberOfReelsToFall(numberOfReelsToFall);
-        }
-    }
-
-    private boolean isAllReelsStoppedFalling() {
-        return animatedReelsManager.getReelsStoppedFalling() == 0;
     }
 
     private void updateReelBoxes() {
@@ -407,6 +409,7 @@ public class Box2DBoxesFallingFromSlotPuzzleMatrices extends SPPrototype impleme
         renderReelBoxes(batch, reelBoxBodies);
         if (numberOfReelBoxesAsleep == numberOfReelBoxesCreated) {
             if (isAutoFall) {
+                cycleSlotMatrix();
                 reCreateBoxes();
                 setBoxesActive();
             }
@@ -474,6 +477,10 @@ public class Box2DBoxesFallingFromSlotPuzzleMatrices extends SPPrototype impleme
         }
         if (keycode == Input.Keys.D) {
             System.out.println("Debug");
+            return true;
+        }
+        if (keycode == Input.Keys.C) {
+            cycleDynamic = !cycleDynamic;
             return true;
         }
         return false;
