@@ -103,7 +103,7 @@ public class Box2DBoxesFallingFromSlotPuzzleMatrices extends SPPrototype impleme
     private int numberOfReelBoxesAsleep = 0;
     private int numberOfReelBoxesCreated = 0;
     int[] matrixIdentifier = new int[PlayScreen.GAME_LEVEL_WIDTH];
-    private boolean cycleDynamic = false;
+    private boolean cycleDynamic = true;
 
     @Override
     public void create() {
