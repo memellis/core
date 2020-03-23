@@ -1,4 +1,4 @@
-package com.ellzone.slotpuzzle2d.prototypes.box2d.collisions;
+package com.ellzone.slotpuzzle2d.physics.contact;
 
 import com.ellzone.slotpuzzle2d.sprites.ReelTile;
 

@@ -17,6 +17,7 @@
 package com.ellzone.slotpuzzle2d.prototypes.box2d.collisions;
 
 import com.badlogic.gdx.utils.Array;
+import com.ellzone.slotpuzzle2d.physics.contact.AnimatedReelsManager;
 import com.ellzone.slotpuzzle2d.sprites.AnimatedReel;
 
 import org.junit.Test;
@@ -24,12 +25,12 @@ import org.junit.Test;
 public class TestAnimatedReelsManager {
     @Test(expected = IllegalArgumentException.class)
     public void testAnimatedReelsManagerCreatedWithNullAnimatedReelsParameter() {
-        AnimatedReelsManager animatedReelsManager = new AnimatedReelsManager(null);
+        com.ellzone.slotpuzzle2d.physics.contact.AnimatedReelsManager animatedReelsManager = new com.ellzone.slotpuzzle2d.physics.contact.AnimatedReelsManager(null);
     }
 
     @Test
     public void testAnimatedReelsManagerCreatedWithEmptyAnimatedReels() {
         Array<AnimatedReel> animatedReels = new Array<>();
-        AnimatedReelsManager animatedReelsManager = new AnimatedReelsManager(animatedReels);
+        com.ellzone.slotpuzzle2d.physics.contact.AnimatedReelsManager animatedReelsManager = new AnimatedReelsManager(animatedReels);
     }
 }

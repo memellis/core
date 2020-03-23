@@ -21,6 +21,7 @@ import com.badlogic.gdx.ai.msg.Telegram;
 import com.badlogic.gdx.utils.Array;
 import com.ellzone.slotpuzzle2d.gdx.MyGDXApplication;
 import com.ellzone.slotpuzzle2d.messaging.MessageType;
+import com.ellzone.slotpuzzle2d.physics.contact.AnimatedReelsManager;
 import com.ellzone.slotpuzzle2d.screens.PlayScreen;
 import com.ellzone.slotpuzzle2d.sprites.AnimatedReel;
 import com.ellzone.slotpuzzle2d.sprites.ReelTile;
@@ -38,7 +39,7 @@ public class TestReelSinkReelsLeftToFall {
         Array<AnimatedReel> animatedReels = new Array<>();
         Telegram message = new Telegram();
         message.message = MessageType.ReelSinkReelsLeftToFall.index;
-        AnimatedReelsManager animatedReelsManager = new AnimatedReelsManager(animatedReels);
+        com.ellzone.slotpuzzle2d.physics.contact.AnimatedReelsManager animatedReelsManager = new com.ellzone.slotpuzzle2d.physics.contact.AnimatedReelsManager(animatedReels);
         animatedReelsManager.handleMessage(message);
     }
 
@@ -47,7 +48,7 @@ public class TestReelSinkReelsLeftToFall {
         Gdx.app = new MyGDXApplication();
         Array<AnimatedReel> animatedReels = new Array<>();
         animatedReels.add(createAnimatedReel(160, 40, 0, 0));
-        AnimatedReelsManager animatedReelsManager = sendReelSinkReelsLeftToFallMessage(
+        com.ellzone.slotpuzzle2d.physics.contact.AnimatedReelsManager animatedReelsManager = sendReelSinkReelsLeftToFallMessage(
                 animatedReels,
                 0
         );
@@ -60,7 +61,7 @@ public class TestReelSinkReelsLeftToFall {
         Array<AnimatedReel> animatedReels = new Array<>();
         animatedReels = createAnimatedReelsFromSlotPuzzleMatrix(
                 SlotPuzzleMatrices.createMatrixWithTwoBoxes());
-        AnimatedReelsManager animatedReelsManager = sendReelSinkReelsLeftToFallMessage(
+        com.ellzone.slotpuzzle2d.physics.contact.AnimatedReelsManager animatedReelsManager = sendReelSinkReelsLeftToFallMessage(
                 animatedReels,
                 96
         );
@@ -100,7 +101,7 @@ public class TestReelSinkReelsLeftToFall {
         for (int matrixColumn = 0; matrixColumn < slotMatrix[0].length; matrixColumn++) {
             int bottomReelForColumn = (slotMatrix.length - 1) * slotMatrix[0].length + matrixColumn;
             if (!animatedReels.get(bottomReelForColumn).getReel().isReelTileDeleted()) {
-                AnimatedReelsManager animatedReelsManager = sendReelSinkReelsLeftToFallMessage(
+                com.ellzone.slotpuzzle2d.physics.contact.AnimatedReelsManager animatedReelsManager = sendReelSinkReelsLeftToFallMessage(
                         animatedReels,
                         (slotMatrix.length - 1) * slotMatrix[0].length + matrixColumn);
                 Array<AnimatedReel> swappedReelsAboveAnimatedReels = animatedReelsManager.getAnimatedReels();
@@ -134,7 +135,7 @@ public class TestReelSinkReelsLeftToFall {
             Array<AnimatedReel> animatedReels) {
         animatedReels = createAnimatedReelsFromSlotPuzzleMatrix(slotMatrix);
         for (int matrixColumn = 0; matrixColumn < slotMatrix[0].length; matrixColumn++) {
-            AnimatedReelsManager animatedReelsManager = sendReelSinkReelsLeftToFallMessage(
+            com.ellzone.slotpuzzle2d.physics.contact.AnimatedReelsManager animatedReelsManager = sendReelSinkReelsLeftToFallMessage(
                     animatedReels,
                     (slotMatrix.length - 1) * slotMatrix[0].length + matrixColumn);
             Array<AnimatedReel> swappedReelsAboveAnimatedReels = animatedReelsManager.getAnimatedReels();
@@ -156,13 +157,13 @@ public class TestReelSinkReelsLeftToFall {
         }
     }
 
-    AnimatedReelsManager sendReelSinkReelsLeftToFallMessage(
+    com.ellzone.slotpuzzle2d.physics.contact.AnimatedReelsManager sendReelSinkReelsLeftToFallMessage(
             Array<AnimatedReel> animatedReels,
             int animatedReel) {
         Telegram message = new Telegram();
         message.message = MessageType.ReelSinkReelsLeftToFall.index;
         message.extraInfo = animatedReels.get(animatedReel);
-        AnimatedReelsManager animatedReelsManager = new AnimatedReelsManager(animatedReels);
+        com.ellzone.slotpuzzle2d.physics.contact.AnimatedReelsManager animatedReelsManager = new AnimatedReelsManager(animatedReels);
         animatedReelsManager.handleMessage(message);
         return animatedReelsManager;
     }

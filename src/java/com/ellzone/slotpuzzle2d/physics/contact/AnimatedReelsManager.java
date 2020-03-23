@@ -13,7 +13,7 @@
  limitations under the License.
  */
 
-package com.ellzone.slotpuzzle2d.prototypes.box2d.collisions;
+package com.ellzone.slotpuzzle2d.physics.contact;
 
 import com.badlogic.gdx.ai.msg.Telegram;
 import com.badlogic.gdx.ai.msg.Telegraph;
@@ -40,14 +40,14 @@ public class AnimatedReelsManager implements Telegraph {
     private int numberOfReelsToFall = 0;
     private int reelsStoppedFalling = 0;
 
-    AnimatedReelsManager(Array<AnimatedReel> animatedReels) {
+    public AnimatedReelsManager(Array<AnimatedReel> animatedReels) {
         if (animatedReels == null)
             throw new IllegalArgumentException("animatedReels is null");
         this.animatedReels = animatedReels;
         reelTiles = getReelTilesFromAnimatedReels(animatedReels);
     }
 
-    AnimatedReelsManager(Array<AnimatedReel> animatedReels,
+    public AnimatedReelsManager(Array<AnimatedReel> animatedReels,
                          Array<Body> reelBodies) {
         this(animatedReels);
         this.reelBodies = reelBodies;

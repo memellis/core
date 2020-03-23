@@ -50,6 +50,7 @@ import com.ellzone.slotpuzzle2d.effects.ReelAccessor;
 import com.ellzone.slotpuzzle2d.effects.SpriteAccessor;
 import com.ellzone.slotpuzzle2d.physics.PhysicsManagerCustomBodies;
 import com.ellzone.slotpuzzle2d.physics.ReelSink;
+import com.ellzone.slotpuzzle2d.physics.contact.AnimatedReelsManager;
 import com.ellzone.slotpuzzle2d.physics.contact.BoxHittingBoxContactListener;
 import com.ellzone.slotpuzzle2d.prototypes.SPPrototype;
 import com.ellzone.slotpuzzle2d.puzzlegrid.PuzzleGrid;
@@ -97,7 +98,7 @@ public class Box2DBoxesFallingFromSlotPuzzleMatrices extends SPPrototype impleme
     private Stage stage;
     private PhysicsManagerCustomBodies physicsEngine;
     private MessageManager messageManager;
-    private AnimatedReelsManager animatedReelsManager;
+    private com.ellzone.slotpuzzle2d.physics.contact.AnimatedReelsManager animatedReelsManager;
     private int slotMatrixCycleIndex;
     private Boolean isAutoFall;
     private int numberOfReelBoxesAsleep = 0;

@@ -14,16 +14,15 @@
  limitations under the License.
  */
 
-package com.ellzone.slotpuzzle2d.prototypes.box2d.collisions;
+package com.ellzone.slotpuzzle2d.physics.contact;
 
 import com.badlogic.gdx.ai.msg.MessageManager;
 import com.badlogic.gdx.utils.Array;
 import com.ellzone.slotpuzzle2d.messaging.MessageType;
 import com.ellzone.slotpuzzle2d.physics.ReelSink;
+import com.ellzone.slotpuzzle2d.physics.contact.AnimatedReelsManager;
 import com.ellzone.slotpuzzle2d.puzzlegrid.PuzzleGridTypeReelTile;
 import com.ellzone.slotpuzzle2d.sprites.AnimatedReel;
-
-import java.text.MessageFormat;
 
 import static com.ellzone.slotpuzzle2d.screens.PlayScreen.GAME_LEVEL_HEIGHT;
 

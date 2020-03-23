@@ -21,6 +21,7 @@ import com.badlogic.gdx.ai.msg.Telegram;
 import com.badlogic.gdx.utils.Array;
 import com.ellzone.slotpuzzle2d.gdx.MyGDXApplication;
 import com.ellzone.slotpuzzle2d.messaging.MessageType;
+import com.ellzone.slotpuzzle2d.physics.contact.AnimatedReelsManager;
 import com.ellzone.slotpuzzle2d.screens.PlayScreen;
 import com.ellzone.slotpuzzle2d.sprites.AnimatedReel;
 import com.ellzone.slotpuzzle2d.sprites.ReelTile;
@@ -37,14 +38,14 @@ public class TestSwapReelsAbove {
     @Test(expected = IllegalArgumentException.class)
     public void testSwapReelsAboveMeWithHandleMessageWithNullMessage() {
         Array<AnimatedReel> animatedReels = new Array<>();
-        AnimatedReelsManager animatedReelsManager = new AnimatedReelsManager(animatedReels);
+        com.ellzone.slotpuzzle2d.physics.contact.AnimatedReelsManager animatedReelsManager = new com.ellzone.slotpuzzle2d.physics.contact.AnimatedReelsManager(animatedReels);
         animatedReelsManager.handleMessage(null);
     }
 
     @Test(expected = IllegalArgumentException.class)
     public void testSwapReelsAboveMeWithHandleMessageSwapReelsAboveMeNullExtraInfo() {
         Array<AnimatedReel> animatedReels = new Array<>();
-        AnimatedReelsManager animatedReelsManager = new AnimatedReelsManager(animatedReels);
+        com.ellzone.slotpuzzle2d.physics.contact.AnimatedReelsManager animatedReelsManager = new com.ellzone.slotpuzzle2d.physics.contact.AnimatedReelsManager(animatedReels);
         Telegram message = new Telegram();
         message.message = MessageType.SwapReelsAboveMe.index;
         animatedReelsManager.handleMessage(message);
@@ -53,7 +54,7 @@ public class TestSwapReelsAbove {
     @Test(expected = IllegalArgumentException.class)
     public void testSwapReelsAboveMeWithHandleMessageSwapReelsAboveMeOneAnimtaedReelInExtraInfo() {
         Array<AnimatedReel> animatedReels = new Array<>();
-        AnimatedReelsManager animatedReelsManager = new AnimatedReelsManager(animatedReels);
+        com.ellzone.slotpuzzle2d.physics.contact.AnimatedReelsManager animatedReelsManager = new com.ellzone.slotpuzzle2d.physics.contact.AnimatedReelsManager(animatedReels);
         Telegram message = new Telegram();
         message.message = MessageType.SwapReelsAboveMe.index;
         addAnimatedReel(animatedReels, 160, 40);
@@ -67,7 +68,7 @@ public class TestSwapReelsAbove {
         Array<AnimatedReel> animatedReels = new Array<>();
         addAnimatedReel(animatedReels, 160, 40);
         addAnimatedReel(animatedReels, 160, 80);
-        AnimatedReelsManager animatedReelsManager = new AnimatedReelsManager(animatedReels);
+        com.ellzone.slotpuzzle2d.physics.contact.AnimatedReelsManager animatedReelsManager = new com.ellzone.slotpuzzle2d.physics.contact.AnimatedReelsManager(animatedReels);
         handleSwapReelsAboveMessage(animatedReels, animatedReelsManager, 0, 1);
         Array<AnimatedReel> swappedReelsAboveMeAnimatedReels = animatedReelsManager.getAnimatedReels();
         for (int currentReel = 0; currentReel < animatedReels.size; currentReel++)
@@ -81,7 +82,7 @@ public class TestSwapReelsAbove {
         addAnimatedReel(animatedReels, 160, 40);
         addAnimatedReel(animatedReels, 160, 80);
         addAnimatedReel(animatedReels, 160, 120);
-        AnimatedReelsManager animatedReelsManager = new AnimatedReelsManager(animatedReels);
+        com.ellzone.slotpuzzle2d.physics.contact.AnimatedReelsManager animatedReelsManager = new com.ellzone.slotpuzzle2d.physics.contact.AnimatedReelsManager(animatedReels);
         handleSwapReelsAboveMessage(animatedReels, animatedReelsManager, 0, 1);
         Array<AnimatedReel> swappedReelsAboveMeAnimatedReels = animatedReelsManager.getAnimatedReels();
         for (int currentReel = 0; currentReel < animatedReels.size; currentReel++)
@@ -94,7 +95,7 @@ public class TestSwapReelsAbove {
         Array<AnimatedReel> animatedReels = new Array<>();
         addAnimatedReelXYandDestXY(animatedReels, 160, 40, 160, 40);
         addAnimatedReelXYandDestXY(animatedReels, 160, 80, 160, 120);
-        AnimatedReelsManager animatedReelsManager = new AnimatedReelsManager(animatedReels);
+        com.ellzone.slotpuzzle2d.physics.contact.AnimatedReelsManager animatedReelsManager = new com.ellzone.slotpuzzle2d.physics.contact.AnimatedReelsManager(animatedReels);
         handleSwapReelsAboveMessage(animatedReels, animatedReelsManager, 0, 1);
         Array<AnimatedReel> swappedReelsAboveMeAnimatedReels = animatedReelsManager.getAnimatedReels();
         for (int currentReel = 0; currentReel < animatedReels.size; currentReel++)
@@ -108,7 +109,7 @@ public class TestSwapReelsAbove {
         addAnimatedReelXYandDestXY(animatedReels, 160, 40, 160, 40);
         addAnimatedReelXYandDestXY(animatedReels, 160, 80, 160, 120);
         addAnimatedReelXYandDestXY(animatedReels, 160, 120, 160, 160);
-        AnimatedReelsManager animatedReelsManager = new AnimatedReelsManager(animatedReels);
+        com.ellzone.slotpuzzle2d.physics.contact.AnimatedReelsManager animatedReelsManager = new com.ellzone.slotpuzzle2d.physics.contact.AnimatedReelsManager(animatedReels);
         handleSwapReelsAboveMessage(animatedReels, animatedReelsManager, 0, 1);
         Array<AnimatedReel> swappedReelsAboveMeAnimatedReels = animatedReelsManager.getAnimatedReels();
         for (int currentReel = 0; currentReel < animatedReels.size; currentReel++)
@@ -132,7 +133,7 @@ public class TestSwapReelsAbove {
         animatedReels.get(60).getReel().setY(80 + SCREEN_OFFSET);
         animatedReels.get(60).getReel().deleteReelTile();
 
-        AnimatedReelsManager animatedReelsManager =
+        com.ellzone.slotpuzzle2d.physics.contact.AnimatedReelsManager animatedReelsManager =
                 sendSwapReelsAboveMessage(animatedReels, 96, 84);
 
         Array<AnimatedReel> swappedReelsAboveAnimatedReels = animatedReelsManager.getAnimatedReels();
@@ -165,7 +166,7 @@ public class TestSwapReelsAbove {
         animatedReels.get(48).getReel().setY(80 + SCREEN_OFFSET);
         animatedReels.get(48).getReel().deleteReelTile();
 
-        AnimatedReelsManager animatedReelsManager =
+        com.ellzone.slotpuzzle2d.physics.contact.AnimatedReelsManager animatedReelsManager =
                 sendSwapReelsAboveMessage(animatedReels, 96, 84);
 
         Array<AnimatedReel> swappedReelsAboveAnimatedReels = animatedReelsManager.getAnimatedReels();
@@ -197,7 +198,7 @@ public class TestSwapReelsAbove {
         animatedReels.get(48).getReel().setY(80 + SCREEN_OFFSET);
         animatedReels.get(48).getReel().deleteReelTile();
 
-        AnimatedReelsManager animatedReelsManager =
+        com.ellzone.slotpuzzle2d.physics.contact.AnimatedReelsManager animatedReelsManager =
                 sendSwapReelsAboveMessage(animatedReels, 96, 84);
 
         Array<AnimatedReel> swappedReelsAboveAnimatedReels = animatedReelsManager.getAnimatedReels();
@@ -222,14 +223,14 @@ public class TestSwapReelsAbove {
         animatedReels = createAnimatedReelsFromSlotPuzzleMatrix(
                 SlotPuzzleMatrices.createMatrixWithFourBoxes());
 
-        AnimatedReelsManager animatedReelsManager =
+        com.ellzone.slotpuzzle2d.physics.contact.AnimatedReelsManager animatedReelsManager =
                 sendSwapReelsAboveMessage(animatedReels, 96, 84);
         Array<AnimatedReel> swappedReelsAboveAnimatedReels = animatedReelsManager.getAnimatedReels();
         for (int currentReel = 0; currentReel < animatedReels.size; currentReel++)
             assertAnimatedReelNotSwapped(animatedReels, swappedReelsAboveAnimatedReels, currentReel);
     }
 
-    private AnimatedReelsManager sendSwapReelsAboveMessage(
+    private com.ellzone.slotpuzzle2d.physics.contact.AnimatedReelsManager sendSwapReelsAboveMessage(
             Array<AnimatedReel> animatedReels,
             int animatedReelA,
             int animatedReelB) {
@@ -239,7 +240,7 @@ public class TestSwapReelsAbove {
         reelsAB.add(animatedReels.get(animatedReelA));
         reelsAB.add(animatedReels.get(animatedReelB));
         message.extraInfo = reelsAB;
-        AnimatedReelsManager animatedReelsManager = new AnimatedReelsManager(animatedReels);
+        com.ellzone.slotpuzzle2d.physics.contact.AnimatedReelsManager animatedReelsManager = new com.ellzone.slotpuzzle2d.physics.contact.AnimatedReelsManager(animatedReels);
         animatedReelsManager.handleMessage(message);
         return animatedReelsManager;
     }

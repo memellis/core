@@ -55,6 +55,7 @@ import com.ellzone.slotpuzzle2d.prototypes.events.GdxAiEntityMessaging;
 import com.ellzone.slotpuzzle2d.prototypes.framebuffer.FrameBufferParticleEffectSample;
 import com.ellzone.slotpuzzle2d.prototypes.gdxfreetype.GdxFreeType;
 import com.ellzone.slotpuzzle2d.prototypes.icons.DownloadMamuIcons;
+import com.ellzone.slotpuzzle2d.prototypes.level.hiddenpattern.HiddenPatternFallingReelsAnimatedReelsManager;
 import com.ellzone.slotpuzzle2d.prototypes.level.hiddenpattern.HiddenPatternWithFallingReels;
 import com.ellzone.slotpuzzle2d.prototypes.level.minislotmachine.MiniSlotMachineLevelFallingReels;
 import com.ellzone.slotpuzzle2d.prototypes.level.minislotmachine.MiniSlotMachineLevelPrototype;
@@ -148,6 +149,7 @@ public class SPPrototypes {
         MiniSlotMachineLevelPrototypeWithLevelCreator.class,
         MiniSlotMachineLevelFallingReels.class,
         HiddenPatternWithFallingReels.class,
+        HiddenPatternFallingReelsAnimatedReelsManager.class,
 		Particle1.class,
         Particle2.class,
         Particle3.class,
