@@ -40,7 +40,7 @@ public class FlashSlots {
     private int mapWidth, mapHeight;
     private Array<ReelTile> reelTiles;
     private int numberOfReelsFlashing, numberOfReelsToDelete;
-    private boolean startedFlashing, reelsAreFlashing, reelsAreDeleted;
+    private boolean startedFlashing;
     private boolean finishedMatchingSlots;
 
     public FlashSlots(TweenManager tweenManager, int mapWidth, int mapHeight, Array<ReelTile> reelTiles) {
@@ -52,7 +52,6 @@ public class FlashSlots {
     }
 
     private void initialiseFlashSlots() {
-        reelsAreFlashing = false;
         startedFlashing = false;
         finishedMatchingSlots = false;
         numberOfReelsFlashing = 0;
@@ -84,8 +83,6 @@ public class FlashSlots {
         numberOfReelsToDelete = numberOfReelsFlashing;
         while (matchedSlots.size > 0) {
             startedFlashing = true;
-            reelsAreFlashing = true;
-            reelsAreDeleted = false;
             batchIndex = matchSlotIndex;
             for (int batchCount = batchIndex; batchCount < batchIndex + FLASH_BATCH_POOL_SIZE; batchCount++) {
                 if (batchCount < matchedSlots.size) {
@@ -108,6 +105,8 @@ public class FlashSlots {
         Array<ReelTileGridValue> matchSlotsBatch = new Array<ReelTileGridValue>();
         float pushPause = 0.0f;
         matchSlotIndex = 0;
+        numberOfReelsFlashing = matchedSlots.size;
+        numberOfReelsToDelete = numberOfReelsFlashing;
         while (matchedSlots.size > 0) {
             batchIndex = matchSlotIndex;
             for (int batchCount = batchIndex; batchCount < batchIndex + 3; batchCount++) {
@@ -234,6 +233,7 @@ public class FlashSlots {
             reel.processEvent(new ReelStoppedFlashingEvent());
         }
         numberOfReelsFlashing--;
+        System.out.println("In FlashReels numberOfReelsFlashing=" + numberOfReelsFlashing);
     }
 
     private void initialiseReelFlashForLevelCreator(ReelTile reel, float pushPause) {
@@ -271,8 +271,8 @@ public class FlashSlots {
                 .setCallbackTriggers(TweenCallback.COMPLETE)
                 .setUserData(userData)
                 .start(tweenManager);
-        System.out.println("numberOfReelsFlashing="+numberOfReelsFlashing);
-        numberOfReelsFlashing++;
+//        numberOfReelsFlashing++;
+        System.out.println("In FlashReels-> numberOfReelsFlashing="+numberOfReelsFlashing);
     }
 
     private TweenCallback reelFlashCallbackForLevelCreator = new TweenCallback() {
@@ -289,7 +289,7 @@ public class FlashSlots {
         @SuppressWarnings("unchecked")
         Array<Object> userData = (Array<Object>) source.getUserData();
         ReelTile reel = (ReelTile) userData.get(0);
-        System.out.println("delegateReelFlashCallbackForLevelCreator reel x="+reel.getX()+"reel y="+reel.getY());
+//        System.out.println("delegateReelFlashCallbackForLevelCreator reel x="+reel.getX()+"reel y="+reel.getY());
         Timeline reelFlashSeq = (Timeline) userData.get(1);
         reelFlashSeq.kill();
         if (reel.getFlashTween()) {
@@ -297,6 +297,8 @@ public class FlashSlots {
             reel.setFlashTween(false);
             reel.processEvent(new ReelStoppedFlashingEvent());
         }
+        numberOfReelsFlashing--;
+        System.out.println("In FlashReels numberOfReelsFlashing=" + numberOfReelsFlashing);
     }
 
     public int getNumberOfReelsFlashing() {
@@ -323,10 +325,6 @@ public class FlashSlots {
 
     public void setNumberOfReelsFlashing(int numberOfReelsFlashing) {
         this.numberOfReelsFlashing = numberOfReelsFlashing;
-    }
-
-    public void setReelsAreFlashing(boolean reelsAreFlashing) {
-        this.reelsAreFlashing = reelsAreFlashing;
     }
 
     public void setReesStartedFlashing(boolean startedFlashing) {
