@@ -408,7 +408,7 @@ public class Box2DBoxesFallingFromSlotPuzzleMatrices extends SPPrototype impleme
         camera.update();
 
         renderReelBoxes(batch, reelBoxBodies);
-        if (numberOfReelBoxesAsleep == numberOfReelBoxesCreated) {
+        if (isReelsStoppingMoving()) {
             if (isAutoFall) {
                 cycleSlotMatrix();
                 reCreateBoxes();
@@ -419,6 +419,10 @@ public class Box2DBoxesFallingFromSlotPuzzleMatrices extends SPPrototype impleme
 
         renderWorld();
         renderFps(updateTime);
+    }
+
+    private boolean isReelsStoppingMoving() {
+        return numberOfReelBoxesAsleep == numberOfReelBoxesCreated;
     }
 
     private void renderFps(float updateTime) {

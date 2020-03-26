@@ -1,6 +1,9 @@
 package com.ellzone.slotpuzzle2d.prototypes.box2d.collisions;
 
 import com.badlogic.gdx.utils.Array;
+import com.ellzone.slotpuzzle2d.screens.PlayScreen;
+import com.ellzone.slotpuzzle2d.sprites.AnimatedReel;
+import com.ellzone.slotpuzzle2d.sprites.ReelTile;
 import com.ellzone.slotpuzzle2d.utils.InputMatrix;
 
 public class SlotPuzzleMatrices {
@@ -366,5 +369,58 @@ public class SlotPuzzleMatrices {
         slotMatrices.add(createMatrixWithTwoByOnTFourBoxes());
         slotMatrices.add(createMatrixWithTwoFillColumnNineBoxes());
         return slotMatrices;
+    }
+
+    public static Array<AnimatedReel> createAnimatedReelsFromSlotPuzzleMatrix(int[][] slotPuzzleMatrix) {
+        Array<AnimatedReel> animatedReels = new Array<AnimatedReel>();
+        int numberOfAnimatedReelsCreated = 0;
+        for (int r = 0; r < slotPuzzleMatrix.length; r++) {
+            for (int c = 0; c < slotPuzzleMatrix[0].length; c++) {
+                animatedReels.add(
+                        createAnimatedReel(
+                                (int) PlayScreen.PUZZLE_GRID_START_X + (c * 40),
+                                ((slotPuzzleMatrix.length - 1 - r) * 40) + 40,
+                                slotPuzzleMatrix[r][c],
+                                numberOfAnimatedReelsCreated));
+                if (slotPuzzleMatrix[r][c] < 0)
+                    animatedReels.get(numberOfAnimatedReelsCreated).getReel().deleteReelTile();
+                numberOfAnimatedReelsCreated++;
+            }
+        }
+        return animatedReels;
+    }
+
+    private static AnimatedReel createAnimatedReel(int x, int y, int endReel, int index) {
+        AnimatedReel animatedReel = getAnimatedReel(x, y, endReel);
+        setUpReelTileInAnimatedReel(index, animatedReel);
+        return animatedReel;
+    }
+
+    private static void setUpReelTileInAnimatedReel(int index, AnimatedReel animatedReel) {
+        ReelTile reelTile = animatedReel.getReel();
+        reelTile.setDestinationX(reelTile.getX());
+        reelTile.setDestinationY(reelTile.getY());
+        reelTile.setY(reelTile.getY());
+        reelTile.setIsFallen(false);
+        reelTile.setIsStoppedFalling(false);
+        reelTile.setIndex(index);
+    }
+
+    private static AnimatedReel getAnimatedReel(int x, int y, int endReel) {
+        AnimatedReel animatedReel = new AnimatedReel(
+                null,
+                x,
+                y,
+                40,
+                40,
+                40,
+                40,
+                0,
+                null);
+        animatedReel.setSx(0);
+        animatedReel.setEndReel(endReel);
+        animatedReel.setupSpinning();
+        animatedReel.getReel().startSpinning();
+        return animatedReel;
     }
 }

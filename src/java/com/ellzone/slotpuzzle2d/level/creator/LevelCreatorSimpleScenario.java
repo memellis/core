@@ -170,8 +170,6 @@ public class LevelCreatorSimpleScenario {
         reelTiles = populateLevel(level, reelTiles, levelWidth, levelHeight);
         reelTiles = checkLevel(reelTiles, levelWidth, levelHeight);
         reelTiles = adjustForAnyLonelyReels(reelTiles, levelWidth, levelHeight);
-//        for (ReelTile reelTile : reelTiles)
-//            reelTile.setEndReel(scenario1Reels[reelTile.getIndex()]);
 
         return reelTiles;
     }

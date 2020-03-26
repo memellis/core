@@ -201,15 +201,17 @@ public class FlashSlots {
         reelFlashSeq = reelFlashSeq.push(SlotPuzzleTween.set(reel, ReelAccessor.FLASH_TINT)
                 .target(fromColor.r, fromColor.g, fromColor.b)
                 .ease(Sine.IN));
-        reelFlashSeq = reelFlashSeq.push(SlotPuzzleTween.to(reel, ReelAccessor.FLASH_TINT, 0.05f)
-                .target(toColor.r, toColor.g, toColor.b)
-                .ease(Sine.OUT)
-                .repeatYoyo(25, 0))
-                .setCallback(reelFlashCallback)
-                .setCallbackTriggers(TweenCallback.COMPLETE)
-                .setUserData(userData)
-                .start(tweenManager);
-    }
+
+        if (tweenManager != null)
+            reelFlashSeq = reelFlashSeq.push(SlotPuzzleTween.to(reel, ReelAccessor.FLASH_TINT, 0.05f)
+                    .target(toColor.r, toColor.g, toColor.b)
+                    .ease(Sine.OUT)
+                    .repeatYoyo(25, 0))
+                    .setCallback(reelFlashCallback)
+                    .setCallbackTriggers(TweenCallback.COMPLETE)
+                    .setUserData(userData)
+                    .start(tweenManager);
+        }
 
     private TweenCallback reelFlashCallback = new TweenCallback() {
         @Override
@@ -271,7 +273,6 @@ public class FlashSlots {
                 .setCallbackTriggers(TweenCallback.COMPLETE)
                 .setUserData(userData)
                 .start(tweenManager);
-//        numberOfReelsFlashing++;
         System.out.println("In FlashReels-> numberOfReelsFlashing="+numberOfReelsFlashing);
     }
 

@@ -684,7 +684,7 @@ public class PlayScreen implements Screen, PlayInterface, LevelCreatorInjectionI
 
     @Override
     public void setReelsAreFlashing(boolean reelsAreFlashing) {
-        flashSlots.setReelsAreFlashing(reelsAreFlashing);
+//        flashSlots.setReelsAreFlashing(reelsAreFlashing);
     }
 
     public void updateState(float delta) {

@@ -88,7 +88,7 @@ public class LevelCreatorSimple {
     private PlayStates playState;
     private boolean win = false, gameOver = false;
     private Array<Score> scores;
-    private boolean hitSinkBottom = false;
+//    private boolean hitSinkBottom = false;
     private Array<Body> reelBoxes;
     private Array<Body> reelBoxesCollided;
     public Array<Integer> replacementReelBoxes;
@@ -103,6 +103,7 @@ public class LevelCreatorSimple {
     private boolean reelBoxesToBeCreated = false;
     private int debugNumberOfReelsDeleted = 0;
     private int debugNumberOfReelBoxesDeleted = 0;
+    private int debugActionReelStoppedFlashing = 0;
 
     public LevelCreatorSimple (
             LevelDoor levelDoor,
@@ -138,7 +139,7 @@ public class LevelCreatorSimple {
         reelTiles = createLevel(levelDoor, level, reelTiles, levelWidth, levelHeight);
         reelsSpinning = reelBoxes.size - 1;
         reelsFlashing = 0;
-        hitSinkBottom = false;
+//        hitSinkBottom = false;
         scores = new Array<Score>();
         reelsToFall = new Array<TupleValueIndex>();
         getMapProperties(level);
@@ -357,7 +358,7 @@ public class LevelCreatorSimple {
     }
 
     private void allReelsHaveStoppedSpinning() {
-        if ((reelsSpinning <= -1) & (hitSinkBottom)) {
+        if (reelsSpinning <= -1)  {
             if (levelDoor.getLevelType().equals(HIDDEN_PATTERN_LEVEL_TYPE)) {
                 if (testForHiddenPatternRevealed(reelTiles, levelWidth, levelHeight))
                     iWonTheLevel();
@@ -377,9 +378,11 @@ public class LevelCreatorSimple {
     }
 
     private void actionReelStoppedFlashing(ReelTileEvent event, ReelTile reelTile) {
+        debugActionReelStoppedFlashing++;
+        System.out.println("actionReelsStoppedFlashing times call="+debugActionReelStoppedFlashing);
         if ((playState == PlayStates.INTRO_FLASHING) | (playState != PlayStates.REELS_FLASHING)) {
             System.out.println("Testing to deal with numberOfReelsFlashing < 1 after a when a reel has stopped flashing - numberOfReelsFlashing="+flashSlots.getNumberOfReelsFlashing());
-            if (flashSlots.getNumberOfReelsFlashing() < 1) {
+            if (flashSlots.getNumberOfReelsFlashing() <= 2) {
                 System.out.println("Please deal with numberOfReelsFlashing < 1 after a when a reel has stopped flashing");
                 // When do I need to testForAnyLonelyReels?
                 //
@@ -594,7 +597,7 @@ public class LevelCreatorSimple {
         reelBoxesToDelete.add(reelTilesIndex);
         if (!replacementReelBoxes.contains(reelTilesIndex, true))
             replacementReelBoxes.add(reelTilesIndex);
-        flashSlots.setNumberOfReelsFlashing(flashSlots.getNumberOfReelsFlashing() - 1);
+//        flashSlots.setNumberOfReelsFlashing(flashSlots.getNumberOfReelsFlashing() - 1);
         numberOfReelBoxesToDelete--;
     }
 
@@ -778,7 +781,7 @@ public class LevelCreatorSimple {
     }
 
     public void setHitSinkBottom(boolean hitSinkBottom) {
-        this.hitSinkBottom = hitSinkBottom;
+//        this.hitSinkBottom = hitSinkBottom;
     }
 
     public void setNumberOfReelsSpinning(int numberOfReelsSpinning) {
