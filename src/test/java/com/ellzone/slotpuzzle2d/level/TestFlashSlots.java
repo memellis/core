@@ -98,8 +98,7 @@ public class TestFlashSlots {
         Gdx.app = new MyGDXApplication();
         TweenManager tweenManager = initialTweenEngine();
         Array<AnimatedReel> animatedReels =
-             SlotPuzzleMatrices.createAnimatedReelsFromSlotPuzzleMatrix(
-                SlotPuzzleMatrices.createMatrixWithTwoBoxes());
+             SlotPuzzleMatrices.createAnimatedReelsFromSlotPuzzleMatrix(slotMatrix);
 
         Array<ReelTile> reelTiles = getReelTilesFromAnimatedReels(animatedReels);
 
