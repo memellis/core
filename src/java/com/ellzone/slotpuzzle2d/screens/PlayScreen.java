@@ -281,11 +281,13 @@ public class PlayScreen implements Screen, PlayInterface, LevelCreatorInjectionI
     }
 
     private Array<RectangleMapObject> getRectangleMapObjectsFromLevel(TiledMap level) {
-        return level.getLayers().get(SLOT_REEL_OBJECT_LAYER).getObjects().getByType(RectangleMapObject.class);
+        return level.getLayers().get(SLOT_REEL_OBJECT_LAYER).
+                    getObjects().getByType(RectangleMapObject.class);
     }
 
     protected LevelLoader getLevelLoader() {
-        LevelLoader levelLoader = new LevelLoader(game.annotationAssetManager, levelDoor, mapTile, animatedReels);
+        LevelLoader levelLoader =
+                new LevelLoader(game.annotationAssetManager, levelDoor, mapTile, animatedReels);
         levelLoader.setStoppedSpinningCallback(stoppedSpinningCallback);
         levelLoader.setStoppedFlashingCallback(stoppedFlashingCallback);
         return levelLoader;
@@ -294,9 +296,7 @@ public class PlayScreen implements Screen, PlayInterface, LevelCreatorInjectionI
     private LevelCallback stoppedSpinningCallback = new LevelCallback() {
         @Override
         public void onEvent (ReelTile source) {
-            messageManager.dispatchMessage(PlayAudio.index, AssetsAnnotation.SOUND_REEL_STOPPED);
-            Timestamp timestamp = new Timestamp(System.currentTimeMillis());
-            System.out.println("reelSpinning="+reelsSpinning + " "+timestamp);
+            playSound(AssetsAnnotation.SOUND_REEL_STOPPED);
             reelsSpinning--;
             if (playStateMachine.getStateMachine().getCurrentState() == PlayState.PLAY) {
                 if (reelsSpinning < 1) {
@@ -471,8 +471,8 @@ public class PlayScreen implements Screen, PlayInterface, LevelCreatorInjectionI
     private void proceesDeleteReel(BaseTween<?> source) {
         ReelTile reel = (ReelTile) source.getUserData();
         hud.addScore((reel.getEndReel() + 1) * reel.getScore());
-        messageManager.dispatchMessage(PlayAudio.index, AssetsAnnotation.SOUND_REEL_STOPPED);
-        messageManager.dispatchMessage(PlayAudio.index, AssetsAnnotation.SOUND_CHA_CHING);
+        playSound(AssetsAnnotation.SOUND_REEL_STOPPED);
+        playSound(AssetsAnnotation.SOUND_CHA_CHING);
         reel.deleteReelTile();
         flashSlots.deleteAReel();
         if (playStateMachine.getStateMachine().getCurrentState() == PlayState.PLAY) {
@@ -591,7 +591,7 @@ public class PlayScreen implements Screen, PlayInterface, LevelCreatorInjectionI
         reel.setSy(0);
         animatedReel.reinitialise();
         hud.addScore(-1);
-        messageManager.dispatchMessage(PlayAudio.index, AssetsAnnotation.SOUND_PULL_LEVER);
+        playSound(AssetsAnnotation.SOUND_PULL_LEVER);
     }
 
     protected void processReelTouchedWhileSpinning(ReelTile reel, int currentReel, int spinHelpSprite) {
@@ -599,8 +599,8 @@ public class PlayScreen implements Screen, PlayInterface, LevelCreatorInjectionI
         displaySpinHelp = true;
         displaySpinHelpSprite = spinHelpSprite;
         hud.addScore(-1);
-        messageManager.dispatchMessage(PlayAudio.index, AssetsAnnotation.SOUND_PULL_LEVER);
-        messageManager.dispatchMessage(PlayAudio.index, AssetsAnnotation.SOUND_REEL_SPINNING);
+        playSound(AssetsAnnotation.SOUND_PULL_LEVER);
+        playSound(AssetsAnnotation.SOUND_REEL_SPINNING);
     }
 
     protected TweenCallback levelOverCallback = new TweenCallback() {
@@ -679,7 +679,8 @@ public class PlayScreen implements Screen, PlayInterface, LevelCreatorInjectionI
 
     @Override
     public boolean areReelsDeleted() {
-        return levelDoor.getLevelType().equals(LevelCreator.MINI_SLOT_MACHINE_LEVEL_TYPE) ? false : flashSlots.areReelsDeleted();
+        return levelDoor.getLevelType().equals(LevelCreator.MINI_SLOT_MACHINE_LEVEL_TYPE) ?
+                false : flashSlots.areReelsDeleted();
     }
 
     @Override
@@ -696,10 +697,14 @@ public class PlayScreen implements Screen, PlayInterface, LevelCreatorInjectionI
         renderer.setView(camera);
         updateAnimatedReels(delta);
         hud.update(delta);
-        if (hud.getWorldTime() == 0 && playState != PlayStates.BONUS_LEVEL_ENDED)
+        if (isOutOfTime())
             weAreOutOfTime();
         framerate.update();
         checkForGameOverCondition();
+    }
+
+    private boolean isOutOfTime() {
+        return hud.getWorldTime() == 0 && playState != PlayStates.BONUS_LEVEL_ENDED;
     }
 
     private void checkForGameOverCondition() {
@@ -764,7 +769,6 @@ public class PlayScreen implements Screen, PlayInterface, LevelCreatorInjectionI
             viewport.unproject(unprojTouch);
             switch (playState) {
                 case INTRO_POPUP:
-                    System.out.println("playStateMachine.getStateMachine().getCurrentState()"+playStateMachine.getStateMachine().getCurrentState());
                     if (isOver(playScreenPopUps.getLevelPopUpSprites().get(0), unprojTouch.x, unprojTouch.y))
                         playScreenPopUps.getLevelPopUp().hideLevelPopUp(hideLevelPopUpCallback);
                     break;
@@ -877,7 +881,7 @@ public class PlayScreen implements Screen, PlayInterface, LevelCreatorInjectionI
 
     @Override
     public void show() {
-        this.show = true;
+        show = true;
         Gdx.app.log(SlotPuzzleConstants.SLOT_PUZZLE + this.getClass().getName(), "show() called.");
     }
 
@@ -888,7 +892,7 @@ public class PlayScreen implements Screen, PlayInterface, LevelCreatorInjectionI
 
     @Override
     public void pause() {
-        this.show = false;
+        show = false;
         Gdx.app.log(SlotPuzzleConstants.SLOT_PUZZLE + this.getClass().getName(), "pause() called.");
     }
 
@@ -899,7 +903,7 @@ public class PlayScreen implements Screen, PlayInterface, LevelCreatorInjectionI
 
     @Override
     public void hide() {
-        this.show = false;
+        show = false;
         Gdx.app.log(SlotPuzzleConstants.SLOT_PUZZLE + this.getClass().getName(), "hide() called.");
     }
 
@@ -939,4 +943,9 @@ public class PlayScreen implements Screen, PlayInterface, LevelCreatorInjectionI
     public TextureAtlas getSlothandleAtlas() {
         return game.annotationAssetManager.get(AssetsAnnotation.SLOT_HANDLE);
     }
+
+    private void playSound(String sound) {
+        messageManager.dispatchMessage(PlayAudio.index, sound);
+    }
+
 }

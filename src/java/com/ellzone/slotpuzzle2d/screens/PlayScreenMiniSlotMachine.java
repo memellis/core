@@ -154,7 +154,7 @@ public class PlayScreenMiniSlotMachine extends PlayScreen {
 
     private void matchReels() {
         if (playStateMachine.getStateMachine().getCurrentState() == PlayState.INTRO_FLASHING_SEQUENCE)
-            flashSlots.setReesStartedFlashing(true);
+            flashSlots.setReelsStartedFlashing(true);
 
         captureReelPositions();
         PuzzleGridTypeReelTile puzzleGrid = new PuzzleGridTypeReelTile();
