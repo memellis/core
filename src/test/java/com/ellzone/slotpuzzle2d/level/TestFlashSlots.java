@@ -37,6 +37,7 @@ public class TestFlashSlots {
 
     public static final int MAP_WIDTH = 12;
     public static final int MAP_HEIGHT = 9;
+    public static final int DELTA_TIME = 100;
 
     @Test
     public void testFlashSlotsWithEmptyReelsToFlash() {
@@ -123,8 +124,8 @@ public class TestFlashSlots {
     private void waitUntilAllReelsHaveflashed(TweenManager tweenManager, FlashSlots flashSlots) {
         while (flashSlots.getNumberOfReelsFlashing() > 0) {
             try {
-                tweenManager.update(100);
-                Thread.sleep(100);
+                tweenManager.update(DELTA_TIME);
+                Thread.sleep(DELTA_TIME);
             } catch (InterruptedException ie) {}
         }
     }

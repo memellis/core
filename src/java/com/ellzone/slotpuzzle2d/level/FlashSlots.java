@@ -290,7 +290,6 @@ public class FlashSlots {
         @SuppressWarnings("unchecked")
         Array<Object> userData = (Array<Object>) source.getUserData();
         ReelTile reel = (ReelTile) userData.get(0);
-//        System.out.println("delegateReelFlashCallbackForLevelCreator reel x="+reel.getX()+"reel y="+reel.getY());
         Timeline reelFlashSeq = (Timeline) userData.get(1);
         reelFlashSeq.kill();
         if (reel.getFlashTween()) {
@@ -328,7 +327,7 @@ public class FlashSlots {
         this.numberOfReelsFlashing = numberOfReelsFlashing;
     }
 
-    public void setReesStartedFlashing(boolean startedFlashing) {
+    public void setReelsStartedFlashing(boolean startedFlashing) {
         this.startedFlashing = startedFlashing;
     }
 
