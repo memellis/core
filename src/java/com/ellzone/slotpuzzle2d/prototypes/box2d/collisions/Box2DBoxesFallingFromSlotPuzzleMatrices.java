@@ -53,7 +53,6 @@ import com.ellzone.slotpuzzle2d.physics.ReelSink;
 import com.ellzone.slotpuzzle2d.physics.contact.AnimatedReelsManager;
 import com.ellzone.slotpuzzle2d.physics.contact.BoxHittingBoxContactListener;
 import com.ellzone.slotpuzzle2d.prototypes.SPPrototype;
-import com.ellzone.slotpuzzle2d.puzzlegrid.PuzzleGrid;
 import com.ellzone.slotpuzzle2d.screens.PlayScreen;
 import com.ellzone.slotpuzzle2d.sprites.AnimatedReel;
 import com.ellzone.slotpuzzle2d.sprites.ReelSprites;
@@ -105,6 +104,8 @@ public class Box2DBoxesFallingFromSlotPuzzleMatrices extends SPPrototype impleme
     private int numberOfReelBoxesCreated = 0;
     int[] matrixIdentifier = new int[PlayScreen.GAME_LEVEL_WIDTH];
     private boolean cycleDynamic = true;
+    private boolean testingFullMatrixDeleteingReelBoxes = true;
+    int reelToDelete = 96;
 
     @Override
     public void create() {
@@ -191,7 +192,15 @@ public class Box2DBoxesFallingFromSlotPuzzleMatrices extends SPPrototype impleme
 
     private void initialiseReelSlots() {
         createScrollReelTexture();
-        cycleSlotMatrix();
+        if (testingFullMatrixDeleteingReelBoxes)
+            testFullMatrixDeletingReelBoxesSetUp();
+        else
+            cycleSlotMatrix();
+    }
+
+    private void testFullMatrixDeletingReelBoxesSetUp() {
+        animatedReels = createAnimatedReelsFromSlotPuzzleMatrix(
+                SlotPuzzleMatrices.createMatrixWithAFullMatrix());
     }
 
     private void cycleSlotMatrix() {
@@ -216,12 +225,10 @@ public class Box2DBoxesFallingFromSlotPuzzleMatrices extends SPPrototype impleme
                 matrixIdentifier,
                 PlayScreen.GAME_LEVEL_WIDTH,
                 PlayScreen.GAME_LEVEL_HEIGHT);
-        PuzzleGrid.printGrid(dynamicGrid);
         System.out.println();
         animatedReels = createAnimatedReelsFromSlotPuzzleMatrix(dynamicGrid);
         slotMatrixCycleIndex++;
         slotMatrixCycleIndex %= Math.pow(2, PlayScreen.GAME_LEVEL_HEIGHT);
-        System.out.println("numberOfReelsToFall="+numberOfReelsToFall);
     }
 
     private void setColumnValues(int[] matrixIdentifier, int matrixValue) {
@@ -409,16 +416,28 @@ public class Box2DBoxesFallingFromSlotPuzzleMatrices extends SPPrototype impleme
 
         renderReelBoxes(batch, reelBoxBodies);
         if (isReelsStoppingMoving()) {
-            if (isAutoFall) {
-                cycleSlotMatrix();
-                reCreateBoxes();
-                setBoxesActive();
-            }
+            if (testingFullMatrixDeleteingReelBoxes)
+                deleteAReel();
+            else
+                if (isAutoFall) {
+                    cycleSlotMatrix();
+                    reCreateBoxes();
+                    setBoxesActive();
+                }
         }
         physicsEngine.draw(batch);
 
         renderWorld();
         renderFps(updateTime);
+    }
+
+    private void deleteAReel() {
+        if (reelToDelete >= 0)
+            if (!animatedReels.get(reelToDelete).getReel().isReelTileDeleted()) {
+                reelBoxBodies.get(reelToDelete).setActive(false);
+                animatedReels.get(reelToDelete).getReel().deleteReelTile();
+                reelToDelete -= 12;
+            }
     }
 
     private boolean isReelsStoppingMoving() {

@@ -27,6 +27,8 @@ import com.ellzone.slotpuzzle2d.puzzlegrid.TupleValueIndex;
 import com.ellzone.slotpuzzle2d.sprites.AnimatedReel;
 import com.ellzone.slotpuzzle2d.sprites.ReelTile;
 
+import java.text.MessageFormat;
+
 import static com.ellzone.slotpuzzle2d.prototypes.assets.CreateLevelReels.REEL_WIDTH;
 import static com.ellzone.slotpuzzle2d.prototypes.box2d.collisions.Box2DBoxesFallingFromSlotPuzzleMatrices.SCREEN_OFFSET;
 import static com.ellzone.slotpuzzle2d.screens.PlayScreen.GAME_LEVEL_HEIGHT;
@@ -122,7 +124,7 @@ public class AnimatedReelsManager implements Telegraph {
     private SwapReelAction swapReelActionStoppedFalling = new SwapReelAction() {
         @Override
         public void doAction(ReelTile reelTile) {
-            reelTile.setIsStoppedFalling(true);
+        reelTile.setIsStoppedFalling(true);
         }
     };
 
@@ -167,17 +169,23 @@ public class AnimatedReelsManager implements Telegraph {
         return currentReelBelow.getDestinationY() + REEL_WIDTH == reelTiles.get(reel.index).getDestinationY();
     }
 
-    private boolean isReelAtDestination(ReelTile currentReel, float destinationY) {
-        return currentReel.getDestinationY() == destinationY;
-    }
-
     private void reelSinkReelsLeftToFall(AnimatedReel animatedReel) {
         ReelTile reelTile = animatedReel.getReel();
         if (isReelAtDestination(reelTile, BOTTOM_ROW)) {
             recordDecrementReelsLeftToFall(reelTile);
             markAllReelsAvoveInContactAsFallen(reelTile);
-            printSlotMatrix();
         }
+        if (isReelFallenFromAbove(reelTile, BOTTOM_ROW))
+            processReelFallenBelowDestinationRow(reelTile, getReelsAboveMe(reelTile));
+        printSlotMatrix();
+    }
+
+    private boolean isReelAtDestination(ReelTile currentReel, float destinationY) {
+        return currentReel.getDestinationY() == destinationY;
+    }
+
+    private boolean isReelFallenFromAbove(ReelTile currentReel, float destinationY) {
+        return currentReel.getDestinationY() > destinationY;
     }
 
     private void markAllReelsAvoveInContactAsFallen(ReelTile reelTile) {
@@ -223,7 +231,6 @@ public class AnimatedReelsManager implements Telegraph {
             bottomDeletedReel = reelTiles.get(findReel((int) reelTile.getDestinationX(), 40 + 40 * (i+1)));
             swapReelsForFallenReel(reelTiles.get(reelsAboveMe[i].index), bottomDeletedReel);
         }
-        printSlotMatrix();
     }
 
     private void swapReelsForFallenReel(ReelTile reelTileA, ReelTile reelTileB) {
