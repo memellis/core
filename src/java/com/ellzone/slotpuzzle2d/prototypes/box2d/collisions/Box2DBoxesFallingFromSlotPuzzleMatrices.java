@@ -105,7 +105,7 @@ public class Box2DBoxesFallingFromSlotPuzzleMatrices extends SPPrototype impleme
     int[] matrixIdentifier = new int[PlayScreen.GAME_LEVEL_WIDTH];
     private boolean cycleDynamic = true;
     private boolean testingFullMatrixDeleteingReelBoxes = true;
-    int reelToDelete = 96;
+    int reelToDelete = 84;
 
     @Override
     public void create() {
@@ -281,7 +281,18 @@ public class Box2DBoxesFallingFromSlotPuzzleMatrices extends SPPrototype impleme
     }
 
     private AnimatedReel getAnimatedReel(int x, int y, int endReel) {
-        AnimatedReel animatedReel = new AnimatedReel(slotReelScrollTexture, x, y, spriteWidth, spriteHeight, spriteWidth, spriteHeight, 0, reelSpinningSound, reelStoppingSound, tweenManager);
+        AnimatedReel animatedReel = new AnimatedReel(
+                slotReelScrollTexture,
+                x,
+                y,
+                spriteWidth,
+                spriteHeight,
+                spriteWidth,
+                spriteHeight,
+                0,
+                reelSpinningSound,
+                reelStoppingSound,
+                tweenManager);
         animatedReel.setSx(0);
         animatedReel.setEndReel(endReel);
         animatedReel.setupSpinning();
@@ -301,8 +312,8 @@ public class Box2DBoxesFallingFromSlotPuzzleMatrices extends SPPrototype impleme
     private void createReelSink() {
         ReelSink reelSink = new ReelSink(physicsEngine);
         reelSink.createReelSink(
-                SlotPuzzleConstants.VIRTUAL_WIDTH / 2 - 20,
-                SlotPuzzleConstants.VIRTUAL_HEIGHT / 2,
+                SlotPuzzleConstants.VIRTUAL_WIDTH / 2 + 20,
+                SlotPuzzleConstants.VIRTUAL_HEIGHT / 2 + 20,
                 12,
                 9,
                 40,
@@ -353,8 +364,8 @@ public class Box2DBoxesFallingFromSlotPuzzleMatrices extends SPPrototype impleme
 
     private void updateBoxBody(AnimatedReel animatedReel, boolean isActive, Body reelTileBody) {
         reelTileBody.setTransform(
-                animatedReel.getReel().getX() / 100,
-                animatedReel.getReel().getY() / 100,
+                (animatedReel.getReel().getX() + 20) / 100,
+                (animatedReel.getReel().getY() + 20) / 100,
                 0);
         reelTileBody.setActive(isActive);
         reelTileBody.setUserData(animatedReel);
@@ -364,7 +375,7 @@ public class Box2DBoxesFallingFromSlotPuzzleMatrices extends SPPrototype impleme
         Body reelTileBody = createReelTileBodyAt(
                 (int) animatedReel.getReel().getX(),
                 (int) animatedReel.getReel().getY());
-        reelTileBody.setActive(isActive);
+       reelTileBody.setActive(isActive);
         reelTileBody.setUserData(animatedReel);
         return reelTileBody;
     }
@@ -380,7 +391,6 @@ public class Box2DBoxesFallingFromSlotPuzzleMatrices extends SPPrototype impleme
     }
 
     private void update(float dt) {
-        world.step(dt , 8, 3);
         tweenManager.update(dt);
         physicsEngine.update(dt);
         updateAnimatedReels(dt);
@@ -414,6 +424,7 @@ public class Box2DBoxesFallingFromSlotPuzzleMatrices extends SPPrototype impleme
         stage.draw();
         camera.update();
 
+        physicsEngine.draw(batch);
         renderReelBoxes(batch, reelBoxBodies);
         if (isReelsStoppingMoving()) {
             if (testingFullMatrixDeleteingReelBoxes)
@@ -476,8 +487,10 @@ public class Box2DBoxesFallingFromSlotPuzzleMatrices extends SPPrototype impleme
     }
 
     private void renderReel(ReelTile reelTile, SpriteBatch batch, Body reelBox, float angle) {
-        reelTile.setPosition(reelBox.getPosition().x * 100 - 20, reelBox.getPosition().y * 100 - 20);
-        reelTile.updateReelFlashSegments(reelBox.getPosition().x * 100 - 20, reelBox.getPosition().y * 100 - 20);
+        reelTile.setPosition(
+                reelBox.getPosition().x * 100 - 20,
+                reelBox.getPosition().y * 100 - 20);
+        reelTile.updateReelFlashSegments(reelBox.getPosition().x * 100 , reelBox.getPosition().y * 100);
         reelTile.setOrigin(0, 0);
         reelTile.setSize(40, 40);
         reelTile.setRotation(angle);

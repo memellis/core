@@ -239,31 +239,6 @@ public class HiddenPatternWithFallingReels extends SPPrototypeTemplate
 
     @Override
     public void dealWithReelHittingReelSink(ReelTile reelTile) {
-        numberOfReelsToHitSinkBottom++;
-        if (numberOfReelsToHitSinkBottom < GAME_LEVEL_WIDTH)
-            return;
-
-        if (levelCreator.getPlayState() == PlayStates.INTRO_SPINNING)
-            levelCreator.setHitSinkBottom(true);
-
-        if (levelCreator.getPlayState() == PlayStates.REELS_SPINNING ||
-            levelCreator.getPlayState() == PlayStates.INTRO_FLASHING ||
-            levelCreator.getPlayState() == PlayStates.REELS_FLASHING ||
-            levelCreator.getPlayState() == PlayStates.PLAYING) {
-
-            if (levelCreator.getPlayState() == PlayStates.REELS_SPINNING ||
-               (levelCreator.getPlayState() == PlayStates.PLAYING))
-                System.out.println("I've hit sink bottom");
-
-            int r = PuzzleGridTypeReelTile.getRowFromLevel(reelTile.getDestinationY(), GAME_LEVEL_HEIGHT);
-            int c = PuzzleGridTypeReelTile.getColumnFromLevel(reelTile.getDestinationX());
-
-            int currentTileAtBottomIndex = levelCreator.findReel((int)reelTile.getDestinationX(), 40);
-            if (currentTileAtBottomIndex != -1) {
-                swapReelsAboveMe(reelTile);
-                reelsLeftToFall(r, c);
-            }
-        }
     }
 
     @Override
@@ -339,51 +314,52 @@ public class HiddenPatternWithFallingReels extends SPPrototypeTemplate
     }
 
     private void swapReels(ReelTile reelTileA, ReelTile reelTileB) {
-        float savedDestinationY = reelTileA.getDestinationY();
-        int reelHasFallenFrom = levelCreator.findReel((int)reelTileB.getDestinationX(), (int) reelTileB.getDestinationY() + 40);
-
-        if (reelHasFallenFrom > 0) {
-            ReelTile deletedReel = reelTiles.get(reelHasFallenFrom);
-            System.out.println("swapReels deleteReel="+reelHasFallenFrom+" x="+deletedReel.getX()+" y="+deletedReel.getY());
-
-            reelTileA.setDestinationY(reelTileB.getDestinationY() + 40);
-            reelTileA.setY(reelTileB.getDestinationY() + 40);
-            reelTileA.unDeleteReelTile();
-            levelCreator.undeleteReelBox(reelTileA.getIndex());
-
-            deletedReel.setDestinationY(savedDestinationY);
-            deletedReel.setY(savedDestinationY);
-        }
+//        float savedDestinationY = reelTileA.getDestinationY();
+//        int reelHasFallenFrom = levelCreator.findReel((int)reelTileB.getDestinationX(), (int) reelTileB.getDestinationY() + 40);
+//
+//        if (reelHasFallenFrom > 0) {
+//            ReelTile deletedReel = reelTiles.get(reelHasFallenFrom);
+//            System.out.println("swapReels deleteReel="+reelHasFallenFrom+" x="+deletedReel.getX()+" y="+deletedReel.getY());
+//
+//            reelTileA.setDestinationY(reelTileB.getDestinationY() + 40);
+//            reelTileA.setY(reelTileB.getDestinationY() + 40);
+//            reelTileA.unDeleteReelTile();
+//            levelCreator.undeleteReelBox(reelTileA.getIndex());
+//
+//            deletedReel.setDestinationY(savedDestinationY);
+//            deletedReel.setY(savedDestinationY);
+//        }
     }
 
     private void swapReels(ReelTile reelTile) {
-        float savedDestinationY = reelTile.getDestinationY();
-        System.out.println("savedDesinationY="+savedDestinationY);
-        int reelHasFallenTo = levelCreator.findReel((int)reelTile.getDestinationX(), 40);
-        ReelTile deletedReel = reelTiles.get(reelHasFallenTo);
-        System.out.println("swapReels deleteReel="+reelHasFallenTo+" x="+deletedReel.getX()+" y="+deletedReel.getY());
-
-        reelTile.setDestinationY(40);
-        reelTile.setY(40);
-        reelTile.unDeleteReelTile();
-        levelCreator.undeleteReelBox(reelTile.getIndex());
-
-        deletedReel.setDestinationY(savedDestinationY);
-        deletedReel.setY(savedDestinationY);
+//        float savedDestinationY = reelTile.getDestinationY();
+//        System.out.println("savedDesinationY="+savedDestinationY);
+//        int reelHasFallenTo = levelCreator.findReel((int)reelTile.getDestinationX(), 40);
+//        ReelTile deletedReel = reelTiles.get(reelHasFallenTo);
+//        System.out.println("swapReels deleteReel="+reelHasFallenTo+" x="+deletedReel.getX()+" y="+deletedReel.getY());
+//
+//        reelTile.setDestinationY(40);
+//        reelTile.setY(40);
+//        reelTile.unDeleteReelTile();
+//        levelCreator.undeleteReelBox(reelTile.getIndex());
+//
+//        deletedReel.setDestinationY(savedDestinationY);
+//        deletedReel.setY(savedDestinationY);
     }
 
     private ReelTile swapReels(TupleValueIndex[] reelsAboveMe, int reelsAboveMeIndex, ReelTile currentReel) {
-        float savedDestinationY = reelTiles.get(reelsAboveMe[reelsAboveMeIndex].getIndex()).getDestinationY();
-        int reelHasFallenFrom = levelCreator.findReel((int) currentReel.getDestinationX(), (int) currentReel.getDestinationY() + 40);
-
-        ReelTile deletedReel = reelTiles.get(reelHasFallenFrom);
-
-        reelTiles.get(reelsAboveMe[reelsAboveMeIndex].getIndex()).setDestinationY(currentReel.getDestinationY() + 40);
-        reelTiles.get(reelsAboveMe[reelsAboveMeIndex].getIndex()).setY(currentReel.getDestinationY() + 40);
-
-        deletedReel.setDestinationY(savedDestinationY);
-        deletedReel.setY(savedDestinationY);
-        return reelTiles.get(reelsAboveMe[reelsAboveMeIndex].getIndex());
+//        float savedDestinationY = reelTiles.get(reelsAboveMe[reelsAboveMeIndex].getIndex()).getDestinationY();
+//        int reelHasFallenFrom = levelCreator.findReel((int) currentReel.getDestinationX(), (int) currentReel.getDestinationY() + 40);
+//
+//        ReelTile deletedReel = reelTiles.get(reelHasFallenFrom);
+//
+//        reelTiles.get(reelsAboveMe[reelsAboveMeIndex].getIndex()).setDestinationY(currentReel.getDestinationY() + 40);
+//        reelTiles.get(reelsAboveMe[reelsAboveMeIndex].getIndex()).setY(currentReel.getDestinationY() + 40);
+//
+//        deletedReel.setDestinationY(savedDestinationY);
+//        deletedReel.setY(savedDestinationY);
+//        return reelTiles.get(reelsAboveMe[reelsAboveMeIndex].getIndex());
+        return null;
     }
 
     private void swapReelsAboveMe(ReelTile reelTile) {

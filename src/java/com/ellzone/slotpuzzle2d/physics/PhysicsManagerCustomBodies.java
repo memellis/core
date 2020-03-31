@@ -98,7 +98,7 @@ public class PhysicsManagerCustomBodies {
         if(!isPaused){
             accumulator += dt;
             while(accumulator > dt){
-                world.step(BOX_STEP,VELOCITY_ITER, POSITION_ITER);
+                world.step(BOX_STEP, VELOCITY_ITER, POSITION_ITER);
                 accumulator -= BOX_STEP;
             }
         }

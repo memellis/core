@@ -27,15 +27,13 @@ import com.badlogic.gdx.utils.Array;
 import com.ellzone.slotpuzzle2d.utils.PixmapProcessors;
 import com.ellzone.slotpuzzle2d.utils.Random;
 
-public class ReelTile extends ReelSprite {
+public class ReelTile extends ReelSprite implements ReelTileInterface {
     private Texture scrollTexture;
     private int numberOfReelsInTexture = 0;
     private TextureRegion region, flashReel;
     private float tileWidth;
     private float tileHeight;
     private float reelDisplayWidth = 0, reelDisplayHeight = 0;
-    private float x;
-    private float y;
     private float destinationX;
     private float destinationY;
     private float sx = 0;
@@ -59,8 +57,8 @@ public class ReelTile extends ReelSprite {
 	
     public ReelTile(Texture scrollTexture, float x, float y, float tileWidth, float tileHeight, int endReel, Sound spinningSound) {
         this.scrollTexture = scrollTexture;
-        this.x = x;
-        this.y = y;
+        super.setX(x);
+        super.setY(y);
         this.tileWidth = tileWidth;
         this.tileHeight = tileHeight;
         super.setEndReel(endReel);
@@ -71,8 +69,8 @@ public class ReelTile extends ReelSprite {
     public ReelTile(Texture texture, int numberOfReelsInTexture, float x, float y, float tileWidth, float tileHeight, float reelDisplayWidth, float reelDisplayHeight, int endReel, Sound spinningSound) {
         this.scrollTexture = texture;
         this.numberOfReelsInTexture = numberOfReelsInTexture;
-        this.x = x;
-        this.y = y;
+        super.setX(x);
+        super.setY(y);
         this.tileWidth = tileWidth;
         this.tileHeight = tileHeight;
         this.reelDisplayWidth = reelDisplayWidth;
@@ -83,7 +81,7 @@ public class ReelTile extends ReelSprite {
     }
 
     private void defineReelSlotTileScroll() {
-    	setPosition((int) x, (int) y);
+    	setPosition((int) super.getX(), (int) super.getY());
         if (scrollTexture != null) {
             scrollTexture.setWrap(Texture.TextureWrap.Repeat, Texture.TextureWrap.Repeat);
             region = new TextureRegion(scrollTexture);
@@ -93,11 +91,11 @@ public class ReelTile extends ReelSprite {
                 sy = randomSy;
             }
             if ((reelDisplayWidth == 0) && (reelDisplayHeight == 0)) {
-                region.setRegion((int) 0, randomSy, (int) tileWidth, (int) tileHeight);
-                setBounds((int) x, (int) y, (int) tileWidth, (int) tileHeight);
+                region.setRegion(0, randomSy, (int) tileWidth, (int) tileHeight);
+                setBounds((int) super.getX(), (int) super.getY(), (int) tileWidth, (int) tileHeight);
             } else {
-                region.setRegion((int) 0, randomSy, (int) reelDisplayWidth, (int) reelDisplayHeight);
-                setBounds((int) x, (int) y, (int) reelDisplayWidth, (int) reelDisplayHeight);
+                region.setRegion(0, randomSy, (int) reelDisplayWidth, (int) reelDisplayHeight);
+                setBounds((int) super.getX(), (int) super.getY(), (int) reelDisplayWidth, (int) reelDisplayHeight);
             }
             setRegion(region);
         }
@@ -114,167 +112,198 @@ public class ReelTile extends ReelSprite {
     public void update(float delta) {
         if (super.isSpinning())
             processSpinningState();
-        if (reelFlashTween) {
+        if (reelFlashTween)
             processFlashTweenState(delta);
-        }
     }
-	
-	private void processSpinningState() {
+
+    @Override
+    public float getSnapX() {
+        int quotient = (int) ((super.getX() + (tileWidth / 2)) / tileWidth);
+        return quotient * tileWidth;
+    }
+
+    @Override
+    public float getSnapY() {
+        int quotient = (int) ((super.getY() + (tileHeight / 2)) / tileHeight);
+        return quotient * tileHeight;
+    }
+
+    private void processSpinningState() {
         float syModulus = sy % scrollTexture.getHeight();
         region.setRegion((int) sx, (int) syModulus, (int)reelDisplayWidth, (int)reelDisplayHeight);
         setRegion(region);
-        if (this.spinningSound != null) {
-//        	this.spinngPitch = this.spinngPitch * 0.999f;
-//        	this.spinningSound.setPitch(this.spinningSoundId, this.spinngPitch);
-        }
  	}
 		
 	private void processFlashTweenState(float delta) {
          setFlashOn();
 	}
 
-	public float getDestinationX() {
+	@Override
+    public float getDestinationX() {
         return this.destinationX;
     }
 
+    @Override
     public float getDestinationY() {
         return this.destinationY;
     }
 
+    @Override
     public void setDestinationX(float destinationX) {
         this.destinationX = destinationX;
     }
 
+    @Override
     public void setDestinationY(float destinationY) {
         this.destinationY = destinationY;
     }
 
+    @Override
     public float getSx() {
         return this.sx;
     }
 
+    @Override
     public float getSy() {
         return this.sy;
     }
 
+
+
+    @Override
     public void setSx(float sx) {
         this.sx = sx;
     }
 
+    @Override
     public void setSy(float sy) {
         this.sy = sy;
     }
 
+    @Override
     public float getTileWidth() {
         return tileWidth;
     }
 
+    @Override
     public float getTileHeight() {
         return tileHeight;
     }
 
+    @Override
     public void setEndReel() {
         float syModulus = sy % scrollTexture.getHeight();
         super.setEndReel((int) ((int) ((syModulus + (tileHeight / 2)) % scrollTexture.getHeight()) / tileHeight));
     }
 
-	public int getCurrentReel() {
+	@Override
+    public int getCurrentReel() {
         float syModulus = sy % scrollTexture.getHeight();
  		return (int) ((int) ((syModulus + (tileHeight / 2)) % scrollTexture.getHeight()) / tileHeight);
 	}
 
-	public boolean isReelTileDeleted() {
+	@Override
+    public boolean isReelTileDeleted() {
         return this.tileDeleted;
 	}
 	
-	public void deleteReelTile() {
+	@Override
+    public void deleteReelTile() {
         this.tileDeleted = true;
 	}
 
-	public void unDeleteReelTile() { this.tileDeleted = false; }
+	@Override
+    public void unDeleteReelTile() { this.tileDeleted = false; }
 
-	public void setIsFallen (boolean isFallen) {
+	@Override
+    public void setIsFallen(boolean isFallen) {
         this.isFallen = isFallen;
     }
 
+    @Override
     public boolean isFallen() {
         return isFallen;
     }
 
+    @Override
     public boolean isStoppedFalling() { return isStoppedFalling; }
 
+    @Override
     public void setIsStoppedFalling(boolean isStoppedFalling) {
         this.isStoppedFalling = isStoppedFalling;
     }
 
-	public void startSpinning() {
+	@Override
+    public void startSpinning() {
 		super.setSpinning(true);
-//		if (this.spinningSound != null)
-//			startSpinningSound();
 	}
 
-	private void startSpinningSound() {
-		this.spinngPitch = 1.0f;
-		this.spinningSoundId = this.spinningSound.play(1.0f, this.spinngPitch, 1.0f);
-		this.spinningSound.setLooping(this.spinningSoundId, true);
-	}
-	
-	public void stopSpinning() {
+	@Override
+    public void stopSpinning() {
 		super.setSpinning(false);
-//		if (this.spinningSound != null)
-//			stopSpinningSound();
 	}
 
-	public void stopSpinningSound() {
-//        if (this.spinningSound != null)
-//            this.spinningSound.stop(this.spinningSoundId);
+	@Override
+    public void stopSpinningSound() {
 	}
 	
-	public FlashState getFlashState() {
+	@Override
+    public FlashState getFlashState() {
         return reelFlashState;
 	}
 	
-	public boolean isFlashing() {
+	@Override
+    public boolean isFlashing() {
         return reelFlash;
 	}
 	
-	public void setFlashMode(boolean reelFlash) {
+	@Override
+    public void setFlashMode(boolean reelFlash) {
         this.reelFlash = reelFlash;
 	}
 	
-	public Color getFlashColor() {
+	@Override
+    public Color getFlashColor() {
         return this.flashColor;
 	}
 	
-	public void setFlashColor(Color flashColor) {
+	@Override
+    public void setFlashColor(Color flashColor) {
         this.flashColor = flashColor;
 	}
 	
-	public void setFlashTween(boolean reelFlashTween) {
+	@Override
+    public void setFlashTween(boolean reelFlashTween) {
         this.reelFlashTween = reelFlashTween;
 	}
 	
-	public boolean getFlashTween() {
+	@Override
+    public boolean getFlashTween() {
         return this.reelFlashTween;
 	}
 	
-	public void setFlashOn() {
+	@Override
+    public void setFlashOn() {
         reelFlashState = FlashState.FLASH_ON;
 	}
 
+    @Override
     public void setFlashOff() {
         reelFlashState = FlashState.FLASH_OFF;
 	}
 
-	public void setScore(int score) {
+	@Override
+    public void setScore(int score) {
         this.score = score;
 	}
 	
-	public int getScore() {
+	@Override
+    public int getScore() {
         return this.score;
 	}
 	
-	public TextureRegion getRegion() {
+	@Override
+    public TextureRegion getRegion() {
         return this.region;
 	}
 
@@ -284,20 +313,25 @@ public class ReelTile extends ReelSprite {
             flashOnReelPixmap.dispose();
 	}
 
-	public void setIndex(int index) { this.index = index; }
+	@Override
+    public void setIndex(int index) { this.index = index; }
 
-	public int getIndex() { return this.index; }
+	@Override
+    public int getIndex() { return this.index; }
 
-	public void saveRegion() {
+	@Override
+    public void saveRegion() {
         if (region != null)
             PixmapProcessors.saveTextureRegion(region);
     }
 
+    @Override
     public void saveFlashRegion() {
         if(flashReel != null)
             PixmapProcessors.saveTextureRegion(flashReel);
     }
 
+    @Override
     public void resetReel() {
         flashOnReelPixmap = null;
         float syModulus = sy % scrollTexture.getHeight();
@@ -305,14 +339,17 @@ public class ReelTile extends ReelSprite {
         setRegion(region);
     }
 
+    @Override
     public int getScrollTextureHeight() {
         return scrollTexture.getHeight();
     }
 
+    @Override
     public int getNumberOfReelsInTexture() {
         return numberOfReelsInTexture;
     }
 
+    @Override
     public void drawFlashSegments(ShapeRenderer shapeRenderer) {
         shapeRenderer.begin(ShapeRenderer.ShapeType.Line);
         shapeRenderer.setColor(flashColor);
@@ -327,18 +364,22 @@ public class ReelTile extends ReelSprite {
         shapeRenderer.rect(reelFlashSegment.x + 2, reelFlashSegment.y + 2, tileWidth - 4, tileHeight - 4);
     }
 
+    @Override
     public void addReelFlashSegment(float x, float y) {
         reelFlashSegments.add(new Vector2(x, y));
     }
 
+    @Override
     public Array<Vector2> getReelFlashSegments() {
         return reelFlashSegments;
     }
 
+    @Override
     public void clearReelFlashSegments() {
         reelFlashSegments.clear();
     }
 
+    @Override
     public void updateReelFlashSegments(float x, float y) {
         for (Vector2 reelFlashSegment : reelFlashSegments)
             reelFlashSegment.set(new Vector2(x, y));

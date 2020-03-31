@@ -27,8 +27,6 @@ import com.ellzone.slotpuzzle2d.puzzlegrid.TupleValueIndex;
 import com.ellzone.slotpuzzle2d.sprites.AnimatedReel;
 import com.ellzone.slotpuzzle2d.sprites.ReelTile;
 
-import java.text.MessageFormat;
-
 import static com.ellzone.slotpuzzle2d.prototypes.assets.CreateLevelReels.REEL_WIDTH;
 import static com.ellzone.slotpuzzle2d.prototypes.box2d.collisions.Box2DBoxesFallingFromSlotPuzzleMatrices.SCREEN_OFFSET;
 import static com.ellzone.slotpuzzle2d.screens.PlayScreen.GAME_LEVEL_HEIGHT;
@@ -99,6 +97,15 @@ public class AnimatedReelsManager implements Telegraph {
                 throw new IllegalArgumentException("message.extrainfo does have a two AnimatedReels");
 
             AnimatedReel animatedReelA = reelsAB.get(0);
+            AnimatedReel animatedReelB = reelsAB.get(1);
+
+            if (animatedReelA.getReel().getIndex() == 72 &
+                    animatedReelB.getReel().getIndex() == 96)
+                System.out.println("I found my moving falling reel A!");
+            if (animatedReelA.getReel().getIndex() == 96 &
+                    animatedReelB.getReel().getIndex() == 72)
+                System.out.println("I found my moving falling reel B!");
+
             swapReelsAboveReel(
                     animatedReelA.getReel(),
                     swapReelActionStoppedFalling);
@@ -132,14 +139,13 @@ public class AnimatedReelsManager implements Telegraph {
         TupleValueIndex[] reelsAboveMe = getReelsAboveMe(reelBelow);
         ReelTile currentReelBelow = reelBelow;
         for (TupleValueIndex reel : reelsAboveMe) {
-            if (!isReelAtDestination(currentReelBelow, reel)) {
-                swapReelDestination(currentReelBelow, reel);
-                if (swapReelAction != null)
-                    swapReelAction.doAction(currentReelBelow);
-                currentReelBelow = reelTiles.get(reel.index);
-            }
+            swapReelDestination(currentReelBelow, reel);
+            if (swapReelAction != null)
+                swapReelAction.doAction(currentReelBelow);
+            currentReelBelow = reelTiles.get(reel.index);
         }
         swapReelAction.doAction(currentReelBelow);
+        printSlotMatrix();
     }
 
     private void swapReelDestination(ReelTile currentReelBelow, TupleValueIndex reel) {
@@ -166,7 +172,7 @@ public class AnimatedReelsManager implements Telegraph {
     }
 
     private boolean isReelAtDestination(ReelTile currentReelBelow, TupleValueIndex reel) {
-        return currentReelBelow.getDestinationY() + REEL_WIDTH == reelTiles.get(reel.index).getDestinationY();
+        return currentReelBelow.getSnapY() == currentReelBelow.getDestinationY();
     }
 
     private void reelSinkReelsLeftToFall(AnimatedReel animatedReel) {
@@ -177,7 +183,6 @@ public class AnimatedReelsManager implements Telegraph {
         }
         if (isReelFallenFromAbove(reelTile, BOTTOM_ROW))
             processReelFallenBelowDestinationRow(reelTile, getReelsAboveMe(reelTile));
-        printSlotMatrix();
     }
 
     private boolean isReelAtDestination(ReelTile currentReel, float destinationY) {

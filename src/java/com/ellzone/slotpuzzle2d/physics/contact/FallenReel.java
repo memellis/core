@@ -20,7 +20,6 @@ import com.badlogic.gdx.ai.msg.MessageManager;
 import com.badlogic.gdx.utils.Array;
 import com.ellzone.slotpuzzle2d.messaging.MessageType;
 import com.ellzone.slotpuzzle2d.physics.ReelSink;
-import com.ellzone.slotpuzzle2d.physics.contact.AnimatedReelsManager;
 import com.ellzone.slotpuzzle2d.puzzlegrid.PuzzleGridTypeReelTile;
 import com.ellzone.slotpuzzle2d.sprites.AnimatedReel;
 
@@ -31,10 +30,7 @@ public class FallenReel {
     private AnimatedReel animatedReelB;
     private AnimatedReel animatedReel;
     private ReelSink reelSink;
-
     private MessageManager messageManager;
-    private AnimatedReelsManager animatedReelsManager;
-
 
     public FallenReel(AnimatedReel animatedReelA, AnimatedReel animatedReelB) {
         this.animatedReelA = animatedReelA;
@@ -69,10 +65,10 @@ public class FallenReel {
 
     private void processReelHittingReel(int rowA, int rowB) {
         messageManager.dispatchMessage(MessageType.ReelsLeftToFall.index, animatedReelA);
-        if (animatedReelA.getReel().isStoppedFalling())
-            return;
-        if (animatedReelB.getReel().isStoppedFalling())
-            return;
+//        if (animatedReelA.getReel().isStoppedFalling())
+//            return;
+//        if (animatedReelB.getReel().isStoppedFalling())
+//            return;
         if (isFallenGapGreaterThanOneReel(rowA, rowB))
             processReelsFallenMoreThanOneTile(rowA, rowB);
     }
@@ -83,9 +79,9 @@ public class FallenReel {
 
      private void processReelsFallenMoreThanOneTile(int rowA, int rowB) {
          if (rowA > rowB)
-             swapReelsAboveMeBA();
-         else
              swapReelsAboveMeAB();
+         else
+             swapReelsAboveMeBA();
      }
 
     private void swapReelsAboveMeAB() {

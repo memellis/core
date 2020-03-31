@@ -30,6 +30,8 @@ import com.badlogic.gdx.utils.Array;
 import com.ellzone.slotpuzzle2d.SlotPuzzleConstants;
 import com.ellzone.slotpuzzle2d.effects.ScoreAccessor;
 import com.ellzone.slotpuzzle2d.effects.SpriteAccessor;
+import com.ellzone.slotpuzzle2d.finitestatemachine.PlayState;
+import com.ellzone.slotpuzzle2d.finitestatemachine.PlayStateMachine;
 import com.ellzone.slotpuzzle2d.finitestatemachine.PlayStates;
 import com.ellzone.slotpuzzle2d.level.FlashSlots;
 import com.ellzone.slotpuzzle2d.level.LevelDoor;
@@ -88,7 +90,6 @@ public class LevelCreatorSimple {
     private PlayStates playState;
     private boolean win = false, gameOver = false;
     private Array<Score> scores;
-//    private boolean hitSinkBottom = false;
     private Array<Body> reelBoxes;
     private Array<Body> reelBoxesCollided;
     public Array<Integer> replacementReelBoxes;
@@ -101,9 +102,7 @@ public class LevelCreatorSimple {
     private int mapWidth, mapHeight;
     private FlashSlots flashSlots;
     private boolean reelBoxesToBeCreated = false;
-    private int debugNumberOfReelsDeleted = 0;
-    private int debugNumberOfReelBoxesDeleted = 0;
-    private int debugActionReelStoppedFlashing = 0;
+    private PlayStateMachine playStateMachine;
 
     public LevelCreatorSimple (
             LevelDoor levelDoor,
@@ -131,6 +130,32 @@ public class LevelCreatorSimple {
         initialise(levelDoor, reelTiles, level, tweenManager, levelWidth, levelHeight);
     }
 
+    public LevelCreatorSimple (
+            LevelDoor levelDoor,
+            Array<AnimatedReel> animatedReels,
+            Array<ReelTile> reelTiles,
+            TiledMap level,
+            AnnotationAssetManager annotationAssetManager,
+            TextureAtlas carddeckAtlas,
+            TweenManager tweenManager,
+            PhysicsManagerCustomBodies physics,
+            int levelWidth,
+            int levelHeight,
+            PlayStateMachine playStateMachine) {
+        this.levelDoor = levelDoor;
+        this.animatedReels = animatedReels;
+        this.reelTiles = reelTiles;
+        this.level = level;
+        this.tweenManager = tweenManager;
+        this.annotationAssetManager = annotationAssetManager;
+        this.carddeckAtlas = carddeckAtlas;
+        this.physics = physics;
+        this.levelWidth = levelWidth;
+        this.levelHeight = levelHeight;
+        this.playStateMachine = playStateMachine;
+        initialise(levelDoor, reelTiles, level, tweenManager, levelWidth, levelHeight);
+    }
+
     private void initialise(LevelDoor levelDoor, Array<ReelTile> reelTiles, TiledMap level, TweenManager tweenManager, int levelWidth, int levelHeight) {
         puzzleGridTypeReelTile = new PuzzleGridTypeReelTile();
         reelBoxes = new Array<>();
@@ -139,15 +164,10 @@ public class LevelCreatorSimple {
         reelTiles = createLevel(levelDoor, level, reelTiles, levelWidth, levelHeight);
         reelsSpinning = reelBoxes.size - 1;
         reelsFlashing = 0;
-//        hitSinkBottom = false;
         scores = new Array<Score>();
         reelsToFall = new Array<TupleValueIndex>();
         getMapProperties(level);
         flashSlots = new FlashSlots(tweenManager, mapWidth, mapHeight, reelTiles);
-    }
-
-    private int getNumberOfReelMapObjectsByName(TiledMap level, String layerName, String name) {
-        return getRectangleMapObjectsByName(level, layerName, name).size;
     }
 
     private Array<RectangleMapObject> getRectangleMapObjectsByName(TiledMap level, String layerName, String name) {
@@ -311,7 +331,7 @@ public class LevelCreatorSimple {
                 19,
                 19,
                 true);
-        reelTileBody.setUserData(reelTile);
+        reelTileBody.setUserData(animatedReels.get(reelTile.getIndex()));
         reelBoxes.add(reelTileBody);
     }
 
@@ -357,90 +377,36 @@ public class LevelCreatorSimple {
             allReelsHaveStoppedSpinning();
     }
 
-    private void allReelsHaveStoppedSpinning() {
-        if (reelsSpinning <= -1)  {
-            if (levelDoor.getLevelType().equals(HIDDEN_PATTERN_LEVEL_TYPE)) {
-                if (testForHiddenPatternRevealed(reelTiles, levelWidth, levelHeight))
-                    iWonTheLevel();
-            }
-            if (levelDoor.getLevelType().equals(PLAYING_CARD_LEVEL_TYPE)) {
-                if (testForHiddenPlayingCardsRevealed(reelTiles, levelWidth, levelHeight))
-                    iWonTheLevel();
-            }
-            if (levelDoor.getLevelType().equals(BONUS_LEVEL_TYPE)) {
-                if (testForJackpot(reelTiles, levelWidth, levelHeight))
-                    iWonABonus();
-            }
-        } else {
+    public void allReelsHaveStoppedSpinning() {
+        if (levelDoor.getLevelType().equals(HIDDEN_PATTERN_LEVEL_TYPE)) {
+            if (testForHiddenPatternRevealed(reelTiles, levelWidth, levelHeight))
+                iWonTheLevel();
+        }
+        if (levelDoor.getLevelType().equals(PLAYING_CARD_LEVEL_TYPE)) {
+            if (testForHiddenPlayingCardsRevealed(reelTiles, levelWidth, levelHeight))
+                iWonTheLevel();
+        }
+        if (levelDoor.getLevelType().equals(BONUS_LEVEL_TYPE)) {
             if (testForJackpot(reelTiles, levelWidth, levelHeight))
                 iWonABonus();
         }
     }
 
     private void actionReelStoppedFlashing(ReelTileEvent event, ReelTile reelTile) {
-        debugActionReelStoppedFlashing++;
-        System.out.println("actionReelsStoppedFlashing times call="+debugActionReelStoppedFlashing);
-        if ((playState == PlayStates.INTRO_FLASHING) | (playState != PlayStates.REELS_FLASHING)) {
-            System.out.println("Testing to deal with numberOfReelsFlashing < 1 after a when a reel has stopped flashing - numberOfReelsFlashing="+flashSlots.getNumberOfReelsFlashing());
-            if (flashSlots.getNumberOfReelsFlashing() <= 2) {
-                System.out.println("Please deal with numberOfReelsFlashing < 1 after a when a reel has stopped flashing");
-                // When do I need to testForAnyLonelyReels?
-                //
-                /*if (testForAnyLonelyReels(reelTiles, this.levelWidth, this.levelHeight)) {
-                    win = false;
-                    if (Hud.getLives() > 0) {
-                        setPlayState(PlayScreen.PlayStates.LEVEL_LOST);
-                    } else {
-                        gameOver = true;
-                    }
-                }*/
-            }
+        if (playStateMachine.getStateMachine().getCurrentState() == PlayState.PLAY) {
+            System.out.println("Copy logic from PlayScreen");
         }
         reelScoreAnimation(reelTile);
         deleteReelAnimation(reelTile);
     }
 
-    private ReelTileGridValue[][] flashSlots(Array<ReelTile> reelTiles, int levelWidth, int levelHeight) {
-        if (playState == PlayStates.INTRO_SPINNING)
-            playState = PlayStates.INTRO_FLASHING;
-
-        if (playState == PlayStates.REELS_SPINNING ||
-            playState == PlayStates.PLAYING)
-            playState = PlayStates.REELS_FLASHING;
-
-        ReelTileGridValue[][] puzzleGrid = puzzleGridTypeReelTile.populateMatchGrid(reelTiles, levelWidth, levelHeight);
-
-        Array<ReelTileGridValue> matchedSlots = puzzleGridTypeReelTile.matchGridSlots(puzzleGrid);
-        Array<ReelTileGridValue> duplicateMatchedSlots = PuzzleGridTypeReelTile.findDuplicateMatches(matchedSlots);
-
-        matchedSlots = PuzzleGridTypeReelTile.adjustMatchSlotDuplicates(matchedSlots, duplicateMatchedSlots);
-
-        if (matchedSlots.size > 0)
-            setUpToFlashMatchedReels(reelTiles, matchedSlots, duplicateMatchedSlots);
-        else
-            matchedReels = false;
-        return puzzleGrid;
-    }
-
-    private void setUpToFlashMatchedReels(Array<ReelTile> reelTiles, Array<ReelTileGridValue> matchedSlots, Array<ReelTileGridValue> duplicateMatchedSlots) {
-        matchedSlots.reverse();
-        numberOfReelBoxesToReplace = matchedSlots.size - 1 - duplicateMatchedSlots.size / 2;
-        numberOfReelBoxesToDelete = matchedSlots.size - 1 - duplicateMatchedSlots.size / 2;
-
-        for (TupleValueIndex matchedSlot : matchedSlots)
-            reelTiles.get(matchedSlot.index).setScore(matchedSlot.value);
-
-        flashSlots.flashMatchedSlotsForLevelCreator(matchedSlots, puzzleGridTypeReelTile);
-        matchedReels = true;
-    }
-
     private boolean testForHiddenPatternRevealed(Array<ReelTile> levelReel, int levelWidth, int levelHeight) {
-        TupleValueIndex[][] matchGrid = flashSlots(levelReel, levelWidth, levelHeight);
+        TupleValueIndex[][] matchGrid = flashSlots.flashSlots(reelTiles);
         return hiddenPatternRevealed(matchGrid);
     }
 
     private boolean testForHiddenPlayingCardsRevealed(Array<ReelTile> levelReel, int levelWidth, int levelHeight) {
-        TupleValueIndex[][] matchGrid = flashSlots(levelReel, levelWidth, levelHeight);
+        TupleValueIndex[][] matchGrid = flashSlots.flashSlots(reelTiles);
         return hiddenPlayingCardsRevealed(matchGrid);
     }
 
@@ -481,7 +447,7 @@ public class LevelCreatorSimple {
     }
 
     private boolean testForJackpot(Array<ReelTile> levelReel, int levelWidth, int levelHeight) {
-        TupleValueIndex[][] matchGrid = flashSlots(levelReel, levelWidth, levelHeight);
+        TupleValueIndex[][] matchGrid = flashSlots.flashSlots(levelReel);
         return true;
     }
 
@@ -560,10 +526,6 @@ public class LevelCreatorSimple {
             switch (type) {
                 case TweenCallback.COMPLETE:
                     deleteReel(source);
-                    System.out.println("numberOfReelBoxesToDelete="+numberOfReelBoxesToDelete);
-                    if (numberOfReelBoxesToDelete < 1)
-                        processCurrentMatchedReelsDeleted();
-
                     if (levelDoor.getLevelType().equals(PLAYING_CARD_LEVEL_TYPE))
                         testPlayingCardLevelWon(levelWidth, levelHeight);
                     if (levelDoor.getLevelType().equals(HIDDEN_PATTERN_LEVEL_TYPE))
@@ -574,54 +536,17 @@ public class LevelCreatorSimple {
         }
     };
 
-    private void processCurrentMatchedReelsDeleted() {
-        if ((playState == PlayStates.INTRO_FLASHING) | (playState == PlayStates.REELS_FLASHING)) {
-            findReelsAboveMe();
-            if (isThereMatchedSlots())
-                flashSlots(reelTiles, levelWidth, levelHeight);
-            else
-                if (replacementReelBoxes.size == 0)
-                    playState = PlayStates.PLAYING;
-        }
-    }
-
     private void deleteReel(BaseTween<?> source) {
         ReelTile reel = (ReelTile) source.getUserData();
-        int reelTilesIndex = reelTiles.indexOf(reel, true);
+        int reelTileIndex = reelTiles.indexOf(reel, true);
         //hudAddScore((reel.getEndReel() + 1) * reel.getScore());
         //playSound(reelStoppedSound);
         //playSound(chaChingSound);
 
         reel.deleteReelTile();
-        debugNumberOfReelsDeleted++;
-        reelBoxesToDelete.add(reelTilesIndex);
-        if (!replacementReelBoxes.contains(reelTilesIndex, true))
-            replacementReelBoxes.add(reelTilesIndex);
-//        flashSlots.setNumberOfReelsFlashing(flashSlots.getNumberOfReelsFlashing() - 1);
-        numberOfReelBoxesToDelete--;
-    }
-
-    private boolean isThereMatchedSlots() {
-        ReelTileGridValue[][] puzzleGrid = puzzleGridTypeReelTile.populateMatchGrid(reelTiles, levelWidth, levelHeight);
-        Array<ReelTileGridValue> matchedSlots = puzzleGridTypeReelTile.matchGridSlots(puzzleGrid);
-        Array<ReelTileGridValue> duplicateMatchedSlots = PuzzleGridTypeReelTile.findDuplicateMatches(matchedSlots);
-
-        PuzzleGridTypeReelTile.printGrid(puzzleGrid);
-
-        matchedSlots = PuzzleGridTypeReelTile.adjustMatchSlotDuplicates(matchedSlots, duplicateMatchedSlots);
-        if (matchedSlots.size > 0) {
-            matchedSlots.reverse();
-
-            numberOfReelBoxesToReplace = matchedSlots.size - 1 - duplicateMatchedSlots.size / 2;
-            numberOfReelBoxesToDelete = matchedSlots.size - 1 - duplicateMatchedSlots.size / 2;
-
-            for (TupleValueIndex matchedSlot : matchedSlots)
-                reelTiles.get(matchedSlot.index).setScore(matchedSlot.value);
-
-            flashSlots.flashMatchedSlotsForLevelCreator(matchedSlots, puzzleGridTypeReelTile);
-            return true;
-        }
-        return false;
+        reelBoxesToDelete.add(reelTileIndex);
+        if (!replacementReelBoxes.contains(reelTileIndex, true))
+            replacementReelBoxes.add(reelTileIndex);
     }
 
     private void testPlayingCardLevelWon(int levelWidth, int levelHeight) {
@@ -649,24 +574,6 @@ public class LevelCreatorSimple {
     }
 
     public void update(float dt) {
-        findReelsAboveMe();
-        if ((playState == PlayStates.INTRO_FLASHING) | (playState == PlayStates.REELS_FLASHING)) {
-            if ((reelsAboveHaveFallen) & (reelsToFall.size==0) & (flashSlots.getNumberOfReelsFlashing() == 0)) {
-                processReelsAboveHaveFallenWithNoReelsToFallNoReelsFlashingState();
-            } else {
-                if ((playState == PlayStates.INTRO_FLASHING) |
-                    (playState == PlayStates.REELS_FLASHING) |
-                    (playState == PlayStates.PLAYING))
-                    processNoReelBoxesToDeleteAnyMatchedReels();
-            }
-        }
-        if ((playState == PlayStates.INTRO_SPINNING) | (playState == PlayStates.REELS_SPINNING)) {
-             if ((numberOfReelBoxesToDelete < 0) &
-                    (reelsToFall.size == 0) &
-                    (replacementReelBoxes.size == 0))
-                playState = PlayStates.PLAYING;
-        }
-
         physics.update(dt);
         updateReelBoxes();
         deleteReelBoxes(reelBoxesToDelete);
@@ -677,41 +584,17 @@ public class LevelCreatorSimple {
     }
 
     private void processNoReelBoxesToDeleteAnyMatchedReels() {
-        if ((numberOfReelBoxesToDelete < 0) &
-                (reelsToFall.size == 0) &
-                (replacementReelBoxes.size > 0) &
-                (flashSlots.getNumberOfReelsFlashing() == 0)) {
-            matchedReels = isThereMatchedSlots();
-            if (!matchedReels) {
-                if ((numberOfReelBoxesToDelete < 0) &
-                        (reelsToFall.size == 0) &
-                        (replacementReelBoxes.size > 0)) {
-                    System.out.println("I was calling createReplacementReelBoxes from here! 2");
-                    reelBoxesToBeCreated = true;
-                }
-            } else {
-                if (playState == PlayStates.REELS_FLASHING)
-                    playState = PlayStates.PLAYING;
-            }
-        } else {
-            if ((numberOfReelBoxesToDelete < 0) &
-                    (!matchedReels) &
-                    (reelsToFall.size == 0) &
-                    (replacementReelBoxes.size == 0)) {
+        if (!flashSlots.areReelsFlashing()) {
+            if (!flashSlots.areReelsStartedFlashing())
+                flashSlots.flashSlots(reelTiles);
+            else {
                 playState = PlayStates.PLAYING;
             }
         }
     }
 
     private void processReelsAboveHaveFallenWithNoReelsToFallNoReelsFlashingState() {
-        if (!isThereMatchedSlots()) {
-            if (replacementReelBoxes.size == 0)
-                playState = PlayStates.PLAYING;
-            else
-            if (reelsToFall.size == 0)
-                reelBoxesToBeCreated = true;
-            reelsAboveHaveFallen = false;
-        }
+        flashSlots.flashSlots(reelTiles);
     }
 
     private void createReplacementReelBoxes() {
@@ -730,20 +613,6 @@ public class LevelCreatorSimple {
         }
         reelsSpinning = replacementReelBoxes.size - 1;
 
-        if (playState == PlayStates.INTRO_FLASHING)
-            playState = PlayStates.INTRO_SPINNING;
-
-        if (playState == PlayStates.REELS_FLASHING)
-            playState = PlayStates.REELS_SPINNING;
-    }
-
-    private Array<Integer> getDeletedReelTiles() {
-        Array<Integer> deleteReelTiles = new Array<>();
-        for (ReelTile reelTile : reelTiles) {
-            if (reelTile.isReelTileDeleted())
-                deleteReelTiles.add(reelTile.getIndex());
-        }
-        return deleteReelTiles;
     }
 
     private void createReplacementReelBox(Integer reelBoxIndex) {
@@ -780,10 +649,6 @@ public class LevelCreatorSimple {
         animatedReel.setupSpinning();
     }
 
-    public void setHitSinkBottom(boolean hitSinkBottom) {
-//        this.hitSinkBottom = hitSinkBottom;
-    }
-
     public void setNumberOfReelsSpinning(int numberOfReelsSpinning) {
         this.reelsSpinning = numberOfReelsSpinning;
     }
@@ -792,34 +657,20 @@ public class LevelCreatorSimple {
         return reelsSpinning;
     }
 
-    public Array<Score> getScores() {
-        return scores;
+    public int getNumberOfReelsFlashing() {
+        return flashSlots.getNumberOfReelsFlashing();
     }
 
-    public int findReel(int destinationX, int destinationY) {
-        int findReelIndex = 0;
-        while (findReelIndex < reelTiles.size) {
-            if ((reelTiles.get(findReelIndex).getDestinationX() == destinationX) &
-                    (reelTiles.get(findReelIndex).getDestinationY() == destinationY))
-                return findReelIndex;
-            findReelIndex++;
-        }
-        return -1;
+    public boolean getAreReelsFlashing() {
+        return flashSlots.areReelsFlashing();
     }
 
-    private void findReelsAboveMe() {
-        TupleValueIndex[][] matchGrid = puzzleGridTypeReelTile.populateMatchGrid(reelTiles, levelWidth, levelHeight);
-        TupleValueIndex[] reelsAboveMe = null;
-        reelsToFall = new Array<TupleValueIndex>();
-        PuzzleGridType puzzleGridType = new PuzzleGridType();
-        for (Integer replacementReelBox : replacementReelBoxes) {
-            reelsAboveMe = puzzleGridType.getReelsAboveMe(matchGrid,
-                    PuzzleGridTypeReelTile.getRowFromLevel(reelTiles.get(replacementReelBox).getDestinationY(), levelHeight),
-                    PuzzleGridTypeReelTile.getColumnFromLevel(reelTiles.get(replacementReelBox).getDestinationX()));
-            for (int rami = 0; rami < reelsAboveMe.length; rami++)
-                if (!reelsToFall.contains(reelsAboveMe[rami], true))
-                    reelsToFall.add(reelsAboveMe[rami]);
-        }
+    public boolean getAreReelsStartedFlashing() {
+        return flashSlots.areReelsStartedFlashing();
+    }
+
+    public boolean isFinishedMatchingSlots() {
+        return flashSlots.isFinishedMatchingSlots();
     }
 
     public Array<TupleValueIndex> getReelsToFall() {
@@ -834,18 +685,6 @@ public class LevelCreatorSimple {
         this.reelsAboveHaveFallen = reelsAboveHaveFallen;
     }
 
-    public void setNumberOfReelBoxesToDelete(int numberOfReelBoxesToDelete) {
-        this.numberOfReelBoxesToDelete = numberOfReelBoxesToDelete;
-    }
-
-    public int getNumberOfReelBoxesToDelete() {
-        return numberOfReelBoxesToDelete;
-    }
-
-    public int getNumberOfReelsFlashing() {
-        return flashSlots.getNumberOfReelsFlashing();
-    }
-
     private void updateReelBoxes() {
         if ((reelBoxesCollided != null) && (reelBoxesCollided.size > 0)) {
             for (Body reelBoxCollided : reelBoxesCollided) {
@@ -858,16 +697,43 @@ public class LevelCreatorSimple {
 
     private void deleteReelBoxes(Array<Integer> reelBoxesToDelete) {
         for (Integer reelBoxToDelete : reelBoxesToDelete) {
-            ReelTile reelTile = (ReelTile) reelBoxes.get(reelBoxToDelete).getUserData();
+            AnimatedReel animatedReel = (AnimatedReel) reelBoxes.get(reelBoxToDelete).getUserData();
             reelBoxes.get(reelBoxToDelete).setTransform(
-                    reelTile.getDestinationX() + 20 / 100,
-                    reelTile.getDestinationY() + OFF_PLAY_SCREEN_OFFSET / 100, 0);
+                    animatedReel.getReel().getDestinationX() + 20 / 100,
+                    animatedReel.getReel().getDestinationY() + OFF_PLAY_SCREEN_OFFSET / 100, 0);
             reelBoxes.get(reelBoxToDelete).setActive(false);
         }
         reelBoxesToDelete.clear();
     }
 
-    public void undeleteReelBox(int reelTileIndex) {
-        replacementReelBoxes.removeValue(reelTileIndex, true);
+    public void setReelsAreFlashing(boolean reelsAreFlashing) {
     }
+
+    public void updateOld(float dt) {
+        if ((playState == PlayStates.INTRO_FLASHING) | (playState == PlayStates.REELS_FLASHING)) {
+            if ((reelsAboveHaveFallen) & (reelsToFall.size==0) & (flashSlots.getNumberOfReelsFlashing() == 0)) {
+                processReelsAboveHaveFallenWithNoReelsToFallNoReelsFlashingState();
+            } else {
+                if ((playState == PlayStates.INTRO_FLASHING) |
+                        (playState == PlayStates.REELS_FLASHING) |
+                        (playState == PlayStates.PLAYING))
+                    processNoReelBoxesToDeleteAnyMatchedReels();
+            }
+        }
+        if ((playState == PlayStates.INTRO_SPINNING) | (playState == PlayStates.REELS_SPINNING)) {
+            if ((numberOfReelBoxesToDelete < 0) &
+                    (reelsToFall.size == 0) &
+                    (replacementReelBoxes.size == 0))
+                playState = PlayStates.PLAYING;
+        }
+
+        physics.update(dt);
+        updateReelBoxes();
+        deleteReelBoxes(reelBoxesToDelete);
+        if (reelBoxesToBeCreated) {
+            createReplacementReelBoxes();
+            reelBoxesToBeCreated = false;
+        }
+    }
+
 }

@@ -93,7 +93,6 @@ public class BoxBodyBuilder {
         //CALCULATE ANGLE OF THE LINE SEGMENT
         body.setTransform(bx, by, MathUtils.atan2(v2y-v1y, v2x-v1x));
 
-
         return body;
     }
 
@@ -116,9 +115,10 @@ public class BoxBodyBuilder {
     Body createBoxBody(World world, BodyDef.BodyType bodyType, float posx, float posy, float width, float height, boolean fixedRotation) {
         BodyDef bodyDef = new BodyDef();
         bodyDef.type = bodyType;
-        bodyDef.position.set(convertToBox(posx), convertToBox(posy));
+        bodyDef.position.set(
+                convertToBox(posx) + convertToBox(width),
+                convertToBox(posy) + convertToBox(height));
         bodyDef.fixedRotation = fixedRotation;
-
         Body body = world.createBody(bodyDef);
 
         makeBoxBody(body, bodyType, convertToBox(width), convertToBox(height), 1, 0, 0, 1);

@@ -308,6 +308,21 @@ public class SlotPuzzleMatrices {
         return inputMatrix.readMatrix();
     }
 
+    public static int[][] createMatrixWithAFullMatrix() {
+        String matrixToInput = "12 x 9\n"
+                + " 0  0  0  0  0  0  0  0  0  0   0   0\n"
+                + " 0  0  0  0  0  0  0  0  0  0   0   0\n"
+                + " 0  0  0  0  0  0  0  0  0  0   0   0\n"
+                + " 0  0  0  0  0  0  0  0  0  0   0   0\n"
+                + " 0  0  0  0  0  0  0  0  0  0   0   0\n"
+                + " 0  0  0  0  0  0  0  0  0  0   0   0\n"
+                + " 0  0  0  0  0  0  0  0  0  0   0   0\n"
+                + " 0  0  0  0  0  0  0  0  0  0   0   0\n"
+                + " 0  0  0  0  0  0  0  0  0  0   0   0\n";
+        InputMatrix inputMatrix = new InputMatrix(matrixToInput);
+        return inputMatrix.readMatrix();
+    }
+
     public static int[][] createDynamicMatrix(int[] matrixIdentifier,
                                               int width,
                                               int height) {
