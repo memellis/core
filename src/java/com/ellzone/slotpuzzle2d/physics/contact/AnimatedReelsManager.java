@@ -288,7 +288,7 @@ public class AnimatedReelsManager implements Telegraph {
         }
     }
 
-    private void printSlotMatrix() {
+    public void printSlotMatrix() {
         PuzzleGridTypeReelTile.printGrid(
                 PuzzleGridTypeReelTile.populateMatchGridStatic(
                         reelTiles,

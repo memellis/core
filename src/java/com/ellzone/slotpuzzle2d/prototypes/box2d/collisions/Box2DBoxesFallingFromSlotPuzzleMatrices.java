@@ -375,7 +375,7 @@ public class Box2DBoxesFallingFromSlotPuzzleMatrices extends SPPrototype impleme
         Body reelTileBody = createReelTileBodyAt(
                 (int) animatedReel.getReel().getX(),
                 (int) animatedReel.getReel().getY());
-       reelTileBody.setActive(isActive);
+        reelTileBody.setActive(isActive);
         reelTileBody.setUserData(animatedReel);
         return reelTileBody;
     }
@@ -447,7 +447,15 @@ public class Box2DBoxesFallingFromSlotPuzzleMatrices extends SPPrototype impleme
             if (!animatedReels.get(reelToDelete).getReel().isReelTileDeleted()) {
                 reelBoxBodies.get(reelToDelete).setActive(false);
                 animatedReels.get(reelToDelete).getReel().deleteReelTile();
+                animatedReels.get(reelToDelete).getReel().setY(
+                        animatedReels.get(reelToDelete).getReel().getSnapY() + SCREEN_OFFSET);
+                updateBoxBody(
+                        animatedReels.get(reelToDelete),
+                        false,
+                        reelBoxBodies.get(reelToDelete));
                 reelToDelete -= 12;
+                if (reelToDelete < 0)
+                    animatedReelsManager.printSlotMatrix();
             }
     }
 
