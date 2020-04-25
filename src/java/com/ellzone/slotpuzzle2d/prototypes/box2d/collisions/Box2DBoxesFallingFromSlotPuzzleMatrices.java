@@ -104,8 +104,10 @@ public class Box2DBoxesFallingFromSlotPuzzleMatrices extends SPPrototype impleme
     private int numberOfReelBoxesCreated = 0;
     int[] matrixIdentifier = new int[PlayScreen.GAME_LEVEL_WIDTH];
     private boolean cycleDynamic = true;
+    private boolean testingFullMatrixDeleteingReelBox = false;
     private boolean testingFullMatrixDeleteingReelBoxes = true;
     int reelToDelete = 84;
+    Array<Integer> reelsToDelete;
 
     @Override
     public void create() {
@@ -117,6 +119,11 @@ public class Box2DBoxesFallingFromSlotPuzzleMatrices extends SPPrototype impleme
         initialiseUniversalTweenEngine();
         isAutoFall = false;
         slotMatrixCycleIndex = 0;
+        reelsToDelete = new Array<>();
+        reelsToDelete.add(84);
+        reelsToDelete.add(72);
+        reelsToDelete.add(48);
+        reelsToDelete.add(36);
         initialiseReelSlots();
         createPhysicsWorld();
         animatedReelsManager = new AnimatedReelsManager(animatedReels, reelBoxBodies);
@@ -427,8 +434,10 @@ public class Box2DBoxesFallingFromSlotPuzzleMatrices extends SPPrototype impleme
         physicsEngine.draw(batch);
         renderReelBoxes(batch, reelBoxBodies);
         if (isReelsStoppingMoving()) {
-            if (testingFullMatrixDeleteingReelBoxes)
+            if (testingFullMatrixDeleteingReelBox)
                 deleteAReel();
+            else if (testingFullMatrixDeleteingReelBoxes)
+                deleteReels();
             else
                 if (isAutoFall) {
                     cycleSlotMatrix();
@@ -445,18 +454,28 @@ public class Box2DBoxesFallingFromSlotPuzzleMatrices extends SPPrototype impleme
     private void deleteAReel() {
         if (reelToDelete >= 0)
             if (!animatedReels.get(reelToDelete).getReel().isReelTileDeleted()) {
-                reelBoxBodies.get(reelToDelete).setActive(false);
-                animatedReels.get(reelToDelete).getReel().deleteReelTile();
-                animatedReels.get(reelToDelete).getReel().setY(
-                        animatedReels.get(reelToDelete).getReel().getSnapY() + SCREEN_OFFSET);
-                updateBoxBody(
-                        animatedReels.get(reelToDelete),
-                        false,
-                        reelBoxBodies.get(reelToDelete));
+                deleteTheReel(reelToDelete);
                 reelToDelete -= 12;
                 if (reelToDelete < 0)
                     animatedReelsManager.printSlotMatrix();
             }
+    }
+
+    private void deleteTheReel(int reelToDelete) {
+        reelBoxBodies.get(reelToDelete).setActive(false);
+        animatedReels.get(reelToDelete).getReel().deleteReelTile();
+        animatedReels.get(reelToDelete).getReel().setY(
+                animatedReels.get(reelToDelete).getReel().getSnapY() + SCREEN_OFFSET);
+        updateBoxBody(
+                animatedReels.get(reelToDelete),
+                false,
+                reelBoxBodies.get(reelToDelete));
+    }
+
+    private void deleteReels() {
+        for (Integer deleteReel : reelsToDelete)
+            if (!animatedReels.get(deleteReel).getReel().isReelTileDeleted())
+                deleteTheReel(deleteReel);
     }
 
     private boolean isReelsStoppingMoving() {

@@ -27,7 +27,6 @@ import com.ellzone.slotpuzzle2d.puzzlegrid.TupleValueIndex;
 import com.ellzone.slotpuzzle2d.sprites.AnimatedReel;
 import com.ellzone.slotpuzzle2d.sprites.ReelTile;
 
-import static com.ellzone.slotpuzzle2d.prototypes.assets.CreateLevelReels.REEL_WIDTH;
 import static com.ellzone.slotpuzzle2d.prototypes.box2d.collisions.Box2DBoxesFallingFromSlotPuzzleMatrices.SCREEN_OFFSET;
 import static com.ellzone.slotpuzzle2d.screens.PlayScreen.GAME_LEVEL_HEIGHT;
 import static com.ellzone.slotpuzzle2d.screens.PlayScreen.GAME_LEVEL_WIDTH;
@@ -99,15 +98,27 @@ public class AnimatedReelsManager implements Telegraph {
             AnimatedReel animatedReelA = reelsAB.get(0);
             AnimatedReel animatedReelB = reelsAB.get(1);
 
-            if (animatedReelA.getReel().getIndex() == 72 &
+            if (animatedReelA.getReel().getIndex() == 60 &
                     animatedReelB.getReel().getIndex() == 96)
-                System.out.println("I found my moving falling reel A!");
+                System.out.println("I found my moving falling reel A1!");
             if (animatedReelA.getReel().getIndex() == 96 &
-                    animatedReelB.getReel().getIndex() == 72)
-                System.out.println("I found my moving falling reel B!");
+                    animatedReelB.getReel().getIndex() == 60)
+                System.out.println("I found my moving falling reel B1!");
+
+            if (animatedReelA.getReel().getIndex() == 24 &
+                    animatedReelB.getReel().getIndex() == 60)
+                System.out.println("I found my moving falling reel A2!");
+            if (animatedReelA.getReel().getIndex() == 60 &
+                    animatedReelB.getReel().getIndex() == 24)
+                System.out.println("I found my moving falling reel B2!");
+
+//            swapReelsAboveReel(
+//                    animatedReelA.getReel(),
+//                    swapReelActionStoppedFalling);
 
             swapReelsAboveReel(
                     animatedReelA.getReel(),
+                    animatedReelB.getReel(),
                     swapReelActionStoppedFalling);
 
             return true;
@@ -139,13 +150,110 @@ public class AnimatedReelsManager implements Telegraph {
         TupleValueIndex[] reelsAboveMe = getReelsAboveMe(reelBelow);
         ReelTile currentReelBelow = reelBelow;
         for (TupleValueIndex reel : reelsAboveMe) {
-            swapReelDestination(currentReelBelow, reel);
-            if (swapReelAction != null)
-                swapReelAction.doAction(currentReelBelow);
-            currentReelBelow = reelTiles.get(reel.index);
+            if (isTouching(currentReelBelow, reel)) {
+                swapReelDestination(currentReelBelow, reel);
+                if (swapReelAction != null)
+                    swapReelAction.doAction(currentReelBelow);
+                currentReelBelow = reelTiles.get(reel.index);
+            }
         }
         swapReelAction.doAction(currentReelBelow);
         printSlotMatrix();
+    }
+
+    private void swapReelsAboveReel(
+            ReelTile reelBelow,
+            ReelTile reelAbove,
+            SwapReelAction swapReelAction) {
+        moveDeletedReelsToTheTopOfTheColumn(reelBelow, reelAbove);
+        setFallenReelsToCurrentPostions(reelBelow, reelAbove);
+        printSlotMatrix();
+    }
+
+    private void moveDeletedReelsToTheTopOfTheColumn(ReelTile reelBelow, ReelTile reelAbove) {
+        Array<Integer> reelsBetween = getReelsBetween(reelBelow, reelAbove);
+        Array<Integer> reelsDeleted = getTheReelsDeletedInColumn(reelBelow.getDestinationX());
+        for (Integer reelBetween : reelsBetween) {
+            ReelTile reelTileBetween = reelTiles.get(reelBetween);
+            for (Integer reelDeleted : reelsDeleted) {
+                ReelTile reelTileDeleted = reelTiles.get(reelDeleted);
+                if (reelTileBetween.getDestinationX() == reelTileDeleted.getDestinationX() &
+                    reelTileBetween.getDestinationY() == reelTileDeleted.getDestinationY()) {
+                    reelTileBetween.setDestinationY(400 - reelDeleted * 40);
+                    reelTileBetween.setY(400 + SCREEN_OFFSET - reelDeleted * 40);
+                }
+            }
+        }
+    }
+
+    private void setFallenReelsToCurrentPostions(ReelTile reelBelow, ReelTile reelAbove) {
+        Array<Integer> reelsAboveInContact = getReelsInContactAbove(reelAbove.getIndex());
+        for (Integer reelAboveInContact : reelsAboveInContact)
+            setFallReelToCurrentPosition(reelAboveInContact);
+        setFallReelToCurrentPosition(reelAbove.getIndex());
+    }
+
+    private void setFallReelToCurrentPosition(Integer reelAboveInContact) {
+        ReelTile reelTile = reelTiles.get(reelAboveInContact);
+        if (!reelTile.isReelTileDeleted())
+            reelTile.setDestinationY(reelTile.getSnapY());
+    }
+
+    private Array<Integer> getTheReelsDeletedInColumn(float column) {
+        Array<Integer> reelsDeleted = new Array<>();
+        int reelDeleted;
+        for (float row=40; row<=400; row+=40) {
+            reelDeleted = findReelUsingSnapY((int) column, (int) row);
+            if (reelDeleted>=0)
+                if (reelTiles.get(reelDeleted).isReelTileDeleted())
+                    reelsDeleted.add(reelDeleted);
+        }
+        return reelsDeleted;
+    }
+
+    private Array<Integer> getReelsBetween(ReelTile reelBelow, ReelTile reelAbove) {
+        Array<Integer> reelsBetween = new Array<>();
+        ReelTile nextReelAbove = reelBelow;
+        int foundReel;
+        boolean exitgetReelsBetween = false;
+        do {
+            foundReel = findReel(
+                    (int) nextReelAbove.getDestinationX(),
+                    (int) (nextReelAbove.getDestinationY() + 40.0f));
+            if (foundReel >= 0) {
+                nextReelAbove = animatedReels.get(foundReel).getReel();
+                if (nextReelAbove.getDestinationY() < reelAbove.getDestinationY())
+                    reelsBetween.add(foundReel);
+                else
+                    exitgetReelsBetween = true;
+            } else
+                exitgetReelsBetween = true;
+        } while (!exitgetReelsBetween);
+        return reelsBetween;
+    }
+
+    private boolean isTouching(ReelTile currentReelBelow, TupleValueIndex reel) {
+        return
+            currentReelBelow.getSnapY() + 40 ==
+            animatedReels.get(reel.index).getReel().getSnapY();
+    }
+
+    public Array<Integer> getReelsInContactAbove(int reel) {
+        Array<Integer> reelsAbove = new Array<>();
+        ReelTile reelTile = reelTiles.get(reel);
+        boolean foundReelAvove;
+        do {
+            int reelAbove = findReel(
+                    (int) reelTile.getDestinationX(),
+                    (int) reelTile.getDestinationY() + 40);
+            foundReelAvove = reelAbove >= 0 ? true : false;
+            if (foundReelAvove) {
+                reelsAbove.add(reelAbove);
+                reelTile = reelTiles.get(reelAbove);
+            }
+
+        } while (foundReelAvove);
+        return reelsAbove;
     }
 
     private void swapReelDestination(ReelTile currentReelBelow, TupleValueIndex reel) {
@@ -156,7 +264,7 @@ public class AnimatedReelsManager implements Telegraph {
             ReelTile reelTile = reelTiles.get(reel.index);
             ReelTile deletedReelTile = reelTiles.get(deletedReelIndex);
             deletedReelTile.setY(reelTile.getDestinationY() + SCREEN_OFFSET);
-            deletedReelTile.setDestinationY(deletedReelTile.getDestinationY() + 40);
+            deletedReelTile.setDestinationY(deletedReelTile.getDestinationY() + SCREEN_OFFSET);
             reelTile.setDestinationY(currentReelBelow.getDestinationY() + 40);
         }
     }
@@ -267,7 +375,24 @@ public class AnimatedReelsManager implements Telegraph {
     private boolean isReelFound(int destinationX, int destinationY, int findReelIndex) {
         return (reelTiles.get(findReelIndex).getDestinationX() == destinationX) &
                 ((reelTiles.get(findReelIndex).getDestinationY() == destinationY) |
-                 (reelTiles.get(findReelIndex).getDestinationY()+SCREEN_OFFSET == destinationY));
+                        (reelTiles.get(findReelIndex).getDestinationY()+SCREEN_OFFSET == destinationY));
+    }
+
+    private int findReelUsingSnapY(int x, int y) {
+        int findReelIndex = 0;
+        while (findReelIndex < reelTiles.size) {
+            if (isReelFound(x, y, findReelIndex)) {
+                return findReelIndex;
+            }
+            findReelIndex++;
+        }
+        return -1;
+    }
+
+    private boolean isReelFoundSnapY(int x, int y, int findReelIndex) {
+        return (reelTiles.get(findReelIndex).getDestinationX() == x) &
+                ((reelTiles.get(findReelIndex).getSnapY() == y) |
+                        (reelTiles.get(findReelIndex).getDestinationY()+SCREEN_OFFSET == y));
     }
 
     private void decrementReelsLeftToFall() {

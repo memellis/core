@@ -24,6 +24,7 @@ import com.ellzone.slotpuzzle2d.messaging.MessageType;
 import com.ellzone.slotpuzzle2d.physics.contact.AnimatedReelsManager;
 import com.ellzone.slotpuzzle2d.sprites.AnimatedReel;
 
+import org.hamcrest.CoreMatchers;
 import org.junit.Test;
 
 import static com.ellzone.slotpuzzle2d.prototypes.assets.CreateLevelReels.REEL_HEIGHT;
@@ -228,15 +229,97 @@ public class TestSwapReelsAbove {
             assertAnimatedReelNotSwapped(animatedReels, swappedReelsAboveAnimatedReels, currentReel);
     }
 
-    private AnimatedReelsManager sendSwapReelsAboveMessage(
+    @Test
+    public void testSwapReelsFallenWithTwoByTwoReelsDeleted() {
+        Gdx.app = new MyGDXApplication();
+        Array<AnimatedReel> animatedReels = new Array<>();
+        animatedReels = SlotPuzzleMatrices.createAnimatedReelsFromSlotPuzzleMatrix(
+                SlotPuzzleMatrices.createMatrixWithFillColumnNineBoxes());
+
+        prepareTestWithDeletedBoxes84and72And60Hitting96(animatedReels);
+        AnimatedReelsManager animatedReelsManager =
+                sendSwapReelsAboveMessage(animatedReels, 96, 60);
+        assertBoxesAfter60Hitting96(animatedReels);
+        prepareTestWith36And24Hitting60(animatedReels);
+        sendSwapReelsAboveMessage(animatedReelsManager, animatedReels, 60, 24);
+        assertBoxes24Hitting60(animatedReels);
+    }
+
+    private void prepareTestWithDeletedBoxes84and72And60Hitting96(
+            Array<AnimatedReel> animatedReels) {
+        animatedReels.get(84).getReel().deleteReelTile();
+        animatedReels.get(72).getReel().deleteReelTile();
+        animatedReels.get(48).getReel().deleteReelTile();
+        animatedReels.get(36).getReel().deleteReelTile();
+        animatedReels.get(60).getReel().setY(80);
+    }
+
+    private void assertBoxesAfter60Hitting96(
+            Array<AnimatedReel> animatedReels) {
+        assertThat(animatedReels.get(96).getReel().getY(), is(equalTo(40.0f)));
+        assertThat(animatedReels.get(96).getReel().getDestinationY(), is(equalTo(40.0f)));
+
+        assertThat(animatedReels.get(60).getReel().getY(), is(equalTo(80.0f)));
+        assertThat(animatedReels.get(60).getReel().getDestinationY(), is(equalTo(80.0f)));
+
+        assertThat(animatedReels.get(48).getReel().getY(), is(equalTo(200.0f)));
+        assertThat(animatedReels.get(48).getReel().getDestinationY(), is(equalTo(200.0f)));
+        assertThat(animatedReels.get(48).getReel().isReelTileDeleted(), is(true));
+
+        assertThat(animatedReels.get(36).getReel().getY(), is(equalTo(240.0f)));
+        assertThat(animatedReels.get(36).getReel().getDestinationY(), is(equalTo(240.0f)));
+        assertThat(animatedReels.get(36).getReel().isReelTileDeleted(), is(true));
+
+        assertThat(animatedReels.get(24).getReel().getY(), is(equalTo(280.f)));
+        assertThat(animatedReels.get(24).getReel().getY(), is(equalTo(280.f)));
+
+        assertThat(animatedReels.get(12).getReel().getY(), is(equalTo(320.f)));
+        assertThat(animatedReels.get(12).getReel().getY(), is(equalTo(320.f)));
+
+        assertThat(animatedReels.get(0).getReel().getY(), is(equalTo(360.f)));
+        assertThat(animatedReels.get(0).getReel().getY(), is(equalTo(360.f)));
+
+    }
+
+    private void prepareTestWith36And24Hitting60(
+            Array<AnimatedReel> animatedReels) {
+        animatedReels.get(24).getReel().setY(120);
+        animatedReels.get(12).getReel().setY(160);
+        animatedReels.get(0).getReel().setY(200);
+    }
+
+    private void sendSwapReelsAboveMessage(
+            AnimatedReelsManager animatedReelsManager,
             Array<AnimatedReel> animatedReels,
-            int animatedReelA,
-            int animatedReelB) {
+            int reelBelow,
+            int reelAbove) {
         Telegram message = new Telegram();
         message.message = MessageType.SwapReelsAboveMe.index;
         Array<AnimatedReel> reelsAB = new Array<>();
-        reelsAB.add(animatedReels.get(animatedReelA));
-        reelsAB.add(animatedReels.get(animatedReelB));
+        reelsAB.add(animatedReels.get(reelBelow));
+        reelsAB.add(animatedReels.get(reelAbove));
+        message.extraInfo = reelsAB;
+        animatedReelsManager.handleMessage(message);
+    }
+
+    private void assertBoxes24Hitting60(
+            Array<AnimatedReel> animatedReels) {
+        assertThat(animatedReels.get(96).getReel().getDestinationY(), is(equalTo(40.0f)));
+        assertThat(animatedReels.get(60).getReel().getDestinationY(), is(equalTo(80.0f)));
+        assertThat(animatedReels.get(24).getReel().getDestinationY(), is(equalTo(120.0f)));
+        assertThat(animatedReels.get(12).getReel().getDestinationY(), is(equalTo(160.0f)));
+        assertThat(animatedReels.get( 0).getReel().getDestinationY(), is(equalTo(200.0f)));
+    }
+
+    private AnimatedReelsManager sendSwapReelsAboveMessage(
+            Array<AnimatedReel> animatedReels,
+            int reelBelow,
+            int reelAbove) {
+        Telegram message = new Telegram();
+        message.message = MessageType.SwapReelsAboveMe.index;
+        Array<AnimatedReel> reelsAB = new Array<>();
+        reelsAB.add(animatedReels.get(reelBelow));
+        reelsAB.add(animatedReels.get(reelAbove));
         message.extraInfo = reelsAB;
         AnimatedReelsManager animatedReelsManager = new AnimatedReelsManager(animatedReels);
         animatedReelsManager.handleMessage(message);
