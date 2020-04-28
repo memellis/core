@@ -98,24 +98,6 @@ public class AnimatedReelsManager implements Telegraph {
             AnimatedReel animatedReelA = reelsAB.get(0);
             AnimatedReel animatedReelB = reelsAB.get(1);
 
-            if (animatedReelA.getReel().getIndex() == 60 &
-                    animatedReelB.getReel().getIndex() == 96)
-                System.out.println("I found my moving falling reel A1!");
-            if (animatedReelA.getReel().getIndex() == 96 &
-                    animatedReelB.getReel().getIndex() == 60)
-                System.out.println("I found my moving falling reel B1!");
-
-            if (animatedReelA.getReel().getIndex() == 24 &
-                    animatedReelB.getReel().getIndex() == 60)
-                System.out.println("I found my moving falling reel A2!");
-            if (animatedReelA.getReel().getIndex() == 60 &
-                    animatedReelB.getReel().getIndex() == 24)
-                System.out.println("I found my moving falling reel B2!");
-
-//            swapReelsAboveReel(
-//                    animatedReelA.getReel(),
-//                    swapReelActionStoppedFalling);
-
             swapReelsAboveReel(
                     animatedReelA.getReel(),
                     animatedReelB.getReel(),
@@ -173,14 +155,15 @@ public class AnimatedReelsManager implements Telegraph {
     private void moveDeletedReelsToTheTopOfTheColumn(ReelTile reelBelow, ReelTile reelAbove) {
         Array<Integer> reelsBetween = getReelsBetween(reelBelow, reelAbove);
         Array<Integer> reelsDeleted = getTheReelsDeletedInColumn(reelBelow.getDestinationX());
+        int numberOfReelsDeletedInColumn = reelsDeleted.size;
         for (Integer reelBetween : reelsBetween) {
             ReelTile reelTileBetween = reelTiles.get(reelBetween);
-            for (Integer reelDeleted : reelsDeleted) {
-                ReelTile reelTileDeleted = reelTiles.get(reelDeleted);
+            for (int index = 0; index < numberOfReelsDeletedInColumn; index++ ) {
+                ReelTile reelTileDeleted = reelTiles.get(reelsDeleted.get(index));
                 if (reelTileBetween.getDestinationX() == reelTileDeleted.getDestinationX() &
                     reelTileBetween.getDestinationY() == reelTileDeleted.getDestinationY()) {
-                    reelTileBetween.setDestinationY(400 - reelDeleted * 40);
-                    reelTileBetween.setY(400 + SCREEN_OFFSET - reelDeleted * 40);
+                    reelTileBetween.setDestinationY(360 - ((numberOfReelsDeletedInColumn - 1 - index) * 40));
+                    reelTileBetween.setY(360 + SCREEN_OFFSET - ((numberOfReelsDeletedInColumn - 1 - index) * 40));
                 }
             }
         }
@@ -194,9 +177,11 @@ public class AnimatedReelsManager implements Telegraph {
     }
 
     private void setFallReelToCurrentPosition(Integer reelAboveInContact) {
-        ReelTile reelTile = reelTiles.get(reelAboveInContact);
-        if (!reelTile.isReelTileDeleted())
-            reelTile.setDestinationY(reelTile.getSnapY());
+        if (reelAboveInContact>=0) {
+            ReelTile reelTile = reelTiles.get(reelAboveInContact);
+            if (!reelTile.isReelTileDeleted())
+                reelTile.setDestinationY(reelTile.getSnapY());
+        }
     }
 
     private Array<Integer> getTheReelsDeletedInColumn(float column) {
@@ -240,13 +225,17 @@ public class AnimatedReelsManager implements Telegraph {
 
     public Array<Integer> getReelsInContactAbove(int reel) {
         Array<Integer> reelsAbove = new Array<>();
+        if (reel < 0)
+            return reelsAbove;
         ReelTile reelTile = reelTiles.get(reel);
         boolean foundReelAvove;
         do {
-            int reelAbove = findReel(
+            int reelAbove = findReelIgnoringDeletedReels(
                     (int) reelTile.getDestinationX(),
                     (int) reelTile.getDestinationY() + 40);
-            foundReelAvove = reelAbove >= 0 ? true : false;
+            foundReelAvove =
+                    reelAbove >= 0 &&
+                    !reelTiles.get(reelAbove).isReelTileDeleted() ? true : false;
             if (foundReelAvove) {
                 reelsAbove.add(reelAbove);
                 reelTile = reelTiles.get(reelAbove);
@@ -375,7 +364,7 @@ public class AnimatedReelsManager implements Telegraph {
     private boolean isReelFound(int destinationX, int destinationY, int findReelIndex) {
         return (reelTiles.get(findReelIndex).getDestinationX() == destinationX) &
                 ((reelTiles.get(findReelIndex).getDestinationY() == destinationY) |
-                        (reelTiles.get(findReelIndex).getDestinationY()+SCREEN_OFFSET == destinationY));
+                 (reelTiles.get(findReelIndex).getDestinationY()+SCREEN_OFFSET == destinationY));
     }
 
     private int findReelUsingSnapY(int x, int y) {
@@ -389,10 +378,25 @@ public class AnimatedReelsManager implements Telegraph {
         return -1;
     }
 
-    private boolean isReelFoundSnapY(int x, int y, int findReelIndex) {
-        return (reelTiles.get(findReelIndex).getDestinationX() == x) &
-                ((reelTiles.get(findReelIndex).getSnapY() == y) |
-                        (reelTiles.get(findReelIndex).getDestinationY()+SCREEN_OFFSET == y));
+    private int findReelIgnoringDeletedReels(int destinationX, int destinationY) {
+        int findReelIndex = 0;
+        while (findReelIndex < reelTiles.size) {
+            if (isReelFoundIgnoringDeletedReels(destinationX, destinationY, findReelIndex))
+                return findReelIndex;
+            findReelIndex++;
+        }
+        return -1;
+    }
+
+    private boolean isReelFoundIgnoringDeletedReels(
+            int destinationX,
+            int destinationY,
+            int findReelIndex) {
+        if (reelTiles.get(findReelIndex).isReelTileDeleted())
+            return false;
+        return (reelTiles.get(findReelIndex).getDestinationX() == destinationX) &
+                ((reelTiles.get(findReelIndex).getDestinationY() == destinationY) |
+                 (reelTiles.get(findReelIndex).getDestinationY()+SCREEN_OFFSET == destinationY));
     }
 
     private void decrementReelsLeftToFall() {
