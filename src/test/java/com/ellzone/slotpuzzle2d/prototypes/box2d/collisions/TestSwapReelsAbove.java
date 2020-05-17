@@ -245,6 +245,53 @@ public class TestSwapReelsAbove {
         assertBoxes24Hitting60(animatedReels);
     }
 
+    @Test
+    public void testSwapReelsFallenAvoidingDuplicateReels() {
+        Gdx.app = new MyGDXApplication();
+        Array<AnimatedReel> animatedReels = new Array<>();
+        animatedReels = SlotPuzzleMatrices.createAnimatedReelsFromSlotPuzzleMatrix(
+                SlotPuzzleMatrices.createMatrixWithFillColumnNineBoxes());
+        prepareTestWithDeleteReel(24, animatedReels);
+        animatedReels.get(12).getReel().setY(280);
+        animatedReels.get(0).getReel().setY(320);
+        AnimatedReelsManager animatedReelsManager =
+                sendSwapReelsAboveMessage(animatedReels, 36, 12);
+
+        Array<AnimatedReel> swappedReelsAboveAnimatedReels = animatedReelsManager.getAnimatedReels();
+
+        assertThat(swappedReelsAboveAnimatedReels.get(0).getReel().getY(), is(equalTo(320.0f)));
+        assertThat(swappedReelsAboveAnimatedReels.get(0).getReel().getDestinationY(), is(equalTo(320.0f)));
+        assertThat(swappedReelsAboveAnimatedReels.get(0).getReel().isReelTileDeleted(), is(false));
+        assertThat(swappedReelsAboveAnimatedReels.get(12).getReel().getY(), is(equalTo(280.0f)));
+        assertThat(swappedReelsAboveAnimatedReels.get(12).getReel().getDestinationY(), is(equalTo(280.0f)));
+        assertThat(swappedReelsAboveAnimatedReels.get(12).getReel().isReelTileDeleted(), is(false));
+        assertThat(swappedReelsAboveAnimatedReels.get(24).getReel().getY(), is(equalTo(760.0f)));
+        assertThat(swappedReelsAboveAnimatedReels.get(24).getReel().getDestinationY(), is(equalTo(360.0f)));
+        assertThat(swappedReelsAboveAnimatedReels.get(24).getReel().isReelTileDeleted(), is(true));
+        assertThat(swappedReelsAboveAnimatedReels.get(36).getReel().getY(), is(equalTo(240.0f)));
+        assertThat(swappedReelsAboveAnimatedReels.get(36).getReel().getDestinationY(), is(equalTo(240.0f)));
+        assertThat(swappedReelsAboveAnimatedReels.get(36).getReel().isReelTileDeleted(), is(false));
+        assertThat(swappedReelsAboveAnimatedReels.get(48).getReel().getY(), is(equalTo(200.0f)));
+        assertThat(swappedReelsAboveAnimatedReels.get(48).getReel().getDestinationY(), is(equalTo(200.0f)));
+        assertThat(swappedReelsAboveAnimatedReels.get(48).getReel().isReelTileDeleted(), is(false));
+        assertThat(swappedReelsAboveAnimatedReels.get(60).getReel().getY(), is(equalTo(160.0f)));
+        assertThat(swappedReelsAboveAnimatedReels.get(60).getReel().getDestinationY(), is(equalTo(160.0f)));
+        assertThat(swappedReelsAboveAnimatedReels.get(60).getReel().isReelTileDeleted(), is(false));
+        assertThat(swappedReelsAboveAnimatedReels.get(72).getReel().getY(), is(equalTo(120.0f)));
+        assertThat(swappedReelsAboveAnimatedReels.get(72).getReel().getDestinationY(), is(equalTo(120.0f)));
+        assertThat(swappedReelsAboveAnimatedReels.get(72).getReel().isReelTileDeleted(), is(false));
+        assertThat(swappedReelsAboveAnimatedReels.get(84).getReel().getY(), is(equalTo(80.0f)));
+        assertThat(swappedReelsAboveAnimatedReels.get(84).getReel().getDestinationY(), is(equalTo(80.0f)));
+        assertThat(swappedReelsAboveAnimatedReels.get(84).getReel().isReelTileDeleted(), is(false));
+        assertThat(swappedReelsAboveAnimatedReels.get(96).getReel().getY(), is(equalTo(40.0f)));
+        assertThat(swappedReelsAboveAnimatedReels.get(96).getReel().getDestinationY(), is(equalTo(40.0f)));
+        assertThat(swappedReelsAboveAnimatedReels.get(96).getReel().isReelTileDeleted(), is(false));
+    }
+
+    private void prepareTestWithDeleteReel(int reelToDelete, Array<AnimatedReel> animatedReels) {
+        animatedReels.get(reelToDelete).getReel().deleteReelTile();
+    }
+
     private void prepareTestWithDeletedBoxes84and72And60Hitting96(
             Array<AnimatedReel> animatedReels) {
         animatedReels.get(84).getReel().deleteReelTile();
