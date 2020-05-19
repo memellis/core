@@ -107,13 +107,6 @@ public class AnimatedReelsManager implements Telegraph {
                     animatedReelB.getReel(),
                     swapReelActionStoppedFalling);
 
-            printSlotMatrix();
-            Array<ReelTile> duplicateReels = checkForDuplicateReels();
-            if (duplicateReels.size>0) {
-                System.out.println("Duplicate reels in AnimatedReelsManager");
-               for (ReelTile reelTile : duplicateReels)
-                printColumn((int)reelTile.getDestinationX());
-            }
             return true;
         }
         if (message.message == MessageType.ReelsLeftToFall.index) {
@@ -138,21 +131,6 @@ public class AnimatedReelsManager implements Telegraph {
         reelTile.setIsStoppedFalling(true);
         }
     };
-
-    private void swapReelsAboveReel(ReelTile reelBelow, SwapReelAction swapReelAction) {
-        TupleValueIndex[] reelsAboveMe = getReelsAboveMe(reelBelow);
-        ReelTile currentReelBelow = reelBelow;
-        for (TupleValueIndex reel : reelsAboveMe) {
-            if (isTouching(currentReelBelow, reel)) {
-                swapReelDestination(currentReelBelow, reel);
-                if (swapReelAction != null)
-                    swapReelAction.doAction(currentReelBelow);
-                currentReelBelow = reelTiles.get(reel.index);
-            }
-        }
-        swapReelAction.doAction(currentReelBelow);
-        printSlotMatrix();
-    }
 
     private void swapReelsAboveReel(
             ReelTile reelBelow,
@@ -231,12 +209,6 @@ public class AnimatedReelsManager implements Telegraph {
         return reelsBetween;
     }
 
-    private boolean isTouching(ReelTile currentReelBelow, TupleValueIndex reel) {
-        return
-            currentReelBelow.getSnapY() + 40 ==
-            animatedReels.get(reel.index).getReel().getSnapY();
-    }
-
     public Array<Integer> getReelsInContactAbove(int reel) {
         Array<Integer> reelsAbove = new Array<>();
         if (reel < 0)
@@ -257,19 +229,6 @@ public class AnimatedReelsManager implements Telegraph {
 
         } while (foundReelAvove);
         return reelsAbove;
-    }
-
-    private void swapReelDestination(ReelTile currentReelBelow, TupleValueIndex reel) {
-        int deletedReelIndex = findReel(
-                (int) currentReelBelow.getDestinationX(),
-                (int) currentReelBelow.getDestinationY() + 40);
-        if (deletedReelIndex >= 0) {
-            ReelTile reelTile = reelTiles.get(reel.index);
-            ReelTile deletedReelTile = reelTiles.get(deletedReelIndex);
-            deletedReelTile.setY(reelTile.getDestinationY() + SCREEN_OFFSET);
-            deletedReelTile.setDestinationY(deletedReelTile.getDestinationY() + SCREEN_OFFSET);
-            reelTile.setDestinationY(currentReelBelow.getDestinationY() + 40);
-        }
     }
 
     private TupleValueIndex[] getReelsAboveMe(ReelTile reelTile) {

@@ -272,6 +272,10 @@ public class TestSwapReelsAbove {
         AnimatedReelsManager animatedReelsManager =
                 sendSwapReelsAboveMessage(animatedReels, 48, 12);
         Array<AnimatedReel> swappedReels = animatedReelsManager.getAnimatedReels();
+        assertReelsColumnAvoidingDuplicatesTopReelDeleted(swappedReels);
+    }
+
+    private void assertReelsColumnAvoidingDuplicatesTopReelDeleted(Array<AnimatedReel> swappedReels) {
         assertReelYDestionYIsDelete(swappedReels, 0, 360.0f, 360.0f, true);
         assertReelYDestionYIsDelete(swappedReels, 12, 240.0f, 240.0f, false);
         assertReelYDestionYIsDelete(swappedReels, 24, 720.0f, 320.0f, true);
