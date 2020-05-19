@@ -408,11 +408,9 @@ public class HiddenPatternFallingReelsAnimatedReelsManager extends SPPrototypeTe
     private void processReelsStoppedMoving() {
         if(!reelsStoppedMoving) {
             System.out.println();
-            Array<ReelTile> duplicateReelTiles = animatedReelsManager.checkForDuplicateReels();
-            if (duplicateReelTiles.size > 0)
-                System.out.println("duplicate reels!!!!!");
             levelCreator.printMatchGrid(reelTiles, 12, 9);
             reelsStoppedMoving = true;
+            levelCreator.allReelsHaveStoppedSpinning();
         }
     }
 
