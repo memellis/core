@@ -21,11 +21,14 @@ import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.utils.Array;
 import com.ellzone.slotpuzzle2d.messaging.MessageType;
 import com.ellzone.slotpuzzle2d.physics.PhysicsManagerCustomBodies;
+import com.ellzone.slotpuzzle2d.puzzlegrid.Point;
 import com.ellzone.slotpuzzle2d.puzzlegrid.PuzzleGridType;
 import com.ellzone.slotpuzzle2d.puzzlegrid.PuzzleGridTypeReelTile;
 import com.ellzone.slotpuzzle2d.puzzlegrid.TupleValueIndex;
 import com.ellzone.slotpuzzle2d.sprites.AnimatedReel;
 import com.ellzone.slotpuzzle2d.sprites.ReelTile;
+
+import java.util.HashSet;
 
 import static com.ellzone.slotpuzzle2d.prototypes.box2d.collisions.Box2DBoxesFallingFromSlotPuzzleMatrices.SCREEN_OFFSET;
 import static com.ellzone.slotpuzzle2d.screens.PlayScreen.GAME_LEVEL_HEIGHT;
@@ -38,6 +41,7 @@ public class AnimatedReelsManager implements Telegraph {
     private Array<ReelTile> reelTiles;
     private int numberOfReelsToFall = 0;
     private int reelsStoppedFalling = 0;
+    private HashSet<Point> reelPoints = new HashSet<>();
 
     public AnimatedReelsManager(Array<AnimatedReel> animatedReels) {
         if (animatedReels == null)
@@ -103,6 +107,13 @@ public class AnimatedReelsManager implements Telegraph {
                     animatedReelB.getReel(),
                     swapReelActionStoppedFalling);
 
+            printSlotMatrix();
+            Array<ReelTile> duplicateReels = checkForDuplicateReels();
+            if (duplicateReels.size>0) {
+                System.out.println("Duplicate reels in AnimatedReelsManager");
+               for (ReelTile reelTile : duplicateReels)
+                printColumn((int)reelTile.getDestinationX());
+            }
             return true;
         }
         if (message.message == MessageType.ReelsLeftToFall.index) {
@@ -162,8 +173,8 @@ public class AnimatedReelsManager implements Telegraph {
                 ReelTile reelTileDeleted = reelTiles.get(reelsDeleted.get(index));
                 if (reelTileBetween.getDestinationX() == reelTileDeleted.getDestinationX() &
                     reelTileBetween.getDestinationY() == reelTileDeleted.getDestinationY()) {
-                    reelTileBetween.setDestinationY(360 - ((numberOfReelsDeletedInColumn - 1 - index) * 40));
-                    reelTileBetween.setY(360 + SCREEN_OFFSET - ((numberOfReelsDeletedInColumn - 1 - index) * 40));
+                    reelTileBetween.setDestinationY(360 - (index * 40));
+                    reelTileBetween.setY(360 + SCREEN_OFFSET - (index * 40));
                 }
             }
         }
@@ -191,11 +202,10 @@ public class AnimatedReelsManager implements Telegraph {
     private Array<Integer> getTheReelsDeletedInColumn(float column) {
         Array<Integer> reelsDeleted = new Array<>();
         int reelDeleted;
-        for (float row=40; row<=400; row+=40) {
-            reelDeleted = findReelUsingSnapY((int) column, (int) row);
-            if (reelDeleted>=0)
-                if (reelTiles.get(reelDeleted).isReelTileDeleted())
-                    reelsDeleted.add(reelDeleted);
+        for (ReelTile reelTile : reelTiles) {
+            if (reelTile.getDestinationX() == column)
+                if (reelTile.isReelTileDeleted())
+                    reelsDeleted.add(reelTile.getIndex());
         }
         return reelsDeleted;
     }
@@ -270,10 +280,6 @@ public class AnimatedReelsManager implements Telegraph {
                     GAME_LEVEL_HEIGHT),
             PuzzleGridTypeReelTile.getRowFromLevel(reelTile.getDestinationY(), GAME_LEVEL_HEIGHT),
             PuzzleGridTypeReelTile.getColumnFromLevel(reelTile.getDestinationX()));
-    }
-
-    private boolean isReelAtDestination(ReelTile currentReelBelow, TupleValueIndex reel) {
-        return currentReelBelow.getSnapY() == currentReelBelow.getDestinationY();
     }
 
     private void reelSinkReelsLeftToFall(AnimatedReel animatedReel) {
@@ -374,7 +380,7 @@ public class AnimatedReelsManager implements Telegraph {
     private int findReelUsingSnapY(int x, int y) {
         int findReelIndex = 0;
         while (findReelIndex < reelTiles.size) {
-            if (isReelFound(x, y, findReelIndex)) {
+            if (isReelFoundUsingSnapY(x, y, findReelIndex)) {
                 return findReelIndex;
             }
             findReelIndex++;
@@ -390,6 +396,15 @@ public class AnimatedReelsManager implements Telegraph {
             findReelIndex++;
         }
         return -1;
+    }
+
+    private boolean isReelFoundUsingSnapY(
+            int destinationX,
+            int destinationY,
+            int findReelIndex) {
+        return (reelTiles.get(findReelIndex).getDestinationX() == destinationX) &
+                ((reelTiles.get(findReelIndex).getSnapY() == destinationY) |
+                 (reelTiles.get(findReelIndex).getSnapY()+SCREEN_OFFSET == destinationY));
     }
 
     private boolean isReelFoundUsingSnapYIgnoringDeletedReels(
@@ -428,6 +443,33 @@ public class AnimatedReelsManager implements Telegraph {
                         GAME_LEVEL_WIDTH,
                         GAME_LEVEL_HEIGHT)
         );
+        System.out.println();
+    }
+
+    public Array<ReelTile> checkForDuplicateReels() {
+        Array<ReelTile> duplicateReels = new Array<>();
+        reelPoints.clear();
+        for (ReelTile reelTile : reelTiles)
+            if (isDuplicateReel(reelTile))
+                duplicateReels.add(reelTile);
+        return duplicateReels;
+    }
+
+    private boolean isDuplicateReel(ReelTile reelTile) {
+        int r = PuzzleGridTypeReelTile.getRowFromLevel(reelTile.getDestinationY(), GAME_LEVEL_HEIGHT);
+        int c = PuzzleGridTypeReelTile.getColumnFromLevel(reelTile.getDestinationX());
+        Point point = new Point(r, c, GAME_LEVEL_WIDTH);
+        boolean isNotADuplicate = reelPoints.add(point);
+        if (!isNotADuplicate)
+            reelPoints.add(point);
+        return !isNotADuplicate;
+    }
+
+    private void printColumn(int column) {
+        for (ReelTile reelTile : reelTiles) {
+            if (reelTile.getDestinationX() == column)
+                System.out.print(" "+reelTile.getIndex());
+        }
         System.out.println();
     }
 }

@@ -1,5 +1,6 @@
 package com.ellzone.slotpuzzle2d.prototypes.level.hiddenpattern;
 
+import com.badlogic.gdx.Application;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.ai.msg.MessageManager;
@@ -107,7 +108,7 @@ public class HiddenPatternFallingReelsAnimatedReelsManager extends SPPrototypeTe
     private ShapeRenderer shapeRenderer;
     private boolean displaySpinHelp;
     private int displaySpinHelpSprite;
-    private boolean slowMotion = false;
+    private boolean slowMotion = true;
     private boolean introSequenceFinished = false;
     private float slowMotionCount = 0;
     private int currentReel = 0;
@@ -121,6 +122,7 @@ public class HiddenPatternFallingReelsAnimatedReelsManager extends SPPrototypeTe
 
     @Override
     protected void initialiseOverride() {
+        Gdx.app.setLogLevel(Application.LOG_DEBUG);
         touch = new Vector2();
         initialisePlayFiniteStateMachine();
         initialiseWorld();
@@ -406,6 +408,9 @@ public class HiddenPatternFallingReelsAnimatedReelsManager extends SPPrototypeTe
     private void processReelsStoppedMoving() {
         if(!reelsStoppedMoving) {
             System.out.println();
+            Array<ReelTile> duplicateReelTiles = animatedReelsManager.checkForDuplicateReels();
+            if (duplicateReelTiles.size > 0)
+                System.out.println("duplicate reels!!!!!");
             levelCreator.printMatchGrid(reelTiles, 12, 9);
             reelsStoppedMoving = true;
         }
