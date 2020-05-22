@@ -142,19 +142,12 @@ public class AnimatedReelsManager implements Telegraph {
     }
 
     private void moveDeletedReelsToTheTopOfTheColumn(ReelTile reelBelow, ReelTile reelAbove) {
-        Array<Integer> reelsBetween = getReelsBetween(reelBelow, reelAbove);
         Array<Integer> reelsDeleted = getTheReelsDeletedInColumn(reelBelow.getDestinationX());
         int numberOfReelsDeletedInColumn = reelsDeleted.size;
-        for (Integer reelBetween : reelsBetween) {
-            ReelTile reelTileBetween = reelTiles.get(reelBetween);
-            for (int index = 0; index < numberOfReelsDeletedInColumn; index++ ) {
-                ReelTile reelTileDeleted = reelTiles.get(reelsDeleted.get(index));
-                if (reelTileBetween.getDestinationX() == reelTileDeleted.getDestinationX() &
-                    reelTileBetween.getDestinationY() == reelTileDeleted.getDestinationY()) {
-                    reelTileBetween.setDestinationY(360 - (index * 40));
-                    reelTileBetween.setY(360 + SCREEN_OFFSET - (index * 40));
-                }
-            }
+        for (int index = 0; index < numberOfReelsDeletedInColumn; index++ ) {
+            ReelTile reelTileDeleted = reelTiles.get(reelsDeleted.get(index));
+            reelTileDeleted.setDestinationY(360 - (index * 40));
+            reelTileDeleted.setY(360 + SCREEN_OFFSET - (index * 40));
         }
     }
 
@@ -186,27 +179,6 @@ public class AnimatedReelsManager implements Telegraph {
                     reelsDeleted.add(reelTile.getIndex());
         }
         return reelsDeleted;
-    }
-
-    private Array<Integer> getReelsBetween(ReelTile reelBelow, ReelTile reelAbove) {
-        Array<Integer> reelsBetween = new Array<>();
-        ReelTile nextReelAbove = reelBelow;
-        int foundReel;
-        boolean exitgetReelsBetween = false;
-        do {
-            foundReel = findReel(
-                    (int) nextReelAbove.getDestinationX(),
-                    (int) (nextReelAbove.getDestinationY() + 40.0f));
-            if (foundReel >= 0) {
-                nextReelAbove = animatedReels.get(foundReel).getReel();
-                if (nextReelAbove.getDestinationY() < reelAbove.getDestinationY())
-                    reelsBetween.add(foundReel);
-                else
-                    exitgetReelsBetween = true;
-            } else
-                exitgetReelsBetween = true;
-        } while (!exitgetReelsBetween);
-        return reelsBetween;
     }
 
     public Array<Integer> getReelsInContactAbove(int reel) {
@@ -336,17 +308,6 @@ public class AnimatedReelsManager implements Telegraph {
                  (reelTiles.get(findReelIndex).getDestinationY()+SCREEN_OFFSET == destinationY));
     }
 
-    private int findReelUsingSnapY(int x, int y) {
-        int findReelIndex = 0;
-        while (findReelIndex < reelTiles.size) {
-            if (isReelFoundUsingSnapY(x, y, findReelIndex)) {
-                return findReelIndex;
-            }
-            findReelIndex++;
-        }
-        return -1;
-    }
-
     private int findReelUsingSnapYIgnoringDeletedReels(int destinationX, int destinationY) {
         int findReelIndex = 0;
         while (findReelIndex < reelTiles.size) {
@@ -355,15 +316,6 @@ public class AnimatedReelsManager implements Telegraph {
             findReelIndex++;
         }
         return -1;
-    }
-
-    private boolean isReelFoundUsingSnapY(
-            int destinationX,
-            int destinationY,
-            int findReelIndex) {
-        return (reelTiles.get(findReelIndex).getDestinationX() == destinationX) &
-                ((reelTiles.get(findReelIndex).getSnapY() == destinationY) |
-                 (reelTiles.get(findReelIndex).getSnapY()+SCREEN_OFFSET == destinationY));
     }
 
     private boolean isReelFoundUsingSnapYIgnoringDeletedReels(

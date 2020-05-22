@@ -108,7 +108,7 @@ public class HiddenPatternFallingReelsAnimatedReelsManager extends SPPrototypeTe
     private ShapeRenderer shapeRenderer;
     private boolean displaySpinHelp;
     private int displaySpinHelpSprite;
-    private boolean slowMotion = true;
+    private boolean slowMotion = false;
     private boolean introSequenceFinished = false;
     private float slowMotionCount = 0;
     private int currentReel = 0;
@@ -647,7 +647,6 @@ public class HiddenPatternFallingReelsAnimatedReelsManager extends SPPrototypeTe
 
     @Override
     public void start() {
-
     }
 
     @Override

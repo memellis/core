@@ -39,6 +39,7 @@ public class FlashSlots {
     private TweenManager tweenManager;
     private int mapWidth, mapHeight;
     private Array<ReelTile> reelTiles;
+    Array<ReelTileGridValue> matchedSlotsCopy;
     private int numberOfReelsFlashing, numberOfReelsToDelete;
     private boolean startedFlashing;
     private boolean finishedMatchingSlots;
@@ -67,8 +68,11 @@ public class FlashSlots {
 
         matchedSlots = PuzzleGridTypeReelTile.adjustMatchSlotDuplicates(matchedSlots, duplicateMatchedSlots);
         matchedSlots = PuzzleGridTypeReelTile.removeDuplicateMatches(duplicateMatchedSlots, matchedSlots);
+
         for (TupleValueIndex matchedSlot : matchedSlots)
             reelTiles.get(matchedSlot.index).setScore(matchedSlot.value);
+
+        matchedSlotsCopy = new Array<>(matchedSlots);
 
         flashMatchedSlots(matchedSlots, puzzleGridTypeReelTile);
         return puzzleGrid;
@@ -138,6 +142,10 @@ public class FlashSlots {
             initialiseReelFlash(reelTile, 2.0f);
         }
         finishedMatchingSlots = true;
+    }
+
+    public Array<ReelTileGridValue> getMatchedSlots() {
+        return matchedSlotsCopy;
     }
 
     private void flashMatchedSlotsBatch(Array<ReelTileGridValue> matchedSlots, float pushPause) {

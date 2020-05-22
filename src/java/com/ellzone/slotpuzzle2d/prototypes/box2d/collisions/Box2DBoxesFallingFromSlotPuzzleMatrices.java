@@ -436,14 +436,16 @@ public class Box2DBoxesFallingFromSlotPuzzleMatrices extends SPPrototype impleme
         if (isReelsStoppingMoving()) {
             if (testingFullMatrixDeleteingReelBox)
                 deleteAReel();
-            else if (testingFullMatrixDeleteingReelBoxes)
-                deleteReels();
-            else
-                if (isAutoFall) {
-                    cycleSlotMatrix();
-                    reCreateBoxes();
-                    setBoxesActive();
+            else {
+                if (testingFullMatrixDeleteingReelBoxes)
+                    deleteReels();
+                else
+                    if (isAutoFall) {
+                        cycleSlotMatrix();
+                        reCreateBoxes();
+                        setBoxesActive();
                 }
+            }
         }
         physicsEngine.draw(batch);
 
@@ -541,6 +543,7 @@ public class Box2DBoxesFallingFromSlotPuzzleMatrices extends SPPrototype impleme
         }
         if (keycode == Input.Keys.D) {
             System.out.println("Debug");
+            animatedReelsManager.printSlotMatrix();
             return true;
         }
         if (keycode == Input.Keys.C) {

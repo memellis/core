@@ -326,7 +326,7 @@ public class LevelCreatorSimple {
     private void setUpRelatedReelTileBody(ReelTile reelTile) {
         Body reelTileBody = physics.createBoxBody(
                  BodyDef.BodyType.DynamicBody,
-                reelTile.getDestinationX() + 20,
+                reelTile.getDestinationX(),
                 reelTile.getDestinationY() + OFF_PLAY_SCREEN_OFFSET,
                 19,
                 19,
@@ -448,7 +448,8 @@ public class LevelCreatorSimple {
 
     private boolean testForJackpot(Array<ReelTile> levelReel, int levelWidth, int levelHeight) {
         TupleValueIndex[][] matchGrid = flashSlots.flashSlots(levelReel);
-        return true;
+        System.out.println("I think I've stopped flashing! when number of matchslots ==0, currently"+flashSlots.getMatchedSlots().size);
+        return flashSlots.getMatchedSlots().size <= 0;
     }
 
     private void iWonTheLevel() {
@@ -461,6 +462,7 @@ public class LevelCreatorSimple {
 
     private void iWonABonus() {
         System.out.println("iWonABonus!");
+        reelBoxesToBeCreated = true;
     }
 
     public Array<ReelTile> getReelTiles() {
@@ -583,16 +585,15 @@ public class LevelCreatorSimple {
         }
     }
 
-    private void processNoReelBoxesToDeleteAnyMatchedReels() {
+ /*   private void processNoReelBoxesToDeleteAnyMatchedReels() {
         if (!flashSlots.areReelsFlashing()) {
             if (!flashSlots.areReelsStartedFlashing())
                 flashSlots.flashSlots(reelTiles);
-            else {
+            else
                 playState = PlayStates.PLAYING;
-            }
         }
     }
-
+*/
     private void processReelsAboveHaveFallenWithNoReelsToFallNoReelsFlashingState() {
         flashSlots.flashSlots(reelTiles);
     }
@@ -635,7 +636,8 @@ public class LevelCreatorSimple {
 
     private void updateReplacementBody(Integer reelBoxIndex) {
         Body reelTileBody = reelBoxes.get(reelBoxIndex);
-        ReelTile reelTile = (ReelTile) reelTileBody.getUserData();
+        AnimatedReel animatedReel = (AnimatedReel) reelTileBody.getUserData();
+        ReelTile reelTile = animatedReel.getReel();
         reelTileBody.setTransform(
                 (reelTile.getDestinationX() + 20) / 100,
                 (reelTile.getDestinationY() + OFF_PLAY_SCREEN_OFFSET) / 100,
@@ -709,7 +711,7 @@ public class LevelCreatorSimple {
     public void setReelsAreFlashing(boolean reelsAreFlashing) {
     }
 
-    public void updateOld(float dt) {
+/*    public void updateOld(float dt) {
         if ((playState == PlayStates.INTRO_FLASHING) | (playState == PlayStates.REELS_FLASHING)) {
             if ((reelsAboveHaveFallen) & (reelsToFall.size==0) & (flashSlots.getNumberOfReelsFlashing() == 0)) {
                 processReelsAboveHaveFallenWithNoReelsToFallNoReelsFlashingState();
@@ -735,5 +737,5 @@ public class LevelCreatorSimple {
             reelBoxesToBeCreated = false;
         }
     }
-
+*/
 }

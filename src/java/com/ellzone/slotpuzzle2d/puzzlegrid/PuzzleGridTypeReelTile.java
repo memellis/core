@@ -694,7 +694,7 @@ public class PuzzleGridTypeReelTile {
         reelTileGridValuesStack.push(startReelTile);
         while (!reelTileGridValuesStack.empty()) {
             currentReelTile = reelTileGridValuesStack.pop();
-            if (!currentReelTile.getDiscovered()) {
+            if (currentReelTile != null && !currentReelTile.getDiscovered()) {
                 currentReelTile.setDiscovered(true);
                 matchedSlotBatch.add(currentReelTile);
                 if (currentReelTile.getNReelTileGridValue() != null) {
