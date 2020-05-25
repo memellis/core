@@ -386,15 +386,6 @@ public class TestSwapReelsAbove {
         animatedReelsManager.handleMessage(message);
     }
 
-    private void assertBoxes24Hitting60(
-            Array<AnimatedReel> animatedReels) {
-        assertThat(animatedReels.get(96).getReel().getDestinationY(), is(equalTo(40.0f)));
-        assertThat(animatedReels.get(60).getReel().getDestinationY(), is(equalTo(80.0f)));
-        assertThat(animatedReels.get(24).getReel().getDestinationY(), is(equalTo(120.0f)));
-        assertThat(animatedReels.get(12).getReel().getDestinationY(), is(equalTo(160.0f)));
-        assertThat(animatedReels.get( 0).getReel().getDestinationY(), is(equalTo(200.0f)));
-    }
-
     private AnimatedReelsManager sendSwapReelsAboveMessage(
             Array<AnimatedReel> animatedReels,
             int reelBelow,
@@ -439,7 +430,7 @@ public class TestSwapReelsAbove {
             count++;
         }
     }
-    
+
     private void assertAnimatedReelNotSwapped(
             Array<AnimatedReel> animatedReels,
             Array<AnimatedReel> swappedReelsAboveMeAnimatedReels,

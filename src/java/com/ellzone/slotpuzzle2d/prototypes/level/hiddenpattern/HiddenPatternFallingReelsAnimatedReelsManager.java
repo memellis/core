@@ -453,8 +453,8 @@ public class HiddenPatternFallingReelsAnimatedReelsManager extends SPPrototypeTe
     }
 
     private void renderReel(SpriteBatch batch, Body reelBox, float angle, ReelTile reelTile) {
-        reelTile.setPosition(reelBox.getPosition().x * 100 - 20, reelBox.getPosition().y * 100 - 20);
-        reelTile.updateReelFlashSegments(reelBox.getPosition().x * 100 - 20, reelBox.getPosition().y * 100 - 20);
+        reelTile.setPosition(reelBox.getPosition().x * 100 - 19, reelBox.getPosition().y * 100 - 19);
+        reelTile.updateReelFlashSegments(reelBox.getPosition().x * 100 - 19, reelBox.getPosition().y * 100 - 19);
         reelTile.setOrigin(0, 0);
         reelTile.setSize(40, 40);
         reelTile.setRotation(angle);
@@ -638,7 +638,7 @@ public class HiddenPatternFallingReelsAnimatedReelsManager extends SPPrototypeTe
 
     @Override
     public void setReelsAreFlashing(boolean reelsAreFlashing) {
-        levelCreator.setReelsAreFlashing(reelsAreFlashing);
+        //levelCreator.setReelsAreFlashing(reelsAreFlashing);
     }
 
     @Override

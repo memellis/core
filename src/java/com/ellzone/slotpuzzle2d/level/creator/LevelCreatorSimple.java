@@ -585,21 +585,7 @@ public class LevelCreatorSimple {
         }
     }
 
- /*   private void processNoReelBoxesToDeleteAnyMatchedReels() {
-        if (!flashSlots.areReelsFlashing()) {
-            if (!flashSlots.areReelsStartedFlashing())
-                flashSlots.flashSlots(reelTiles);
-            else
-                playState = PlayStates.PLAYING;
-        }
-    }
-*/
-    private void processReelsAboveHaveFallenWithNoReelsToFallNoReelsFlashingState() {
-        flashSlots.flashSlots(reelTiles);
-    }
-
     private void createReplacementReelBoxes() {
-
         System.out.println();
         printMatchGrid(reelTiles, 12, 9);
 
@@ -613,7 +599,6 @@ public class LevelCreatorSimple {
             return;
         }
         reelsSpinning = replacementReelBoxes.size - 1;
-
     }
 
     private void createReplacementReelBox(Integer reelBoxIndex) {
@@ -624,6 +609,7 @@ public class LevelCreatorSimple {
 
     private void updateReplacementReelTile(Integer reelBoxIndex) {
         ReelTile reelTile = reelTiles.get(reelBoxIndex.intValue());
+//        reelTile.setX(reelTile.getDestinationX());
         reelTile.unDeleteReelTile();
         reelTile.setScale(1.0f);
         Color reelTileColor = reelTile.getColor();
@@ -639,8 +625,8 @@ public class LevelCreatorSimple {
         AnimatedReel animatedReel = (AnimatedReel) reelTileBody.getUserData();
         ReelTile reelTile = animatedReel.getReel();
         reelTileBody.setTransform(
-                (reelTile.getDestinationX() + 20) / 100,
-                (reelTile.getDestinationY() + OFF_PLAY_SCREEN_OFFSET) / 100,
+                (reelTile.getDestinationX() + 19) / 100,
+                (reelTile.getDestinationY() + 19 + OFF_PLAY_SCREEN_OFFSET) / 100,
                 0);
         reelTileBody.setActive(true);
     }
@@ -691,7 +677,7 @@ public class LevelCreatorSimple {
         if ((reelBoxesCollided != null) && (reelBoxesCollided.size > 0)) {
             for (Body reelBoxCollided : reelBoxesCollided) {
                 ReelTile reelTile = (ReelTile) reelBoxCollided.getUserData();
-                reelBoxCollided.setTransform((reelTile.getDestinationX() + 20) / 100, (reelTile.getDestinationY() + 20) / 100, 0);
+                reelBoxCollided.setTransform((reelTile.getDestinationX() + 19) / 100, (reelTile.getDestinationY() + 19) / 100, 0);
             }
             reelBoxesCollided.removeRange(0, reelBoxesCollided.size - 1);
         }
@@ -701,41 +687,10 @@ public class LevelCreatorSimple {
         for (Integer reelBoxToDelete : reelBoxesToDelete) {
             AnimatedReel animatedReel = (AnimatedReel) reelBoxes.get(reelBoxToDelete).getUserData();
             reelBoxes.get(reelBoxToDelete).setTransform(
-                    animatedReel.getReel().getDestinationX() + 20 / 100,
-                    animatedReel.getReel().getDestinationY() + OFF_PLAY_SCREEN_OFFSET / 100, 0);
+                    animatedReel.getReel().getDestinationX() + 19 / 100,
+                    animatedReel.getReel().getDestinationY() + 19 + OFF_PLAY_SCREEN_OFFSET / 100, 0);
             reelBoxes.get(reelBoxToDelete).setActive(false);
         }
         reelBoxesToDelete.clear();
     }
-
-    public void setReelsAreFlashing(boolean reelsAreFlashing) {
-    }
-
-/*    public void updateOld(float dt) {
-        if ((playState == PlayStates.INTRO_FLASHING) | (playState == PlayStates.REELS_FLASHING)) {
-            if ((reelsAboveHaveFallen) & (reelsToFall.size==0) & (flashSlots.getNumberOfReelsFlashing() == 0)) {
-                processReelsAboveHaveFallenWithNoReelsToFallNoReelsFlashingState();
-            } else {
-                if ((playState == PlayStates.INTRO_FLASHING) |
-                        (playState == PlayStates.REELS_FLASHING) |
-                        (playState == PlayStates.PLAYING))
-                    processNoReelBoxesToDeleteAnyMatchedReels();
-            }
-        }
-        if ((playState == PlayStates.INTRO_SPINNING) | (playState == PlayStates.REELS_SPINNING)) {
-            if ((numberOfReelBoxesToDelete < 0) &
-                    (reelsToFall.size == 0) &
-                    (replacementReelBoxes.size == 0))
-                playState = PlayStates.PLAYING;
-        }
-
-        physics.update(dt);
-        updateReelBoxes();
-        deleteReelBoxes(reelBoxesToDelete);
-        if (reelBoxesToBeCreated) {
-            createReplacementReelBoxes();
-            reelBoxesToBeCreated = false;
-        }
-    }
-*/
 }

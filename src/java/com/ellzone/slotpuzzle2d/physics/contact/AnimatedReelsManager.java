@@ -268,11 +268,14 @@ public class AnimatedReelsManager implements Telegraph {
     }
 
     private void processReelFallenBelowDestinationRow(ReelTile reelTile, TupleValueIndex[] reelsAboveMe) {
-        ReelTile bottomDeletedReel = reelTiles.get(findReel((int) reelTile.getDestinationX(), 40));
-        swapReelsForFallenReel(reelTile, bottomDeletedReel);
-        for (int i=0; i<reelsAboveMe.length; i++) {
-            bottomDeletedReel = reelTiles.get(findReel((int) reelTile.getDestinationX(), 40 + 40 * (i+1)));
-            swapReelsForFallenReel(reelTiles.get(reelsAboveMe[i].index), bottomDeletedReel);
+        int bottomDeletedReelIndex = findReel((int) reelTile.getDestinationX(), 40);
+        if (bottomDeletedReelIndex>=0) {
+            ReelTile bottomDeletedReel = reelTiles.get(bottomDeletedReelIndex);
+            swapReelsForFallenReel(reelTile, bottomDeletedReel);
+            for (int i = 0; i < reelsAboveMe.length; i++) {
+                bottomDeletedReel = reelTiles.get(findReel((int) reelTile.getDestinationX(), 40 + 40 * (i + 1)));
+                swapReelsForFallenReel(reelTiles.get(reelsAboveMe[i].index), bottomDeletedReel);
+            }
         }
     }
 
