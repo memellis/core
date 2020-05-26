@@ -105,7 +105,7 @@ public class Box2DBoxesFallingFromSlotPuzzleMatrices extends SPPrototype impleme
     int[] matrixIdentifier = new int[PlayScreen.GAME_LEVEL_WIDTH];
     private boolean cycleDynamic = true;
     private boolean testingFullMatrixDeleteingReelBox = false;
-    private boolean testingFullMatrixDeleteingReelBoxes = true;
+    private boolean testingFullMatrixDeleteingReelBoxes = false;
     int reelToDelete = 84;
     Array<Integer> reelsToDelete;
 
@@ -251,7 +251,7 @@ public class Box2DBoxesFallingFromSlotPuzzleMatrices extends SPPrototype impleme
             for (int c = 0; c < slotPuzzleMatrix[0].length; c++) {
                 animatedReels.add(
                         createAnimatedReel(
-                                (int) PlayScreen.PUZZLE_GRID_START_X + (c * 40),
+                                (int) PlayScreen.PUZZLE_GRID_START_X + (c * 40) + 20,
                                 ((slotPuzzleMatrix.length - 1 - r) * 40) + 40,
                                 slotPuzzleMatrix[r][c],
                                 numberOfAnimatedReelsCreated));

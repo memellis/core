@@ -58,27 +58,27 @@ public class ReelSink {
     private Body createReelSinkBottom(float centreX, float centreY, int reelSinkWidth, int reelSinkHeight, int reelWidth, int reelHeight) {
         return physics.createEdgeBody(
                 BodyDef.BodyType.StaticBody,
-                centreX - (reelSinkWidth + 1) * reelWidth / 2 - 4,
+                centreX - (reelSinkWidth * reelWidth / 2 + 3),
                 centreY - reelSinkHeight * reelHeight / 2 - reelHeight,
-                centreX + (reelSinkWidth + 1) * reelWidth / 2 + 4,
+                centreX + (reelSinkWidth  * reelWidth / 2 + 3),
                 centreY - reelSinkHeight * reelHeight / 2 - reelHeight);
     }
 
     private void createReelSinkLeftHandSide(float centreX, float centreY, int reelSinkWidth, int reelSinkHeight, int reelWidth, int reelHeight) {
         physics.createEdgeBody(
                  BodyDef.BodyType.StaticBody,
-                centreX - (reelSinkWidth + 1) * reelWidth / 2 - 4,
+                centreX - (reelSinkWidth * reelWidth / 2 + 3),
                 centreY - reelSinkHeight * reelHeight / 2 - reelHeight,
-                centreX - (reelSinkWidth + 1) * reelWidth / 2 - 4,
+                centreX - (reelSinkWidth * reelWidth / 2 + 3),
                 centreY + reelSinkHeight * reelHeight / 2 - reelHeight);
     }
 
     private void createReelSinkRightHandSide(float centreX, float centreY, int reelSinkWidth, int reelSinkHeight, int reelWidth, int reelHeight) {
         physics.createEdgeBody(
                 BodyDef.BodyType.StaticBody,
-                centreX + (reelSinkWidth + 1) * reelWidth / 2 + 4,
+                centreX + (reelSinkWidth * reelWidth / 2 + 3),
                 centreY - reelSinkHeight * reelHeight / 2 - reelHeight,
-                centreX + (reelSinkWidth + 1) * reelWidth / 2 + 4,
+                centreX + (reelSinkWidth * reelWidth / 2 + 3),
                 centreY + reelSinkHeight * reelHeight / 2 - reelHeight);
     }
 }

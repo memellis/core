@@ -609,7 +609,6 @@ public class LevelCreatorSimple {
 
     private void updateReplacementReelTile(Integer reelBoxIndex) {
         ReelTile reelTile = reelTiles.get(reelBoxIndex.intValue());
-//        reelTile.setX(reelTile.getDestinationX());
         reelTile.unDeleteReelTile();
         reelTile.setScale(1.0f);
         Color reelTileColor = reelTile.getColor();
