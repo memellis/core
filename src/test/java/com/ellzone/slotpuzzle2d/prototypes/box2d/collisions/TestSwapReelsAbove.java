@@ -196,9 +196,11 @@ public class TestSwapReelsAbove {
         animatedReels.get(48).getReel().setDestinationY(80);
         animatedReels.get(48).getReel().setY(80 + SCREEN_OFFSET);
         animatedReels.get(48).getReel().deleteReelTile();
+        animatedReels.get(96).getReel().setIsFallen(true);
 
-        AnimatedReelsManager animatedReelsManager =
-                sendSwapReelsAboveMessage(animatedReels, 96, 84);
+        AnimatedReelsManager animatedReelsManager = new AnimatedReelsManager(animatedReels);
+        animatedReelsManager.setNumberOfReelsToFall(3);
+        sendSwapReelsAboveMessageWithAnimatedReelsManager(animatedReelsManager, animatedReels, 96, 84);
 
         Array<AnimatedReel> swappedReelsAboveAnimatedReels = animatedReelsManager.getAnimatedReels();
         assertDestinationY(
@@ -208,11 +210,11 @@ public class TestSwapReelsAbove {
                 5,
                 12,
                 -REEL_HEIGHT);
-        assertThat(swappedReelsAboveAnimatedReels.get(96).getReel().isStoppedFalling(), is(true));
-        assertThat(swappedReelsAboveAnimatedReels.get(84).getReel().isStoppedFalling(), is(true));
-        assertThat(swappedReelsAboveAnimatedReels.get(72).getReel().isStoppedFalling(), is(true));
-        assertThat(swappedReelsAboveAnimatedReels.get(60).getReel().isStoppedFalling(), is(true));
+        assertThat(swappedReelsAboveAnimatedReels.get(84).getReel().isFallen(), is(true));
+        assertThat(swappedReelsAboveAnimatedReels.get(72).getReel().isFallen(), is(true));
+        assertThat(swappedReelsAboveAnimatedReels.get(60).getReel().isFallen(), is(true));
         assertThat(swappedReelsAboveAnimatedReels.get(48).getReel().getDestinationY(), is(equalTo(200f)));
+        assertThat(animatedReelsManager.getNumberOfReelsToFall(), is(equalTo(0)));
     }
 
     @Test
@@ -300,6 +302,27 @@ public class TestSwapReelsAbove {
         assertReelYDestionYIsDelete(swappedReels, 96,  40.0f,  40.0f, false);
     }
 
+    @Test
+    public void testDropReelOntoOneReel() {
+        Gdx.app = new MyGDXApplication();
+        Array<AnimatedReel> animatedReels = new Array<>();
+        animatedReels = SlotPuzzleMatrices.createAnimatedReelsFromSlotPuzzleMatrix(
+                SlotPuzzleMatrices.createMatrixWithOneBox());
+        AnimatedReelsManager animatedReelsManager = new AnimatedReelsManager(animatedReels);
+        animatedReels.get(0).getReel().setY(80);
+        animatedReels.get(0).getReel().unDeleteReelTile();
+        animatedReels.get(96).getReel().setIsFallen(true);
+        animatedReels.get(96).getReel().setIsStoppedFalling(true);
+        animatedReelsManager.setNumberOfReelsToFall(1);
+        sendSwapReelsAboveMessageWithAnimatedReelsManager(animatedReelsManager, animatedReels,96, 0);
+        Array<AnimatedReel> swappedReels = animatedReelsManager.getAnimatedReels();
+        assertThat(swappedReels.get( 0).getReel().getY(), is(equalTo(80.0f)));
+        assertThat(swappedReels.get( 0).getReel().getDestinationY(), is(equalTo(80.0f)));
+        assertThat(swappedReels.get(96).getReel().getY(), is(equalTo(40.0f)));
+        assertThat(swappedReels.get(96).getReel().getDestinationY(), is(equalTo(40.0f)));
+        assertThat(animatedReelsManager.getNumberOfReelsToFall(), is(equalTo(0)));
+    }
+
     private void assertReelsColumnAvoidingDuplicatesTopReelDeleted(Array<AnimatedReel> swappedReels) {
         assertReelYDestionYIsDelete(swappedReels, 0, 760.0f, 360.0f, true);
         assertReelYDestionYIsDelete(swappedReels, 12, 240.0f, 240.0f, false);
@@ -372,7 +395,7 @@ public class TestSwapReelsAbove {
         animatedReels.get(0).getReel().setY(200);
     }
 
-    private void sendSwapReelsAboveMessage(
+    private void sendSwapReelsAboveMessageWithAnimatedReelsManager(
             AnimatedReelsManager animatedReelsManager,
             Array<AnimatedReel> animatedReels,
             int reelBelow,
@@ -397,6 +420,21 @@ public class TestSwapReelsAbove {
         reelsAB.add(animatedReels.get(reelAbove));
         message.extraInfo = reelsAB;
         AnimatedReelsManager animatedReelsManager = new AnimatedReelsManager(animatedReels);
+        animatedReelsManager.handleMessage(message);
+        return animatedReelsManager;
+    }
+
+    private AnimatedReelsManager sendSwapReelsAboveMessage(
+            AnimatedReelsManager animatedReelsManager,
+            Array<AnimatedReel> animatedReels,
+            int reelBelow,
+            int reelAbove) {
+        Telegram message = new Telegram();
+        message.message = MessageType.SwapReelsAboveMe.index;
+        Array<AnimatedReel> reelsAB = new Array<>();
+        reelsAB.add(animatedReels.get(reelBelow));
+        reelsAB.add(animatedReels.get(reelAbove));
+        message.extraInfo = reelsAB;
         animatedReelsManager.handleMessage(message);
         return animatedReelsManager;
     }

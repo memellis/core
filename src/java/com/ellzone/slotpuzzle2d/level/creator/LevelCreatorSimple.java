@@ -38,6 +38,7 @@ import com.ellzone.slotpuzzle2d.level.LevelDoor;
 import com.ellzone.slotpuzzle2d.level.creator.utils.FilterReelBoxes;
 import com.ellzone.slotpuzzle2d.level.hidden.HiddenPlayingCard;
 import com.ellzone.slotpuzzle2d.physics.PhysicsManagerCustomBodies;
+import com.ellzone.slotpuzzle2d.physics.contact.AnimatedReelsManager;
 import com.ellzone.slotpuzzle2d.puzzlegrid.PuzzleGridType;
 import com.ellzone.slotpuzzle2d.puzzlegrid.PuzzleGridTypeReelTile;
 import com.ellzone.slotpuzzle2d.puzzlegrid.ReelTileGridValue;
@@ -103,6 +104,7 @@ public class LevelCreatorSimple {
     private FlashSlots flashSlots;
     private boolean reelBoxesToBeCreated = false;
     private PlayStateMachine playStateMachine;
+    private AnimatedReelsManager animatedReelsManager;
 
     public LevelCreatorSimple (
             LevelDoor levelDoor,
@@ -465,6 +467,10 @@ public class LevelCreatorSimple {
         reelBoxesToBeCreated = true;
     }
 
+    public void setAnimatedReelsManager(AnimatedReelsManager animatedReelsManager) {
+        this.animatedReelsManager = animatedReelsManager;
+    }
+
     public Array<ReelTile> getReelTiles() {
         return this.reelTiles;
     }
@@ -588,11 +594,14 @@ public class LevelCreatorSimple {
     private void createReplacementReelBoxes() {
         System.out.println();
         printMatchGrid(reelTiles, 12, 9);
-
         Array<Integer> reelBoxesToReplace = FilterReelBoxes.filterReelBoxesByDifficultyLevel(replacementReelBoxes, 0.1f);
-
-        for (Integer reelBoxIndex : reelBoxesToReplace)
+        System.out.println("Creating ReplacementReelBoxes...");
+        if (animatedReelsManager!=null)
+            animatedReelsManager.setNumberOfReelsToFall(reelBoxesToReplace.size);
+        for (Integer reelBoxIndex : reelBoxesToReplace) {
+            System.out.println(reelBoxIndex + " ");
             createReplacementReelBox(reelBoxIndex);
+        }
 
        if (replacementReelBoxes.size == 0) {
             reelsSpinning = 0;
@@ -603,8 +612,8 @@ public class LevelCreatorSimple {
 
     private void createReplacementReelBox(Integer reelBoxIndex) {
         updateReplacementReelTile(reelBoxIndex);
-        updateReplacementBody(reelBoxIndex);
         updateReplacementAnimatedReel(reelBoxIndex);
+        updateReplacementBody(reelBoxIndex);
     }
 
     private void updateReplacementReelTile(Integer reelBoxIndex) {
@@ -617,6 +626,8 @@ public class LevelCreatorSimple {
         reelTile.setEndReel(Random.getInstance().nextInt( reelTile.getNumberOfReelsInTexture() - 1));
         reelTile.resetReel();
         reelTile.setSpinning(true);
+        reelTile.setIsFallen(false);
+        reelTile.setIsStoppedFalling(false);
     }
 
     private void updateReplacementBody(Integer reelBoxIndex) {

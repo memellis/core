@@ -194,6 +194,7 @@ public class HiddenPatternFallingReelsAnimatedReelsManager extends SPPrototypeTe
                 GAME_LEVEL_WIDTH,
                 GAME_LEVEL_HEIGHT,
                 playStateMachine);
+        levelCreator.setAnimatedReelsManager(animatedReelsManager);
     }
 
     private TiledMap createLevel() {
@@ -406,11 +407,20 @@ public class HiddenPatternFallingReelsAnimatedReelsManager extends SPPrototypeTe
     }
 
     private void processReelsStoppedMoving() {
-        if(!reelsStoppedMoving) {
-            System.out.println();
-            levelCreator.printMatchGrid(reelTiles, 12, 9);
-            reelsStoppedMoving = true;
-            levelCreator.allReelsHaveStoppedSpinning();
+        System.out.println("numberOfReelsToFall="+animatedReelsManager.getNumberOfReelsToFall());
+        if (animatedReelsManager.getNumberOfReelsToFall()<=0) {
+            if (!reelsStoppedMoving) {
+                System.out.println();
+                levelCreator.printMatchGrid(reelTiles, 12, 9);
+                reelsStoppedMoving = true;
+                Array<ReelTile> duplicateReels = animatedReelsManager.checkForDuplicateReels();
+                if (duplicateReels.size > 0) {
+                    System.out.println("Alert duplicates found!");
+                    int column = (int) duplicateReels.get(0).getDestinationX();
+                    animatedReelsManager.printColumn(column);
+                }
+                levelCreator.allReelsHaveStoppedSpinning();
+            }
         }
     }
 

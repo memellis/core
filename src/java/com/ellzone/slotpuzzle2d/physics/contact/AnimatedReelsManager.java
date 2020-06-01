@@ -128,7 +128,8 @@ public class AnimatedReelsManager implements Telegraph {
     private SwapReelAction swapReelActionStoppedFalling = new SwapReelAction() {
         @Override
         public void doAction(ReelTile reelTile) {
-        reelTile.setIsStoppedFalling(true);
+            recordDecrementReelsLeftToFall(reelTile);
+            System.out.println("isStoppedFalling index="+reelTile.getIndex());
         }
     };
 
@@ -172,7 +173,6 @@ public class AnimatedReelsManager implements Telegraph {
 
     private Array<Integer> getTheReelsDeletedInColumn(float column) {
         Array<Integer> reelsDeleted = new Array<>();
-        int reelDeleted;
         for (ReelTile reelTile : reelTiles) {
             if (reelTile.getDestinationX() == column)
                 if (reelTile.isReelTileDeleted())
@@ -263,6 +263,7 @@ public class AnimatedReelsManager implements Telegraph {
     private void recordDecrementReelsLeftToFall(ReelTile reelTile) {
         if (!reelTile.isFallen()) {
             reelTile.setIsFallen(true);
+            System.out.println("isFallen index="+reelTile.getIndex());
             decrementReelsLeftToFall();
         }
     }
@@ -276,6 +277,8 @@ public class AnimatedReelsManager implements Telegraph {
                 bottomDeletedReel = reelTiles.get(findReel((int) reelTile.getDestinationX(), 40 + 40 * (i + 1)));
                 swapReelsForFallenReel(reelTiles.get(reelsAboveMe[i].index), bottomDeletedReel);
             }
+        } else {
+            System.out.println("reelTile Fallen Below destinationRow "+reelTile.getIndex());
         }
     }
 
@@ -379,7 +382,7 @@ public class AnimatedReelsManager implements Telegraph {
         return !isNotADuplicate;
     }
 
-    private void printColumn(int column) {
+    public void printColumn(int column) {
         for (ReelTile reelTile : reelTiles) {
             if (reelTile.getDestinationX() == column)
                 System.out.print(" "+reelTile.getIndex());
