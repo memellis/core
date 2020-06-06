@@ -219,8 +219,16 @@ public class AnimatedReelsManager implements Telegraph {
             recordDecrementReelsLeftToFall(reelTile);
             markAllReelsAvoveInContactAsFallen(reelTile);
         }
+        if (isReelAtSnapY(reelTile, BOTTOM_ROW)) {
+            recordDecrementReelsLeftToFall(reelTile);
+            markAllReelsAvoveInContactAsFallen(reelTile);
+        }
         if (isReelFallenFromAbove(reelTile, BOTTOM_ROW))
             processReelFallenBelowDestinationRow(reelTile, getReelsAboveMe(reelTile));
+    }
+
+    private boolean isReelAtSnapY(ReelTile reelTile, float snapY) {
+        return reelTile.getSnapY() == snapY;
     }
 
     private boolean isReelAtDestination(ReelTile currentReel, float destinationY) {

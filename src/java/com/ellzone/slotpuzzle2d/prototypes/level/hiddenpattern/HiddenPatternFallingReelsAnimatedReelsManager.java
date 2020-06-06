@@ -172,6 +172,9 @@ public class HiddenPatternFallingReelsAnimatedReelsManager extends SPPrototypeTe
         initialiseReels();
         createLevelCreator(level);
         reelBoxes = levelCreator.getReelBoxes();
+        animatedReelsManager = new AnimatedReelsManager(animatedReels, reelBoxes);
+        animatedReelsManager.setNumberOfReelsToFall(numberOfReelsToFall);
+        levelCreator.setAnimatedReelsManager(animatedReelsManager);
     }
 
     private void initialisePlayFiniteStateMachine() {
@@ -194,7 +197,6 @@ public class HiddenPatternFallingReelsAnimatedReelsManager extends SPPrototypeTe
                 GAME_LEVEL_WIDTH,
                 GAME_LEVEL_HEIGHT,
                 playStateMachine);
-        levelCreator.setAnimatedReelsManager(animatedReelsManager);
     }
 
     private TiledMap createLevel() {
@@ -207,8 +209,6 @@ public class HiddenPatternFallingReelsAnimatedReelsManager extends SPPrototypeTe
             levelObjectCreator.createLevel(extractedLevelRectangleMapObjects);
             animatedReels = levelObjectCreator.getAnimatedReels();
             reelTiles = levelObjectCreator.getReelTiles();
-            animatedReelsManager = new AnimatedReelsManager(animatedReels, reelBoxes);
-            animatedReelsManager.setNumberOfReelsToFall(numberOfReelsToFall);
         } catch (GdxRuntimeException gdxRuntimeException) {
             throw new GdxRuntimeException(gdxRuntimeException);
         }

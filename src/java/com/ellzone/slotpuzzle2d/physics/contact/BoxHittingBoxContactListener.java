@@ -101,7 +101,6 @@ public class BoxHittingBoxContactListener implements ContactListener {
         return (int) ((int) reel.getX());
     }
 
-
     private AnimatedReel getAnimatedReel(Fixture fixture) {
         return (AnimatedReel) fixture.getBody().getUserData();
     }

@@ -50,13 +50,19 @@ public class FallenReel {
 
     public void processRows() {
         int destinationRowA, destinationRowB;
+        int snapYA, snapYB;
 
         destinationRowA = PuzzleGridTypeReelTile.getRowFromLevel(
                 animatedReelA.getReel().getDestinationY(), GAME_LEVEL_HEIGHT);
         destinationRowB = PuzzleGridTypeReelTile.getRowFromLevel(
                 animatedReelB.getReel().getDestinationY(), GAME_LEVEL_HEIGHT);
 
-        processReelHittingReel(destinationRowA, destinationRowB);
+        snapYA = (int) animatedReelA.getReel().getSnapY();
+        snapYB = (int) animatedReelB.getReel().getSnapY();
+        if (snapYA>snapYB)
+            processReelHittingReel(destinationRowB, destinationRowA);
+        else
+            processReelHittingReel(destinationRowA, destinationRowB);
     }
 
     public void processFallenReelHittingReelSink() {
@@ -64,7 +70,7 @@ public class FallenReel {
     }
 
     private void processReelHittingReel(int rowA, int rowB) {
-        messageManager.dispatchMessage(MessageType.ReelsLeftToFall.index, animatedReelA);
+        messageManager.dispatchMessage(MessageType.ReelsLeftToFall.index, animatedReelB);
         if (isFallenGapGreaterThanOneReel(rowA, rowB))
             processReelsFallenMoreThanOneTile(rowA, rowB);
     }
