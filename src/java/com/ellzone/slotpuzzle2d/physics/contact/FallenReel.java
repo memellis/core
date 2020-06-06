@@ -60,17 +60,17 @@ public class FallenReel {
         snapYA = (int) animatedReelA.getReel().getSnapY();
         snapYB = (int) animatedReelB.getReel().getSnapY();
         if (snapYA>snapYB)
-            processReelHittingReel(destinationRowB, destinationRowA);
+            processReelHittingReel(destinationRowA, destinationRowB, animatedReelA);
         else
-            processReelHittingReel(destinationRowA, destinationRowB);
+            processReelHittingReel(destinationRowA, destinationRowB, animatedReelB);
     }
 
     public void processFallenReelHittingReelSink() {
         messageManager.dispatchMessage(MessageType.ReelSinkReelsLeftToFall.index, animatedReel);
     }
 
-    private void processReelHittingReel(int rowA, int rowB) {
-        messageManager.dispatchMessage(MessageType.ReelsLeftToFall.index, animatedReelB);
+    private void processReelHittingReel(int rowA, int rowB, AnimatedReel animatedReel) {
+        messageManager.dispatchMessage(MessageType.ReelsLeftToFall.index, animatedReel);
         if (isFallenGapGreaterThanOneReel(rowA, rowB))
             processReelsFallenMoreThanOneTile(rowA, rowB);
     }
