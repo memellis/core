@@ -99,12 +99,15 @@ public class LevelCreatorSimple {
     private int numberOfReelBoxesToReplace, numberOfReelBoxesToDelete;
     boolean matchedReels = false;
     boolean reelsAboveHaveFallen = false;
-    Array<TupleValueIndex> reelsToFall;
+    private Array<TupleValueIndex> reelsToFall;
     private int mapWidth, mapHeight;
     private FlashSlots flashSlots;
     private boolean reelBoxesToBeCreated = false;
     private PlayStateMachine playStateMachine;
     private AnimatedReelsManager animatedReelsManager;
+    private int reelBoxFalling = -1;
+    private float reelBoxFallingY = -1.0f;
+    private int reelBoxFallingNotDetectorCount = 0;
 
     public LevelCreatorSimple (
             LevelDoor levelDoor,
@@ -373,10 +376,11 @@ public class LevelCreatorSimple {
     private void actionReelStoppedSpinning(ReelTileEvent event, ReelTile source) {
         source.stopSpinningSound();
         reelsSpinning--;
-        if ((playState == PlayStates.INTRO_SPINNING) |
-            (playState == PlayStates.REELS_SPINNING) |
-            (playState == PlayStates.PLAYING))
-            allReelsHaveStoppedSpinning();
+        if (reelsSpinning < 1)
+            if ((playState == PlayStates.INTRO_SPINNING) |
+                (playState == PlayStates.REELS_SPINNING) |
+                (playState == PlayStates.PLAYING))
+                allReelsHaveStoppedSpinning();
     }
 
     public void allReelsHaveStoppedSpinning() {
@@ -589,6 +593,16 @@ public class LevelCreatorSimple {
             createReplacementReelBoxes();
             reelBoxesToBeCreated = false;
         }
+        if (reelBoxFalling>-1)
+            detectIfReelIsNotFalling(reelBoxFalling);
+    }
+
+    private void detectIfReelIsNotFalling(int reelBoxFalling) {
+        if (reelTiles.get(reelBoxFalling).getY() == reelBoxFallingY) {
+            reelBoxFallingNotDetectorCount++;
+            if (reelBoxFallingNotDetectorCount>10)
+                animatedReelsManager.printColumn((int)reelTiles.get(reelBoxFalling).getSnapX());
+        }
     }
 
     private void createReplacementReelBoxes() {
@@ -600,14 +614,19 @@ public class LevelCreatorSimple {
             animatedReelsManager.setNumberOfReelsToFall(reelBoxesToReplace.size);
         for (Integer reelBoxIndex : reelBoxesToReplace) {
             System.out.println(reelBoxIndex + " ");
-            createReplacementReelBox(reelBoxIndex);
+            System.out.println("replacement reelTile x="+reelTiles.get(reelBoxIndex).getX()+
+                               " y="+reelTiles.get(reelBoxIndex).getY()+
+                               " dX="+reelTiles.get(reelBoxIndex).getDestinationX()+
+                               " dY="+reelTiles.get(reelBoxIndex).getDestinationY());
+            Array<Integer> deletedReelsInColumn = animatedReelsManager.getTheReelsDeletedInColumn(reelTiles.get(reelBoxIndex).getSnapX());
+            if (deletedReelsInColumn.size > 0)
+                createReplacementReelBox(deletedReelsInColumn.get(deletedReelsInColumn.size-1));
+            else
+                createReplacementReelBox(reelBoxIndex);
+            reelBoxFalling = reelBoxIndex;
+            reelBoxFallingY = reelTiles.get(reelBoxIndex).getY();
         }
-
-       if (replacementReelBoxes.size == 0) {
-            reelsSpinning = 0;
-            return;
-        }
-        reelsSpinning = replacementReelBoxes.size - 1;
+        reelsSpinning = reelBoxesToReplace.size;
     }
 
     private void createReplacementReelBox(Integer reelBoxIndex) {

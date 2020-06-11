@@ -408,7 +408,8 @@ public class HiddenPatternFallingReelsAnimatedReelsManager extends SPPrototypeTe
 
     private void processReelsStoppedMoving() {
         System.out.println("numberOfReelsToFall="+animatedReelsManager.getNumberOfReelsToFall());
-        if (animatedReelsManager.getNumberOfReelsToFall()<=0) {
+        if (animatedReelsManager.getNumberOfReelsToFall()<=0 &
+            levelCreator.getNumberOfReelsSpinning() < 1) {
             if (!reelsStoppedMoving) {
                 System.out.println();
                 levelCreator.printMatchGrid(reelTiles, 12, 9);

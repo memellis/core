@@ -62,6 +62,7 @@ public class BoxHittingBoxContactListener implements ContactListener {
     }
 
     private void dealWithReelBoxHittingReelSink(Fixture fixtureA, Fixture fixtureB) {
+        System.out.println("dealWithReelBoxHittingReelSink");
         AnimatedReel animatedReel = getAnimatedReel(fixtureA);
         ReelSink reelSink = getReelSink(fixtureB);
         FallenReel fallenReel = new FallenReel(animatedReel, reelSink);
@@ -82,6 +83,7 @@ public class BoxHittingBoxContactListener implements ContactListener {
     }
 
     private void dealWithTwoReelBoxesHittingEachOther(Fixture fixtureA, Fixture fixtureB) {
+        System.out.println("dealWithTwoReelBoxesHittingEachOther");
         AnimatedReel animatedReelA = getAnimatedReel(fixtureA);
         AnimatedReel animatedReelB = getAnimatedReel(fixtureB);
 

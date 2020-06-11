@@ -171,7 +171,7 @@ public class AnimatedReelsManager implements Telegraph {
         }
     }
 
-    private Array<Integer> getTheReelsDeletedInColumn(float column) {
+    public Array<Integer> getTheReelsDeletedInColumn(float column) {
         Array<Integer> reelsDeleted = new Array<>();
         for (ReelTile reelTile : reelTiles) {
             if (reelTile.getDestinationX() == column)

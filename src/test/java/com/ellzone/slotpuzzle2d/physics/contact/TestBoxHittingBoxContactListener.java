@@ -12,6 +12,7 @@ import com.ellzone.slotpuzzle2d.gdx.MyGDXApplication;
 import com.badlogic.gdx.math.Vector2;
 import com.ellzone.slotpuzzle2d.messaging.MessageUtils;
 import com.ellzone.slotpuzzle2d.physics.ReelSink;
+import com.ellzone.slotpuzzle2d.prototypes.box2d.collisions.SlotPuzzleMatrices;
 import com.ellzone.slotpuzzle2d.sprites.AnimatedReel;
 import com.ellzone.slotpuzzle2d.utils.reels.ReelUtils;
 
@@ -80,6 +81,54 @@ public class TestBoxHittingBoxContactListener {
         BoxHittingBoxContactListener boxHittingBoxContactListener = new BoxHittingBoxContactListener();
         boxHittingBoxContactListener.beginContact(myTestContact);
         assertThat(animatedReelsManager.getNumberOfReelsToFall(), is(equalTo(0)));
+    }
+
+    @Test
+    public void testReelFallingOntoTwoReels() {
+        animatedReels.add(setUpAnimatedReel(160, 40, true));
+        animatedReels.add(setUpAnimatedReel(160, 80, true));
+        animatedReels.add(setUpAnimatedReel(160, 120, false));
+        animatedReelsManager.setNumberOfReelsToFall(1);
+        MessageManager messageManager = MessageUtils.setUpMessageManager(animatedReelsManager);
+        myTestContact.setFixtureA(animatedReels.get(1));
+        myTestContact.setFixtureB(animatedReels.get(2));
+        BoxHittingBoxContactListener boxHittingBoxContactListener = new BoxHittingBoxContactListener();
+        boxHittingBoxContactListener.beginContact(myTestContact);
+        assertThat(animatedReelsManager.getNumberOfReelsToFall(), is(equalTo(0)));
+    }
+
+    @Test
+    public void testFallingReelWhenMatchingReelsDeleted() {
+        animatedReels = SlotPuzzleMatrices.createAnimatedReelsFromSlotPuzzleMatrix(
+                SlotPuzzleMatrices.createMatrixWithFillColumnNineBoxes());
+        animatedReels.get(0).getReel().deleteReelTile();
+        animatedReels.get(0).getReel().setDestinationY(80);
+        animatedReels.get(0).getReel().setY(160);
+        animatedReels.get(12).getReel().deleteReelTile();
+        animatedReels.get(12).getReel().setY(320+400);
+        animatedReels.get(24).getReel().deleteReelTile();
+        animatedReels.get(24).getReel().setY(280+400);
+        animatedReels.get(36).getReel().deleteReelTile();
+        animatedReels.get(36).getReel().setY(280+400);
+        animatedReels.get(48).getReel().deleteReelTile();
+        animatedReels.get(48).getReel().setY(240+400);
+        animatedReels.get(60).getReel().deleteReelTile();
+        animatedReels.get(60).getReel().setY(200+400);
+        animatedReels.get(84).getReel().deleteReelTile();
+        animatedReels.get(72).getReel().setY(80);
+        myTestContact.setFixtureA(animatedReels.get(72));
+        myTestContact.setFixtureB(animatedReels.get(96));
+        BoxHittingBoxContactListener boxHittingBoxContactListener = new BoxHittingBoxContactListener();
+        boxHittingBoxContactListener.beginContact(myTestContact);
+        assertThat(animatedReelsManager.getNumberOfReelsToFall(), is(equalTo(0)));
+    }
+
+    private AnimatedReel setUpAnimatedReel(int x, int y, boolean isFallen) {
+        AnimatedReel animatedReel = ReelUtils.createAnimatedReel(x, y);
+        animatedReel.getReel().setDestinationX(x);
+        animatedReel.getReel().setDestinationY(y);
+        animatedReel.getReel().setIsFallen(isFallen);
+        return animatedReel;
     }
 
     public class MyContact extends Contact {
