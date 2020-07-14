@@ -39,6 +39,8 @@ import com.ellzone.slotpuzzle2d.level.creator.utils.FilterReelBoxes;
 import com.ellzone.slotpuzzle2d.level.hidden.HiddenPlayingCard;
 import com.ellzone.slotpuzzle2d.physics.PhysicsManagerCustomBodies;
 import com.ellzone.slotpuzzle2d.physics.contact.AnimatedReelsManager;
+import com.ellzone.slotpuzzle2d.prototypes.box2d.collisions.AnimatedReelsMatrixCreator;
+import com.ellzone.slotpuzzle2d.prototypes.box2d.collisions.SlotPuzzleMatrices;
 import com.ellzone.slotpuzzle2d.puzzlegrid.PuzzleGridType;
 import com.ellzone.slotpuzzle2d.puzzlegrid.PuzzleGridTypeReelTile;
 import com.ellzone.slotpuzzle2d.puzzlegrid.ReelTileGridValue;
@@ -108,6 +110,8 @@ public class LevelCreatorSimple {
     private int reelBoxFalling = -1;
     private float reelBoxFallingY = -1.0f;
     private int reelBoxFallingNotDetectorCount = 0;
+    private boolean usePreparedSlotPuzzleMatrix = true;
+    private AnimatedReelsMatrixCreator animatedReelsMatrixCreator;
 
     public LevelCreatorSimple (
             LevelDoor levelDoor,
@@ -167,12 +171,26 @@ public class LevelCreatorSimple {
         replacementReelBoxes = new Array<>();
         reelBoxesToDelete = new Array<>();
         reelTiles = createLevel(levelDoor, level, reelTiles, levelWidth, levelHeight);
+        if (usePreparedSlotPuzzleMatrix)
+            setUpLevelUsingSlotPuzzleMatrix();
         reelsSpinning = reelBoxes.size - 1;
         reelsFlashing = 0;
         scores = new Array<Score>();
         reelsToFall = new Array<TupleValueIndex>();
         getMapProperties(level);
         flashSlots = new FlashSlots(tweenManager, mapWidth, mapHeight, reelTiles);
+    }
+
+    private void setUpLevelUsingSlotPuzzleMatrix() {
+        animatedReelsMatrixCreator = new AnimatedReelsMatrixCreator();
+        animatedReels = animatedReelsMatrixCreator.updateAnimatedReelsFromSlotPuzzleMatrix(
+                SlotPuzzleMatrices.createMatrixWithANearlyFullMatrix(),
+                animatedReels,
+                replacementReelBoxes);
+        reelBoxes = animatedReelsMatrixCreator.updateBoxBodiesFromAnimatedReels(
+                animatedReels,
+                reelBoxes);
+        printMatchGrid(reelTiles, 12, 9);
     }
 
     private Array<RectangleMapObject> getRectangleMapObjectsByName(TiledMap level, String layerName, String name) {
@@ -559,6 +577,8 @@ public class LevelCreatorSimple {
         reelBoxesToDelete.add(reelTileIndex);
         if (!replacementReelBoxes.contains(reelTileIndex, true))
             replacementReelBoxes.add(reelTileIndex);
+        else
+            System.out.println("Something has gone wrong!");
     }
 
     private void testPlayingCardLevelWon(int levelWidth, int levelHeight) {
@@ -627,6 +647,13 @@ public class LevelCreatorSimple {
             reelBoxFallingY = reelTiles.get(reelBoxIndex).getY();
         }
         reelsSpinning = reelBoxesToReplace.size;
+        for (Integer reelBoxIndex : reelBoxesToReplace)
+            replacementReelBoxes.removeValue(reelBoxIndex, true);
+        System.out.println("Number of replacementReelBoxes left="+replacementReelBoxes.size);
+        int numberOfReelsDeleted = animatedReelsManager.getTheReelsDeleted().size;
+        System.out.println("numberOfReelsDeleted="+numberOfReelsDeleted);
+        if (replacementReelBoxes.size != numberOfReelsDeleted)
+            System.out.println("Error mismatch in deleted reels");
     }
 
     private void createReplacementReelBox(Integer reelBoxIndex) {
@@ -654,8 +681,8 @@ public class LevelCreatorSimple {
         AnimatedReel animatedReel = (AnimatedReel) reelTileBody.getUserData();
         ReelTile reelTile = animatedReel.getReel();
         reelTileBody.setTransform(
-                (reelTile.getDestinationX() + 19) / 100,
-                (reelTile.getDestinationY() + 19 + OFF_PLAY_SCREEN_OFFSET) / 100,
+                (reelTile.getDestinationX() + 20) / 100,
+                (reelTile.getDestinationY() + 20 + OFF_PLAY_SCREEN_OFFSET) / 100,
                 0);
         reelTileBody.setActive(true);
     }

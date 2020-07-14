@@ -44,6 +44,9 @@ import com.ellzone.slotpuzzle2d.physics.ReelSink;
 import com.ellzone.slotpuzzle2d.physics.contact.BoxHittingBoxContactListener;
 import com.ellzone.slotpuzzle2d.prototypes.SPPrototypeTemplate;
 import com.ellzone.slotpuzzle2d.physics.contact.AnimatedReelsManager;
+import com.ellzone.slotpuzzle2d.prototypes.box2d.collisions.AnimatedReelsMatrixCreator;
+import com.ellzone.slotpuzzle2d.prototypes.box2d.collisions.SlotPuzzleMatrices;
+import com.ellzone.slotpuzzle2d.puzzlegrid.PuzzleGridTypeReelTile;
 import com.ellzone.slotpuzzle2d.puzzlegrid.ReelTileGridValue;
 import com.ellzone.slotpuzzle2d.scene.Hud;
 import com.ellzone.slotpuzzle2d.screens.PlayScreen;
@@ -119,6 +122,7 @@ public class HiddenPatternFallingReelsAnimatedReelsManager extends SPPrototypeTe
     private MessageManager messageManager;
     private PlayStateMachine playStateMachine;
     private boolean reelsStoppedMoving = false;
+    private AnimatedReelsMatrixCreator animatedReelsMatrixCreator;
 
     @Override
     protected void initialiseOverride() {
@@ -137,6 +141,13 @@ public class HiddenPatternFallingReelsAnimatedReelsManager extends SPPrototypeTe
         createIntroSequence();
         playStateMachine.getStateMachine().changeState(PlayState.INTRO_SPINNING_SEQUENCE);
         messageManager = setUpMessageManager();
+        activateReelBoxes();
+    }
+
+    private void activateReelBoxes() {
+        for (Body reelBox : reelBoxes)
+            if (!((AnimatedReel) (reelBox.getUserData())).getReel().isReelTileDeleted())
+                reelBox.setActive(true);
     }
 
     private void initialiseWorld() {
@@ -213,6 +224,34 @@ public class HiddenPatternFallingReelsAnimatedReelsManager extends SPPrototypeTe
             throw new GdxRuntimeException(gdxRuntimeException);
         }
         return level;
+    }
+
+    private void setUpLevelUsingSlotPuzzleMatrix() {
+        animatedReelsMatrixCreator = new AnimatedReelsMatrixCreator(
+                physics,
+                slotReelScrollTexture,
+                spriteWidth,
+                spriteHeight,
+                tweenManager);
+//        animatedReels = animatedReelsMatrixCreator.createAnimatedReelsFromSlotPuzzleMatrix(
+//                SlotPuzzleMatrices.createMatrixWithANearlyFullMatrix());
+//        animatedReels = animatedReelsMatrixCreator.updateAnimatedReelsFromSlotPuzzleMatrix(
+//                SlotPuzzleMatrices.createMatrixWithANearlyFullMatrix(),
+//                animatedReels);
+        numberOfReelsToFall = animatedReelsMatrixCreator.getNumberOfReelsToFall();
+        reelTiles = getReelTilesFromAnimatedReels(animatedReels);
+        reelBoxes = animatedReelsMatrixCreator.updateBoxBodiesFromAnimatedReels(
+                animatedReels,
+                levelCreator.getReelBoxes());
+        levelCreator.setAnimatedReels(animatedReels);
+        levelCreator.setReelTiles(reelTiles);
+        levelCreator.setReelBoxes(reelBoxes);
+        PuzzleGridTypeReelTile.printGrid(
+                com.ellzone.slotpuzzle2d.puzzlegrid.PuzzleGridTypeReelTile.populateMatchGridStatic(
+                        reelTiles,
+                        GAME_LEVEL_WIDTH,
+                        GAME_LEVEL_HEIGHT)
+        );
     }
 
     private void initialiseReels() {
@@ -297,7 +336,7 @@ public class HiddenPatternFallingReelsAnimatedReelsManager extends SPPrototypeTe
 
     private Array<ReelTile> getReelTilesFromAnimatedReels(Array<AnimatedReel> animatedReels) {
         Array<ReelTile> reelTiles = new Array<>();
-        for (AnimatedReel animatedReel : animatedReels)
+         for (AnimatedReel animatedReel : animatedReels)
             reelTiles.add(animatedReel.getReel());
         return reelTiles;
     }
@@ -464,8 +503,12 @@ public class HiddenPatternFallingReelsAnimatedReelsManager extends SPPrototypeTe
     }
 
     private void renderReel(SpriteBatch batch, Body reelBox, float angle, ReelTile reelTile) {
-        reelTile.setPosition(reelBox.getPosition().x * 100 - 19, reelBox.getPosition().y * 100 - 19);
-        reelTile.updateReelFlashSegments(reelBox.getPosition().x * 100 - 19, reelBox.getPosition().y * 100 - 19);
+        reelTile.setPosition(
+                reelBox.getPosition().x * 100 - 20,
+                reelBox.getPosition().y * 100 - 20);
+        reelTile.updateReelFlashSegments(
+                reelBox.getPosition().x * 100 - 20,
+                reelBox.getPosition().y * 100 - 20);
         reelTile.setOrigin(0, 0);
         reelTile.setSize(40, 40);
         reelTile.setRotation(angle);
@@ -481,18 +524,21 @@ public class HiddenPatternFallingReelsAnimatedReelsManager extends SPPrototypeTe
     }
 
     public void handleInput() {
-        int touchX, touchY;
+//        int touchX, touchY;
         if (Gdx.input.justTouched()) {
-            touchX = Gdx.input.getX();
-            touchY = Gdx.input.getY();
-            Vector3 unProjectTouch = new Vector3(touchX, touchY, 0);
-            viewport.unproject(unProjectTouch);
-            levelCreator.printMatchGrid(reelTiles, 12, 9);
+//            touchX = Gdx.input.getX();
+//            touchY = Gdx.input.getY();
+//            Vector3 unProjectTouch = new Vector3(touchX, touchY, 0);
+//            viewport.unproject(unProjectTouch);
+//            levelCreator.printMatchGrid(reelTiles, 12, 9);
+            if (playStateMachine.getStateMachine().getCurrentState() == PlayState.PLAY) {
+                processIsTileClicked();
+            }
         }
-        if (Gdx.input.isKeyPressed(Input.Keys.D))
-            System.out.println("Debug key pressed - use this to insert a breakpoint");
+        if (Gdx.input.isKeyPressed(Input.Keys.D)) {
+            System.out.println("d key pressed - use this to insert a breakpoint");
+        }
     }
-
 
     private void processIsTileClicked() {
         Vector2 tileClicked = getTileClicked();

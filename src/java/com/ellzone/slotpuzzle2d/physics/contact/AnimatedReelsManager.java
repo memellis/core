@@ -181,6 +181,15 @@ public class AnimatedReelsManager implements Telegraph {
         return reelsDeleted;
     }
 
+    public Array<Integer> getTheReelsDeleted() {
+        Array<Integer> reelsDeleted = new Array<>();
+        for (ReelTile reelTile : reelTiles)
+            if (reelTile.isReelTileDeleted())
+                reelsDeleted.add(reelTile.getIndex());
+        return reelsDeleted;
+    }
+
+
     public Array<Integer> getReelsInContactAbove(int reel) {
         Array<Integer> reelsAbove = new Array<>();
         if (reel < 0)

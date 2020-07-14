@@ -463,13 +463,13 @@ public class PixmapProcessors {
 	    }
 	    try {
 		FileHandle fh;
-                do {
-                    fh = new FileHandle(file);
-                } while (fh.exists());
-                PixmapIO.writePNG(fh, pixmap);
-            } catch (Exception e){
+		    do {
+                fh = new FileHandle(file);
+            } while (fh.exists());
+            PixmapIO.writePNG(fh, pixmap);
+	    } catch (Exception e) {
         	Gdx.app.error(SlotPuzzleConstants.SLOT_PUZZLE, "Could not save pixmap to PNG file " + e.getMessage());
-            }
+	    }
 	}
 
     public static void savePixmap(Pixmap pixmap, String pixmapFileName) {

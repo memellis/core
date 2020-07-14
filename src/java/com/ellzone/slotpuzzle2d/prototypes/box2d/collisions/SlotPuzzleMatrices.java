@@ -1,219 +1,232 @@
+/*
+ Copyright 2011 See AUTHORS file.
+
+ Licensed under the Apache License, Version 2.0 (the "License");
+ you may not use this file except in compliance with the License.
+ You may obtain a copy of the License at
+
+ http://www.apache.org/licenses/LICENSE-2.0
+
+ Unless required by applicable law or agreed to in writing, software
+ distributed under the License is distributed on an "AS IS" BASIS,
+ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ See the License for the specific language governing permissions and
+ limitations under the License.
+ */
+
 package com.ellzone.slotpuzzle2d.prototypes.box2d.collisions;
 
 import com.badlogic.gdx.utils.Array;
-import com.ellzone.slotpuzzle2d.screens.PlayScreen;
-import com.ellzone.slotpuzzle2d.sprites.AnimatedReel;
-import com.ellzone.slotpuzzle2d.sprites.ReelTile;
 import com.ellzone.slotpuzzle2d.utils.InputMatrix;
 
 public class SlotPuzzleMatrices {
 
     public static int[][] createMatrixMimicingDynamicMatrixFailed1() {
         String matrixToInput = "12 x 9\n"
-                + "-1  0 -1  0 -1 -1 -1 -1 -1  0  -1   0\n"
-                + "-1 -1  0  0 -1 -1  0 -1 -1 -1   0   0\n"
-                + "-1 -1 -1 -1  0 -1  0 -1 -1 -1  -1  -1\n"
-                + "-1 -1 -1 -1 -1 -1 -1 -1  0  0   0  -1\n"
-                + "-1 -1 -1 -1 -1 -1 -1 -1 -1 -1  -1  -1\n"
-                + "-1 -1 -1 -1 -1 -1 -1 -1 -1 -1  -1  -1\n"
-                + "-1 -1 -1 -1 -1 -1 -1 -1 -1 -1  -1  -1\n"
-                + "-1 -1 -1 -1 -1 -1 -1 -1 -1 -1  -1  -1\n"
-                + "-1 -1 -1 -1 -1 -1 -1 -1 -1 -1  -1  -1\n";
+                + "-1  0 -1  0 -1 -1 -1 -1 -1  0 -1  0\n"
+                + "-1 -1  0  0 -1 -1  0 -1 -1 -1  0  0\n"
+                + "-1 -1 -1 -1  0 -1  0 -1 -1 -1 -1 -1\n"
+                + "-1 -1 -1 -1 -1 -1 -1 -1  0  0  0 -1\n"
+                + "-1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1\n"
+                + "-1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1\n"
+                + "-1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1\n"
+                + "-1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1\n"
+                + "-1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1\n";
         InputMatrix inputMatrix = new InputMatrix(matrixToInput);
         return inputMatrix.readMatrix();
     }
 
     public static int[][] createMatrixMimicingDynamicMatrixFailed2() {
         String matrixToInput = "12 x 9\n"
-                + " 0  0 -1  0 -1 -1 -1 -1 -1 -1  -1  -1\n"
-                + " 0 -1  0  0 -1 -1 -1 -1 -1 -1  -1  -1\n"
-                + " 0  0  0 -1 -1 -1 -1 -1 -1 -1  -1  -1\n"
-                + "-1 -1 -1 -1 -1 -1 -1 -1 -1 -1  -1  -1\n"
-                + "-1 -1 -1 -1 -1 -1 -1 -1 -1 -1  -1  -1\n"
-                + "-1 -1 -1 -1 -1 -1 -1 -1 -1 -1  -1  -1\n"
-                + "-1 -1 -1 -1 -1 -1 -1 -1 -1 -1  -1  -1\n"
-                + "-1 -1 -1 -1 -1 -1 -1 -1 -1 -1  -1  -1\n"
-                + "-1 -1 -1 -1 -1 -1 -1 -1 -1 -1  -1  -1\n";
+                + " 0  0 -1  0 -1 -1 -1 -1 -1 -1 -1 -1\n"
+                + " 0 -1  0  0 -1 -1 -1 -1 -1 -1 -1 -1\n"
+                + " 0  0  0 -1 -1 -1 -1 -1 -1 -1 -1 -1\n"
+                + "-1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1\n"
+                + "-1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1\n"
+                + "-1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1\n"
+                + "-1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1\n"
+                + "-1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1\n"
+                + "-1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1\n";
         InputMatrix inputMatrix = new InputMatrix(matrixToInput);
         return inputMatrix.readMatrix();
     }
 
     public static int[][] createMatrixMimicingDynamicMatrixFailed3() {
         String matrixToInput = "12 x 9\n"
-                + "-1  0 -1  0 -1  0 -1  0 -1  0  -1   0\n"
-                + "-1  0  0  0 -1 -1  0  0 -1 -1   0   0\n"
-                + "-1  0 -1 -1  0  0  0  0 -1 -1  -1  -1\n"
-                + "-1 -1 -1 -1 -1 -1 -1 -1  0  0   0   0\n"
-                + "-1 -1 -1 -1 -1 -1 -1 -1 -1 -1  -1  -1\n"
-                + "-1 -1 -1 -1 -1 -1 -1 -1 -1 -1  -1  -1\n"
-                + "-1 -1 -1 -1 -1 -1 -1 -1 -1 -1  -1  -1\n"
-                + "-1 -1 -1 -1 -1 -1 -1 -1 -1 -1  -1  -1\n"
-                + "-1 -1 -1 -1 -1 -1 -1 -1 -1 -1  -1  -1\n";
+                + "-1  0 -1  0 -1  0 -1  0 -1  0 -1  0\n"
+                + "-1  0  0  0 -1 -1  0  0 -1 -1  0  0\n"
+                + "-1  0 -1 -1  0  0  0  0 -1 -1 -1 -1\n"
+                + "-1 -1 -1 -1 -1 -1 -1 -1  0  0  0  0\n"
+                + "-1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1\n"
+                + "-1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1\n"
+                + "-1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1\n"
+                + "-1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1\n"
+                + "-1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1\n";
         InputMatrix inputMatrix = new InputMatrix(matrixToInput);
         return inputMatrix.readMatrix();
     }
 
     public static int[][] createMatrixMimicingDynamicMatrix() {
         String matrixToInput = "12 x 9\n"
-                + "-1  0 -1  0 -1  0 -1  0 -1  0  -1   0\n"
-                + "-1 -1  0  0 -1 -1  0  0 -1 -1   0   0\n"
-                + "-1 -1 -1 -1  0  0  0  0 -1 -1  -1  -1\n"
-                + "-1 -1 -1 -1 -1 -1 -1 -1  0  0   0   0\n"
-                + "-1 -1 -1 -1 -1 -1 -1 -1 -1 -1  -1  -1\n"
-                + "-1 -1 -1 -1 -1 -1 -1 -1 -1 -1  -1  -1\n"
-                + "-1 -1 -1 -1 -1 -1 -1 -1 -1 -1  -1  -1\n"
-                + "-1 -1 -1 -1 -1 -1 -1 -1 -1 -1  -1  -1\n"
-                + "-1 -1 -1 -1 -1 -1 -1 -1 -1 -1  -1  -1\n";
+                + "-1  0 -1  0 -1  0 -1  0 -1  0 -1  0\n"
+                + "-1 -1  0  0 -1 -1  0  0 -1 -1  0  0\n"
+                + "-1 -1 -1 -1  0  0  0  0 -1 -1 -1 -1\n"
+                + "-1 -1 -1 -1 -1 -1 -1 -1  0  0  0  0\n"
+                + "-1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1\n"
+                + "-1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1\n"
+                + "-1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1\n"
+                + "-1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1\n"
+                + "-1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1\n";
         InputMatrix inputMatrix = new InputMatrix(matrixToInput);
         return inputMatrix.readMatrix();
     }
 
     public static int[][] createMatrixWithNoBoxes() {
         String matrixToInput = "12 x 9\n"
-                + "-1 -1 -1 -1 -1 -1 -1 -1 -1 -1  -1  -1\n"
-                + "-1 -1 -1 -1 -1 -1 -1 -1 -1 -1  -1  -1\n"
-                + "-1 -1 -1 -1 -1 -1 -1 -1 -1 -1  -1  -1\n"
-                + "-1 -1 -1 -1 -1 -1 -1 -1 -1 -1  -1  -1\n"
-                + "-1 -1 -1 -1 -1 -1 -1 -1 -1 -1  -1  -1\n"
-                + "-1 -1 -1 -1 -1 -1 -1 -1 -1 -1  -1  -1\n"
-                + "-1 -1 -1 -1 -1 -1 -1 -1 -1 -1  -1  -1\n"
-                + "-1 -1 -1 -1 -1 -1 -1 -1 -1 -1  -1  -1\n"
-                + "-1 -1 -1 -1 -1 -1 -1 -1 -1 -1  -1  -1\n";
+                + "-1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1\n"
+                + "-1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1\n"
+                + "-1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1\n"
+                + "-1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1\n"
+                + "-1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1\n"
+                + "-1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1\n"
+                + "-1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1\n"
+                + "-1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1\n"
+                + "-1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1\n";
         InputMatrix inputMatrix = new InputMatrix(matrixToInput);
         return inputMatrix.readMatrix();
     }
 
     public static int[][] createMatrixWithOneBox() {
         String matrixToInput = "12 x 9\n"
-                + "-1 -1 -1 -1 -1 -1 -1 -1 -1 -1  -1  -1\n"
-                + "-1 -1 -1 -1 -1 -1 -1 -1 -1 -1  -1  -1\n"
-                + "-1 -1 -1 -1 -1 -1 -1 -1 -1 -1  -1  -1\n"
-                + "-1 -1 -1 -1 -1 -1 -1 -1 -1 -1  -1  -1\n"
-                + "-1 -1 -1 -1 -1 -1 -1 -1 -1 -1  -1  -1\n"
-                + "-1 -1 -1 -1 -1 -1 -1 -1 -1 -1  -1  -1\n"
-                + "-1 -1 -1 -1 -1 -1 -1 -1 -1 -1  -1  -1\n"
-                + "-1 -1 -1 -1 -1 -1 -1 -1 -1 -1  -1  -1\n"
-                + " 0 -1 -1 -1 -1 -1 -1 -1 -1 -1  -1  -1\n";
+                + "-1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1\n"
+                + "-1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1\n"
+                + "-1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1\n"
+                + "-1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1\n"
+                + "-1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1\n"
+                + "-1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1\n"
+                + "-1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1\n"
+                + "-1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1\n"
+                + " 0 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1\n";
         InputMatrix inputMatrix = new InputMatrix(matrixToInput);
         return inputMatrix.readMatrix();
     }
 
     public static int[][] createMatrixWithTwoBoxes() {
         String matrixToInput = "12 x 9\n"
-                + "-1 -1 -1 -1 -1 -1 -1 -1 -1 -1  -1  -1\n"
-                + "-1 -1 -1 -1 -1 -1 -1 -1 -1 -1  -1  -1\n"
-                + "-1 -1 -1 -1 -1 -1 -1 -1 -1 -1  -1  -1\n"
-                + "-1 -1 -1 -1 -1 -1 -1 -1 -1 -1  -1  -1\n"
-                + "-1 -1 -1 -1 -1 -1 -1 -1 -1 -1  -1  -1\n"
-                + "-1 -1 -1 -1 -1 -1 -1 -1 -1 -1  -1  -1\n"
-                + "-1 -1 -1 -1 -1 -1 -1 -1 -1 -1  -1  -1\n"
-                + " 0 -1 -1 -1 -1 -1 -1 -1 -1 -1  -1  -1\n"
-                + " 0 -1 -1 -1 -1 -1 -1 -1 -1 -1  -1  -1\n";
+                + "-1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1\n"
+                + "-1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1\n"
+                + "-1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1\n"
+                + "-1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1\n"
+                + "-1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1\n"
+                + "-1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1\n"
+                + "-1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1\n"
+                + " 0 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1\n"
+                + " 0 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1\n";
         InputMatrix inputMatrix = new InputMatrix(matrixToInput);
         return inputMatrix.readMatrix();
     }
 
     public static int[][] createMatrixWithThreeBoxes() {
         String matrixToInput = "12 x 9\n"
-                + "-1 -1 -1 -1 -1 -1 -1 -1 -1 -1  -1  -1\n"
-                + "-1 -1 -1 -1 -1 -1 -1 -1 -1 -1  -1  -1\n"
-                + "-1 -1 -1 -1 -1 -1 -1 -1 -1 -1  -1  -1\n"
-                + "-1 -1 -1 -1 -1 -1 -1 -1 -1 -1  -1  -1\n"
-                + "-1 -1 -1 -1 -1 -1 -1 -1 -1 -1  -1  -1\n"
-                + "-1 -1 -1 -1 -1 -1 -1 -1 -1 -1  -1  -1\n"
-                + " 0 -1 -1 -1 -1 -1 -1 -1 -1 -1  -1  -1\n"
-                + " 0 -1 -1 -1 -1 -1 -1 -1 -1 -1  -1  -1\n"
-                + " 0 -1 -1 -1 -1 -1 -1 -1 -1 -1  -1  -1\n";
+                + "-1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1\n"
+                + "-1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1\n"
+                + "-1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1\n"
+                + "-1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1\n"
+                + "-1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1\n"
+                + "-1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1\n"
+                + " 0 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1\n"
+                + " 0 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1\n"
+                + " 0 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1\n";
         InputMatrix inputMatrix = new InputMatrix(matrixToInput);
         return inputMatrix.readMatrix();
     }
 
     public static int[][] createMatrixWithFourBoxes() {
         String matrixToInput = "12 x 9\n"
-                + "-1 -1 -1 -1 -1 -1 -1 -1 -1 -1  -1  -1\n"
-                + "-1 -1 -1 -1 -1 -1 -1 -1 -1 -1  -1  -1\n"
-                + "-1 -1 -1 -1 -1 -1 -1 -1 -1 -1  -1  -1\n"
-                + "-1 -1 -1 -1 -1 -1 -1 -1 -1 -1  -1  -1\n"
-                + "-1 -1 -1 -1 -1 -1 -1 -1 -1 -1  -1  -1\n"
-                + " 0 -1 -1 -1 -1 -1 -1 -1 -1 -1  -1  -1\n"
-                + " 0 -1 -1 -1 -1 -1 -1 -1 -1 -1  -1  -1\n"
-                + " 0 -1 -1 -1 -1 -1 -1 -1 -1 -1  -1  -1\n"
-                + " 0 -1 -1 -1 -1 -1 -1 -1 -1 -1  -1  -1\n";
+                + "-1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1\n"
+                + "-1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1\n"
+                + "-1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1\n"
+                + "-1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1\n"
+                + "-1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1\n"
+                + " 0 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1\n"
+                + " 0 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1\n"
+                + " 0 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1\n"
+                + " 0 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1\n";
         InputMatrix inputMatrix = new InputMatrix(matrixToInput);
         return inputMatrix.readMatrix();
     }
 
     public static int[][] createMatrixWithFillColumnNineBoxes() {
         String matrixToInput = "12 x 9\n"
-                + " 0 -1 -1 -1 -1 -1 -1 -1 -1 -1  -1  -1\n"
-                + " 0 -1 -1 -1 -1 -1 -1 -1 -1 -1  -1  -1\n"
-                + " 0 -1 -1 -1 -1 -1 -1 -1 -1 -1  -1  -1\n"
-                + " 0 -1 -1 -1 -1 -1 -1 -1 -1 -1  -1  -1\n"
-                + " 0 -1 -1 -1 -1 -1 -1 -1 -1 -1  -1  -1\n"
-                + " 0 -1 -1 -1 -1 -1 -1 -1 -1 -1  -1  -1\n"
-                + " 0 -1 -1 -1 -1 -1 -1 -1 -1 -1  -1  -1\n"
-                + " 0 -1 -1 -1 -1 -1 -1 -1 -1 -1  -1  -1\n"
-                + " 0 -1 -1 -1 -1 -1 -1 -1 -1 -1  -1  -1\n";
+                + " 0 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1\n"
+                + " 0 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1\n"
+                + " 0 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1\n"
+                + " 0 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1\n"
+                + " 0 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1\n"
+                + " 0 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1\n"
+                + " 0 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1\n"
+                + " 0 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1\n"
+                + " 0 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1\n";
         InputMatrix inputMatrix = new InputMatrix(matrixToInput);
         return inputMatrix.readMatrix();
     }
 
     public static int[][] createMatrixWithOneBoxOnOneBox() {
         String matrixToInput = "12 x 9\n"
-                + "-1 -1 -1 -1 -1 -1 -1 -1 -1 -1  -1  -1\n"
-                + "-1 -1 -1 -1 -1 -1 -1 -1 -1 -1  -1  -1\n"
-                + "-1 -1 -1 -1 -1 -1 -1 -1 -1 -1  -1  -1\n"
-                + "-1 -1 -1 -1 -1 -1 -1 -1 -1 -1  -1  -1\n"
-                + "-1 -1 -1 -1 -1 -1 -1 -1 -1 -1  -1  -1\n"
-                + "-1 -1 -1 -1 -1 -1 -1 -1 -1 -1  -1  -1\n"
-                + " 0 -1 -1 -1 -1 -1 -1 -1 -1 -1  -1  -1\n"
-                + "-1 -1 -1 -1 -1 -1 -1 -1 -1 -1  -1  -1\n"
-                + " 0 -1 -1 -1 -1 -1 -1 -1 -1 -1  -1  -1\n";
+                + "-1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1\n"
+                + "-1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1\n"
+                + "-1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1\n"
+                + "-1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1\n"
+                + "-1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1\n"
+                + "-1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1\n"
+                + " 0 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1\n"
+                + "-1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1\n"
+                + " 0 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1\n";
         InputMatrix inputMatrix = new InputMatrix(matrixToInput);
         return inputMatrix.readMatrix();
     }
 
     public static int[][] createMatrixWithTwoBoxesOnOneBox() {
         String matrixToInput = "12 x 9\n"
-                + "-1 -1 -1 -1 -1 -1 -1 -1 -1 -1  -1  -1\n"
-                + "-1 -1 -1 -1 -1 -1 -1 -1 -1 -1  -1  -1\n"
-                + "-1 -1 -1 -1 -1 -1 -1 -1 -1 -1  -1  -1\n"
-                + "-1 -1 -1 -1 -1 -1 -1 -1 -1 -1  -1  -1\n"
-                + "-1 -1 -1 -1 -1 -1 -1 -1 -1 -1  -1  -1\n"
-                + " 0 -1 -1 -1 -1 -1 -1 -1 -1 -1  -1  -1\n"
-                + " 0 -1 -1 -1 -1 -1 -1 -1 -1 -1  -1  -1\n"
-                + "-1 -1 -1 -1 -1 -1 -1 -1 -1 -1  -1  -1\n"
-                + " 0 -1 -1 -1 -1 -1 -1 -1 -1 -1  -1  -1\n";
+                + "-1 -1 -1 -1 -1 -1 -1 -1 -1 -1  1 -1\n"
+                + "-1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1\n"
+                + "-1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1\n"
+                + "-1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1\n"
+                + "-1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1\n"
+                + " 0 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1\n"
+                + " 0 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1\n"
+                + "-1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1\n"
+                + " 0 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1\n";
         InputMatrix inputMatrix = new InputMatrix(matrixToInput);
         return inputMatrix.readMatrix();
     }
 
     public static int[][] createMatrixWithThreeBoxesOnOneBox() {
         String matrixToInput = "12 x 9\n"
-                + "-1 -1 -1 -1 -1 -1 -1 -1 -1 -1  -1  -1\n"
-                + "-1 -1 -1 -1 -1 -1 -1 -1 -1 -1  -1  -1\n"
-                + "-1 -1 -1 -1 -1 -1 -1 -1 -1 -1  -1  -1\n"
-                + "-1 -1 -1 -1 -1 -1 -1 -1 -1 -1  -1  -1\n"
-                + " 0 -1 -1 -1 -1 -1 -1 -1 -1 -1  -1  -1\n"
-                + " 0 -1 -1 -1 -1 -1 -1 -1 -1 -1  -1  -1\n"
-                + " 0 -1 -1 -1 -1 -1 -1 -1 -1 -1  -1  -1\n"
-                + "-1 -1 -1 -1 -1 -1 -1 -1 -1 -1  -1  -1\n"
-                + " 0 -1 -1 -1 -1 -1 -1 -1 -1 -1  -1  -1\n";
+                + "-1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1\n"
+                + "-1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1\n"
+                + "-1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1\n"
+                + "-1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1\n"
+                + " 0 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1\n"
+                + " 0 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1\n"
+                + " 0 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1\n"
+                + "-1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1\n"
+                + " 0 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1\n";
         InputMatrix inputMatrix = new InputMatrix(matrixToInput);
         return inputMatrix.readMatrix();
     }
 
     public static int[][] createMatrixWithTwoByOnOneBox() {
         String matrixToInput = "12 x 9\n"
-                + "-1 -1 -1 -1 -1 -1 -1 -1 -1 -1  -1  -1\n"
-                + "-1 -1 -1 -1 -1 -1 -1 -1 -1 -1  -1  -1\n"
-                + "-1 -1 -1 -1 -1 -1 -1 -1 -1 -1  -1  -1\n"
-                + "-1 -1 -1 -1 -1 -1 -1 -1 -1 -1  -1  -1\n"
-                + "-1 -1 -1 -1 -1 -1 -1 -1 -1 -1  -1  -1\n"
-                + "-1 -1 -1 -1 -1 -1 -1 -1 -1 -1  -1  -1\n"
-                + "-1 -1 -1 -1 -1 -1 -1 -1 -1 -1  -1  -1\n"
-                + "-1 -1 -1 -1 -1 -1 -1 -1 -1 -1  -1  -1\n"
-                + " 0  0 -1 -1 -1 -1 -1 -1 -1 -1  -1  -1\n";
+                + "-1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1\n"
+                + "-1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1\n"
+                + "-1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1\n"
+                + "-1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1\n"
+                + "-1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1\n"
+                + "-1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1\n"
+                + "-1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1\n"
+                + "-1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1\n"
+                + " 0  0 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1\n";
         InputMatrix inputMatrix = new InputMatrix(matrixToInput);
         return inputMatrix.readMatrix();
     }
@@ -323,6 +336,21 @@ public class SlotPuzzleMatrices {
         return inputMatrix.readMatrix();
     }
 
+    public static int[][] createMatrixWithANearlyFullMatrix() {
+        String matrixToInput = "12 x 9\n"
+                + "-1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1\n"
+                + " 7  0  1  2  3  4  5  6  7  0  1  2\n"
+                + " 6  7  0  1  2  3  4  5  6  7  0  1\n"
+                + " 5  6  7  0  1  2  3  4  5  6  7  0\n"
+                + " 4  5  6  7  0  1  2  3  4  5  6  7\n"
+                + " 3  4  5  6  7  0  1  2  3  4  5  6\n"
+                + " 2  3  4  5  6  7  0  1  2  3  4  5\n"
+                + " 1  2  3  4  5  6  7  0  1  2  3  4\n"
+                + " 0  1  2  3  4  5  6  7  0  1  2  3\n";
+        InputMatrix inputMatrix = new InputMatrix(matrixToInput);
+        return inputMatrix.readMatrix();
+    }
+
     public static int[][] createDynamicMatrix(int[] matrixIdentifier,
                                               int width,
                                               int height) {
@@ -384,58 +412,5 @@ public class SlotPuzzleMatrices {
         slotMatrices.add(createMatrixWithTwoByOnTFourBoxes());
         slotMatrices.add(createMatrixWithTwoFillColumnNineBoxes());
         return slotMatrices;
-    }
-
-    public static Array<AnimatedReel> createAnimatedReelsFromSlotPuzzleMatrix(int[][] slotPuzzleMatrix) {
-        Array<AnimatedReel> animatedReels = new Array<AnimatedReel>();
-        int numberOfAnimatedReelsCreated = 0;
-        for (int r = 0; r < slotPuzzleMatrix.length; r++) {
-            for (int c = 0; c < slotPuzzleMatrix[0].length; c++) {
-                animatedReels.add(
-                        createAnimatedReel(
-                                (int) PlayScreen.PUZZLE_GRID_START_X + (c * 40),
-                                ((slotPuzzleMatrix.length - 1 - r) * 40) + 40,
-                                slotPuzzleMatrix[r][c],
-                                numberOfAnimatedReelsCreated));
-                if (slotPuzzleMatrix[r][c] < 0)
-                    animatedReels.get(numberOfAnimatedReelsCreated).getReel().deleteReelTile();
-                numberOfAnimatedReelsCreated++;
-            }
-        }
-        return animatedReels;
-    }
-
-    private static AnimatedReel createAnimatedReel(int x, int y, int endReel, int index) {
-        AnimatedReel animatedReel = getAnimatedReel(x, y, endReel);
-        setUpReelTileInAnimatedReel(index, animatedReel);
-        return animatedReel;
-    }
-
-    private static void setUpReelTileInAnimatedReel(int index, AnimatedReel animatedReel) {
-        ReelTile reelTile = animatedReel.getReel();
-        reelTile.setDestinationX(reelTile.getX());
-        reelTile.setDestinationY(reelTile.getY());
-        reelTile.setY(reelTile.getY());
-        reelTile.setIsFallen(false);
-        reelTile.setIsStoppedFalling(false);
-        reelTile.setIndex(index);
-    }
-
-    private static AnimatedReel getAnimatedReel(int x, int y, int endReel) {
-        AnimatedReel animatedReel = new AnimatedReel(
-                null,
-                x,
-                y,
-                40,
-                40,
-                40,
-                40,
-                0,
-                null);
-        animatedReel.setSx(0);
-        animatedReel.setEndReel(endReel);
-        animatedReel.setupSpinning();
-        animatedReel.getReel().startSpinning();
-        return animatedReel;
     }
 }
