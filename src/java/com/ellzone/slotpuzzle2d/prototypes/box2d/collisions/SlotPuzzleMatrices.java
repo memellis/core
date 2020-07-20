@@ -338,9 +338,9 @@ public class SlotPuzzleMatrices {
 
     public static int[][] createMatrixWithANearlyFullMatrix() {
         String matrixToInput = "12 x 9\n"
-                + "-1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1\n"
+                + " 0  1  2  3  4 -1 -1 -1 -1 -1 -1 -1\n"
                 + " 7  0  1  2  3  4  5  6  7  0  1  2\n"
-                + " 6  7  0  1  2  3  4  5  6  7  0  1\n"
+                + " 6  7  0  1  2  3  4  5  6  0  0  1\n"
                 + " 5  6  7  0  1  2  3  4  5  6  7  0\n"
                 + " 4  5  6  7  0  1  2  3  4  5  6  7\n"
                 + " 3  4  5  6  7  0  1  2  3  4  5  6\n"

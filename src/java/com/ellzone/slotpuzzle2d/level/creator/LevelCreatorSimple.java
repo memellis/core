@@ -110,8 +110,12 @@ public class LevelCreatorSimple {
     private int reelBoxFalling = -1;
     private float reelBoxFallingY = -1.0f;
     private int reelBoxFallingNotDetectorCount = 0;
-    private boolean usePreparedSlotPuzzleMatrix = true;
+    private boolean usePreparedSlotPuzzleMatrix = false;
+    private boolean usePreparedSlotPuzzleMatrixReelsToFall = false;
     private AnimatedReelsMatrixCreator animatedReelsMatrixCreator;
+    private Array<Integer> myReelsToFall = new Array<>();
+    private Array<Integer> myReelsToFallEndReel = new Array<>();
+    private int myReelsToFallIndex;
 
     public LevelCreatorSimple (
             LevelDoor levelDoor,
@@ -162,6 +166,8 @@ public class LevelCreatorSimple {
         this.levelWidth = levelWidth;
         this.levelHeight = levelHeight;
         this.playStateMachine = playStateMachine;
+        myReelsToFall.addAll(9, 10, 11, 12);
+        myReelsToFallEndReel.addAll(7,7,7,7);
         initialise(levelDoor, reelTiles, level, tweenManager, levelWidth, levelHeight);
     }
 
@@ -472,8 +478,7 @@ public class LevelCreatorSimple {
 
     private boolean testForJackpot(Array<ReelTile> levelReel, int levelWidth, int levelHeight) {
         TupleValueIndex[][] matchGrid = flashSlots.flashSlots(levelReel);
-        System.out.println("I think I've stopped flashing! when number of matchslots ==0, currently"+flashSlots.getMatchedSlots().size);
-        return flashSlots.getMatchedSlots().size <= 0;
+         return flashSlots.getMatchedSlots().size <= 0;
     }
 
     private void iWonTheLevel() {
@@ -569,16 +574,12 @@ public class LevelCreatorSimple {
     private void deleteReel(BaseTween<?> source) {
         ReelTile reel = (ReelTile) source.getUserData();
         int reelTileIndex = reelTiles.indexOf(reel, true);
-        //hudAddScore((reel.getEndReel() + 1) * reel.getScore());
-        //playSound(reelStoppedSound);
-        //playSound(chaChingSound);
-
         reel.deleteReelTile();
         reelBoxesToDelete.add(reelTileIndex);
         if (!replacementReelBoxes.contains(reelTileIndex, true))
             replacementReelBoxes.add(reelTileIndex);
         else
-            System.out.println("Something has gone wrong!");
+            System.out.println("Going here causes mismatch between number of deleted Reels and replacement reels");
     }
 
     private void testPlayingCardLevelWon(int levelWidth, int levelHeight) {
@@ -613,47 +614,45 @@ public class LevelCreatorSimple {
             createReplacementReelBoxes();
             reelBoxesToBeCreated = false;
         }
-        if (reelBoxFalling>-1)
-            detectIfReelIsNotFalling(reelBoxFalling);
-    }
-
-    private void detectIfReelIsNotFalling(int reelBoxFalling) {
-        if (reelTiles.get(reelBoxFalling).getY() == reelBoxFallingY) {
-            reelBoxFallingNotDetectorCount++;
-            if (reelBoxFallingNotDetectorCount>10)
-                animatedReelsManager.printColumn((int)reelTiles.get(reelBoxFalling).getSnapX());
-        }
     }
 
     private void createReplacementReelBoxes() {
-        System.out.println();
-        printMatchGrid(reelTiles, 12, 9);
-        Array<Integer> reelBoxesToReplace = FilterReelBoxes.filterReelBoxesByDifficultyLevel(replacementReelBoxes, 0.1f);
-        System.out.println("Creating ReplacementReelBoxes...");
-        if (animatedReelsManager!=null)
-            animatedReelsManager.setNumberOfReelsToFall(reelBoxesToReplace.size);
+        if (animatedReelsManager == null)
+            return;
+        Array<Integer> reelBoxesToReplace = new Array<>();
+        if (usePreparedSlotPuzzleMatrixReelsToFall)
+            prepareReelsToFall(reelBoxesToReplace);
+        else
+            reelBoxesToReplace =
+                    FilterReelBoxes.
+                            filterReelBoxesByDifficultyLevel(
+                                    replacementReelBoxes, 0.1f);
+
+        animatedReelsManager.setNumberOfReelsToFall(reelBoxesToReplace.size);
+        Array<Integer> replacementReelsToDelete = new Array<>();
         for (Integer reelBoxIndex : reelBoxesToReplace) {
-            System.out.println(reelBoxIndex + " ");
-            System.out.println("replacement reelTile x="+reelTiles.get(reelBoxIndex).getX()+
-                               " y="+reelTiles.get(reelBoxIndex).getY()+
-                               " dX="+reelTiles.get(reelBoxIndex).getDestinationX()+
-                               " dY="+reelTiles.get(reelBoxIndex).getDestinationY());
-            Array<Integer> deletedReelsInColumn = animatedReelsManager.getTheReelsDeletedInColumn(reelTiles.get(reelBoxIndex).getSnapX());
-            if (deletedReelsInColumn.size > 0)
-                createReplacementReelBox(deletedReelsInColumn.get(deletedReelsInColumn.size-1));
-            else
+              Array<Integer> deletedReelsInColumn = animatedReelsManager.getTheReelsDeletedInColumn(reelTiles.get(reelBoxIndex).getSnapX());
+            if (deletedReelsInColumn.size > 0) {
+                createReplacementReelBox(deletedReelsInColumn.get(deletedReelsInColumn.size - 1));
+                replacementReelsToDelete.add(deletedReelsInColumn.get(deletedReelsInColumn.size - 1));
+            }
+            else {
                 createReplacementReelBox(reelBoxIndex);
+                replacementReelsToDelete.add(reelBoxIndex);
+            }
             reelBoxFalling = reelBoxIndex;
             reelBoxFallingY = reelTiles.get(reelBoxIndex).getY();
         }
         reelsSpinning = reelBoxesToReplace.size;
-        for (Integer reelBoxIndex : reelBoxesToReplace)
-            replacementReelBoxes.removeValue(reelBoxIndex, true);
-        System.out.println("Number of replacementReelBoxes left="+replacementReelBoxes.size);
-        int numberOfReelsDeleted = animatedReelsManager.getTheReelsDeleted().size;
-        System.out.println("numberOfReelsDeleted="+numberOfReelsDeleted);
-        if (replacementReelBoxes.size != numberOfReelsDeleted)
-            System.out.println("Error mismatch in deleted reels");
+        for (Integer replacementReelToDelete : replacementReelsToDelete)
+            replacementReelBoxes.removeValue(replacementReelToDelete, true);
+    }
+
+    private void prepareReelsToFall(Array<Integer> reelBoxesToReplace) {
+        reelBoxesToReplace.add(myReelsToFall.get(myReelsToFallIndex));
+        myReelsToFallIndex++;
+        if(myReelsToFallIndex>=myReelsToFall.size)
+            myReelsToFallIndex = 0;
     }
 
     private void createReplacementReelBox(Integer reelBoxIndex) {
@@ -669,7 +668,10 @@ public class LevelCreatorSimple {
         Color reelTileColor = reelTile.getColor();
         reelTileColor.set(reelTileColor.r, reelTileColor.g, reelTileColor.b, 1.0f);
         reelTile.setColor(reelTileColor);
-        reelTile.setEndReel(Random.getInstance().nextInt( reelTile.getNumberOfReelsInTexture() - 1));
+        if (usePreparedSlotPuzzleMatrixReelsToFall)
+            reelTile.setEndReel(myReelsToFallEndReel.get(myReelsToFallIndex));
+        else
+            reelTile.setEndReel(Random.getInstance().nextInt( reelTile.getNumberOfReelsInTexture() - 1));
         reelTile.resetReel();
         reelTile.setSpinning(true);
         reelTile.setIsFallen(false);

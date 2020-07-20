@@ -17,7 +17,6 @@ import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer;
 import com.badlogic.gdx.physics.box2d.World;
@@ -45,8 +44,6 @@ import com.ellzone.slotpuzzle2d.physics.contact.BoxHittingBoxContactListener;
 import com.ellzone.slotpuzzle2d.prototypes.SPPrototypeTemplate;
 import com.ellzone.slotpuzzle2d.physics.contact.AnimatedReelsManager;
 import com.ellzone.slotpuzzle2d.prototypes.box2d.collisions.AnimatedReelsMatrixCreator;
-import com.ellzone.slotpuzzle2d.prototypes.box2d.collisions.SlotPuzzleMatrices;
-import com.ellzone.slotpuzzle2d.puzzlegrid.PuzzleGridTypeReelTile;
 import com.ellzone.slotpuzzle2d.puzzlegrid.ReelTileGridValue;
 import com.ellzone.slotpuzzle2d.scene.Hud;
 import com.ellzone.slotpuzzle2d.screens.PlayScreen;
@@ -106,7 +103,6 @@ public class HiddenPatternFallingReelsAnimatedReelsManager extends SPPrototypeTe
     private OrthographicCamera camera;
     private LevelDoor levelDoor;
     private LevelCreatorSimple levelCreator;
-    private int numberOfReelsAboveHitsIntroSpinning;
     private Array<ReelTile> reelTiles;
     private ShapeRenderer shapeRenderer;
     private boolean displaySpinHelp;
@@ -155,6 +151,10 @@ public class HiddenPatternFallingReelsAnimatedReelsManager extends SPPrototypeTe
         BoxHittingBoxContactListener contactListener = new BoxHittingBoxContactListener();
         world.setContactListener(contactListener);
         debugRenderer = new Box2DDebugRenderer();
+        setupRayHandler();
+    }
+
+    private void setupRayHandler() {
         rayHandler = new RayHandler(world);
         rayHandler.useDiffuseLight(true);
         rayHandler.setAmbientLight(0.2f, 0.2f, 0.2f, 0.25f);
@@ -162,6 +162,10 @@ public class HiddenPatternFallingReelsAnimatedReelsManager extends SPPrototypeTe
 
     private void initialisePhysics() {
         physics = new PhysicsManagerCustomBodies(camera, world, debugRenderer);
+        createReelSink();
+    }
+
+    private void createReelSink() {
         ReelSink reelSink = new ReelSink(physics);
         reelSink.createReelSink(
                 SlotPuzzleConstants.VIRTUAL_WIDTH / 2,
@@ -183,6 +187,10 @@ public class HiddenPatternFallingReelsAnimatedReelsManager extends SPPrototypeTe
         initialiseReels();
         createLevelCreator(level);
         reelBoxes = levelCreator.getReelBoxes();
+        setupAnimatedReelsManager();
+    }
+
+    private void setupAnimatedReelsManager() {
         animatedReelsManager = new AnimatedReelsManager(animatedReels, reelBoxes);
         animatedReelsManager.setNumberOfReelsToFall(numberOfReelsToFall);
         levelCreator.setAnimatedReelsManager(animatedReelsManager);
@@ -193,7 +201,6 @@ public class HiddenPatternFallingReelsAnimatedReelsManager extends SPPrototypeTe
         playStateMachine.setConcretePlay(this);
         playStateMachine.getStateMachine().changeState(PlayState.INITIALISING);
     }
-
 
     private void createLevelCreator(TiledMap level) {
         levelCreator = new LevelCreatorSimple(
@@ -216,6 +223,11 @@ public class HiddenPatternFallingReelsAnimatedReelsManager extends SPPrototypeTe
         TiledMap level = getLevelAssets(annotationAssetManager);
         tileMapRenderer = new OrthogonalTiledMapRenderer(level);
         Array<RectangleMapObject> extractedLevelRectangleMapObjects = extractLevelAssets(level);
+        delegateCreateLevel(levelObjectCreator, extractedLevelRectangleMapObjects);
+        return level;
+    }
+
+    private void delegateCreateLevel(LevelObjectCreatorEntityHolder levelObjectCreator, Array<RectangleMapObject> extractedLevelRectangleMapObjects) {
         try {
             levelObjectCreator.createLevel(extractedLevelRectangleMapObjects);
             animatedReels = levelObjectCreator.getAnimatedReels();
@@ -223,35 +235,6 @@ public class HiddenPatternFallingReelsAnimatedReelsManager extends SPPrototypeTe
         } catch (GdxRuntimeException gdxRuntimeException) {
             throw new GdxRuntimeException(gdxRuntimeException);
         }
-        return level;
-    }
-
-    private void setUpLevelUsingSlotPuzzleMatrix() {
-        animatedReelsMatrixCreator = new AnimatedReelsMatrixCreator(
-                physics,
-                slotReelScrollTexture,
-                spriteWidth,
-                spriteHeight,
-                tweenManager);
-//        animatedReels = animatedReelsMatrixCreator.createAnimatedReelsFromSlotPuzzleMatrix(
-//                SlotPuzzleMatrices.createMatrixWithANearlyFullMatrix());
-//        animatedReels = animatedReelsMatrixCreator.updateAnimatedReelsFromSlotPuzzleMatrix(
-//                SlotPuzzleMatrices.createMatrixWithANearlyFullMatrix(),
-//                animatedReels);
-        numberOfReelsToFall = animatedReelsMatrixCreator.getNumberOfReelsToFall();
-        reelTiles = getReelTilesFromAnimatedReels(animatedReels);
-        reelBoxes = animatedReelsMatrixCreator.updateBoxBodiesFromAnimatedReels(
-                animatedReels,
-                levelCreator.getReelBoxes());
-        levelCreator.setAnimatedReels(animatedReels);
-        levelCreator.setReelTiles(reelTiles);
-        levelCreator.setReelBoxes(reelBoxes);
-        PuzzleGridTypeReelTile.printGrid(
-                com.ellzone.slotpuzzle2d.puzzlegrid.PuzzleGridTypeReelTile.populateMatchGridStatic(
-                        reelTiles,
-                        GAME_LEVEL_WIDTH,
-                        GAME_LEVEL_HEIGHT)
-        );
     }
 
     private void initialiseReels() {
@@ -394,16 +377,22 @@ public class HiddenPatternFallingReelsAnimatedReelsManager extends SPPrototypeTe
 
     @Override
     protected void updateOverride(float dt) {
-        if (slowMotion) {
-            if (isSlowMotionTimerEnded(dt))
-                return;
-        }
-        playStateMachine.update();
+        if (slowMotion & isSlowMotionTimerEnded(dt))
+            return;
+        deletegateUpdates(dt);
+//        tileMapRenderer.setView(orthographicCamera);
         handleInput();
+    }
+
+    private void deletegateUpdates(float dt) {
         tweenManager.update(dt);
         levelCreator.update(dt);
-        tileMapRenderer.setView(orthographicCamera);
         hud.update(dt);
+        playStateMachine.update();
+        updateReels(dt);
+    }
+
+    private void updateReels(float dt) {
         for (AnimatedReel animatedReel : animatedReels)
             animatedReel.update(dt);
         updateReelBoxes();
@@ -430,6 +419,12 @@ public class HiddenPatternFallingReelsAnimatedReelsManager extends SPPrototypeTe
 
     @Override
     protected void renderOverride(float dt) {
+        delegateRender();
+        delegateDraw();
+        renderAnimatedReelsFlash();
+    }
+
+    private void delegateRender() {
         tileMapRenderer.render();
         renderReelBoxes(batch, reelBoxes);
         if (isReelsStoppedMoving())
@@ -439,26 +434,19 @@ public class HiddenPatternFallingReelsAnimatedReelsManager extends SPPrototypeTe
         renderRayHandler();
         renderHud(batch);
         renderWorld();
+    }
+
+    private void delegateDraw() {
         physics.draw(batch);
         hud.stage.draw();
         stage.draw();
-        renderAnimatedReelsFlash();
     }
 
     private void processReelsStoppedMoving() {
-        System.out.println("numberOfReelsToFall="+animatedReelsManager.getNumberOfReelsToFall());
-        if (animatedReelsManager.getNumberOfReelsToFall()<=0 &
+        if (animatedReelsManager.getNumberOfReelsToFall() <= 0 &
             levelCreator.getNumberOfReelsSpinning() < 1) {
             if (!reelsStoppedMoving) {
-                System.out.println();
-                levelCreator.printMatchGrid(reelTiles, 12, 9);
                 reelsStoppedMoving = true;
-                Array<ReelTile> duplicateReels = animatedReelsManager.checkForDuplicateReels();
-                if (duplicateReels.size > 0) {
-                    System.out.println("Alert duplicates found!");
-                    int column = (int) duplicateReels.get(0).getDestinationX();
-                    animatedReelsManager.printColumn(column);
-                }
                 levelCreator.allReelsHaveStoppedSpinning();
             }
         }
@@ -524,20 +512,12 @@ public class HiddenPatternFallingReelsAnimatedReelsManager extends SPPrototypeTe
     }
 
     public void handleInput() {
-//        int touchX, touchY;
-        if (Gdx.input.justTouched()) {
-//            touchX = Gdx.input.getX();
-//            touchY = Gdx.input.getY();
-//            Vector3 unProjectTouch = new Vector3(touchX, touchY, 0);
-//            viewport.unproject(unProjectTouch);
-//            levelCreator.printMatchGrid(reelTiles, 12, 9);
-            if (playStateMachine.getStateMachine().getCurrentState() == PlayState.PLAY) {
+        if (Gdx.input.justTouched())
+            if (playStateMachine.getStateMachine().getCurrentState() == PlayState.PLAY)
                 processIsTileClicked();
-            }
-        }
-        if (Gdx.input.isKeyPressed(Input.Keys.D)) {
+
+        if (Gdx.input.isKeyPressed(Input.Keys.D))
             System.out.println("d key pressed - use this to insert a breakpoint");
-        }
     }
 
     private void processIsTileClicked() {

@@ -243,7 +243,6 @@ public class FlashSlots {
             reel.processEvent(new ReelStoppedFlashingEvent());
         }
         numberOfReelsFlashing--;
-        System.out.println("In FlashReels numberOfReelsFlashing=" + numberOfReelsFlashing);
     }
 
     private void initialiseReelFlashForLevelCreator(ReelTile reel, float pushPause) {
@@ -281,7 +280,6 @@ public class FlashSlots {
                 .setCallbackTriggers(TweenCallback.COMPLETE)
                 .setUserData(userData)
                 .start(tweenManager);
-        System.out.println("In FlashReels-> numberOfReelsFlashing="+numberOfReelsFlashing);
     }
 
     private TweenCallback reelFlashCallbackForLevelCreator = new TweenCallback() {
@@ -306,7 +304,6 @@ public class FlashSlots {
             reel.processEvent(new ReelStoppedFlashingEvent());
         }
         numberOfReelsFlashing--;
-        System.out.println("In FlashReels numberOfReelsFlashing=" + numberOfReelsFlashing);
     }
 
     public int getNumberOfReelsFlashing() {

@@ -129,7 +129,6 @@ public class AnimatedReelsManager implements Telegraph {
         @Override
         public void doAction(ReelTile reelTile) {
             recordDecrementReelsLeftToFall(reelTile);
-            System.out.println("isStoppedFalling index="+reelTile.getIndex());
         }
     };
 
@@ -139,7 +138,6 @@ public class AnimatedReelsManager implements Telegraph {
             SwapReelAction swapReelAction) {
         moveDeletedReelsToTheTopOfTheColumn(reelBelow, reelAbove);
         setFallenReelsToCurrentPostions(reelBelow, reelAbove, swapReelAction);
-        printSlotMatrix();
     }
 
     private void moveDeletedReelsToTheTopOfTheColumn(ReelTile reelBelow, ReelTile reelAbove) {
@@ -280,7 +278,6 @@ public class AnimatedReelsManager implements Telegraph {
     private void recordDecrementReelsLeftToFall(ReelTile reelTile) {
         if (!reelTile.isFallen()) {
             reelTile.setIsFallen(true);
-            System.out.println("isFallen index="+reelTile.getIndex());
             decrementReelsLeftToFall();
         }
     }
@@ -294,8 +291,6 @@ public class AnimatedReelsManager implements Telegraph {
                 bottomDeletedReel = reelTiles.get(findReel((int) reelTile.getDestinationX(), 40 + 40 * (i + 1)));
                 swapReelsForFallenReel(reelTiles.get(reelsAboveMe[i].index), bottomDeletedReel);
             }
-        } else {
-            System.out.println("reelTile Fallen Below destinationRow "+reelTile.getIndex());
         }
     }
 
