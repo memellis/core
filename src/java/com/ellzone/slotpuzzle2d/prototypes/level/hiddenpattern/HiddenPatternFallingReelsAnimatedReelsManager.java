@@ -516,14 +516,30 @@ public class HiddenPatternFallingReelsAnimatedReelsManager extends SPPrototypeTe
             if (playStateMachine.getStateMachine().getCurrentState() == PlayState.PLAY)
                 processIsTileClicked();
 
-        if (Gdx.input.isKeyPressed(Input.Keys.D))
-            System.out.println("d key pressed - use this to insert a breakpoint");
+        if (Gdx.input.isKeyPressed(Input.Keys.D)) {
+            handleDForDebugKeyPressed();
+        }
+
+        if (Gdx.input.isKeyPressed(Input.Keys.M))
+            handleMforMatrixPrintKeyPressed();
+
     }
 
     private void processIsTileClicked() {
         Vector2 tileClicked = getTileClicked();
         processTileClicked(tileClicked);
     }
+
+    private void handleDForDebugKeyPressed() {
+        System.out.println("d key pressed - use this to insert a breakpoint");
+    }
+
+    private void handleMforMatrixPrintKeyPressed() {
+        System.out.println();
+        levelCreator.printMatchGrid(reelTiles, GAME_LEVEL_WIDTH, GAME_LEVEL_HEIGHT);
+    }
+
+
 
     private Vector2 getTileClicked() {
         int touchX = Gdx.input.getX();

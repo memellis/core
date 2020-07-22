@@ -394,16 +394,16 @@ public class LevelCreatorSimple {
     }
 
     public PlayStates getPlayState() {
-        return this.playState;
+        return playState;
     }
 
     private void actionReelStoppedSpinning(ReelTileEvent event, ReelTile source) {
         source.stopSpinningSound();
         reelsSpinning--;
         if (reelsSpinning < 1)
-            if ((playState == PlayStates.INTRO_SPINNING) |
-                (playState == PlayStates.REELS_SPINNING) |
-                (playState == PlayStates.PLAYING))
+            if ((playStateMachine.getStateMachine().getCurrentState() == PlayState.INTRO_SPINNING_SEQUENCE) |
+                (playStateMachine.getStateMachine().getCurrentState() == PlayState.FLASH) |
+                (playStateMachine.getStateMachine().getCurrentState() == PlayState.PLAY))
                 allReelsHaveStoppedSpinning();
     }
 
@@ -424,7 +424,7 @@ public class LevelCreatorSimple {
 
     private void actionReelStoppedFlashing(ReelTileEvent event, ReelTile reelTile) {
         if (playStateMachine.getStateMachine().getCurrentState() == PlayState.PLAY) {
-            System.out.println("Copy logic from PlayScreen");
+            System.out.println("Reel stopped flashing Copy logic from PlayScreen");
         }
         reelScoreAnimation(reelTile);
         deleteReelAnimation(reelTile);
@@ -683,8 +683,8 @@ public class LevelCreatorSimple {
         AnimatedReel animatedReel = (AnimatedReel) reelTileBody.getUserData();
         ReelTile reelTile = animatedReel.getReel();
         reelTileBody.setTransform(
-                (reelTile.getDestinationX() + 20) / 100,
-                (reelTile.getDestinationY() + 20 + OFF_PLAY_SCREEN_OFFSET) / 100,
+                (reelTile.getDestinationX() + 19) / 100,
+                (reelTile.getDestinationY() + 19 + OFF_PLAY_SCREEN_OFFSET) / 100,
                 0);
         reelTileBody.setActive(true);
     }
