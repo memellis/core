@@ -196,11 +196,7 @@ public class TestSwapReelsAbove {
         animatedReels.get(48).getReel().setEndReel(0);
         animatedReels.get(48).getReel().unDeleteReelTile();
     }
-
-    private AnimatedReelsManager runTestSwapReelsFallenWithFourReels(Array<AnimatedReel> animatedReels) {
-        return sendSwapReelsAboveMessage(animatedReels, 96, 72);
-    }
-
+    
     private void assertTestSwapReelsFallenWithFourReels(AnimatedReelsManager animatedReelsManager) {
         Array<AnimatedReel> swappedReelsAboveAnimatedReels = animatedReelsManager.getAnimatedReels();
 
