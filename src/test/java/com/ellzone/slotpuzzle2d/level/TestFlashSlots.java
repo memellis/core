@@ -20,6 +20,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.utils.Array;
 import com.ellzone.slotpuzzle2d.effects.ReelAccessor;
 import com.ellzone.slotpuzzle2d.gdx.MyGDXApplication;
+import com.ellzone.slotpuzzle2d.prototypes.box2d.collisions.AnimatedReelsMatrixCreator;
 import com.ellzone.slotpuzzle2d.prototypes.box2d.collisions.SlotPuzzleMatrices;
 import com.ellzone.slotpuzzle2d.puzzlegrid.ReelTileGridValue;
 import com.ellzone.slotpuzzle2d.sprites.AnimatedReel;
@@ -68,7 +69,8 @@ public class TestFlashSlots {
     public void testFlashSlotsWithOneReel() {
         Gdx.app = new MyGDXApplication();
         Array<AnimatedReel> animatedReels = new Array<>();
-        animatedReels = SlotPuzzleMatrices.createAnimatedReelsFromSlotPuzzleMatrix(
+        AnimatedReelsMatrixCreator animatedReelsMatrixCreator = new AnimatedReelsMatrixCreator();
+        animatedReels = animatedReelsMatrixCreator.createAnimatedReelsFromSlotPuzzleMatrix(
                   SlotPuzzleMatrices.createMatrixWithOneBox());
         Array<ReelTile> reelTiles = getReelTilesFromAnimatedReels(animatedReels);
         FlashSlots flashSlots = new FlashSlots(
@@ -98,8 +100,9 @@ public class TestFlashSlots {
     private FlashSlots testFlashSlotsForSlotMatrix(int[][] slotMatrix) {
         Gdx.app = new MyGDXApplication();
         TweenManager tweenManager = initialTweenEngine();
+        AnimatedReelsMatrixCreator animatedReelsMatrixCreator = new AnimatedReelsMatrixCreator();
         Array<AnimatedReel> animatedReels =
-             SlotPuzzleMatrices.createAnimatedReelsFromSlotPuzzleMatrix(slotMatrix);
+             animatedReelsMatrixCreator.createAnimatedReelsFromSlotPuzzleMatrix(slotMatrix);
 
         Array<ReelTile> reelTiles = getReelTilesFromAnimatedReels(animatedReels);
 

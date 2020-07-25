@@ -55,8 +55,6 @@ public class AnimatedReelsMatrixCreator {
         this.tweenManager = tweenManager;
     }
 
-
-
     public Array<AnimatedReel> createAnimatedReelsFromSlotPuzzleMatrix(
             int[][] slotPuzzleMatrix) {
         Array<AnimatedReel> animatedReels = new Array<AnimatedReel>();
@@ -104,6 +102,14 @@ public class AnimatedReelsMatrixCreator {
 
     public void setNumberOfReelsToFall(int numberOfReelsToFall) {
         this.numberOfReelsToFall = numberOfReelsToFall;
+    }
+
+    public void setSpriteWidth(int spriteWidth) {
+        this.spriteWidth = spriteWidth;
+    }
+
+    public void setSpriteHeight(int spriteHeight) {
+        this.spriteHeight = spriteHeight;
     }
 
     private AnimatedReel createAnimatedReel(int x, int y, int endReel, int index) {

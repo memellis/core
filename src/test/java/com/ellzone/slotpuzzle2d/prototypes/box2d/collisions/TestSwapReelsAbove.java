@@ -24,7 +24,6 @@ import com.ellzone.slotpuzzle2d.messaging.MessageType;
 import com.ellzone.slotpuzzle2d.physics.contact.AnimatedReelsManager;
 import com.ellzone.slotpuzzle2d.sprites.AnimatedReel;
 
-import org.hamcrest.CoreMatchers;
 import org.junit.Test;
 
 import static com.ellzone.slotpuzzle2d.prototypes.assets.CreateLevelReels.REEL_HEIGHT;
@@ -119,7 +118,8 @@ public class TestSwapReelsAbove {
     public void testSwapReelsFallenWithThreeReels() {
         Gdx.app = new MyGDXApplication();
         Array<AnimatedReel> animatedReels = new Array<>();
-        animatedReels = SlotPuzzleMatrices.createAnimatedReelsFromSlotPuzzleMatrix(
+        AnimatedReelsMatrixCreator animatedReelsMatrixCreator = new AnimatedReelsMatrixCreator();
+        animatedReels = animatedReelsMatrixCreator.createAnimatedReelsFromSlotPuzzleMatrix(
             SlotPuzzleMatrices.createMatrixWithThreeBoxes());
         animatedReelsSetDestinationY(
                 animatedReels,
@@ -149,42 +149,53 @@ public class TestSwapReelsAbove {
 
     @Test
     public void testSwapReelsFallenWithFourReels() {
+        Array<AnimatedReel> animatedReels = prepareTestSwapReelsFallenWithFourReels();
+        AnimatedReelsManager animatedReelsManager = runTestSwapReelsFallenWithFourReels(animatedReels);
+        assertTestSwapReelsFallenWithFourReels(animatedReelsManager);
+    }
+
+    private Array<AnimatedReel> prepareTestSwapReelsFallenWithFourReels() {
         Gdx.app = new MyGDXApplication();
         Array<AnimatedReel> animatedReels = new Array<>();
-        animatedReels = SlotPuzzleMatrices.createAnimatedReelsFromSlotPuzzleMatrix(
+        AnimatedReelsMatrixCreator animatedReelsMatrixCreator = new AnimatedReelsMatrixCreator();
+        animatedReelsMatrixCreator.setSpriteWidth(40);
+        animatedReelsMatrixCreator.setSpriteHeight(40);
+        animatedReels = animatedReelsMatrixCreator.createAnimatedReelsFromSlotPuzzleMatrix(
                 SlotPuzzleMatrices.createMatrixWithFourBoxes());
-        animatedReelsSetDestinationY(
-                animatedReels,
-                60,
-                200.0f,
-                3,
-                12,
-                -REEL_HEIGHT);
 
-        animatedReels.get(48).getReel().setDestinationY(80);
-        animatedReels.get(48).getReel().setY(80 + SCREEN_OFFSET);
-        animatedReels.get(48).getReel().deleteReelTile();
+        animatedReels.get(84).getReel().setDestinationY(80);
+        animatedReels.get(84).getReel().setY(80 + SCREEN_OFFSET);
+        animatedReels.get(84).getReel().deleteReelTile();
 
-        AnimatedReelsManager animatedReelsManager =
-                sendSwapReelsAboveMessage(animatedReels, 96, 84);
+        animatedReels.get(96).getReel().setY(40);
+        animatedReels.get(72).getReel().setY(80);
+        animatedReels.get(60).getReel().setY(120);
+        animatedReels.get(48).getReel().setY(160);
+        animatedReels.get(48).getReel().setEndReel(0);
+        animatedReels.get(48).getReel().unDeleteReelTile();
+        return animatedReels;
+    }
 
+    private AnimatedReelsManager runTestSwapReelsFallenWithFourReels(Array<AnimatedReel> animatedReels) {
+        return sendSwapReelsAboveMessage(animatedReels, 96, 72);
+    }
+
+    private void assertTestSwapReelsFallenWithFourReels(AnimatedReelsManager animatedReelsManager) {
         Array<AnimatedReel> swappedReelsAboveAnimatedReels = animatedReelsManager.getAnimatedReels();
 
-        assertDestinationY(
-                swappedReelsAboveAnimatedReels,
-                48,
-                200.0f,
-                5,
-                12,
-                -REEL_HEIGHT);
-        assertThat(swappedReelsAboveAnimatedReels.get(48).getReel().isReelTileDeleted(), is(true));
+        assertThat(swappedReelsAboveAnimatedReels.get(48).getReel().getDestinationY(), is(equalTo(160.0f)));
+        assertThat(swappedReelsAboveAnimatedReels.get(60).getReel().getDestinationY(), is(equalTo(120.0f)));
+        assertThat(swappedReelsAboveAnimatedReels.get(72).getReel().getDestinationY(), is(equalTo(80.0f)));
+        assertThat(swappedReelsAboveAnimatedReels.get(84).getReel().isReelTileDeleted(), is(true));
+        assertThat(swappedReelsAboveAnimatedReels.get(96).getReel().getDestinationY(), is(equalTo(40.0f)));
     }
 
     @Test
     public void testSwapReelsFallenWithFourReelsAndWithReelsStoppingFalling() {
         Gdx.app = new MyGDXApplication();
         Array<AnimatedReel> animatedReels = new Array<>();
-        animatedReels = SlotPuzzleMatrices.createAnimatedReelsFromSlotPuzzleMatrix(
+        AnimatedReelsMatrixCreator animatedReelsMatrixCreator = new AnimatedReelsMatrixCreator();
+        animatedReels = animatedReelsMatrixCreator.createAnimatedReelsFromSlotPuzzleMatrix(
                 SlotPuzzleMatrices.createMatrixWithFourBoxes());
         animatedReelsSetDestinationY(
                 animatedReels,
@@ -221,7 +232,8 @@ public class TestSwapReelsAbove {
     public void testSwapReelsFallenWithFillColumnNineBoxes() {
         Gdx.app = new MyGDXApplication();
         Array<AnimatedReel> animatedReels = new Array<>();
-        animatedReels = SlotPuzzleMatrices.createAnimatedReelsFromSlotPuzzleMatrix(
+        AnimatedReelsMatrixCreator animatedReelsMatrixCreator = new AnimatedReelsMatrixCreator();
+        animatedReels = animatedReelsMatrixCreator.createAnimatedReelsFromSlotPuzzleMatrix(
                 SlotPuzzleMatrices.createMatrixWithFourBoxes());
 
         AnimatedReelsManager animatedReelsManager =
@@ -235,7 +247,8 @@ public class TestSwapReelsAbove {
     public void testSwapReelsFallenWithTwoByTwoReelsDeleted() {
         Gdx.app = new MyGDXApplication();
         Array<AnimatedReel> animatedReels = new Array<>();
-        animatedReels = SlotPuzzleMatrices.createAnimatedReelsFromSlotPuzzleMatrix(
+        AnimatedReelsMatrixCreator animatedReelsMatrixCreator = new AnimatedReelsMatrixCreator();
+        animatedReels = animatedReelsMatrixCreator.createAnimatedReelsFromSlotPuzzleMatrix(
                 SlotPuzzleMatrices.createMatrixWithFillColumnNineBoxes());
         prepareTestWithDeletedBoxes84and72And60Hitting96(animatedReels);
         AnimatedReelsManager animatedReelsManager =
@@ -249,7 +262,8 @@ public class TestSwapReelsAbove {
     public void testSwapReelsFallenAvoidingDuplicateReels() {
         Gdx.app = new MyGDXApplication();
         Array<AnimatedReel> animatedReels = new Array<>();
-        animatedReels = SlotPuzzleMatrices.createAnimatedReelsFromSlotPuzzleMatrix(
+        AnimatedReelsMatrixCreator animatedReelsMatrixCreator = new AnimatedReelsMatrixCreator();
+        animatedReels = animatedReelsMatrixCreator.createAnimatedReelsFromSlotPuzzleMatrix(
                 SlotPuzzleMatrices.createMatrixWithFillColumnNineBoxes());
         prepareTestWithDeleteReel(24, animatedReels);
         animatedReels.get(12).getReel().setY(280);
@@ -265,7 +279,8 @@ public class TestSwapReelsAbove {
     public void testSwapReelsFallenAvoidingDuplicateReelsTopReelsDeleted() {
         Gdx.app = new MyGDXApplication();
         Array<AnimatedReel> animatedReels = new Array<>();
-        animatedReels = SlotPuzzleMatrices.createAnimatedReelsFromSlotPuzzleMatrix(
+        AnimatedReelsMatrixCreator animatedReelsMatrixCreator = new AnimatedReelsMatrixCreator();
+        animatedReels = animatedReelsMatrixCreator.createAnimatedReelsFromSlotPuzzleMatrix(
                 SlotPuzzleMatrices.createMatrixWithFillColumnNineBoxes());
         prepareTestWithDeleteReel(animatedReels, 0, 24, 36);
         animatedReels.get(12).getReel().setY(240);
@@ -279,7 +294,9 @@ public class TestSwapReelsAbove {
     public void testSwapReelFallenAvoidDuplicateReelsFourReelsDeleted() {
         Gdx.app = new MyGDXApplication();
         Array<AnimatedReel> animatedReels = new Array<>();
-        animatedReels = SlotPuzzleMatrices.createAnimatedReelsFromSlotPuzzleMatrix(
+        AnimatedReelsMatrixCreator animatedReelsMatrixCreator = new AnimatedReelsMatrixCreator();
+
+        animatedReels = animatedReelsMatrixCreator.createAnimatedReelsFromSlotPuzzleMatrix(
                 SlotPuzzleMatrices.createMatrixWithFillColumnNineBoxes());
         prepareTestWithDeleteReel(animatedReels, 84, 72, 48, 36);
         animatedReels.get(60).getReel().setY(80);
@@ -306,7 +323,8 @@ public class TestSwapReelsAbove {
     public void testDropReelOntoOneReel() {
         Gdx.app = new MyGDXApplication();
         Array<AnimatedReel> animatedReels = new Array<>();
-        animatedReels = SlotPuzzleMatrices.createAnimatedReelsFromSlotPuzzleMatrix(
+        AnimatedReelsMatrixCreator animatedReelsMatrixCreator = new AnimatedReelsMatrixCreator();
+        animatedReels = animatedReelsMatrixCreator.createAnimatedReelsFromSlotPuzzleMatrix(
                 SlotPuzzleMatrices.createMatrixWithOneBox());
         AnimatedReelsManager animatedReelsManager = new AnimatedReelsManager(animatedReels);
         animatedReels.get(0).getReel().setY(80);

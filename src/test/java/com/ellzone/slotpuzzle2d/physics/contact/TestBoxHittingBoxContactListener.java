@@ -12,6 +12,7 @@ import com.ellzone.slotpuzzle2d.gdx.MyGDXApplication;
 import com.badlogic.gdx.math.Vector2;
 import com.ellzone.slotpuzzle2d.messaging.MessageUtils;
 import com.ellzone.slotpuzzle2d.physics.ReelSink;
+import com.ellzone.slotpuzzle2d.prototypes.box2d.collisions.AnimatedReelsMatrixCreator;
 import com.ellzone.slotpuzzle2d.prototypes.box2d.collisions.SlotPuzzleMatrices;
 import com.ellzone.slotpuzzle2d.sprites.AnimatedReel;
 import com.ellzone.slotpuzzle2d.utils.reels.ReelUtils;
@@ -31,6 +32,7 @@ public class TestBoxHittingBoxContactListener {
     private Array<AnimatedReel> animatedReels;
     private Array<Body> reelBoxBodies;
     private AnimatedReelsManager animatedReelsManager;
+    private AnimatedReelsMatrixCreator animatedReelsMatrixCreator;
 
     @Before
     public void setUp() {
@@ -40,6 +42,7 @@ public class TestBoxHittingBoxContactListener {
         animatedReels = new Array<>();
         reelBoxBodies = new Array<Body>();
         animatedReelsManager = new AnimatedReelsManager(animatedReels, reelBoxBodies);
+        animatedReelsMatrixCreator = new AnimatedReelsMatrixCreator();
     }
 
     @After
@@ -50,6 +53,7 @@ public class TestBoxHittingBoxContactListener {
         animatedReels = null;
         reelBoxBodies = null;
         animatedReelsManager = null;
+        animatedReelsMatrixCreator = null;
         MessageManager.getInstance().clearListeners();
     }
 
@@ -99,7 +103,7 @@ public class TestBoxHittingBoxContactListener {
 
     @Test
     public void testFallingReelWhenMatchingReelsDeleted() {
-        animatedReels = SlotPuzzleMatrices.createAnimatedReelsFromSlotPuzzleMatrix(
+        animatedReels = animatedReelsMatrixCreator.createAnimatedReelsFromSlotPuzzleMatrix(
                 SlotPuzzleMatrices.createMatrixWithFillColumnNineBoxes());
         animatedReels.get(0).getReel().deleteReelTile();
         animatedReels.get(0).getReel().setDestinationY(80);
