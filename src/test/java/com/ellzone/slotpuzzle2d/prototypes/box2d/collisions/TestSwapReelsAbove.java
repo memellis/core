@@ -196,8 +196,8 @@ public class TestSwapReelsAbove {
         animatedReels.get(48).getReel().setEndReel(0);
         animatedReels.get(48).getReel().unDeleteReelTile();
     }
-    
-    private void assertTestSwapReelsFallenWithFourReels(AnimatedReelsManager animatedReelsManager) {
+
+    private Array<AnimatedReel> assertTestSwapReelsFallenWithFourReels(AnimatedReelsManager animatedReelsManager) {
         Array<AnimatedReel> swappedReelsAboveAnimatedReels = animatedReelsManager.getAnimatedReels();
 
         assertThat(swappedReelsAboveAnimatedReels.get(48).getReel().getDestinationY(), is(equalTo(160.0f)));
@@ -205,43 +205,32 @@ public class TestSwapReelsAbove {
         assertThat(swappedReelsAboveAnimatedReels.get(72).getReel().getDestinationY(), is(equalTo(80.0f)));
         assertThat(swappedReelsAboveAnimatedReels.get(84).getReel().isReelTileDeleted(), is(true));
         assertThat(swappedReelsAboveAnimatedReels.get(96).getReel().getDestinationY(), is(equalTo(40.0f)));
+        return swappedReelsAboveAnimatedReels;
     }
 
     @Test
-    public void testSwapReelsFallenWithFourReelsAndWithReelsStoppingFalling() {
-        Gdx.app = new MyGDXApplication();
-        Array<AnimatedReel> animatedReels = new Array<>();
-        AnimatedReelsMatrixCreator animatedReelsMatrixCreator = new AnimatedReelsMatrixCreator();
-        animatedReels = animatedReelsMatrixCreator.createAnimatedReelsFromSlotPuzzleMatrix(
-                SlotPuzzleMatrices.createMatrixWithFourBoxes());
-        animatedReelsSetDestinationY(
-                animatedReels,
-                60,
-                200.0f,
-                3,
-                12,
-                -REEL_HEIGHT);
-        animatedReels.get(48).getReel().setDestinationY(80);
-        animatedReels.get(48).getReel().setY(80 + SCREEN_OFFSET);
-        animatedReels.get(48).getReel().deleteReelTile();
+    public void testSwapReelsFallenWithFourReelsAndWithReelsStoppedFalling() {
+
+        Array<AnimatedReel> animatedReels = prepareTestSwapReelsFallenWithFourReels();
         animatedReels.get(96).getReel().setIsFallen(true);
 
+        AnimatedReelsManager animatedReelsManager = runTestSwapReelsWithFourReelsAndWithReelsStoppedFalling(animatedReels);
+
+        assertTestSwappedReelsFallenWithFourReelsAndWithStoppedFalling(animatedReelsManager);
+    }
+
+    private AnimatedReelsManager runTestSwapReelsWithFourReelsAndWithReelsStoppedFalling(Array<AnimatedReel> animatedReels) {
         AnimatedReelsManager animatedReelsManager = new AnimatedReelsManager(animatedReels);
         animatedReelsManager.setNumberOfReelsToFall(3);
-        sendSwapReelsAboveMessageWithAnimatedReelsManager(animatedReelsManager, animatedReels, 96, 84);
+        sendSwapReelsAboveMessageWithAnimatedReelsManager(animatedReelsManager, animatedReels, 96, 72);
+        return animatedReelsManager;
+    }
 
-        Array<AnimatedReel> swappedReelsAboveAnimatedReels = animatedReelsManager.getAnimatedReels();
-        assertDestinationY(
-                swappedReelsAboveAnimatedReels,
-                48,
-                200.0f,
-                5,
-                12,
-                -REEL_HEIGHT);
-        assertThat(swappedReelsAboveAnimatedReels.get(84).getReel().isFallen(), is(true));
+    private void assertTestSwappedReelsFallenWithFourReelsAndWithStoppedFalling(AnimatedReelsManager animatedReelsManager) {
+        Array<AnimatedReel> swappedReelsAboveAnimatedReels =
+                assertTestSwapReelsFallenWithFourReels(animatedReelsManager);
         assertThat(swappedReelsAboveAnimatedReels.get(72).getReel().isFallen(), is(true));
         assertThat(swappedReelsAboveAnimatedReels.get(60).getReel().isFallen(), is(true));
-        assertThat(swappedReelsAboveAnimatedReels.get(48).getReel().getDestinationY(), is(equalTo(200f)));
         assertThat(animatedReelsManager.getNumberOfReelsToFall(), is(equalTo(0)));
     }
 
@@ -272,8 +261,10 @@ public class TestSwapReelsAbove {
                 SlotPuzzleMatrices.createMatrixWithFillColumnNineBoxes());
         prepareTestWithDeletedBoxes84and72And60Hitting96(animatedReels);
         AnimatedReelsManager animatedReelsManager = getAnimatedReelsManager(animatedReels, 96, 60);
+        animatedReelsManager.printSlotMatrix();
         prepareTestWith36And24Hitting60(animatedReels);
         sendSwapReelsAboveMessage(animatedReelsManager, animatedReels, 60, 24);
+        animatedReelsManager.printSlotMatrix();
         assertTwoByTwoReelsDeleted(animatedReelsManager.getAnimatedReels());
     }
 
