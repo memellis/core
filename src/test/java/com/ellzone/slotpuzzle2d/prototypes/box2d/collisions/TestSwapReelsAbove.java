@@ -293,12 +293,9 @@ public class TestSwapReelsAbove {
 
     @Test
     public void testSwapReelFallenAvoidDuplicateReelsFourReelsDeleted() {
-        Gdx.app = new MyGDXApplication();
-        Array<AnimatedReel> animatedReels = new Array<>();
-        AnimatedReelsMatrixCreator animatedReelsMatrixCreator = new AnimatedReelsMatrixCreator();
+        Array<AnimatedReel> animatedReels =
+                prepareMatrxBasedTest(SlotPuzzleMatrices.createMatrixWithFillColumnNineBoxes(), 0);
 
-        animatedReels = animatedReelsMatrixCreator.createAnimatedReelsFromSlotPuzzleMatrix(
-                SlotPuzzleMatrices.createMatrixWithFillColumnNineBoxes());
         prepareTestWithDeleteReel(animatedReels, 84, 72, 48, 36);
         animatedReels.get(60).getReel().setY(80);
         animatedReels.get(24).getReel().setY(120);
