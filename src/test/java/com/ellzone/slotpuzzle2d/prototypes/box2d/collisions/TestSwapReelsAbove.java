@@ -127,13 +127,8 @@ public class TestSwapReelsAbove {
     }
 
     private Array<AnimatedReel> prepareTestSwapReelsFallenWithThreeReels() {
-        Gdx.app = new MyGDXApplication();
-        Array<AnimatedReel> animatedReels = new Array<>();
-        AnimatedReelsMatrixCreator animatedReelsMatrixCreator = new AnimatedReelsMatrixCreator();
-        animatedReelsMatrixCreator.setSpriteWidth(40);
-        animatedReelsMatrixCreator.setSpriteHeight(40);
-        animatedReels = animatedReelsMatrixCreator.createAnimatedReelsFromSlotPuzzleMatrix(
-                SlotPuzzleMatrices.createMatrixWithThreeBoxes());
+        Array<AnimatedReel> animatedReels =
+                prepareMatrxBasedTest(SlotPuzzleMatrices.createMatrixWithThreeBoxes(), SCREEN_OFFSET);
 
         animatedReels.get(84).getReel().setDestinationY(80);
         animatedReels.get(84).getReel().setY(80 + SCREEN_OFFSET);
@@ -141,6 +136,17 @@ public class TestSwapReelsAbove {
         animatedReels.get(96).getReel().setY(40);
         animatedReels.get(72).getReel().setY(80);
         animatedReels.get(60).getReel().setY(120);
+        return animatedReels;
+    }
+
+    private Array<AnimatedReel> prepareMatrxBasedTest(int[][] matrixToCreateFrom, int screenOffset) {
+        Gdx.app = new MyGDXApplication();
+        Array<AnimatedReel> animatedReels = new Array<>();
+        AnimatedReelsMatrixCreator animatedReelsMatrixCreator = new AnimatedReelsMatrixCreator();
+        animatedReelsMatrixCreator.setSpriteWidth(40);
+        animatedReelsMatrixCreator.setSpriteHeight(40);
+        animatedReels = animatedReelsMatrixCreator.createAnimatedReelsFromSlotPuzzleMatrix(
+                matrixToCreateFrom, screenOffset);
         return animatedReels;
     }
 
@@ -172,13 +178,8 @@ public class TestSwapReelsAbove {
     }
 
     private Array<AnimatedReel> prepareTestSwapReelsFallenWithFourReels() {
-        Gdx.app = new MyGDXApplication();
-        Array<AnimatedReel> animatedReels = new Array<>();
-        AnimatedReelsMatrixCreator animatedReelsMatrixCreator = new AnimatedReelsMatrixCreator();
-        animatedReelsMatrixCreator.setSpriteWidth(40);
-        animatedReelsMatrixCreator.setSpriteHeight(40);
-        animatedReels = animatedReelsMatrixCreator.createAnimatedReelsFromSlotPuzzleMatrix(
-                SlotPuzzleMatrices.createMatrixWithFourBoxes());
+        Array<AnimatedReel> animatedReels =
+                prepareMatrxBasedTest(SlotPuzzleMatrices.createMatrixWithFourBoxes(), SCREEN_OFFSET);
 
         prepareAnimatedReelsForFallingWithFourReels(animatedReels);
         return animatedReels;
@@ -210,7 +211,6 @@ public class TestSwapReelsAbove {
 
     @Test
     public void testSwapReelsFallenWithFourReelsAndWithReelsStoppedFalling() {
-
         Array<AnimatedReel> animatedReels = prepareTestSwapReelsFallenWithFourReels();
         animatedReels.get(96).getReel().setIsFallen(true);
 
@@ -254,14 +254,11 @@ public class TestSwapReelsAbove {
 
     @Test
     public void testSwapReelsFallenWithTwoByTwoReelsDeleted() {
-        Gdx.app = new MyGDXApplication();
-        Array<AnimatedReel> animatedReels = new Array<>();
-        AnimatedReelsMatrixCreator animatedReelsMatrixCreator = new AnimatedReelsMatrixCreator();
-        animatedReels = animatedReelsMatrixCreator.createAnimatedReelsFromSlotPuzzleMatrix(
-                SlotPuzzleMatrices.createMatrixWithFillColumnNineBoxes());
+        Array<AnimatedReel> animatedReels =
+                prepareMatrxBasedTest(SlotPuzzleMatrices.createMatrixWithFillColumnNineBoxes(), 0);
+
         prepareTestWithDeletedBoxes84and72And60Hitting96(animatedReels);
         AnimatedReelsManager animatedReelsManager = getAnimatedReelsManager(animatedReels, 96, 60);
-        animatedReelsManager.printSlotMatrix();
         prepareTestWith36And24Hitting60(animatedReels);
         sendSwapReelsAboveMessage(animatedReelsManager, animatedReels, 60, 24);
         animatedReelsManager.printSlotMatrix();
@@ -445,6 +442,7 @@ public class TestSwapReelsAbove {
         reelsAB.add(animatedReels.get(reelAbove));
         message.extraInfo = reelsAB;
         AnimatedReelsManager animatedReelsManager = new AnimatedReelsManager(animatedReels);
+        animatedReelsManager.printSlotMatrix();
         animatedReelsManager.handleMessage(message);
         return animatedReelsManager;
     }

@@ -77,6 +77,31 @@ public class AnimatedReelsMatrixCreator {
         return animatedReels;
     }
 
+    public Array<AnimatedReel> createAnimatedReelsFromSlotPuzzleMatrix(
+            int[][] slotPuzzleMatrix,
+            int screenOffSet) {
+        Array<AnimatedReel> animatedReels = new Array<AnimatedReel>();
+        int numberOfAnimatedReelsCreated = 0;
+        for (int r = 0; r < slotPuzzleMatrix.length; r++) {
+            for (int c = 0; c < slotPuzzleMatrix[0].length; c++) {
+                animatedReels.add(
+                        createAnimatedReel(
+                                (int) PlayScreen.PUZZLE_GRID_START_X + (c * 40) + 20,
+                                ((slotPuzzleMatrix.length - 1 - r) * 40) + 40,
+                                slotPuzzleMatrix[r][c],
+                                numberOfAnimatedReelsCreated,
+                                screenOffSet)
+                                );
+                if (slotPuzzleMatrix[r][c] < 0)
+                    animatedReels.get(numberOfAnimatedReelsCreated).getReel().deleteReelTile();
+                else
+                    numberOfReelsToFall++;
+                numberOfAnimatedReelsCreated++;
+            }
+        }
+        return animatedReels;
+    }
+
     public Array<AnimatedReel> updateAnimatedReelsFromSlotPuzzleMatrix(
             int[][] slotPuzzleMatrix,
             Array<AnimatedReel> animatedReels,
@@ -118,11 +143,28 @@ public class AnimatedReelsMatrixCreator {
         return animatedReel;
     }
 
+    private AnimatedReel createAnimatedReel(
+            int x, int y, int endReel, int index, int screenOffset) {
+        AnimatedReel animatedReel = getAnimatedReel(x, y, endReel);
+        setUpReelTileInAnimatedReel(index, animatedReel, screenOffset);
+        return animatedReel;
+    }
+
     private void setUpReelTileInAnimatedReel(int index, AnimatedReel animatedReel) {
         ReelTile reelTile = animatedReel.getReel();
         reelTile.setDestinationX(reelTile.getX());
         reelTile.setDestinationY(reelTile.getY());
         reelTile.setY(reelTile.getY() + SCREEN_OFFSET);
+        reelTile.setIsFallen(false);
+        reelTile.setIsStoppedFalling(false);
+        reelTile.setIndex(index);
+    }
+
+    private void setUpReelTileInAnimatedReel(int index, AnimatedReel animatedReel, int screenOffset) {
+        ReelTile reelTile = animatedReel.getReel();
+        reelTile.setDestinationX(reelTile.getX());
+        reelTile.setDestinationY(reelTile.getY());
+        reelTile.setY(reelTile.getY() + screenOffset);
         reelTile.setIsFallen(false);
         reelTile.setIsStoppedFalling(false);
         reelTile.setIndex(index);
