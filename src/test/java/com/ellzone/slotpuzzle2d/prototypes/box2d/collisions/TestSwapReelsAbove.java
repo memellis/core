@@ -267,11 +267,9 @@ public class TestSwapReelsAbove {
 
     @Test
     public void testSwapReelsFallenAvoidingDuplicateReels() {
-        Gdx.app = new MyGDXApplication();
-        Array<AnimatedReel> animatedReels = new Array<>();
-        AnimatedReelsMatrixCreator animatedReelsMatrixCreator = new AnimatedReelsMatrixCreator();
-        animatedReels = animatedReelsMatrixCreator.createAnimatedReelsFromSlotPuzzleMatrix(
-                SlotPuzzleMatrices.createMatrixWithFillColumnNineBoxes());
+        Array<AnimatedReel> animatedReels =
+                prepareMatrxBasedTest(SlotPuzzleMatrices.createMatrixWithFillColumnNineBoxes(), 0);
+
         prepareTestWithDeleteReel(24, animatedReels);
         animatedReels.get(12).getReel().setY(280);
         animatedReels.get(0).getReel().setY(320);
@@ -442,7 +440,6 @@ public class TestSwapReelsAbove {
         reelsAB.add(animatedReels.get(reelAbove));
         message.extraInfo = reelsAB;
         AnimatedReelsManager animatedReelsManager = new AnimatedReelsManager(animatedReels);
-        animatedReelsManager.printSlotMatrix();
         animatedReelsManager.handleMessage(message);
         return animatedReelsManager;
     }
