@@ -26,7 +26,6 @@ import com.ellzone.slotpuzzle2d.sprites.AnimatedReel;
 
 import org.junit.Test;
 
-import static com.ellzone.slotpuzzle2d.prototypes.assets.CreateLevelReels.REEL_HEIGHT;
 import static com.ellzone.slotpuzzle2d.prototypes.box2d.collisions.Box2DBoxesFallingFromSlotPuzzleMatrices.SCREEN_OFFSET;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.is;
@@ -318,11 +317,9 @@ public class TestSwapReelsAbove {
 
     @Test
     public void testDropReelOntoOneReel() {
-        Gdx.app = new MyGDXApplication();
-        Array<AnimatedReel> animatedReels = new Array<>();
-        AnimatedReelsMatrixCreator animatedReelsMatrixCreator = new AnimatedReelsMatrixCreator();
-        animatedReels = animatedReelsMatrixCreator.createAnimatedReelsFromSlotPuzzleMatrix(
-                SlotPuzzleMatrices.createMatrixWithOneBox());
+        Array<AnimatedReel> animatedReels =
+                prepareMatrxBasedTest(SlotPuzzleMatrices.createMatrixWithOneBox(), 0);
+
         AnimatedReelsManager animatedReelsManager = new AnimatedReelsManager(animatedReels);
         animatedReels.get(0).getReel().setY(80);
         animatedReels.get(0).getReel().unDeleteReelTile();
@@ -464,22 +461,6 @@ public class TestSwapReelsAbove {
         int count = 0;
         for (int index = startIndex; index < startIndex + numberOfReels*step ; index+=step) {
             animatedReels.get(index).getReel().setDestinationY(startY + count * reelHeight);
-            count++;
-        }
-    }
-
-    private void assertDestinationY(
-            Array<AnimatedReel> animatedReels,
-            int startIndex,
-            float startY,
-            int numberOfReels,
-            int step,
-            int reelHeight) {
-        int count = 0;
-        for (int index = startIndex; index < startIndex + numberOfReels * step; index+=step) {
-            assertThat(
-                    animatedReels.get(index).getReel().getDestinationY(),
-                    is(equalTo(startY + count * reelHeight)));
             count++;
         }
     }
