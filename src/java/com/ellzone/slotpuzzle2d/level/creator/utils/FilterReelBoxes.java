@@ -24,8 +24,7 @@ public class FilterReelBoxes {
         Array<Integer> filterReplacementReelBoxes = new Array<>();
         if (deletedReelBoxes.size == 0)
             return filterReplacementReelBoxes;
-//        int numberOfReelBoxesToBeSelected = (int) Math.ceil(deletedReelBoxes.size * difficultyLevelFactor);
-        int numberOfReelBoxesToBeSelected = 1;
+        int numberOfReelBoxesToBeSelected = (int) Math.ceil(deletedReelBoxes.size * difficultyLevelFactor);
 
         do {
             int next = Random.getInstance().nextInt(deletedReelBoxes.size);
