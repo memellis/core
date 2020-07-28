@@ -563,12 +563,12 @@ public class PuzzleGridTypeReelTile {
                 else
                     matchGrid[r][c] = new ReelTileGridValue(reelLevel.get(i), r, c, i, reelLevel.get(i).getEndReel());
 
-//                Gdx.app.debug(SlotPuzzleConstants.SLOT_PUZZLE, MessageFormat.format("r={0} c={1} x={2} y={3} dx={4} dy={5} i={6} v={7}",
-//                              r, c,
-//                              reelLevel.get(i).getX(), reelLevel.get(i).getY(),
-//                              reelLevel.get(i).getDestinationX(), reelLevel.get(i).getDestinationY(),
-//                              i,
-//                              reelLevel.get(i).getEndReel()));
+                Gdx.app.debug(SlotPuzzleConstants.SLOT_PUZZLE, MessageFormat.format("r={0} c={1} x={2} y={3} dx={4} dy={5} i={6} v={7}",
+                              r, c,
+                              reelLevel.get(i).getX(), reelLevel.get(i).getY(),
+                              reelLevel.get(i).getDestinationX(), reelLevel.get(i).getDestinationY(),
+                              i,
+                              reelLevel.get(i).getEndReel()));
             } else
                 Gdx.app.debug(SlotPuzzleConstants.SLOT_PUZZLE, "I don't respond to ***r="+r+" c="+c);
         }
