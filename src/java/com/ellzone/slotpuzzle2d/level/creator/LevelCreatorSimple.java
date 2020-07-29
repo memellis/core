@@ -619,6 +619,36 @@ public class LevelCreatorSimple {
     private void createReplacementReelBoxes() {
         if (animatedReelsManager == null)
             return;
+        Array<Integer> reelBoxesToReplace = getReelBoxesToReplace();
+
+        delegateCreateReplacementReelBoxes(reelBoxesToReplace);
+    }
+
+    private void delegateCreateReplacementReelBoxes(Array<Integer> reelBoxesToReplace) {
+        animatedReelsManager.setNumberOfReelsToFall(reelBoxesToReplace.size);
+        Array<Integer> replacementReelsToDelete = new Array<>();
+        for (Integer reelBoxIndex : reelBoxesToReplace)
+            processReelBoxToReplace(replacementReelsToDelete, reelBoxIndex);
+        reelsSpinning = reelBoxesToReplace.size;
+        for (Integer replacementReelToDelete : replacementReelsToDelete)
+            replacementReelBoxes.removeValue(replacementReelToDelete, true);
+    }
+
+    private void processReelBoxToReplace(Array<Integer> replacementReelsToDelete, Integer reelBoxIndex) {
+        Array<Integer> deletedReelsInColumn = animatedReelsManager.getTheReelsDeletedInColumn(reelTiles.get(reelBoxIndex).getSnapX());
+        if (deletedReelsInColumn.size > 0) {
+            createReplacementReelBox(deletedReelsInColumn.get(deletedReelsInColumn.size - 1));
+            replacementReelsToDelete.add(deletedReelsInColumn.get(deletedReelsInColumn.size - 1));
+        }
+        else {
+            createReplacementReelBox(reelBoxIndex);
+            replacementReelsToDelete.add(reelBoxIndex);
+        }
+        reelBoxFalling = reelBoxIndex;
+        reelBoxFallingY = reelTiles.get(reelBoxIndex).getY();
+    }
+
+    private Array<Integer> getReelBoxesToReplace() {
         Array<Integer> reelBoxesToReplace = new Array<>();
         if (usePreparedSlotPuzzleMatrixReelsToFall)
             prepareReelsToFall(reelBoxesToReplace);
@@ -627,25 +657,7 @@ public class LevelCreatorSimple {
                     FilterReelBoxes.
                             filterReelBoxesByDifficultyLevel(
                                     replacementReelBoxes, 0.1f);
-
-        animatedReelsManager.setNumberOfReelsToFall(reelBoxesToReplace.size);
-        Array<Integer> replacementReelsToDelete = new Array<>();
-        for (Integer reelBoxIndex : reelBoxesToReplace) {
-              Array<Integer> deletedReelsInColumn = animatedReelsManager.getTheReelsDeletedInColumn(reelTiles.get(reelBoxIndex).getSnapX());
-            if (deletedReelsInColumn.size > 0) {
-                createReplacementReelBox(deletedReelsInColumn.get(deletedReelsInColumn.size - 1));
-                replacementReelsToDelete.add(deletedReelsInColumn.get(deletedReelsInColumn.size - 1));
-            }
-            else {
-                createReplacementReelBox(reelBoxIndex);
-                replacementReelsToDelete.add(reelBoxIndex);
-            }
-            reelBoxFalling = reelBoxIndex;
-            reelBoxFallingY = reelTiles.get(reelBoxIndex).getY();
-        }
-        reelsSpinning = reelBoxesToReplace.size;
-        for (Integer replacementReelToDelete : replacementReelsToDelete)
-            replacementReelBoxes.removeValue(replacementReelToDelete, true);
+        return reelBoxesToReplace;
     }
 
     private void prepareReelsToFall(Array<Integer> reelBoxesToReplace) {

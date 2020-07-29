@@ -74,6 +74,7 @@ import static com.ellzone.slotpuzzle2d.messaging.MessageType.SwapReelsAboveMe;
 import static com.ellzone.slotpuzzle2d.prototypes.level.minislotmachine.MiniSlotMachineLevelPrototypeWithLevelCreator.MINI_SLOT_MACHINE_LEVEL_NAME;
 import static com.ellzone.slotpuzzle2d.screens.PlayScreen.GAME_LEVEL_HEIGHT;
 import static com.ellzone.slotpuzzle2d.screens.PlayScreen.GAME_LEVEL_WIDTH;
+import static com.ellzone.slotpuzzle2d.screens.PlayScreen.LEVEL_TIME_LENGTH_IN_SECONDS;
 
 public class HiddenPatternFallingReelsAnimatedReelsManager extends SPPrototypeTemplate
         implements LevelCreatorInjectionInterface, PlayInterface {
@@ -335,6 +336,8 @@ public class HiddenPatternFallingReelsAnimatedReelsManager extends SPPrototypeTe
         switch (type) {
             case TweenCallback.END:
                 System.out.println("Intro Sequence finished");
+                hud.resetWorldTime(LEVEL_TIME_LENGTH_IN_SECONDS);
+                hud.startWorldTimer();
                 levelCreator.allReelsHaveStoppedSpinning();
                 introSequenceFinished = true;
                 break;
