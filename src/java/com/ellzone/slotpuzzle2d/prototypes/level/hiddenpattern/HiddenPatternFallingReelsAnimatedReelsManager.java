@@ -133,8 +133,8 @@ public class HiddenPatternFallingReelsAnimatedReelsManager extends SPPrototypeTe
         createViewPorts();
         initialisePhysics();
         initialiseLevelDoor();
-        loadlevel();
         hud = setUpHud(batch);
+        loadlevel();
         createIntroSequence();
         playStateMachine.getStateMachine().changeState(PlayState.INTRO_SPINNING_SEQUENCE);
         messageManager = setUpMessageManager();
@@ -215,7 +215,8 @@ public class HiddenPatternFallingReelsAnimatedReelsManager extends SPPrototypeTe
                 physics,
                 GAME_LEVEL_WIDTH,
                 GAME_LEVEL_HEIGHT,
-                playStateMachine);
+                playStateMachine,
+                hud);
     }
 
     private TiledMap createLevel() {
@@ -391,8 +392,17 @@ public class HiddenPatternFallingReelsAnimatedReelsManager extends SPPrototypeTe
         tweenManager.update(dt);
         levelCreator.update(dt);
         hud.update(dt);
+        if (isOutOfTime())
+            weAreOutOfTime();
         playStateMachine.update();
         updateReels(dt);
+    }
+
+    private boolean isOutOfTime() {
+        return hud.getWorldTime() == 0;
+    }
+
+    private void weAreOutOfTime() {
     }
 
     private void updateReels(float dt) {

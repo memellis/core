@@ -45,6 +45,7 @@ import com.ellzone.slotpuzzle2d.puzzlegrid.PuzzleGridType;
 import com.ellzone.slotpuzzle2d.puzzlegrid.PuzzleGridTypeReelTile;
 import com.ellzone.slotpuzzle2d.puzzlegrid.ReelTileGridValue;
 import com.ellzone.slotpuzzle2d.puzzlegrid.TupleValueIndex;
+import com.ellzone.slotpuzzle2d.scene.Hud;
 import com.ellzone.slotpuzzle2d.screens.PlayScreen;
 import com.ellzone.slotpuzzle2d.sprites.AnimatedReel;
 import com.ellzone.slotpuzzle2d.sprites.ReelStoppedFlashingEvent;
@@ -116,6 +117,7 @@ public class LevelCreatorSimple {
     private Array<Integer> myReelsToFall = new Array<>();
     private Array<Integer> myReelsToFallEndReel = new Array<>();
     private int myReelsToFallIndex;
+    private Hud hud;
 
     public LevelCreatorSimple (
             LevelDoor levelDoor,
@@ -154,7 +156,8 @@ public class LevelCreatorSimple {
             PhysicsManagerCustomBodies physics,
             int levelWidth,
             int levelHeight,
-            PlayStateMachine playStateMachine) {
+            PlayStateMachine playStateMachine,
+            Hud hud) {
         this.levelDoor = levelDoor;
         this.animatedReels = animatedReels;
         this.reelTiles = reelTiles;
@@ -166,6 +169,7 @@ public class LevelCreatorSimple {
         this.levelWidth = levelWidth;
         this.levelHeight = levelHeight;
         this.playStateMachine = playStateMachine;
+        this.hud = hud;
         myReelsToFall.addAll(9, 10, 11, 12);
         myReelsToFallEndReel.addAll(7,7,7,7);
         initialise(levelDoor, reelTiles, level, tweenManager, levelWidth, levelHeight);
@@ -573,13 +577,12 @@ public class LevelCreatorSimple {
 
     private void deleteReel(BaseTween<?> source) {
         ReelTile reel = (ReelTile) source.getUserData();
+        hud.addScore((reel.getEndReel() + 1) * reel.getScore());
         int reelTileIndex = reelTiles.indexOf(reel, true);
         reel.deleteReelTile();
         reelBoxesToDelete.add(reelTileIndex);
         if (!replacementReelBoxes.contains(reelTileIndex, true))
             replacementReelBoxes.add(reelTileIndex);
-        else
-            System.out.println("Going here causes mismatch between number of deleted Reels and replacement reels");
     }
 
     private void testPlayingCardLevelWon(int levelWidth, int levelHeight) {
