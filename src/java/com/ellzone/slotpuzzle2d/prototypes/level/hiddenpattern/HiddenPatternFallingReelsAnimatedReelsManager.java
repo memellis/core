@@ -120,11 +120,13 @@ public class HiddenPatternFallingReelsAnimatedReelsManager extends SPPrototypeTe
     private PlayStateMachine playStateMachine;
     private boolean reelsStoppedMoving = false;
     private AnimatedReelsMatrixCreator animatedReelsMatrixCreator;
+    private boolean gameOver = false;
 
     @Override
     protected void initialiseOverride() {
         Gdx.app.setLogLevel(Application.LOG_DEBUG);
         touch = new Vector2();
+        setSpritePositions();
         initialisePlayFiniteStateMachine();
         initialiseWorld();
         random = Random.getInstance();
@@ -141,10 +143,9 @@ public class HiddenPatternFallingReelsAnimatedReelsManager extends SPPrototypeTe
         activateReelBoxes();
     }
 
-    private void activateReelBoxes() {
-        for (Body reelBox : reelBoxes)
-            if (!((AnimatedReel) (reelBox.getUserData())).getReel().isReelTileDeleted())
-                reelBox.setActive(true);
+    private void setSpritePositions() {
+        for (Sprite sprite : sprites)
+            sprite.setPosition(0, 80);
     }
 
     private void initialiseWorld() {
@@ -319,6 +320,12 @@ public class HiddenPatternFallingReelsAnimatedReelsManager extends SPPrototypeTe
         return messageManager;
     }
 
+    private void activateReelBoxes() {
+        for (Body reelBox : reelBoxes)
+            if (!((AnimatedReel) (reelBox.getUserData())).getReel().isReelTileDeleted())
+                reelBox.setActive(true);
+    }
+
     private Array<ReelTile> getReelTilesFromAnimatedReels(Array<AnimatedReel> animatedReels) {
         Array<ReelTile> reelTiles = new Array<>();
          for (AnimatedReel animatedReel : animatedReels)
@@ -338,7 +345,9 @@ public class HiddenPatternFallingReelsAnimatedReelsManager extends SPPrototypeTe
             case TweenCallback.END:
                 System.out.println("Intro Sequence finished");
                 hud.resetWorldTime(LEVEL_TIME_LENGTH_IN_SECONDS);
+                hud.resetWorldTime(60);
                 hud.startWorldTimer();
+                levelCreator.createStartRandomReelBoxTimer();
                 levelCreator.allReelsHaveStoppedSpinning();
                 introSequenceFinished = true;
                 break;
@@ -383,7 +392,8 @@ public class HiddenPatternFallingReelsAnimatedReelsManager extends SPPrototypeTe
     protected void updateOverride(float dt) {
         if (slowMotion & isSlowMotionTimerEnded(dt))
             return;
-        deletegateUpdates(dt);
+        if (!gameOver)
+            deletegateUpdates(dt);
 //        tileMapRenderer.setView(orthographicCamera);
         handleInput();
     }
@@ -403,6 +413,13 @@ public class HiddenPatternFallingReelsAnimatedReelsManager extends SPPrototypeTe
     }
 
     private void weAreOutOfTime() {
+        gameOver = true;
+        checkIfWeWon();
+        System.out.println("We are out of time for the level");
+    }
+
+    private void checkIfWeWon() {
+        
     }
 
     private void updateReels(float dt) {
@@ -440,6 +457,8 @@ public class HiddenPatternFallingReelsAnimatedReelsManager extends SPPrototypeTe
     private void delegateRender() {
         tileMapRenderer.render();
         renderReelBoxes(batch, reelBoxes);
+        levelCreator.render(batch, 0);
+        renderSpinHelper();
         if (isReelsStoppedMoving())
             processReelsStoppedMoving();
         else
@@ -467,6 +486,14 @@ public class HiddenPatternFallingReelsAnimatedReelsManager extends SPPrototypeTe
 
     private boolean isReelsStoppedMoving() {
         return numberOfReelBoxesAsleep == numberOfReelBoxesCreated;
+    }
+
+    protected void renderSpinHelper() {
+        if (displaySpinHelp) {
+            batch.begin();
+            sprites[displaySpinHelpSprite].draw(batch);
+            batch.end();
+        }
     }
 
     private void renderRayHandler() {
@@ -608,10 +635,6 @@ public class HiddenPatternFallingReelsAnimatedReelsManager extends SPPrototypeTe
         hud.addScore(-1);
         if (pullLeverSound != null)
             pullLeverSound.play();
-    }
-
-    public void hudAddScore(int score) {
-        hud.addScore(score);
     }
 
     public LevelCreatorSimple getLevelCreator() {

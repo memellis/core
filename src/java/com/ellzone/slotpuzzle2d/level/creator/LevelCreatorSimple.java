@@ -18,6 +18,7 @@ package com.ellzone.slotpuzzle2d.level.creator;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.maps.MapObject;
 import com.badlogic.gdx.maps.MapProperties;
@@ -27,6 +28,7 @@ import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.BodyDef;
 import com.badlogic.gdx.utils.Array;
+import com.badlogic.gdx.utils.Timer;
 import com.ellzone.slotpuzzle2d.SlotPuzzleConstants;
 import com.ellzone.slotpuzzle2d.effects.ScoreAccessor;
 import com.ellzone.slotpuzzle2d.effects.SpriteAccessor;
@@ -118,6 +120,7 @@ public class LevelCreatorSimple {
     private Array<Integer> myReelsToFallEndReel = new Array<>();
     private int myReelsToFallIndex;
     private Hud hud;
+    private boolean itisTimeForRandomReplacementReelBox = false;
 
     public LevelCreatorSimple (
             LevelDoor levelDoor,
@@ -481,8 +484,8 @@ public class LevelCreatorSimple {
     }
 
     private boolean testForJackpot(Array<ReelTile> levelReel, int levelWidth, int levelHeight) {
-        TupleValueIndex[][] matchGrid = flashSlots.flashSlots(levelReel);
-         return flashSlots.getMatchedSlots().size <= 0;
+        flashSlots.flashSlots(levelReel);
+        return flashSlots.getMatchedSlots().size <= 0;
     }
 
     private void iWonTheLevel() {
@@ -613,10 +616,56 @@ public class LevelCreatorSimple {
         physics.update(dt);
         updateReelBoxes();
         deleteReelBoxes(reelBoxesToDelete);
-        if (reelBoxesToBeCreated) {
-            createReplacementReelBoxes();
-            reelBoxesToBeCreated = false;
-        }
+//        if (reelBoxesToBeCreated) {
+//            createReplacementReelBoxes();
+//            reelBoxesToBeCreated = false;
+//        } else
+            if (itisTimeForRandomReplacementReelBox)
+                createRandomReplacementReelBox();
+    }
+
+    public void createStartRandomReelBoxTimer() {
+        System.out.println("createStartRandomReelBoxTimer");
+        Timer.schedule(new Timer.Task(){
+                           @Override
+                           public void run() {
+                               timeTocreateRandomReplacementReelBox();
+                           }
+                       }
+                , Random.getInstance().nextFloat() * 5
+        );
+    }
+
+    private void timeTocreateRandomReplacementReelBox() {
+        itisTimeForRandomReplacementReelBox = true;
+        System.out.println("itisTimeForRandomReplacementReelBox set true");
+    }
+
+    private void createRandomReplacementReelBox() {
+        itisTimeForRandomReplacementReelBox = false;
+
+        if (replacementReelBoxes.size == 0)
+            return;
+
+        Array<Integer> randomReelBoxToReplace = new Array();
+
+        randomReelBoxToReplace.add(replacementReelBoxes.get(
+                Random.getInstance().nextInt(replacementReelBoxes.size)
+        ));
+        delegateCreateReplacementReelBoxes(randomReelBoxToReplace);
+
+        createStartRandomReelBoxTimer();
+    }
+
+    public void render(SpriteBatch batch, float dt) {
+        batch.begin();
+        renderScore(batch);
+        batch.end();
+    }
+
+    private void renderScore(SpriteBatch batch) {
+        for (Score score : scores)
+            score.render(batch);
     }
 
     private void createReplacementReelBoxes() {
