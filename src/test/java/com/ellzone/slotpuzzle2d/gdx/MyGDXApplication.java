@@ -46,37 +46,30 @@ public class MyGDXApplication implements Application {
 
     @Override
     public void log(String tag, String message) {
-
     }
 
     @Override
     public void log(String tag, String message, Throwable exception) {
-
     }
 
     @Override
     public void error(String tag, String message) {
-
     }
 
     @Override
     public void error(String tag, String message, Throwable exception) {
-
     }
 
     @Override
     public void debug(String tag, String message) {
-
     }
 
     @Override
     public void debug(String tag, String message, Throwable exception) {
-
     }
 
     @Override
     public void setLogLevel(int logLevel) {
-
     }
 
     @Override
@@ -86,7 +79,6 @@ public class MyGDXApplication implements Application {
 
     @Override
     public void setApplicationLogger(ApplicationLogger applicationLogger) {
-
     }
 
     @Override
@@ -126,21 +118,17 @@ public class MyGDXApplication implements Application {
 
     @Override
     public void postRunnable(Runnable runnable) {
-
     }
 
     @Override
     public void exit() {
-
     }
 
     @Override
     public void addLifecycleListener(LifecycleListener listener) {
-
     }
 
     @Override
     public void removeLifecycleListener(LifecycleListener listener) {
-
     }
 }

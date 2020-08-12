@@ -108,6 +108,7 @@ public class LevelCreatorSimple {
     private int mapWidth, mapHeight;
     private FlashSlots flashSlots;
     private boolean reelBoxesToBeCreated = false;
+    private boolean enableCreateReplacementReelsBoxesFeature = false;
     private PlayStateMachine playStateMachine;
     private AnimatedReelsManager animatedReelsManager;
     private int reelBoxFalling = -1;
@@ -484,8 +485,13 @@ public class LevelCreatorSimple {
     }
 
     private boolean testForJackpot(Array<ReelTile> levelReel, int levelWidth, int levelHeight) {
+        onlyFlashSlotsForReelsThatHaveStoppedSpinning();
         flashSlots.flashSlots(levelReel);
         return flashSlots.getMatchedSlots().size <= 0;
+    }
+
+    private void onlyFlashSlotsForReelsThatHaveStoppedSpinning() {
+
     }
 
     private void iWonTheLevel() {
@@ -616,10 +622,12 @@ public class LevelCreatorSimple {
         physics.update(dt);
         updateReelBoxes();
         deleteReelBoxes(reelBoxesToDelete);
-//        if (reelBoxesToBeCreated) {
-//            createReplacementReelBoxes();
-//            reelBoxesToBeCreated = false;
-//        } else
+        if (enableCreateReplacementReelsBoxesFeature) {
+            if (reelBoxesToBeCreated) {
+                createReplacementReelBoxes();
+                reelBoxesToBeCreated = false;
+            }
+        } else
             if (itisTimeForRandomReplacementReelBox)
                 createRandomReplacementReelBox();
     }
@@ -629,10 +637,10 @@ public class LevelCreatorSimple {
         Timer.schedule(new Timer.Task(){
                            @Override
                            public void run() {
-                               timeTocreateRandomReplacementReelBox();
+                                timeTocreateRandomReplacementReelBox();
                            }
                        }
-                , Random.getInstance().nextFloat() * 5
+                , (Random.getInstance().nextFloat() + 1.0f) * 5
         );
     }
 

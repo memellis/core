@@ -257,4 +257,12 @@ public class AnimatedReelsMatrixCreator {
         reelTileBody.setActive(isActive);
         reelTileBody.setUserData(animatedReel);
     }
+
+    public Array<ReelTile> getReelTilesFromAnimatedReels(Array<AnimatedReel> animatedReels) {
+        Array<ReelTile> reelTiles = new Array<>();
+        for (AnimatedReel animatedReel : animatedReels)
+            reelTiles.add(animatedReel.getReel());
+        return reelTiles;
+    }
+
 }

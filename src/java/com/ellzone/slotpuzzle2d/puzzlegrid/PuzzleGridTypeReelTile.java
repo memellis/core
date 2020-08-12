@@ -100,11 +100,11 @@ public class PuzzleGridTypeReelTile {
                                         } else
                                             match = false;
                                     } else {
-                                        Gdx.app.debug(SlotPuzzleConstants.SLOT_PUZZLE, "r=" + r + " c=" + c + " is Null - ignoring this tile.");
+                                        Gdx.app.debug(SlotPuzzleConstants.SLOT_PUZZLE, "r=" + r + " co=" + co + " is Null - ignoring this tile.");
                                         match = false;
                                     }
                                 } else {
-                                    Gdx.app.debug(SlotPuzzleConstants.SLOT_PUZZLE, "r=" + r + " co=" + co + " is Null - ignoring this tile.");
+                                    Gdx.app.debug(SlotPuzzleConstants.SLOT_PUZZLE, "r=" + r + " c" + c + " is Null - ignoring this tile.");
                                     match = false;
                                 }
                             }
@@ -151,11 +151,11 @@ public class PuzzleGridTypeReelTile {
                                         } else
                                             match = false;
                                     } else {
-                                        Gdx.app.debug(SlotPuzzleConstants.SLOT_PUZZLE, "r=" + r + " c=" + c + " is Null - ignoring this tile.");
+                                        Gdx.app.debug(SlotPuzzleConstants.SLOT_PUZZLE, "ro=" + ro + " c=" + c + " is Null - ignoring this tile.");
                                         match = false;
                                     }
                                 } else {
-                                    Gdx.app.debug(SlotPuzzleConstants.SLOT_PUZZLE, "r=" + r + " co=" + ro + " is Null - ignoring this tile.");
+                                    Gdx.app.debug(SlotPuzzleConstants.SLOT_PUZZLE, "r=" + r + " c=" + r + " is Null - ignoring this tile.");
                                     match = false;
                                 }
                             }
@@ -297,11 +297,11 @@ public class PuzzleGridTypeReelTile {
                                         } else
                                             match = false;
                                     } else {
-                                        Gdx.app.debug(SlotPuzzleConstants.SLOT_PUZZLE, "r=" + r + " c=" + c + " is Null - ignoring this tile.");
+                                        Gdx.app.debug(SlotPuzzleConstants.SLOT_PUZZLE, "r=" + r + " co=" + co + " is Null - ignoring this tile.");
                                         match = false;
                                     }
                                 } else {
-                                    Gdx.app.debug(SlotPuzzleConstants.SLOT_PUZZLE, "r=" + r + " co=" + co + " is Null - ignoring this tile.");
+                                    Gdx.app.debug(SlotPuzzleConstants.SLOT_PUZZLE, "r=" + r + " c=" + c + " is Null - ignoring this tile.");
                                     match = false;
                                 }
                             }
@@ -344,11 +344,11 @@ public class PuzzleGridTypeReelTile {
                                         } else
                                             match = false;
                                     } else {
-                                        Gdx.app.debug(SlotPuzzleConstants.SLOT_PUZZLE, "r=" + r + " c=" + c + " is Null - ignoring this tile.");
+                                        Gdx.app.debug(SlotPuzzleConstants.SLOT_PUZZLE, "r=" + r + " co=" + co + " is Null - ignoring this tile.");
                                         match = false;
                                     }
                                 } else {
-                                    Gdx.app.debug(SlotPuzzleConstants.SLOT_PUZZLE, "r=" + r + " co=" + co + " is Null - ignoring this tile.");
+                                    Gdx.app.debug(SlotPuzzleConstants.SLOT_PUZZLE, "r=" + r + " c=" + c + " is Null - ignoring this tile.");
                                     match = false;
                                 }
                             }
@@ -407,12 +407,21 @@ public class PuzzleGridTypeReelTile {
                 else {
                     if (puzzleGrid[r][c].value == -1)
                         System.out.print(puzzleGrid[r][c].value + " ");
-                    else
-                        System.out.print(" " + puzzleGrid[r][c].value + " ");
+                    else {
+                        if (puzzleGrid[r][c].value == -2)
+                            System.out.print(" S ");
+                        else
+                            System.out.print(" " + puzzleGrid[r][c].value + " ");
+                    }
                 }
             }
             System.out.println();
         }
+    }
+
+    public static void printMatchGrid(Array<ReelTile> reelLevel, int gridWidth, int gridHeight) {
+        PuzzleGridTypeReelTile.printGrid(
+                PuzzleGridTypeReelTile.populateMatchGridStatic(reelLevel, gridWidth, gridHeight));
     }
 
     private static ReelTileGridValue[][] copyGrid(ReelTileGridValue[][] puzzleGrid) {
@@ -560,9 +569,12 @@ public class PuzzleGridTypeReelTile {
             if ((r >= 0) & (r <= gridHeight) & (c >= 0) & (c <= gridWidth)) {
                 if (reelLevel.get(i).isReelTileDeleted())
                     matchGrid[r][c] = new ReelTileGridValue(r, c, i, -1);
-                else
-                    matchGrid[r][c] = new ReelTileGridValue(reelLevel.get(i), r, c, i, reelLevel.get(i).getEndReel());
-
+                else {
+                    if (reelLevel.get(i).isSpinning())
+                        matchGrid[r][c] = new ReelTileGridValue(r, c, i, -2);
+                    else
+                        matchGrid[r][c] = new ReelTileGridValue(reelLevel.get(i), r, c, i, reelLevel.get(i).getEndReel());
+                }
                 Gdx.app.debug(SlotPuzzleConstants.SLOT_PUZZLE, MessageFormat.format("r={0} c={1} x={2} y={3} dx={4} dy={5} i={6} v={7}",
                               r, c,
                               reelLevel.get(i).getX(), reelLevel.get(i).getY(),
@@ -584,9 +596,12 @@ public class PuzzleGridTypeReelTile {
             if ((r >= 0) & (r <= gridHeight) & (c >= 0) & (c <= gridWidth)) {
                 if (reelLevel.get(i).isReelTileDeleted())
                     matchGrid[r][c] = new ReelTileGridValue(r, c, i, -1);
-                else
-                    matchGrid[r][c] = new ReelTileGridValue(reelLevel.get(i), r, c, i, reelLevel.get(i).getEndReel());
-
+                else {
+                    if (reelLevel.get(i).isSpinning())
+                        matchGrid[r][c] = new ReelTileGridValue(r, c, i, -2);
+                    else
+                        matchGrid[r][c] = new ReelTileGridValue(reelLevel.get(i), r, c, i, reelLevel.get(i).getEndReel());
+                }
 //                Gdx.app.debug(SlotPuzzleConstants.SLOT_PUZZLE, MessageFormat.format("r={0} c={1} x={2} y={3} dx={4} dy={5} i={6} v={7}",
 //                        r, c,
 //                        reelLevel.get(i).getX(), reelLevel.get(i).getY(),

@@ -60,14 +60,10 @@ public class FlashSlots {
     }
 
     public ReelTileGridValue[][] flashSlots(Array<ReelTile> reelTiles) {
-        PuzzleGridTypeReelTile puzzleGridTypeReelTile = new PuzzleGridTypeReelTile();
-        ReelTileGridValue[][] puzzleGrid = puzzleGridTypeReelTile.populateMatchGrid(reelTiles,  mapWidth, mapHeight);
-
-        Array<ReelTileGridValue> matchedSlots = puzzleGridTypeReelTile.matchGridSlots(puzzleGrid);
-        Array<ReelTileGridValue> duplicateMatchedSlots = PuzzleGridTypeReelTile.findDuplicateMatches(matchedSlots);
-
-        matchedSlots = PuzzleGridTypeReelTile.adjustMatchSlotDuplicates(matchedSlots, duplicateMatchedSlots);
-        matchedSlots = PuzzleGridTypeReelTile.removeDuplicateMatches(duplicateMatchedSlots, matchedSlots);
+        MatchSlots matchSlots = new MatchSlots(reelTiles, mapWidth, mapHeight).invoke();
+        PuzzleGridTypeReelTile puzzleGridTypeReelTile = matchSlots.getPuzzleGridTypeReelTile();
+        ReelTileGridValue[][] puzzleGrid = matchSlots.getPuzzleGrid();
+        Array<ReelTileGridValue> matchedSlots = matchSlots.getMatchedSlots();
 
         for (TupleValueIndex matchedSlot : matchedSlots)
             reelTiles.get(matchedSlot.index).setScore(matchedSlot.value);
