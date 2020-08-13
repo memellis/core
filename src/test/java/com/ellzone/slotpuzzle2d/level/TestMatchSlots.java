@@ -3,6 +3,7 @@ package com.ellzone.slotpuzzle2d.level;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.utils.Array;
 import com.ellzone.slotpuzzle2d.gdx.MyGDXApplication;
+import com.ellzone.slotpuzzle2d.level.fixtures.ReelPrepare;
 import com.ellzone.slotpuzzle2d.prototypes.box2d.collisions.AnimatedReelsMatrixCreator;
 import com.ellzone.slotpuzzle2d.prototypes.box2d.collisions.SlotPuzzleMatrices;
 import com.ellzone.slotpuzzle2d.puzzlegrid.PuzzleGridTypeReelTile;
@@ -25,12 +26,7 @@ public class TestMatchSlots {
     @Test
     public void testMatchSlotsWithZeroMatches() {
         Gdx.app = new MyGDXApplication();
-        animatedReelsMatrixCreator = new AnimatedReelsMatrixCreator();
-        int [][] matrix = SlotPuzzleMatrices.createMatrixWithNoBoxes();
-        animatedReels = animatedReelsMatrixCreator.createAnimatedReelsFromSlotPuzzleMatrix(
-                matrix
-        );
-        reelTiles = animatedReelsMatrixCreator.getReelTilesFromAnimatedReels(animatedReels);
+        int[][] matrix = getMatrix(SlotPuzzleMatrices.createMatrixWithNoBoxes());
         PuzzleGridTypeReelTile.printMatchGrid(reelTiles, matrix[0].length, matrix.length);
         MatchSlots matchSlots = new MatchSlots(
                 reelTiles,
@@ -43,16 +39,8 @@ public class TestMatchSlots {
 
     @Test
     public void testMatchSlotsWithTwoMatches() {
-        Gdx.app = new MyGDXApplication();
-        animatedReelsMatrixCreator = new AnimatedReelsMatrixCreator();
-        int [][] matrix = SlotPuzzleMatrices.createMatrixWithTwoBoxes();
-        animatedReels = animatedReelsMatrixCreator.createAnimatedReelsFromSlotPuzzleMatrix(
-                matrix
-        );
-        reelTiles = animatedReelsMatrixCreator.getReelTilesFromAnimatedReels(animatedReels);
-        prepareTestWithReelAction(reelSetNotSpinningAction, reelTiles, 84, 96);
-        PuzzleGridTypeReelTile.printMatchGrid(reelTiles, matrix[0].length, matrix.length);
-         MatchSlots matchSlots = new MatchSlots(
+        int[][] matrix = prepareMatchSlotsTestWithTwoMatches();
+        MatchSlots matchSlots = new MatchSlots(
                 reelTiles,
                 matrix[0].length,
                 matrix.length
@@ -62,24 +50,58 @@ public class TestMatchSlots {
         assertThat(matchedSlots.get(1).reelTile.getIndex(), is(equalTo(96)));
     }
 
-    private void prepareTestWithReelAction(
-            ReelAction action,
-            Array<ReelTile> reelTiles,
-            int... reelsToAction) {
-        for (int reelToAction = 0; reelToAction < reelsToAction.length; reelToAction++)
-            action.action(reelTiles, reelsToAction[reelToAction]);
+    @Test
+    public void testMatchSlotsWithTwoReelsWithOneReelSpinning() {
+        Gdx.app = new MyGDXApplication();
+        ReelPrepare reelPrepare = new ReelPrepare();
+        int[][] matrix = getMatrix(SlotPuzzleMatrices.createMatrixWithTwoBoxes());
+        reelPrepare.prepareTestWithReelAction(
+                reelPrepare.reelSetNotSpinningAction, reelTiles, 84);
+        PuzzleGridTypeReelTile.printMatchGrid(reelTiles, matrix[0].length, matrix.length);
+        MatchSlots matchSlots = new MatchSlots(
+                reelTiles,
+                matrix[0].length,
+                matrix.length
+        ).invoke();
+        Array<ReelTileGridValue> matchedSlots = matchSlots.getMatchedSlots();
+        assertThat(matchedSlots.size, is(equalTo(0)));
     }
 
-    public interface ReelAction {
-        public void action(Array<ReelTile> reel, int reelToAction);
+    @Test
+    public void testMacthSLotWithThreeReelsWithOneReelSpinning() {
+        Gdx.app = new MyGDXApplication();
+        ReelPrepare reelPrepare = new ReelPrepare();
+        int[][] matrix = getMatrix(SlotPuzzleMatrices.createMatrixWithThreeBoxes());
+        reelPrepare.prepareTestWithReelAction(
+                reelPrepare.reelSetNotSpinningAction, reelTiles, 84, 96);
+        PuzzleGridTypeReelTile.printMatchGrid(reelTiles, matrix[0].length, matrix.length);
+        MatchSlots matchSlots = new MatchSlots(
+                reelTiles,
+                matrix[0].length,
+                matrix.length
+        ).invoke();
+        Array<ReelTileGridValue> matchedSlots = matchSlots.getMatchedSlots();
+        assertThat(matchedSlots.get(0).reelTile.getIndex(), is(equalTo(84)));
+        assertThat(matchedSlots.get(1).reelTile.getIndex(), is(equalTo(96)));
     }
 
-    private ReelAction reelSetNotSpinningAction = new ReelAction() {
-        @Override
-        public void action(Array<ReelTile> reels, int reelToAction) {
-            reels.get(reelToAction).setSpinning(false);
-        }
-    };
+    private int[][] prepareMatchSlotsTestWithTwoMatches() {
+        Gdx.app = new MyGDXApplication();
+        ReelPrepare reelPrepare = new ReelPrepare();
+        int[][] matrix = getMatrix(SlotPuzzleMatrices.createMatrixWithTwoBoxes());
+        reelPrepare.prepareTestWithReelAction(
+                reelPrepare.reelSetNotSpinningAction, reelTiles, 84, 96);
+        PuzzleGridTypeReelTile.printMatchGrid(reelTiles, matrix[0].length, matrix.length);
+        return matrix;
+    }
 
-
+    private int[][] getMatrix(int[][] matrixWithTwoBoxes) {
+        animatedReelsMatrixCreator = new AnimatedReelsMatrixCreator();
+        int[][] matrix = matrixWithTwoBoxes;
+        animatedReels = animatedReelsMatrixCreator.createAnimatedReelsFromSlotPuzzleMatrix(
+                matrix
+        );
+        reelTiles = animatedReelsMatrixCreator.getReelTilesFromAnimatedReels(animatedReels);
+        return matrix;
+    }
 }
