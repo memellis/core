@@ -345,7 +345,7 @@ public class HiddenPatternFallingReelsAnimatedReelsManager extends SPPrototypeTe
             case TweenCallback.END:
                 System.out.println("Intro Sequence finished");
                 hud.resetWorldTime(LEVEL_TIME_LENGTH_IN_SECONDS);
-                hud.resetWorldTime(60);
+                hud.resetWorldTime(120);
                 hud.startWorldTimer();
                 levelCreator.createStartRandomReelBoxTimer();
                 levelCreator.allReelsHaveStoppedSpinning();
@@ -392,10 +392,10 @@ public class HiddenPatternFallingReelsAnimatedReelsManager extends SPPrototypeTe
     protected void updateOverride(float dt) {
         if (slowMotion & isSlowMotionTimerEnded(dt))
             return;
-        if (!gameOver)
-            deletegateUpdates(dt);
+        deletegateUpdates(dt);
 //        tileMapRenderer.setView(orthographicCamera);
-        handleInput();
+        if (!gameOver)
+            handleInput();
     }
 
     private void deletegateUpdates(float dt) {
@@ -413,13 +413,20 @@ public class HiddenPatternFallingReelsAnimatedReelsManager extends SPPrototypeTe
     }
 
     private void weAreOutOfTime() {
-        gameOver = true;
-        checkIfWeWon();
-        System.out.println("We are out of time for the level");
+       if (levelCreator.getReelsToFall().size == 0 &
+            levelCreator.getScores().size == 0 &
+            levelCreator.getNumberOfReelsSpinning() == 0 &
+            !levelCreator.getAreReelsFlashing() &
+            levelCreator.getReelsToCreated() &
+            isReelsStoppedMoving()) {
+                gameOver = true;
+                levelCreator.setEndOfGame(true);
+                checkIfWeWon();
+        }
     }
 
     private void checkIfWeWon() {
-        
+        System.out.println("Check if we won");
     }
 
     private void updateReels(float dt) {
@@ -578,8 +585,6 @@ public class HiddenPatternFallingReelsAnimatedReelsManager extends SPPrototypeTe
         System.out.println();
         levelCreator.printMatchGrid(reelTiles, GAME_LEVEL_WIDTH, GAME_LEVEL_HEIGHT);
     }
-
-
 
     private Vector2 getTileClicked() {
         int touchX = Gdx.input.getX();

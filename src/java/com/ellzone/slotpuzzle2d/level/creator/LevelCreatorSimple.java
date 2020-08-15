@@ -121,6 +121,7 @@ public class LevelCreatorSimple {
     private Array<Integer> myReelsToFallEndReel = new Array<>();
     private int myReelsToFallIndex;
     private Hud hud;
+    private boolean endOfGame = false;
     private boolean itisTimeForRandomReplacementReelBox = false;
 
     public LevelCreatorSimple (
@@ -485,13 +486,8 @@ public class LevelCreatorSimple {
     }
 
     private boolean testForJackpot(Array<ReelTile> levelReel, int levelWidth, int levelHeight) {
-        onlyFlashSlotsForReelsThatHaveStoppedSpinning();
         flashSlots.flashSlots(levelReel);
         return flashSlots.getMatchedSlots().size <= 0;
-    }
-
-    private void onlyFlashSlotsForReelsThatHaveStoppedSpinning() {
-
     }
 
     private void iWonTheLevel() {
@@ -622,14 +618,15 @@ public class LevelCreatorSimple {
         physics.update(dt);
         updateReelBoxes();
         deleteReelBoxes(reelBoxesToDelete);
-        if (enableCreateReplacementReelsBoxesFeature) {
-            if (reelBoxesToBeCreated) {
-                createReplacementReelBoxes();
-                reelBoxesToBeCreated = false;
-            }
-        } else
-            if (itisTimeForRandomReplacementReelBox)
-                createRandomReplacementReelBox();
+        if (!endOfGame)
+            if (enableCreateReplacementReelsBoxesFeature) {
+                if (reelBoxesToBeCreated) {
+                    createReplacementReelBoxes();
+                    reelBoxesToBeCreated = false;
+                }
+            } else
+                if (itisTimeForRandomReplacementReelBox)
+                    createRandomReplacementReelBox();
     }
 
     public void createStartRandomReelBoxTimer() {
@@ -795,12 +792,24 @@ public class LevelCreatorSimple {
         return reelsToFall;
     }
 
+    public Array<Score> getScores() {
+        return scores;
+    }
+
+    public boolean getReelsToCreated() {
+        return reelBoxesToBeCreated;
+    }
+
     public void setReelsToFall(Array<TupleValueIndex> reelsToFall) {
         this.reelsToFall = reelsToFall;
     }
 
     public void setReelsAboveHaveFallen(boolean reelsAboveHaveFallen) {
         this.reelsAboveHaveFallen = reelsAboveHaveFallen;
+    }
+
+    public void setEndOfGame(boolean endOfGame) {
+        this.endOfGame = endOfGame;
     }
 
     private void updateReelBoxes() {
