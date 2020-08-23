@@ -142,12 +142,12 @@ public class PlayScreen implements Screen, PlayInterface, LevelCreatorInjectionI
                     reelStoppedSound;
 
     private LevelLoader levelLoader;
-    private Stage stage;
+    protected Stage stage;
     private float sW, sH;
     private TextureAtlas tilesAtlas;
-    private boolean isLoaded = false;
-    private TiledMap level;
-    private OrthogonalTiledMapRenderer renderer;
+    protected boolean isLoaded = false;
+    protected TiledMap level;
+    protected OrthogonalTiledMapRenderer renderer;
     private boolean inRestartLevel = false;
     private boolean win = false;
     private int touchX, touchY;
@@ -155,21 +155,21 @@ public class PlayScreen implements Screen, PlayInterface, LevelCreatorInjectionI
     private HiddenPattern hiddenPattern;
     private int mapWidth;
     private int mapHeight;
-    private boolean show = false;
+    protected boolean show = false;
     private PlayScreenIntroSequence playScreenIntroSequence;
-    private World world;
+    protected World world;
     private Box2DDebugRenderer debugRenderer;
     private RayHandler rayHandler;
     private Array<HoldLightButton> holdLightButtons;
     private Array<SlotHandleSprite> slotHandles;
     private Texture slotReelScrollTexture;
-    private ReelSprites reelSprites;
+    protected ReelSprites reelSprites;
     private int[][] reelGrid = new int[3][3];
     private Array<Array<Vector2>> rowMacthesToDraw;
-    private ShapeRenderer shapeRenderer;
-    private FrameRate framerate;
-    private AudioManager audioManager;
-    private MessageManager messageManager;
+    protected ShapeRenderer shapeRenderer;
+    protected FrameRate framerate;
+    protected AudioManager audioManager;
+    protected MessageManager messageManager;
     private int currentReel = 0;
 
     public PlayScreen(SlotPuzzle game, LevelDoor levelDoor, MapTile mapTile) {
@@ -180,32 +180,32 @@ public class PlayScreen implements Screen, PlayInterface, LevelCreatorInjectionI
         playStateMachine.getStateMachine().changeState(PlayState.INTRO_SPINNING_SEQUENCE);
     }
 
-    private void createPlayScreen() {
+    protected void createPlayScreen() {
         initialisePlayFiniteStateMachine();
         playState = PlayStates.INITIALISING;
         initialiseWorld();
         initialiseDependencies();
         setupPlayScreen();
+        messageManager = setUpMessageManager();
         createReelIntroSequence();
     }
 
-    private void initialisePlayFiniteStateMachine() {
+    protected void initialisePlayFiniteStateMachine() {
         playStateMachine = new PlayStateMachine();
         playStateMachine.setConcretePlay(this);
         playStateMachine.getStateMachine().changeState(PlayState.INITIALISING);
     }
 
-    private void initialiseDependencies() {
+    protected void initialiseDependencies() {
         initialiseScreen();
         initialiseTweenEngine();
         getAssets(game.annotationAssetManager);
         createSprites();
         slotReelScrollTexture = createSlotReelScrollTexture();
         audioManager = new AudioManager(game.annotationAssetManager);
-        messageManager = setUpMessageManager();
     }
 
-    private MessageManager setUpMessageManager() {
+    protected MessageManager setUpMessageManager() {
         MessageManager messageManager = MessageManager.getInstance();
         messageManager.addListeners(audioManager,
                 PlayAudio.index,
@@ -214,7 +214,7 @@ public class PlayScreen implements Screen, PlayInterface, LevelCreatorInjectionI
         return messageManager;
     }
 
-    private void setupPlayScreen() {
+    protected void setupPlayScreen() {
         loadLevel();
         initialisePlayScreen();
         initialiseHud();
@@ -225,7 +225,7 @@ public class PlayScreen implements Screen, PlayInterface, LevelCreatorInjectionI
         return new Texture(slotReelScrollPixmap);
     }
 
-    private void initialiseWorld() {
+    protected void initialiseWorld() {
         world = new World(new Vector2(0, -9.8f), true);
         debugRenderer = new Box2DDebugRenderer();
         rayHandler = new RayHandler(world);
@@ -411,15 +411,14 @@ public class PlayScreen implements Screen, PlayInterface, LevelCreatorInjectionI
         }
     }
 
-
-    private TweenCallback introSequenceCallback = new TweenCallback() {
+    protected TweenCallback introSequenceCallback = new TweenCallback() {
         @Override
         public void onEvent(int type, BaseTween<?> source) {
             delegateIntroSequenceCallback(type, (ReelTile) source.getUserData());
         }
     };
 
-    private void delegateIntroSequenceCallback(int type, ReelTile reelTile) {
+    protected void delegateIntroSequenceCallback(int type, ReelTile reelTile) {
         switch (type) {
              case TweenCallback.END:
                 playState = PlayStates.INTRO_POPUP;
@@ -691,7 +690,7 @@ public class PlayScreen implements Screen, PlayInterface, LevelCreatorInjectionI
     public void updateState(float delta) {
     }
 
-    private void update(float delta) {
+    protected void update(float delta) {
         playStateMachine.update();
         tweenManager.update(delta);
         renderer.setView(camera);
@@ -703,11 +702,11 @@ public class PlayScreen implements Screen, PlayInterface, LevelCreatorInjectionI
         checkForGameOverCondition();
     }
 
-    private boolean isOutOfTime() {
+    protected boolean isOutOfTime() {
         return hud.getWorldTime() == 0 && playState != PlayStates.BONUS_LEVEL_ENDED;
     }
 
-    private void checkForGameOverCondition() {
+    protected void checkForGameOverCondition() {
         if ((gameOver) & (!win) & (hud.getLives() == 0)) {
             dispose();
             game.setScreen(new EndOfGameScreen(game));
@@ -724,7 +723,7 @@ public class PlayScreen implements Screen, PlayInterface, LevelCreatorInjectionI
             gameOver = true;
     }
 
-    private void updateAnimatedReels(float delta) {
+    protected void updateAnimatedReels(float delta) {
         for (AnimatedReel animatedReel : animatedReels)
             animatedReel.update(delta);
     }
@@ -750,7 +749,7 @@ public class PlayScreen implements Screen, PlayInterface, LevelCreatorInjectionI
         }
     }
 
-    private void renderGame(float delta) {
+    protected void renderGame(float delta) {
         update(delta);
         handleInput();
         renderer.render();
@@ -822,7 +821,7 @@ public class PlayScreen implements Screen, PlayInterface, LevelCreatorInjectionI
         hud.stage.draw();
     }
 
-    private void renderHiddenPattern() {
+    protected void renderHiddenPattern() {
         if (levelDoor.getLevelType().equals(PLAYING_CARD_LEVEL_TYPE))
             drawPlayingCards(game.batch);
     }
@@ -947,5 +946,4 @@ public class PlayScreen implements Screen, PlayInterface, LevelCreatorInjectionI
     private void playSound(String sound) {
         messageManager.dispatchMessage(PlayAudio.index, sound);
     }
-
 }

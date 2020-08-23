@@ -75,6 +75,7 @@ public class LevelCreatorSimple {
     public static final String HIDDEN_PATTERN_LAYER_NAME = "Hidden Pattern Object";
     public static final String PLAYING_CARD_LEVEL_TYPE = "PlayingCard";
     public static final String BONUS_LEVEL_TYPE = "BonusLevelType";
+    public static final String FALLING_REELS_LEVEL_TYPE = "FallingReels";
     public static final String REELS_LAYER_NAME = "Reels";
     public static final int OFF_PLAY_SCREEN_OFFSET = 420;
 
@@ -364,7 +365,7 @@ public class LevelCreatorSimple {
     private void setUpRelatedReelTileBody(ReelTile reelTile) {
         Body reelTileBody = physics.createBoxBody(
                  BodyDef.BodyType.DynamicBody,
-                reelTile.getDestinationX(),
+                 reelTile.getDestinationX(),
                 reelTile.getDestinationY() + OFF_PLAY_SCREEN_OFFSET,
                 19,
                 19,
@@ -426,6 +427,10 @@ public class LevelCreatorSimple {
                 iWonTheLevel();
         }
         if (levelDoor.getLevelType().equals(BONUS_LEVEL_TYPE)) {
+            if (testForJackpot(reelTiles, levelWidth, levelHeight))
+                iWonABonus();
+        }
+        if (levelDoor.getLevelType().equals(FALLING_REELS_LEVEL_TYPE)) {
             if (testForJackpot(reelTiles, levelWidth, levelHeight))
                 iWonABonus();
         }

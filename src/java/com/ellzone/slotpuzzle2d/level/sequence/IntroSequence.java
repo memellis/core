@@ -23,18 +23,18 @@ public abstract class IntroSequence {
         this.tweenManager = tweenManager;
     }
 
-    private TweenCallback startReelSpinningCallback = new TweenCallback() {
-        @Override
-        public void onEvent(int type, BaseTween<?> source) {
-            switch (type) {
-                case TweenCallback.BEGIN:
-                    System.out.println(new Timestamp(System.currentTimeMillis()));
-                    System.out.println("reelTile="+((ReelTile) source.getUserData()).getIndex());
-                    ((ReelTile) source.getUserData()).startSpinning();
-                    break;
-            }
-        }
-    };
+//    private TweenCallback startReelSpinningCallback = new TweenCallback() {
+//        @Override
+//        public void onEvent(int type, BaseTween<?> source) {
+//            switch (type) {
+//                case TweenCallback.BEGIN:
+//                    System.out.println(new Timestamp(System.currentTimeMillis()));
+//                    System.out.println("reelTile="+((ReelTile) source.getUserData()).getIndex());
+//                    ((ReelTile) source.getUserData()).startSpinning();
+//                    break;
+//            }
+//        }
+//    };
 
     public void createReelIntroSequence(TweenCallback introSequenceCallback) {
         Timeline introSequence = Timeline.createParallel();

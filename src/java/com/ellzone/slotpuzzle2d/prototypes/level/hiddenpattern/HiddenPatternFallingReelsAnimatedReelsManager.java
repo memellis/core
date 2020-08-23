@@ -58,6 +58,7 @@ import com.ellzone.slotpuzzle2d.tweenengine.TweenManager;
 import com.ellzone.slotpuzzle2d.utils.AssetsAnnotation;
 import com.ellzone.slotpuzzle2d.utils.PixmapProcessors;
 import com.ellzone.slotpuzzle2d.utils.Random;
+import com.ellzone.slotpuzzle2d.utils.SlowMotion;
 
 import net.dermetfan.gdx.assets.AnnotationAssetManager;
 
@@ -108,7 +109,8 @@ public class HiddenPatternFallingReelsAnimatedReelsManager extends SPPrototypeTe
     private ShapeRenderer shapeRenderer;
     private boolean displaySpinHelp;
     private int displaySpinHelpSprite;
-    private boolean slowMotion = false;
+    private boolean slowMotionEnabed = false;
+    private SlowMotion slowMotion;
     private boolean introSequenceFinished = false;
     private float slowMotionCount = 0;
     private int currentReel = 0;
@@ -131,6 +133,7 @@ public class HiddenPatternFallingReelsAnimatedReelsManager extends SPPrototypeTe
         initialiseWorld();
         random = Random.getInstance();
         camera = new OrthographicCamera();
+        slowMotion = new SlowMotion(slowMotionEnabed);
         slotReelScrollTexture = createSlotReelScrollTexture();
         createViewPorts();
         initialisePhysics();
@@ -390,10 +393,9 @@ public class HiddenPatternFallingReelsAnimatedReelsManager extends SPPrototypeTe
 
     @Override
     protected void updateOverride(float dt) {
-        if (slowMotion & isSlowMotionTimerEnded(dt))
+        if (slowMotion.isSlowMotionEnabled() & slowMotion.isSlowMotionTimerEnded(dt))
             return;
         deletegateUpdates(dt);
-//        tileMapRenderer.setView(orthographicCamera);
         if (!gameOver)
             handleInput();
     }
@@ -413,6 +415,8 @@ public class HiddenPatternFallingReelsAnimatedReelsManager extends SPPrototypeTe
     }
 
     private void weAreOutOfTime() {
+       if (gameOver)
+           return;
        if (levelCreator.getReelsToFall().size == 0 &
             levelCreator.getScores().size == 0 &
             levelCreator.getNumberOfReelsSpinning() == 0 &
@@ -433,15 +437,6 @@ public class HiddenPatternFallingReelsAnimatedReelsManager extends SPPrototypeTe
         for (AnimatedReel animatedReel : animatedReels)
             animatedReel.update(dt);
         updateReelBoxes();
-    }
-
-    private boolean isSlowMotionTimerEnded(float dt) {
-        slowMotionCount+=dt;
-        if (slowMotionCount<0.08f)
-            return true;
-        else
-            slowMotionCount = 0;
-        return false;
     }
 
     private void updateReelBoxes() {
@@ -569,7 +564,6 @@ public class HiddenPatternFallingReelsAnimatedReelsManager extends SPPrototypeTe
 
         if (Gdx.input.isKeyPressed(Input.Keys.M))
             handleMforMatrixPrintKeyPressed();
-
     }
 
     private void processIsTileClicked() {

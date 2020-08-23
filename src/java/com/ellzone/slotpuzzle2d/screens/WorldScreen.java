@@ -73,6 +73,7 @@ import org.jrenner.smartfont.SmartFontGenerator;
 
 import java.io.IOException;
 
+import static com.ellzone.slotpuzzle2d.level.creator.LevelCreator.FALLING_REELS_LEVEL_TYPE;
 import static com.ellzone.slotpuzzle2d.level.creator.LevelCreator.HIDDEN_PATTERN_LEVEL_TYPE;
 import static com.ellzone.slotpuzzle2d.level.creator.LevelCreator.MINI_SLOT_MACHINE_LEVEL_TYPE;
 import static com.ellzone.slotpuzzle2d.level.creator.LevelCreator.PLAYING_CARD_LEVEL_TYPE;
@@ -369,6 +370,8 @@ public class WorldScreen implements Screen {
 			game.setScreen(new PlayScreenHiddenPattern(game, levelDoors.get(levelNumber), selectedTile));
 		if (levelDoors.get(levelNumber).getLevelType().equals(MINI_SLOT_MACHINE_LEVEL_TYPE))
 			game.setScreen(new PlayScreenMiniSlotMachine(game, levelDoors.get(levelNumber), selectedTile));
+		if (levelDoors.get(levelNumber).getLevelType().equals(FALLING_REELS_LEVEL_TYPE))
+			game.setScreen(new PlayScreenFallingReels(game, levelDoors.get(levelNumber), selectedTile));
 	}
 
 	@Override
