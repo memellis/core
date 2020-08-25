@@ -44,6 +44,11 @@ public class TimestampSerializer implements Json.Serializable{
         this.timestamp = timestamp;
     }
 
+    public String getYear() {
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy");
+        return dateFormat.format(timestamp);
+    }
+
     public void write(Json json) {
         String formattedDate = dateFormat.format(timestamp);
         json.writeValue("timestamp", formattedDate);

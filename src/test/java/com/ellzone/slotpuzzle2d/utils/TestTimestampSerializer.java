@@ -21,6 +21,7 @@ import com.badlogic.gdx.utils.Json;
 import org.junit.Test;
 
 import java.sql.Timestamp;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 
 import static org.hamcrest.CoreMatchers.equalTo;
@@ -28,8 +29,9 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
 public class TestTimestampSerializer {
+
     @Test
-    public void testTimestampSerialize() {
+    public void testTimestampSerializer() {
         Date date = new Date();
         Long currentTime = date.getTime();
         Timestamp timestamp = new Timestamp(currentTime);
@@ -40,5 +42,17 @@ public class TestTimestampSerializer {
                 json.fromJson(TimestampSerializer.class, jsonPretty);
         assertThat(timestampSerialize.getTimestamp(),
                 is(equalTo(timestampSerializer.getTimestamp())));
+    }
+
+    @Test
+    public void testGetYearFromTimestampeSerializer() {
+        Date date = new Date();
+        Long currentTime = date.getTime();
+        Timestamp timestamp = new Timestamp(currentTime);
+        TimestampSerializer timestampSerializer = new TimestampSerializer(timestamp);
+        String year = timestampSerializer.getYear();
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy");
+        String yearFromDate = dateFormat.format(date);
+        assertThat(year, is(equalTo(yearFromDate)));
     }
 }

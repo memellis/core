@@ -39,6 +39,14 @@ public class VersionInfo {
         this.timestampSerializer = new TimestampSerializer(timestamp);
     }
 
+    public TimestampSerializer getTimestampSerializer() {
+        return timestampSerializer;
+    }
+
+    public void setTimestampSerializer(TimestampSerializer timestampSerializer) {
+        this.timestampSerializer = timestampSerializer;
+    }
+
     public String getAuthor() {
         return author;
     }

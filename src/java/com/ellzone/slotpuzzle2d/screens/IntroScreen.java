@@ -49,7 +49,7 @@ import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import com.ellzone.slotpuzzle2d.SlotPuzzle;
 import com.ellzone.slotpuzzle2d.SlotPuzzleConstants;
-import com.ellzone.slotpuzzle2d.Version;
+import com.ellzone.slotpuzzle2d.utils.Version;
 import com.ellzone.slotpuzzle2d.audio.MusicManager;
 import com.ellzone.slotpuzzle2d.audio.MusicPlayer;
 import com.ellzone.slotpuzzle2d.effects.ReelAccessor;
@@ -73,6 +73,8 @@ import com.ellzone.slotpuzzle2d.tweenengine.TweenManager;
 import com.ellzone.slotpuzzle2d.utils.AssetsAnnotation;
 import com.ellzone.slotpuzzle2d.utils.FileUtils;
 import com.ellzone.slotpuzzle2d.utils.PixmapProcessors;
+import com.ellzone.slotpuzzle2d.utils.VersionInfo;
+import com.ellzone.slotpuzzle2d.utils.VersionInfoFile;
 
 import net.dermetfan.gdx.assets.AnnotationAssetManager;
 
@@ -92,6 +94,7 @@ public class IntroScreen extends InputAdapter implements Screen {
 	public static final String FONT_SMALL = "exo-small";
 	public static final String FONT_MEDIUM = "exo-medium";
 	public static final String FONT_LARGE = "exo-large";
+    private static final String VERSION_INF_FILE = "version_info/SlotPuzzleVersionInfo";
     public static float SCALE = 0.5f;
     public static int NUM_STARS = 64;
 
@@ -154,6 +157,7 @@ public class IntroScreen extends InputAdapter implements Screen {
     private float slidertimerCount = 0.0f;
     private InputMultiplexer inputMultiplexer;
     private MusicPlayer musicPlayer;
+    private VersionInfo versionInfo;
 
     public IntroScreen(SlotPuzzle game) {
         this.game = game;
@@ -161,7 +165,8 @@ public class IntroScreen extends InputAdapter implements Screen {
     }
 
     void defineIntroScreen() {
-    	initialiseIntroScreen();
+    	initialiseVersionInfo();
+        initialiseIntroScreen();
         initialiseTweenEngine();
         initialiseFonts();
         reelSprites = initialiseReelSprites(game.annotationAssetManager);
@@ -175,6 +180,11 @@ public class IntroScreen extends InputAdapter implements Screen {
         initialseInput();
         messageManager.dispatchMessage(MessageType.PlayMusic.index, AssetsAnnotation.MUSIC_INTRO_SCREEN);
         isLoaded = true;
+    }
+
+    private void initialiseVersionInfo() {
+        VersionInfoFile versionInfoFile = new VersionInfoFile();
+        versionInfo = versionInfoFile.loadVersionInfoInternal(VERSION_INF_FILE);
     }
 
     private void initialseInput() {
@@ -277,11 +287,15 @@ public class IntroScreen extends InputAdapter implements Screen {
         reelLetterTiles = new Array<AnimatedReel>();
         initialiseFontReel(SLOT_PUZZLE_REEL_TEXT, viewport.getWorldWidth() / 3.2f, viewport.getWorldHeight() / 2.0f + TEXT_SPACING_SIZE + 10);
     	initialiseFontReel(BY_TEXT, viewport.getWorldWidth() / 3.2f, viewport.getWorldHeight() / 2.0f + TEXT_SPACING_SIZE + 10);
-    	initialiseFontReel(AUTHOR_TEXT, viewport.getWorldWidth() / 3.2f, viewport.getWorldHeight() / 2.0f + TEXT_SPACING_SIZE + 10);
-    	initialiseFontReel(COPYRIGHT_YEAR_AUTHOR_TEXT, viewport.getWorldWidth() / 3.2f, viewport.getWorldHeight() / 2.0f + TEXT_SPACING_SIZE + 10);
-        initialiseFontReel("v"+ Version.VERSION, viewport.getWorldWidth() / 3.2f, viewport.getWorldHeight() / 4.0f + TEXT_SPACING_SIZE + 10);
+    	initialiseFontReel(versionInfo.getAuthor(), viewport.getWorldWidth() / 3.2f, viewport.getWorldHeight() / 2.0f + TEXT_SPACING_SIZE + 10);
+    	initialiseFontReel(getCopyrightYearAuthorText(), viewport.getWorldWidth() / 3.2f, viewport.getWorldHeight() / 2.0f + TEXT_SPACING_SIZE + 10);
+        initialiseFontReel("v"+ versionInfo.getVersion(), viewport.getWorldWidth() / 3.2f, viewport.getWorldHeight() / 4.0f + TEXT_SPACING_SIZE + 10);
         numReelLettersSpinning = reelLetterTiles.size;
         numReelLetterSpinLoops = 10;
+    }
+
+    private String getCopyrightYearAuthorText() {
+        return COPYRIGHT + versionInfo.getTimestampSerializer().getYear() + " " + versionInfo.getAuthor();
     }
 
     private void initialiseFontReel(String reelText, float x, float y) {
@@ -369,15 +383,15 @@ public class IntroScreen extends InputAdapter implements Screen {
         introSeq = getTimeline(introSeq, startOfText, endOfText, 0.4f, 60.0f, 30.0f, 320.0f);
 
         startOfText = endOfText;
-        endOfText = startOfText + AUTHOR_TEXT.length();
+        endOfText = startOfText + versionInfo.getAuthor().length();
         introSeq = getTimeline(introSeq, startOfText, endOfText, 0.4f, -120.0f, 30.0f, 280.0f);
 
         startOfText = endOfText;
-        endOfText = startOfText + COPYRIGHT_YEAR_AUTHOR_TEXT.length();
+        endOfText = startOfText + getCopyrightYearAuthorText().length();
         introSeq = getTimeline(introSeq, startOfText, endOfText, 0.4f, -520.0f, 30.0f, 150.0f);
 
         startOfText = endOfText;
-        endOfText = startOfText + 1 + Version.VERSION.length();
+        endOfText = startOfText + 1 + versionInfo.getVersion().length();
         introSeq = getTimeline(introSeq, startOfText, endOfText, 0.4f, -850.0f, 30.0f, 110.0f);
 
         introSeq.start(tweenManager);
