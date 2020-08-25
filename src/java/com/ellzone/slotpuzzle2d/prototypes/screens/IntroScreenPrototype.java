@@ -45,7 +45,7 @@ import com.badlogic.gdx.physics.box2d.World;
 import box2dLight.PointLight;
 import box2dLight.RayHandler;
 import com.ellzone.slotpuzzle2d.SlotPuzzle;
-import com.ellzone.slotpuzzle2d.Version;
+import com.ellzone.slotpuzzle2d.utils.Version;
 import com.ellzone.slotpuzzle2d.effects.ReelAccessor;
 import com.ellzone.slotpuzzle2d.effects.ReelLetterAccessor;
 import com.ellzone.slotpuzzle2d.effects.SpriteAccessor;
