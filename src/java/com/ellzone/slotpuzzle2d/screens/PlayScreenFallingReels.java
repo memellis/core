@@ -334,6 +334,15 @@ public class PlayScreenFallingReels extends PlayScreen {
         checkForGameOverCondition();
     }
 
+    protected void weAreOutOfTime() {
+        playState = PlayStates.BONUS_LEVEL_ENDED;
+        gameOver = true;
+        mapTile.getLevel().setLevelCompleted();
+        mapTile.getLevel().setScore(hud.getScore());
+        playScreenPopUps.setLevelBonusSpritePositions();
+        playScreenPopUps.getLevelBonusCompletedPopUp().showLevelPopUp(null);
+    }
+
     protected void renderGame(float delta) {
         update(delta);
         handleInput();
@@ -348,7 +357,7 @@ public class PlayScreenFallingReels extends PlayScreen {
     protected void renderMainGameElements() {
         game.batch.begin();
         renderHiddenPattern();
-//        renderAnimatedReels();
+        renderAnimatedReels();
         renderScore();
         renderSpinHelper();
         game.batch.end();
