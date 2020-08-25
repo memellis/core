@@ -18,6 +18,14 @@ public class VersionInfoFile {
         json.toJson(versionInfo, VersionInfo.class, Gdx.files.local(filename));
     }
 
+    public void setVersionInfoPretty(String filename) {
+        Json json = new Json();
+        Gdx.files.local(filename).writeString(
+                json.prettyPrint(versionInfo),
+                false
+        );
+    }
+
     public VersionInfo loadVersionInfo(String myVersionInfo) {
         Json json = new Json();
         return json.fromJson(VersionInfo.class, Gdx.files.local(myVersionInfo));
