@@ -85,6 +85,7 @@ import com.ellzone.slotpuzzle2d.tweenengine.TweenManager;
 import com.ellzone.slotpuzzle2d.utils.AssetsAnnotation;
 import com.ellzone.slotpuzzle2d.utils.FrameRate;
 import com.ellzone.slotpuzzle2d.utils.PixmapProcessors;
+import com.ellzone.slotpuzzle2d.utils.TimeStamp;
 
 import net.dermetfan.gdx.assets.AnnotationAssetManager;
 
@@ -755,7 +756,7 @@ public class PlayScreen implements Screen, PlayInterface, LevelCreatorInjectionI
         handleInput();
         renderer.render();
         renderMainGameElements();
-        drawCurrentPlayState();
+        drawCurrentPlayState(delta);
         renderHud();
         stage.draw();
         framerate.render();
@@ -860,20 +861,24 @@ public class PlayScreen implements Screen, PlayInterface, LevelCreatorInjectionI
             score.render(game.batch);
     }
 
-    protected void drawCurrentPlayState() {
+    protected void drawCurrentPlayState(float delta) {
         game.batch.setProjectionMatrix(camera.combined);
         switch (playState) {
             case INTRO_POPUP:
                 playScreenPopUps.getLevelPopUp().draw(game.batch);
+                playScreenPopUps.getLevelPopUp().drawSpeechBubble(game.batch, delta);
                 break;
             case LEVEL_LOST:
                 playScreenPopUps.getLevelLostPopUp().draw(game.batch);
+                playScreenPopUps.getLevelLostPopUp().drawSpeechBubble(game.batch, delta);
                 break;
             case WON_LEVEL:
                 playScreenPopUps.getLevelWonPopUp().draw(game.batch);
+                playScreenPopUps.getLevelWonPopUp().drawSpeechBubble(game.batch, delta);
                 break;
             case BONUS_LEVEL_ENDED:
                 playScreenPopUps.getLevelBonusCompletedPopUp().draw(game.batch);
+                playScreenPopUps.getLevelBonusCompletedPopUp().drawSpeechBubble(game.batch, delta);
             default:
                 break;
         }

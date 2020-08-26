@@ -38,7 +38,7 @@ public class PlayScreenPopUps {
     private final TweenManager tweenManager;
     private final LevelDoor levelDoor;
     private Array<Sprite> popUpSprites, levelLostSprites, levelWonSprites, levelBonusSprites;
-    private LevelPopUp levelPopUp, levelLostPopUp, levelWonPopUp, levelBonusCompletedPopUp;
+    private LevelPopUpTypeWriterText levelPopUp, levelLostPopUp, levelWonPopUp, levelBonusCompletedPopUp;
 
     public PlayScreenPopUps(TextureAtlas tilesAtlas, int screenWidth, int screenHeight, SpriteBatch batch, TweenManager tweenManager, LevelDoor levelDoor) {
         this.tilesAtlas = tilesAtlas;
@@ -77,27 +77,27 @@ public class PlayScreenPopUps {
         return levelBonusSprites;
     }
 
-    public LevelPopUp getLevelPopUp() {
+    public LevelPopUpTypeWriterText getLevelPopUp() {
         return levelPopUp;
     }
 
-    public LevelPopUp getLevelLostPopUp() {
+    public LevelPopUpTypeWriterText getLevelLostPopUp() {
         return levelLostPopUp;
     }
 
-    public LevelPopUp getLevelWonPopUp() {
+    public LevelPopUpTypeWriterText getLevelWonPopUp() {
         return levelWonPopUp;
     }
 
-    public LevelPopUp getLevelBonusCompletedPopUp() { return levelBonusCompletedPopUp; }
+    public LevelPopUpTypeWriterText getLevelBonusCompletedPopUp() { return levelBonusCompletedPopUp; }
 
     private void createPopUps() {
         BitmapFont currentLevelFont = new BitmapFont();
 	    currentLevelFont.getData().scale(1.5f);
-	    levelPopUp = new LevelPopUp(batch, tweenManager, popUpSprites, currentLevelFont, levelDoor.getLevelName(), LEVEL_TIP_DESCRIPTION);
-	    levelLostPopUp = new LevelPopUp(batch, tweenManager, levelLostSprites, currentLevelFont, levelDoor.getLevelName(), LEVEL_LOST_DESCRIPTION);
-	    levelWonPopUp = new LevelPopUp(batch, tweenManager, levelWonSprites, currentLevelFont, levelDoor.getLevelName(), LEVEL_WON_DESCRIPTION);
-        levelBonusCompletedPopUp = new LevelPopUp(batch, tweenManager, levelBonusSprites, currentLevelFont, levelDoor.getLevelName(), LEVEL_BONUS_COMPLETED_DESCRIPTION);
+	    levelPopUp = new LevelPopUpTypeWriterText(batch, tweenManager, popUpSprites, currentLevelFont, levelDoor.getLevelName(), LEVEL_TIP_DESCRIPTION);
+	    levelLostPopUp = new LevelPopUpTypeWriterText(batch, tweenManager, levelLostSprites, currentLevelFont, levelDoor.getLevelName(), LEVEL_LOST_DESCRIPTION);
+	    levelWonPopUp = new LevelPopUpTypeWriterText(batch, tweenManager, levelWonSprites, currentLevelFont, levelDoor.getLevelName(), LEVEL_WON_DESCRIPTION);
+        levelBonusCompletedPopUp = new LevelPopUpTypeWriterText(batch, tweenManager, levelBonusSprites, currentLevelFont, levelDoor.getLevelName(), LEVEL_BONUS_COMPLETED_DESCRIPTION);
 	}
 
     private void setUpPopUpSprites() {

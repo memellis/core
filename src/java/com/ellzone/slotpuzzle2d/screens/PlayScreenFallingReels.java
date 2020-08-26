@@ -348,7 +348,7 @@ public class PlayScreenFallingReels extends PlayScreen {
         handleInput();
         renderer.render();
         renderMainGameElements();
-        drawCurrentPlayState();
+        drawCurrentPlayState(delta);
         renderHud();
         stage.draw();
         framerate.render();

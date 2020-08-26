@@ -22,6 +22,7 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Interpolation;
 import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.Array;
+import com.ellzone.slotpuzzle2d.tweenengine.TweenCallback;
 import com.ellzone.slotpuzzle2d.tweenengine.TweenManager;
 
 import net.dermetfan.gdx.Typewriter;
@@ -45,7 +46,12 @@ public class LevelPopUpTypeWriterText  extends LevelPopUp{
           iniialiseTypewriter();
     }
 
-    private void iniialiseTypewriter() {
+    public void hideLevelPopUp(TweenCallback callback) {
+        super.hideLevelPopUp(callback);
+        typewriter.setTime(0`);
+    }
+
+        private void iniialiseTypewriter() {
         typewriter.getInterpolator().setInterpolation(Interpolation.linear);
         setTypewriterCustomCusors();
     }
