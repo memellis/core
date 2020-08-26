@@ -91,6 +91,7 @@ import com.ellzone.slotpuzzle2d.prototypes.particle.Particle6ExtendingParticleTe
 import com.ellzone.slotpuzzle2d.prototypes.scrollingsign.ScrollSignWithMultipleMessages;
 import com.ellzone.slotpuzzle2d.prototypes.scrollingsign.ScrollingSign;
 import com.ellzone.slotpuzzle2d.prototypes.scrollingsign.ScrollingSignDynamicSignChange;
+import com.ellzone.slotpuzzle2d.prototypes.speechbubble.SpeechBubble;
 import com.ellzone.slotpuzzle2d.prototypes.starfield.Starfield;
 import com.ellzone.slotpuzzle2d.prototypes.starfield.StarfieldUsingStarfieldObject;
 import com.ellzone.slotpuzzle2d.prototypes.tween.DelayFlash;
@@ -193,6 +194,7 @@ public class SPPrototypes {
         Veil.class,
         WayPoints1.class,
         WayPoints2.class,
+	    SpeechBubble.class,
 	    SpinningSlots.class,
 		SpinningSlotsRotateHandleSprite.class,
 		SpinningSlotsRotateHandleSpriteUsingTweenEngine.class,

@@ -31,15 +31,22 @@ import aurelienribon.tweenengine.equations.Back;
 import aurelienribon.tweenengine.equations.Quad;
 
 public class LevelPopUp {
-
     public static final String LOG_TAG = "SlotPuzzle_PlayScreen";
-    private TweenManager tweenManager;
-    private Array<Sprite> sprites;
-    private BitmapFont levelFont, font;
-    private String currentLevel;
-    private String levelDescription;
-    private int sW = SlotPuzzleConstants.VIRTUAL_WIDTH;
-    private int sH = SlotPuzzleConstants.VIRTUAL_HEIGHT;
+    protected TweenManager tweenManager;
+    protected Array<Sprite> sprites;
+    protected BitmapFont levelFont, font;
+    protected String currentLevel;
+    protected String levelDescription;
+    protected int sW = SlotPuzzleConstants.VIRTUAL_WIDTH;
+    protected int sH = SlotPuzzleConstants.VIRTUAL_HEIGHT;
+protected STATE state = STATE.IDLE;
+
+    protected enum STATE {
+        SHOW_POPUP,
+        HIDE_POP,
+        IDLE,
+        ;
+    }
 
     public LevelPopUp(SpriteBatch batch, TweenManager tweenManager, Array<Sprite> sprites, BitmapFont levelFont, String currentLevel, String levelDescription) {
         this.tweenManager = tweenManager;
@@ -53,6 +60,7 @@ public class LevelPopUp {
     public void showLevelPopUp(TweenCallback callback) {
         Gdx.app.log(LOG_TAG, "sW="+sW);
         Gdx.app.log(LOG_TAG, "sH="+sH);
+        state = STATE.SHOW_POPUP;
 
         Timeline timeline = Timeline.createSequence()
                 .push(SlotPuzzleTween.set(sprites.get(0), SpriteAccessor.SCALE_XY).target(0.1f, 0))
@@ -98,6 +106,7 @@ public class LevelPopUp {
     }
 
     public void hideLevelPopUp(TweenCallback callback) {
+        state = STATE.HIDE_POP;
         Timeline timeline = Timeline.createSequence()
                 .pushPause(0.25f)
                 .beginParallel()
@@ -142,5 +151,4 @@ public class LevelPopUp {
         return sprite.getX() <= x && x <= sprite.getX() + sprite.getWidth()
                 && sprite.getY() <= y && y <= sprite.getY() + sprite.getHeight();
     }
-
 }
