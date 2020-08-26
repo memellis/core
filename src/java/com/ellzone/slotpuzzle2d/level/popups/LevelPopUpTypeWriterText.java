@@ -48,7 +48,7 @@ public class LevelPopUpTypeWriterText  extends LevelPopUp{
 
     public void hideLevelPopUp(TweenCallback callback) {
         super.hideLevelPopUp(callback);
-        typewriter.setTime(0`);
+        typewriter.setTime(0);
     }
 
         private void iniialiseTypewriter() {
