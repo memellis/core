@@ -25,7 +25,8 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 
 public class TimestampSerializer implements Json.Serializable{
-    public static final String TIMESTAMP_FORMAT = "EEE, d MMM yyyy HH:mm:ss.SSS z";
+    public static final String TIMESTAMP_FORMAT = "EEE, d MMM yyyy HH:mm:ss.SSS Z";
+
     private static final SimpleDateFormat dateFormat =
             new SimpleDateFormat(TIMESTAMP_FORMAT);
     private Timestamp timestamp;
@@ -66,6 +67,4 @@ public class TimestampSerializer implements Json.Serializable{
         }
         timestamp = new Timestamp(date.getTime());
     }
-
-
 }
