@@ -120,7 +120,6 @@ public class LevelLoader {
             }
         );
         reelTile.unDeleteReelTile();
-//        reelTile.startSpinning();
         animatedReel.reinitialise();
         reelTile.setSpinning(false);
         reelTiles.add(reelTile);

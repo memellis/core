@@ -53,10 +53,8 @@ public class SpeechBubble extends SPPrototypeTemplate {
         });
     }
 
-
     @Override
     protected void initialiseScreenOverride() {
-
     }
 
     @Override

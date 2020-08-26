@@ -621,6 +621,7 @@ public class PlayScreen implements Screen, PlayInterface, LevelCreatorInjectionI
         renderer = new OrthogonalTiledMapRenderer(level);
         displaySpinHelp = false;
         inRestartLevel = false;
+        currentReel = 0;
         loadLevel();
         createReelIntroSequence();
         playStateMachine.getStateMachine().changeState(PlayState.INTRO_SPINNING_SEQUENCE);
