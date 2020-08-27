@@ -23,6 +23,7 @@ import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.utils.Array;
 import com.ellzone.slotpuzzle2d.effects.SpriteAccessor;
+import com.ellzone.slotpuzzle2d.level.popups.LevelPopUp;
 import com.ellzone.slotpuzzle2d.level.popups.LevelPopUpTypeWriterText;
 import com.ellzone.slotpuzzle2d.prototypes.SPPrototypeTemplate;
 import com.ellzone.slotpuzzle2d.tweenengine.BaseTween;
@@ -45,12 +46,6 @@ public class SpeechBubble extends SPPrototypeTemplate {
         currentLevelFont.getData().scale(1.5f);
         levelPopUp = new LevelPopUpTypeWriterText(batch, tweenManager, popUpSprites, currentLevelFont, CURRENT_LEVEL, LEVEL_DESC);
         Gdx.input.setInputProcessor(inputProcessor);
-        levelPopUp.showLevelPopUp(new TweenCallback() {
-            @Override
-            public void onEvent(int type, BaseTween<?> source) {
-                drawSpeechBubbleText = true;
-            }
-        });
     }
 
     @Override
@@ -78,12 +73,17 @@ public class SpeechBubble extends SPPrototypeTemplate {
 
     @Override
     protected void disposeOverride() {
-
     }
 
     @Override
     protected void updateOverride(float dt) {
-
+        if (levelPopUp.getState() == LevelPopUp.STATE.IDLE)
+            levelPopUp.showLevelPopUp(new TweenCallback() {
+                @Override
+                public void onEvent(int type, BaseTween<?> source) {
+                    drawSpeechBubbleText = true;
+                }
+            });
     }
 
     @Override
@@ -102,8 +102,17 @@ public class SpeechBubble extends SPPrototypeTemplate {
         @Override
         public boolean touchUp(int x, int y, int pointer, int button) {
             tweenManager.killAll();
-            levelPopUp.hideLevelPopUp(null);
+            if(levelPopUp.getState() == LevelPopUp.STATE.SHOW_POPUP)
+                levelPopUp.hideLevelPopUp(resetPopUpPositions);
             return true;
+        }
+    };
+
+    TweenCallback resetPopUpPositions = new TweenCallback() {
+        @Override
+        public void onEvent(int type, BaseTween<?> source) {
+            setPopUpSpritePositions();
+            drawSpeechBubbleText = false;
         }
     };
 }

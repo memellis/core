@@ -23,6 +23,7 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.utils.Array;
 import com.ellzone.slotpuzzle2d.SlotPuzzleConstants;
 import com.ellzone.slotpuzzle2d.effects.SpriteAccessor;
+import com.ellzone.slotpuzzle2d.tweenengine.BaseTween;
 import com.ellzone.slotpuzzle2d.tweenengine.SlotPuzzleTween;
 import com.ellzone.slotpuzzle2d.tweenengine.Timeline;
 import com.ellzone.slotpuzzle2d.tweenengine.TweenCallback;
@@ -39,9 +40,9 @@ public class LevelPopUp {
     protected String levelDescription;
     protected int sW = SlotPuzzleConstants.VIRTUAL_WIDTH;
     protected int sH = SlotPuzzleConstants.VIRTUAL_HEIGHT;
-protected STATE state = STATE.IDLE;
+    protected STATE state = STATE.IDLE;
 
-    protected enum STATE {
+    public enum STATE {
         SHOW_POPUP,
         HIDE_POP,
         IDLE,
@@ -58,8 +59,6 @@ protected STATE state = STATE.IDLE;
     }
 
     public void showLevelPopUp(TweenCallback callback) {
-        Gdx.app.log(LOG_TAG, "sW="+sW);
-        Gdx.app.log(LOG_TAG, "sH="+sH);
         state = STATE.SHOW_POPUP;
 
         Timeline timeline = Timeline.createSequence()
@@ -130,18 +129,29 @@ protected STATE state = STATE.IDLE;
         timeline = timeline
                 .pushPause(0.5f);
 
-        if(callback != null) {
-            timeline.setCallback(callback);
-            timeline.setCallbackTriggers(TweenCallback.END);
-        }
+        timeline.setCallback(endOfPopUpCallback);
+        timeline.setUserData(callback);
+        timeline.setCallbackTriggers(TweenCallback.END);
         timeline.start(tweenManager);
     }
 
+    private TweenCallback endOfPopUpCallback = new TweenCallback() {
+        @Override
+        public void onEvent(int type, BaseTween<?> source) {
+            state = STATE.IDLE;
+
+            if (source.getUserData() != null) {
+                TweenCallback userCallBack = (TweenCallback) source.getUserData();
+                userCallBack.onEvent(type, source);
+            }
+        }
+    };
+
     public void draw(SpriteBatch batch) {
         batch.begin();
-        for (Sprite sprite : sprites) {
+        for (Sprite sprite : sprites)
             sprite.draw(batch);
-        }
+
         levelFont.draw(batch, currentLevel, sprites.get(1).getX() + 100, sprites.get(1).getY() + 32);
         font.draw(batch, levelDescription, sprites.get(1).getX() - 16, sprites.get(1).getY() - 32, 175, -15, true);
         batch.end();
@@ -150,5 +160,9 @@ protected STATE state = STATE.IDLE;
     public boolean isOver(Sprite sprite, float x, float y) {
         return sprite.getX() <= x && x <= sprite.getX() + sprite.getWidth()
                 && sprite.getY() <= y && y <= sprite.getY() + sprite.getHeight();
+    }
+
+    public STATE getState() {
+        return state;
     }
 }
