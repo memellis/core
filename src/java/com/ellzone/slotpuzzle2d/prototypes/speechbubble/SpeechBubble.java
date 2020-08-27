@@ -44,7 +44,13 @@ public class SpeechBubble extends SPPrototypeTemplate {
     protected void initialiseOverride() {
         currentLevelFont = new BitmapFont();
         currentLevelFont.getData().scale(1.5f);
-        levelPopUp = new LevelPopUpTypeWriterText(batch, tweenManager, popUpSprites, currentLevelFont, CURRENT_LEVEL, LEVEL_DESC);
+        levelPopUp = new LevelPopUpTypeWriterText(
+                batch,
+                tweenManager,
+                popUpSprites,
+                currentLevelFont,
+                CURRENT_LEVEL,
+                LEVEL_DESC);
         Gdx.input.setInputProcessor(inputProcessor);
     }
 
