@@ -93,6 +93,7 @@ import com.ellzone.slotpuzzle2d.prototypes.scrollingsign.ScrollSignWithMultipleM
 import com.ellzone.slotpuzzle2d.prototypes.scrollingsign.ScrollingSign;
 import com.ellzone.slotpuzzle2d.prototypes.scrollingsign.ScrollingSignDynamicSignChange;
 import com.ellzone.slotpuzzle2d.prototypes.speechbubble.SpeechBubble;
+import com.ellzone.slotpuzzle2d.prototypes.spin.SpinScreen;
 import com.ellzone.slotpuzzle2d.prototypes.starfield.Starfield;
 import com.ellzone.slotpuzzle2d.prototypes.starfield.StarfieldUsingStarfieldObject;
 import com.ellzone.slotpuzzle2d.prototypes.tween.DelayFlash;
@@ -206,6 +207,7 @@ public class SPPrototypes {
         SpinningSlotsWithMatchesWin.class,
         SpinningSlotsWithMatchesWinFlashes.class,
         SpinningSlotsWithMatchesWinFlashesLoadedLevel.class,
+		SpinScreen.class,
 		SlotPuzzleGame.class,
         Starfield.class,
         StarfieldUsingStarfieldObject.class
