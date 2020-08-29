@@ -45,7 +45,9 @@ public class AnimatedReelHelper {
     private int spriteWidth, spriteHeight;
     private int reelDisplayHeight = 0;
 
-    public AnimatedReelHelper(AnnotationAssetManager annotationAssetManager, TweenManager tweenManager, int numberOfAnimatedReels) {
+    public AnimatedReelHelper(AnnotationAssetManager annotationAssetManager,
+                              TweenManager tweenManager,
+                              int numberOfAnimatedReels) {
         this.annotationAssetManager = annotationAssetManager;
         this.tweenManager = tweenManager;
         this.numberOfAnimatedReels = numberOfAnimatedReels;
@@ -89,7 +91,6 @@ public class AnimatedReelHelper {
             AnimatedReel animatedReel = new AnimatedReel(slotReelScrollTexture, 0, 0, spriteWidth, spriteHeight, spriteWidth, reelDisplayHeight, 0, null, reelStoppingSound, tweenManager);
             animatedReel.setSx(0);
             animatedReel.setEndReel(Random.getInstance().nextInt(reelSprites.getSprites().length - 1));
-//            animatedReel.getReel().startSpinning();
             animatedReels.add(animatedReel);
         }
     }

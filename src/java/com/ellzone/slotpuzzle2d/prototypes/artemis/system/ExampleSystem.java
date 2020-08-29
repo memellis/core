@@ -27,7 +27,6 @@ public class ExampleSystem extends FluidIteratingSystem {
 
         batch = new SpriteBatch(100);
 
-        // create some sprites to look at!
         texture = new Texture("dancingman.png");
         for (int i = 0; i < 40; i++) {
             E.E()

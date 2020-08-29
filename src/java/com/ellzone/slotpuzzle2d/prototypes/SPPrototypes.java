@@ -19,6 +19,7 @@ package com.ellzone.slotpuzzle2d.prototypes;
 import com.badlogic.gdx.utils.reflect.ClassReflection;
 import com.badlogic.gdx.utils.reflect.ReflectionException;
 import com.ellzone.slotpuzzle2d.prototypes.artemis.ArtemisOdbQuickStart;
+import com.ellzone.slotpuzzle2d.prototypes.artemis.RenderReelsUsingArtemis;
 import com.ellzone.slotpuzzle2d.prototypes.ashley.RenderLightButtons;
 import com.ellzone.slotpuzzle2d.prototypes.ashley.RenderMiniSllotMachineLoadedFromALevel;
 import com.ellzone.slotpuzzle2d.prototypes.ashley.RenderReels;
@@ -194,6 +195,7 @@ public class SPPrototypes {
         Veil.class,
         WayPoints1.class,
         WayPoints2.class,
+        RenderReelsUsingArtemis.class,
 	    SpeechBubble.class,
 	    SpinningSlots.class,
 		SpinningSlotsRotateHandleSprite.class,
