@@ -1,27 +1,15 @@
-/*
- * Copyright 2011 See AUTHORS file.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *   http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-
 package com.ellzone.slotpuzzle2d.prototypes.spin;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
+import com.badlogic.gdx.graphics.Pixmap;
+import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Sprite;
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
@@ -29,15 +17,25 @@ import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.Align;
+import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.IntArray;
 import com.badlogic.gdx.utils.viewport.ExtendViewport;
+import com.ellzone.slotpuzzle2d.effects.ReelAccessor;
+import com.ellzone.slotpuzzle2d.effects.SpriteAccessor;
 import com.ellzone.slotpuzzle2d.prototypes.SPPrototype;
 import com.ellzone.slotpuzzle2d.spin.SpinWheel;
+import com.ellzone.slotpuzzle2d.sprites.AnimatedReel;
+import com.ellzone.slotpuzzle2d.sprites.ReelTile;
+import com.ellzone.slotpuzzle2d.tweenengine.SlotPuzzleTween;
+import com.ellzone.slotpuzzle2d.tweenengine.TweenManager;
+import com.ellzone.slotpuzzle2d.utils.PixmapProcessors;
+import com.ellzone.slotpuzzle2d.utils.Random;
+import com.ellzone.slotpuzzle2d.utils.ScreenshotFactory;
 
 import static com.badlogic.gdx.scenes.scene2d.actions.Actions.scaleTo;
 import static com.badlogic.gdx.scenes.scene2d.actions.Actions.sequence;
 
-public class SpinScreen extends SPPrototype {
+public class SpinReelMetaSpinScreen extends SPPrototype {
     private static final String TAG = SpinScreen.class.getSimpleName();
     private static final float WIDTH = 1280;
     private static final float HEIGHT = 1080;
@@ -45,9 +43,15 @@ public class SpinScreen extends SPPrototype {
     private static final int NUMBER_OF_PEGS = 12;
 
     private Stage stage;
+    private SpriteBatch batch;
     private SpinWheel spinWheel;
     private Image wheelImage;
     private Image needleImage;
+    private Texture animatedScreenLeft, animatedScreenMiddle, animatedScreenRight;
+    private boolean screenCaptured = false;
+    private TweenManager tweenManager;
+    private AnimatedReel animatedReelScreenLeft;
+    private Array<AnimatedReel> animatedScreenReels = new Array<>();
 
     @Override
     public void create() {
@@ -56,6 +60,13 @@ public class SpinScreen extends SPPrototype {
         final float width = stage.getWidth();
         final float height = stage.getHeight();
 
+        batch = new SpriteBatch();
+        tweenManager = new TweenManager();
+        initialiseTweenEngine();
+        setUpSpinWheel(width, height);
+    }
+
+    private void setUpSpinWheel(float width, float height) {
         spinWheel = new SpinWheel(width, height, WHEEL_DIAMETER, width / 2, height / 2, NUMBER_OF_PEGS);
 
         final TextureAtlas atlas = new TextureAtlas("spin/spin_wheel_ui.atlas");
@@ -113,8 +124,16 @@ public class SpinScreen extends SPPrototype {
         return array;
     }
 
+    private void initialiseTweenEngine() {
+        SlotPuzzleTween.setWaypointsLimit(10);
+        SlotPuzzleTween.setCombinedAttributesLimit(3);
+        SlotPuzzleTween.registerAccessor(Sprite.class, new SpriteAccessor());
+        SlotPuzzleTween.registerAccessor(ReelTile.class, new ReelAccessor());
+    }
+
     public void render() {
         final float delta = Math.min(1/30f, Gdx.graphics.getDeltaTime());
+        update(delta);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
         spinWheel.render(false);
 
@@ -129,9 +148,86 @@ public class SpinScreen extends SPPrototype {
         if (Gdx.input.isKeyPressed(Input.Keys.ENTER))
             spinWheel.spin(0.2F);
 
+
         stage.act(delta);
         stage.draw();
+
+        if (Gdx.input.isKeyPressed(Input.Keys.S)) {
+            if (!screenCaptured) {
+                screenCapture();
+                screenCaptured = true;
+            }
+        }
+
+        if (screenCaptured == true) {
+            batch.begin();
+            for(AnimatedReel animatedScreenReel : animatedScreenReels)
+                animatedScreenReel.draw(batch);
+            batch.end();
+        }
+
     }
+
+    private void update(float delta) {
+        for (AnimatedReel animatedScreenReel : animatedScreenReels)
+            animatedScreenReel.update(delta);
+        tweenManager.update(delta);
+    }
+
+    private void screenCapture() {
+        Pixmap screenShot = ScreenshotFactory.getScreenshot(
+                0,
+                0,
+                Gdx.graphics.getWidth(),
+                Gdx.graphics.getHeight(),
+                true);
+
+        Texture screenShotsheet = new Texture(screenShot);
+        TextureRegion[][] screenShotGrid = TextureRegion.split(
+                screenShotsheet,
+                screenShotsheet.getWidth() / 3,
+                screenShot.getHeight() / 3
+        );
+
+        TextureRegion[] screenFrames = new TextureRegion[3 * 3];
+        int index = 0;
+        for (int i = 0; i < 3; i++)
+            for (int j = 0; j < 3; j++)
+                screenFrames[index++] = screenShotGrid[i][j];
+
+        Sprite[] spritesLeft = new Sprite[3];
+        Sprite[] spritesMiddle = new Sprite[3];
+        Sprite[] spritesRight = new Sprite[3];
+
+
+        for (int i = 0; i < 3; i++) {
+            spritesLeft[i]   = new Sprite(screenFrames[0 + 3 * i]);
+            spritesMiddle[i] = new Sprite(screenFrames[1 + 3 * i]);
+            spritesRight[i]  = new Sprite(screenFrames[2 + 3 * i]);
+        }
+
+        Array<Texture> animatedScreenTextures = new Array<>();
+        animatedScreenTextures.add(new Texture(PixmapProcessors.createPixmapToAnimate(spritesLeft)));
+        animatedScreenTextures.add(new Texture(PixmapProcessors.createPixmapToAnimate(spritesMiddle)));
+        animatedScreenTextures.add(new Texture(PixmapProcessors.createPixmapToAnimate(spritesRight)));
+
+        int reelIndex = 0;
+        for (Texture animatedScreenTexture : animatedScreenTextures) {
+            AnimatedReel animatedReel = new AnimatedReel(
+                    animatedScreenTexture,
+                    reelIndex++ * Gdx.graphics.getWidth() / 3,
+                    0 ,
+                    Gdx.graphics.getWidth() / 3,
+                    Gdx.graphics.getHeight() / 3,
+                    Gdx.graphics.getWidth() / 3,
+                    Gdx.graphics.getWidth(),
+                    Random.getInstance().nextInt(3),
+                    tweenManager);
+            animatedReel.setupSpinning();
+            animatedReel.getReel().setSpinning(true);
+            animatedScreenReels.add(animatedReel);
+        }
+   }
 
     @Override
     public void resize(int width, int height) {
