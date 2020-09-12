@@ -17,13 +17,9 @@
 
 package com.ellzone.slotpuzzle2d.spin;
 
-import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.math.MathUtils;
-import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.BodyDef;
-import com.badlogic.gdx.physics.box2d.BodyDef.BodyType;
-import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer;
 import com.badlogic.gdx.physics.box2d.CircleShape;
 import com.badlogic.gdx.physics.box2d.Contact;
 import com.badlogic.gdx.physics.box2d.ContactImpulse;
@@ -39,19 +35,7 @@ import com.badlogic.gdx.utils.Disposable;
 import com.badlogic.gdx.utils.IntArray;
 import com.badlogic.gdx.utils.ObjectMap;
 
-/**
- * Thanks for NauticalMile answer's in stackexchange site
- * <li><a>
- * href="https://gamedev.stackexchange.com/questions/72170/how-simulate-the-return-effect-of-the-wheel-of-fortune-needle">
- * https://gamedev.stackexchange.com/questions/72170/how-simulate-the-return-effect-of-the-wheel-of-fortune-needle
- * </a></li> </ul>
- * <p>
- * You must call dispose(); method if spinning is no longer used.
- * </p>
- *
- * @author Crowni
- */
-public class SpinWheel implements Disposable {
+public class SpinWheelForSlotPuzzle {
     public static final float PPM = 100f;
     private static final float STANDARD_SIZE = 512F;
     private static final short BIT_PEG = 4;
@@ -59,10 +43,7 @@ public class SpinWheel implements Disposable {
     private static final short BIT_B1 = 16;
     private static final short BIT_B2 = 32;
 
-    private final World world;
-    private final OrthographicCamera camera;
-    private final Box2DDebugRenderer renderer;
-
+    private World world;
     private final BodyDef bodyDef = new BodyDef();                                // general body definition.
     private final FixtureDef fixtureDef = new FixtureDef();                       // general fixture definition.
     private final RevoluteJointDef revJointDef = new RevoluteJointDef();          // keep needle and wheel in the place.
@@ -79,31 +60,19 @@ public class SpinWheel implements Disposable {
     private float farNeedle;              // distance of needle from the wheel
     private boolean spinned = false;      // to ensure a spinning is one time only.
 
-    /**
-     * All dimensions parameters's dividing on 100 to equivalent Newton's laws according Box2D physics.
-     *
-     * @param viewportWidth  the viewport width.
-     * @param viewportHeight the viewport height.
-     * @param diameter       of wheel.
-     * @param x              position of wheel according camera viewport.
-     * @param y              position of wheel according camera viewport.
-     * @param nPegs          number of pegs attached with wheel.
-     */
-    public SpinWheel(float viewportWidth, float viewportHeight, float diameter, float x, float y, int nPegs) {
+    public SpinWheelForSlotPuzzle(
+                     float diameter,
+                     float x,
+                     float y,
+                     int nPegs,
+                     World world) {
         this.diameter = diameter / PPM;
         this.x = x / PPM;
         this.y = y / PPM;
         this.nPegs = nPegs;
 
-        camera = new OrthographicCamera();
-        camera.setToOrtho(false, viewportWidth / PPM, viewportHeight / PPM);
-
-        // world with no gravity
-        world = new World(new Vector2(0, 0), true);
-        world.setContactListener(new SpinWheelWorldContact());
-
-        // for debugging mode
-        renderer = new Box2DDebugRenderer();
+        this.world = world;
+        this.world.setContactListener(new SpinWheelWorldContact());
 
         createWheel();
         createNeedle();
@@ -145,7 +114,7 @@ public class SpinWheel implements Disposable {
     private void base_of_wheel() {
         PolygonShape polygon = new PolygonShape();
         // Define The Base Of Wheel
-        bodyDef.type = BodyType.StaticBody;
+        bodyDef.type = BodyDef.BodyType.StaticBody;
 
         // set The Base Position
         bodyDef.position.set(x, y);
@@ -169,7 +138,7 @@ public class SpinWheel implements Disposable {
     private void core_of_wheel() {
         CircleShape circle = new CircleShape();
         // Define The Base Of Wheel
-        bodyDef.type = BodyType.DynamicBody;
+        bodyDef.type = BodyDef.BodyType.DynamicBody;
 
         // To Stop after spinning
         bodyDef.angularDamping = 0.25f;
@@ -202,7 +171,7 @@ public class SpinWheel implements Disposable {
 
         CircleShape circle = new CircleShape();
         // Define The Pegs Of Wheel
-        bodyDef.type = BodyType.DynamicBody;
+        bodyDef.type = BodyDef.BodyType.DynamicBody;
         bodyDef.position.set(x, y);
 
         // set The physics properties of The Shape
@@ -245,7 +214,7 @@ public class SpinWheel implements Disposable {
         circle.setRadius(4 * (diameter / STANDARD_SIZE));
         fixtureDef.shape = circle;
 
-        bodyDef.type = BodyType.StaticBody;
+        bodyDef.type = BodyDef.BodyType.StaticBody;
 
         // needs to be true; the reason for this is that the pegs can move very quickly
         // when the wheel is spinning fast and sometimes the peg-needle collision will
@@ -278,7 +247,7 @@ public class SpinWheel implements Disposable {
         circle.setRadius(4 * (diameter / STANDARD_SIZE));
         fixtureDef.shape = circle;
 
-        bodyDef.type = BodyType.StaticBody;
+        bodyDef.type = BodyDef.BodyType.StaticBody;
         bodyDef.bullet = true;
 
         bodyDef.position.set(x + 40F * (diameter / STANDARD_SIZE), y + farNeedle);
@@ -309,7 +278,7 @@ public class SpinWheel implements Disposable {
         circle.setRadius(4 * (diameter / STANDARD_SIZE));
         fixtureDef.shape = circle;
 
-        bodyDef.type = BodyType.StaticBody;
+        bodyDef.type = BodyDef.BodyType.StaticBody;
 
         bodyDef.position.set(x, y + farNeedle + 5F * (diameter / STANDARD_SIZE));
 
@@ -332,7 +301,7 @@ public class SpinWheel implements Disposable {
         polygon.set(vertices);
         fixtureDef.shape = polygon;
 
-        bodyDef.type = BodyType.DynamicBody;
+        bodyDef.type = BodyDef.BodyType.DynamicBody;
 
         farNeedle = diameter / 1.95f;
 
@@ -388,30 +357,14 @@ public class SpinWheel implements Disposable {
     }
 
     /**
-     * @param debug mode.
-     */
-    public void render(boolean debug) {
-        world.step(1 / 60f, 8, 2);
-
-        if (debug)
-            renderer.render(world, camera.combined);
-    }
-
-    /**
-     * This method used one time only.
      *
      * @param omega spin impulse the angular in units of kg*m*m/s. The Maximum value is 30 to avoid needle to slip from joints.
      */
     public void spin(float omega) {
-//        if (spinned)
-//            return;
         wheelCore.setAngularVelocity(MathUtils.clamp(omega, 0, 30));
         spinned = true;
     }
 
-    /**
-     * @return true after calling {@link #spin(float)} method.
-     */
     public boolean spinningStopped() {
         return !wheelCore.isAwake();
     }
@@ -420,20 +373,14 @@ public class SpinWheel implements Disposable {
         world.setContactListener(listener);
     }
 
-    /**
-     * This method is useful to connect this boby with UI data and some properties.
-     *
-     * @return body of wheel.
-     */
+    public void setWorld(World world) {
+        this.world = world;
+    }
+
     public Body getWheelBody() {
         return wheelCore;
     }
 
-    /**
-     * This method is useful to connect this boby with UI data and some properties.
-     *
-     * @return body of needle.
-     */
     public Body getNeedleBody() {
         return needle;
     }
@@ -445,9 +392,6 @@ public class SpinWheel implements Disposable {
         return needleWidth / 2;
     }
 
-    /**
-     * @return center needle rotation value of Y (NOT center Y of the needle shape.) according given height.
-     */
     public float getNeedleCenterY(float needleHeight) {
         return 3 * needleHeight / 4;
     }
@@ -481,12 +425,6 @@ public class SpinWheel implements Disposable {
                 if (array.contains(pegsSelectors.get(0)) && array.contains(pegsSelectors.get(1)))
                     return elements.get(array);
         return null;
-    }
-
-    @Override
-    public void dispose() {
-        world.dispose();
-        renderer.dispose();
     }
 
     private final class SpinWheelWorldContact implements ContactListener {
