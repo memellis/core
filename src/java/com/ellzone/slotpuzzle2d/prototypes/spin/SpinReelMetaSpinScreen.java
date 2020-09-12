@@ -25,7 +25,10 @@ import com.ellzone.slotpuzzle2d.effects.SpriteAccessor;
 import com.ellzone.slotpuzzle2d.prototypes.SPPrototype;
 import com.ellzone.slotpuzzle2d.spin.SpinWheel;
 import com.ellzone.slotpuzzle2d.sprites.AnimatedReel;
+import com.ellzone.slotpuzzle2d.sprites.ReelStoppedSpinningEvent;
 import com.ellzone.slotpuzzle2d.sprites.ReelTile;
+import com.ellzone.slotpuzzle2d.sprites.ReelTileEvent;
+import com.ellzone.slotpuzzle2d.sprites.ReelTileListener;
 import com.ellzone.slotpuzzle2d.tweenengine.SlotPuzzleTween;
 import com.ellzone.slotpuzzle2d.tweenengine.TweenManager;
 import com.ellzone.slotpuzzle2d.utils.PixmapProcessors;
@@ -52,6 +55,7 @@ public class SpinReelMetaSpinScreen extends SPPrototype {
     private TweenManager tweenManager;
     private AnimatedReel animatedReelScreenLeft;
     private Array<AnimatedReel> animatedScreenReels = new Array<>();
+    private int numberOfReelsSpinning = 0;
 
     @Override
     public void create() {
@@ -142,6 +146,7 @@ public class SpinReelMetaSpinScreen extends SPPrototype {
 
             updateCoordinates(spinWheel.getNeedleBody(), needleImage, 0, -25F);
         } else {
+
             System.out.println("lucky element is: " + spinWheel.getLuckyWinElement());
         }
 
@@ -213,7 +218,7 @@ public class SpinReelMetaSpinScreen extends SPPrototype {
 
         int reelIndex = 0;
         for (Texture animatedScreenTexture : animatedScreenTextures) {
-            AnimatedReel animatedReel = new AnimatedReel(
+            final AnimatedReel animatedReel = new AnimatedReel(
                     animatedScreenTexture,
                     reelIndex++ * Gdx.graphics.getWidth() / 3,
                     0 ,
@@ -225,6 +230,17 @@ public class SpinReelMetaSpinScreen extends SPPrototype {
                     tweenManager);
             animatedReel.setupSpinning();
             animatedReel.getReel().setSpinning(true);
+            numberOfReelsSpinning++;
+            animatedReel.getReel().addListener(new ReelTileListener() {
+                @Override
+                public void actionPerformed(ReelTileEvent event, ReelTile source) {
+                    if (event instanceof ReelStoppedSpinningEvent) {
+                        numberOfReelsSpinning--;
+                        if (numberOfReelsSpinning<=0)
+                            animatedScreenReels.clear();
+                    }
+                }
+            });
             animatedScreenReels.add(animatedReel);
         }
    }
