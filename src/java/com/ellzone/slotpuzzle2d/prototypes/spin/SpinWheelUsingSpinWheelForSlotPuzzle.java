@@ -18,28 +18,19 @@ package com.ellzone.slotpuzzle2d.prototypes.spin;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
-import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
-import com.badlogic.gdx.graphics.g2d.Sprite;
-import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer;
 import com.badlogic.gdx.physics.box2d.World;
-import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
-import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.Align;
-import com.badlogic.gdx.utils.IntArray;
 import com.badlogic.gdx.utils.viewport.ExtendViewport;
 import com.ellzone.slotpuzzle2d.prototypes.SPPrototype;
 import com.ellzone.slotpuzzle2d.spin.SpinWheel;
 import com.ellzone.slotpuzzle2d.spin.SpinWheelForSlotPuzzle;
-
-import static com.badlogic.gdx.scenes.scene2d.actions.Actions.scaleTo;
-import static com.badlogic.gdx.scenes.scene2d.actions.Actions.sequence;
 
 public class SpinWheelUsingSpinWheelForSlotPuzzle extends SPPrototype {
     private static final float WHEEL_DIAMETER = 750F;
@@ -49,8 +40,6 @@ public class SpinWheelUsingSpinWheelForSlotPuzzle extends SPPrototype {
     private World world;
     private SpinWheelForSlotPuzzle spinWheel;
     private Stage stage;
-    private Image wheelImage;
-    private Image needleImage;
     private boolean box2dDebugRender = false;
     private Box2DDebugRenderer renderer;
 
@@ -71,73 +60,75 @@ public class SpinWheelUsingSpinWheelForSlotPuzzle extends SPPrototype {
                 Gdx.graphics.getHeight() / 2,
                 NUMBER_OF_PEGS,
                 world);
-
-        final TextureAtlas atlas = new TextureAtlas("spin/spin_wheel_ui.atlas");
-
-        setUpSpinWheelBody(atlas);
-
-        setUpSpinWheelSpinButton(atlas);
-
-        setUpSpinWheelNeedleBody(atlas);
-
-        setElementData();
+        spinWheel.setUpSpinWheel(stage);
     }
-
-    private void setUpSpinWheelNeedleBody(TextureAtlas atlas) {
-        spinWheel.getNeedleBody().setUserData(needleImage = new Image(new Sprite(atlas.findRegion("needle"))));
-        updateCoordinates(spinWheel.getNeedleBody(), needleImage, 0, -25F);
-        needleImage.setOrigin(spinWheel.getNeedleCenterX(needleImage.getWidth()), spinWheel.getNeedleCenterY(needleImage.getHeight()));
-        stage.addActor(needleImage);
-    }
-
-    private void setUpSpinWheelSpinButton(TextureAtlas atlas) {
-        final Image btnSpin = new Image(atlas.findRegion("spin_button"));
-        btnSpin.setOrigin(Align.center);
-        btnSpin.setPosition(Gdx.graphics.getWidth() / 2, Gdx.graphics.getHeight() / 2, Align.center);
-        stage.addActor(btnSpin);
-
-        btnSpin.addListener(new ClickListener() {
-            @Override
-            public void clicked(InputEvent event, float x, float y) {
-                btnSpin.addAction(sequence(scaleTo(1.25F, 1.25F, 0.10F), scaleTo(1F, 1F, 0.10F)));
-                spinWheel.spin(MathUtils.random(5F, 30F));
-
-                Gdx.app.debug(TAG, "Spinning.");
-            }
-        });
-    }
-
-    private void setUpSpinWheelBody(TextureAtlas atlas) {
-        spinWheel.getWheelBody().setUserData(wheelImage = new Image(atlas.findRegion("spin_wheel")));
-        updateCoordinates(spinWheel.getWheelBody(), wheelImage, 0, 0);
-        wheelImage.setOrigin(Align.center);
-        stage.addActor(wheelImage);
-    }
-
-    private void updateCoordinates(Body body, Image image, float incX, float incY) {
-        image.setPosition((body.getPosition().x * SpinWheel.PPM) + incX, (body.getPosition().y * SpinWheel.PPM) + incY, Align.center);
-        image.setRotation(body.getAngle() * MathUtils.radiansToDegrees);
-    }
-
-    private void setElementData() {
-        spinWheel.addElementData(Color.valueOf("e966ac"), getData(1, 2));
-        spinWheel.addElementData(Color.valueOf("b868ad"), getData(2, 3));
-        spinWheel.addElementData(Color.valueOf("8869ad"), getData(3, 4));
-        spinWheel.addElementData(Color.valueOf("3276b5"), getData(4, 5));
-        spinWheel.addElementData(Color.valueOf("33a7d8"), getData(5, 6));
-        spinWheel.addElementData(Color.valueOf("33b8a5"), getData(6, 7));
-        spinWheel.addElementData(Color.valueOf("a3fd39"), getData(7, 8));
-        spinWheel.addElementData(Color.valueOf("fff533"), getData(8, 9));
-        spinWheel.addElementData(Color.valueOf("fece3e"), getData(9, 10));
-        spinWheel.addElementData(Color.valueOf("f9a54b"), getData(10, 11));
-        spinWheel.addElementData(Color.valueOf("f04950"), getData(12, 1));
-    }
-
-    private IntArray getData(int peg_1, int peg_2) {
-        IntArray array = new IntArray(2);
-        array.addAll(peg_1, peg_2);
-        return array;
-    }
+        //
+//        final TextureAtlas atlas = new TextureAtlas("spin/spin_wheel_ui.atlas");
+//
+//        setUpSpinWheelBody(atlas);
+//
+//        setUpSpinWheelSpinButton(atlas);
+//
+//        setUpSpinWheelNeedleBody(atlas);
+//
+//        setElementData();
+//    }
+//
+//    private void setUpSpinWheelNeedleBody(TextureAtlas atlas) {
+//        spinWheel.getNeedleBody().setUserData(needleImage = new Image(new Sprite(atlas.findRegion("needle"))));
+//        updateCoordinates(spinWheel.getNeedleBody(), needleImage, 0, -25F);
+//        needleImage.setOrigin(spinWheel.getNeedleCenterX(needleImage.getWidth()), spinWheel.getNeedleCenterY(needleImage.getHeight()));
+//        stage.addActor(needleImage);
+//    }
+//
+//    private void setUpSpinWheelSpinButton(TextureAtlas atlas) {
+//        final Image btnSpin = new Image(atlas.findRegion("spin_button"));
+//        btnSpin.setOrigin(Align.center);
+//        btnSpin.setPosition(Gdx.graphics.getWidth() / 2, Gdx.graphics.getHeight() / 2, Align.center);
+//        stage.addActor(btnSpin);
+//
+//        btnSpin.addListener(new ClickListener() {
+//            @Override
+//            public void clicked(InputEvent event, float x, float y) {
+//                btnSpin.addAction(sequence(scaleTo(1.25F, 1.25F, 0.10F), scaleTo(1F, 1F, 0.10F)));
+//                spinWheel.spin(MathUtils.random(5F, 30F));
+//
+//                Gdx.app.debug(TAG, "Spinning.");
+//            }
+//        });
+//    }
+//
+//    private void setUpSpinWheelBody(TextureAtlas atlas) {
+//        spinWheel.getWheelBody().setUserData(wheelImage = new Image(atlas.findRegion("spin_wheel")));
+//        updateCoordinates(spinWheel.getWheelBody(), wheelImage, 0, 0);
+//        wheelImage.setOrigin(Align.center);
+//        stage.addActor(wheelImage);
+//    }
+//
+//    private void updateCoordinates(Body body, Image image, float incX, float incY) {
+//        image.setPosition((body.getPosition().x * SpinWheel.PPM) + incX, (body.getPosition().y * SpinWheel.PPM) + incY, Align.center);
+//        image.setRotation(body.getAngle() * MathUtils.radiansToDegrees);
+//    }
+//
+//    private void setElementData() {
+//        spinWheel.addElementData(Color.valueOf("e966ac"), getData(1, 2));
+//        spinWheel.addElementData(Color.valueOf("b868ad"), getData(2, 3));
+//        spinWheel.addElementData(Color.valueOf("8869ad"), getData(3, 4));
+//        spinWheel.addElementData(Color.valueOf("3276b5"), getData(4, 5));
+//        spinWheel.addElementData(Color.valueOf("33a7d8"), getData(5, 6));
+//        spinWheel.addElementData(Color.valueOf("33b8a5"), getData(6, 7));
+//        spinWheel.addElementData(Color.valueOf("a3fd39"), getData(7, 8));
+//        spinWheel.addElementData(Color.valueOf("fff533"), getData(8, 9));
+//        spinWheel.addElementData(Color.valueOf("fece3e"), getData(9, 10));
+//        spinWheel.addElementData(Color.valueOf("f9a54b"), getData(10, 11));
+//        spinWheel.addElementData(Color.valueOf("f04950"), getData(12, 1));
+//    }
+//
+//    private IntArray getData(int peg_1, int peg_2) {
+//        IntArray array = new IntArray(2);
+//        array.addAll(peg_1, peg_2);
+//        return array;
+//    }
 
     public void render() {
         final float delta = Math.min(1/30f, Gdx.graphics.getDeltaTime());
@@ -145,9 +136,9 @@ public class SpinWheelUsingSpinWheelForSlotPuzzle extends SPPrototype {
         update(delta);
 
         if (!spinWheel.spinningStopped()) {
-            updateCoordinates(spinWheel.getWheelBody(), wheelImage, 0, 0);
+            spinWheel.updateCoordinates(spinWheel.getWheelBody(), spinWheel.getWheelImage(), 0, 0);
 
-            updateCoordinates(spinWheel.getNeedleBody(), needleImage, 0, -25F);
+            spinWheel.updateCoordinates(spinWheel.getNeedleBody(), spinWheel.getNeedleImage(), 0, -25F);
         } else {
             System.out.println("lucky element is: " + spinWheel.getLuckyWinElement());
         }

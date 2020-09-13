@@ -17,6 +17,10 @@
 
 package com.ellzone.slotpuzzle2d.spin;
 
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.g2d.Sprite;
+import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.BodyDef;
@@ -31,9 +35,17 @@ import com.badlogic.gdx.physics.box2d.PolygonShape;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.physics.box2d.joints.DistanceJointDef;
 import com.badlogic.gdx.physics.box2d.joints.RevoluteJointDef;
+import com.badlogic.gdx.scenes.scene2d.InputEvent;
+import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.ui.Image;
+import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
+import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.Disposable;
 import com.badlogic.gdx.utils.IntArray;
 import com.badlogic.gdx.utils.ObjectMap;
+
+import static com.badlogic.gdx.scenes.scene2d.actions.Actions.scaleTo;
+import static com.badlogic.gdx.scenes.scene2d.actions.Actions.sequence;
 
 public class SpinWheelForSlotPuzzle {
     public static final float PPM = 100f;
@@ -59,6 +71,8 @@ public class SpinWheelForSlotPuzzle {
     private final int nPegs;              // number of pegs
     private float farNeedle;              // distance of needle from the wheel
     private boolean spinned = false;      // to ensure a spinning is one time only.
+    private Image needleImage;
+    private Image wheelImage;
 
     public SpinWheelForSlotPuzzle(
                      float diameter,
@@ -76,6 +90,146 @@ public class SpinWheelForSlotPuzzle {
 
         createWheel();
         createNeedle();
+    }
+
+    public void setUpSpinWheel(Stage stage) {
+        final TextureAtlas atlas = new TextureAtlas("spin/spin_wheel_ui.atlas");
+
+        setUpSpinWheelBody(atlas, stage);
+
+        setUpSpinWheelSpinButton(atlas, stage);
+
+        setUpSpinWheelNeedleBody(atlas, stage);
+
+        setElementData();
+    }
+
+    public Image getWheelImage() {
+        return wheelImage;
+    }
+
+    public Image getNeedleImage() {
+        return needleImage;
+    }
+
+    public void updateCoordinates(Body body, Image image, float incX, float incY) {
+        image.setPosition((body.getPosition().x * SpinWheel.PPM) + incX, (body.getPosition().y * SpinWheel.PPM) + incY, Align.center);
+        image.setRotation(body.getAngle() * MathUtils.radiansToDegrees);
+    }
+
+    /**
+     *
+     * @param omega spin impulse the angular in units of kg*m*m/s. The Maximum value is 30 to avoid needle to slip from joints.
+     */
+    public void spin(float omega) {
+        wheelCore.setAngularVelocity(MathUtils.clamp(omega, 0, 30));
+        spinned = true;
+    }
+
+    public boolean spinningStopped() {
+        return !wheelCore.isAwake();
+    }
+
+    public void setWorldContactListener(ContactListener listener) {
+        world.setContactListener(listener);
+    }
+
+    public void setWorld(World world) {
+        this.world = world;
+    }
+
+    public Body getWheelBody() {
+        return wheelCore;
+    }
+
+    public Body getNeedleBody() {
+        return needle;
+    }
+
+    /**
+     * @return center needle rotation value of X (NOT center X of the needle shape.) according given width.
+     */
+    public float getNeedleCenterX(float needleWidth) {
+        return needleWidth / 2;
+    }
+
+    public float getNeedleCenterY(float needleHeight) {
+        return 3 * needleHeight / 4;
+    }
+
+    /**
+     * @param elements contains all data with known their objects which have two pegs numbers for each object.
+     */
+    public void setElements(ObjectMap<IntArray, Object> elements) {
+        this.elements = elements;
+    }
+
+    /**
+     * @param object is between data (two numbers of pegs as known)
+     * @param data   two numbers of pegs.
+     */
+    public void addElementData(Object object, IntArray data) {
+        elements.put(data, object);
+    }
+
+    /**
+     * @return object between that two pegs.
+     */
+    public Object getLuckyWinElement() {
+        if (pegsSelectors.size > 0)
+            for (IntArray array : elements.keys())
+                if (array.contains(pegsSelectors.get(0)) && array.contains(pegsSelectors.get(1)))
+                    return elements.get(array);
+        return null;
+    }
+
+    private void setUpSpinWheelNeedleBody(TextureAtlas atlas, Stage stage) {
+        getNeedleBody().setUserData(needleImage = new Image(new Sprite(atlas.findRegion("needle"))));
+        updateCoordinates(getNeedleBody(), needleImage, 0, -25F);
+        needleImage.setOrigin(getNeedleCenterX(needleImage.getWidth()), getNeedleCenterY(needleImage.getHeight()));
+        stage.addActor(needleImage);
+    }
+
+    private void setUpSpinWheelSpinButton(TextureAtlas atlas, Stage stage) {
+        final Image btnSpin = new Image(atlas.findRegion("spin_button"));
+        btnSpin.setOrigin(Align.center);
+        btnSpin.setPosition(Gdx.graphics.getWidth() / 2, Gdx.graphics.getHeight() / 2, Align.center);
+        stage.addActor(btnSpin);
+
+        btnSpin.addListener(new ClickListener() {
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                btnSpin.addAction(sequence(scaleTo(1.25F, 1.25F, 0.10F), scaleTo(1F, 1F, 0.10F)));
+                spin(MathUtils.random(5F, 30F));
+            }
+        });
+    }
+
+    private void setUpSpinWheelBody(TextureAtlas atlas, Stage stage) {
+        getWheelBody().setUserData(wheelImage = new Image(atlas.findRegion("spin_wheel")));
+        updateCoordinates(getWheelBody(), wheelImage, 0, 0);
+        wheelImage.setOrigin(Align.center);
+        stage.addActor(wheelImage);
+    }
+
+    private void setElementData() {
+        addElementData(Color.valueOf("e966ac"), getData(2, 1));
+        addElementData(Color.valueOf("b868ad"), getData(3, 2));
+        addElementData(Color.valueOf("8869ad"), getData(4, 3));
+        addElementData(Color.valueOf("3276b5"), getData(5, 4));
+        addElementData(Color.valueOf("33a7d8"), getData(6, 5));
+        addElementData(Color.valueOf("33b8a5"), getData(7, 6));
+        addElementData(Color.valueOf("a3fd39"), getData(8, 7));
+        addElementData(Color.valueOf("fff533"), getData(9, 8));
+        addElementData(Color.valueOf("fece3e"), getData(10, 9));
+        addElementData(Color.valueOf("f9a54b"), getData(11,10));
+        addElementData(Color.valueOf("f04950"), getData(1, 12));
+    }
+
+    private IntArray getData(int peg_1, int peg_2) {
+        IntArray array = new IntArray(2);
+        array.addAll(peg_1, peg_2);
+        return array;
     }
 
     private void createWheel() {
@@ -356,76 +510,11 @@ public class SpinWheelForSlotPuzzle {
         world.createJoint(revJointDef);
     }
 
-    /**
-     *
-     * @param omega spin impulse the angular in units of kg*m*m/s. The Maximum value is 30 to avoid needle to slip from joints.
-     */
-    public void spin(float omega) {
-        wheelCore.setAngularVelocity(MathUtils.clamp(omega, 0, 30));
-        spinned = true;
-    }
-
-    public boolean spinningStopped() {
-        return !wheelCore.isAwake();
-    }
-
-    public void setWorldContactListener(ContactListener listener) {
-        world.setContactListener(listener);
-    }
-
-    public void setWorld(World world) {
-        this.world = world;
-    }
-
-    public Body getWheelBody() {
-        return wheelCore;
-    }
-
-    public Body getNeedleBody() {
-        return needle;
-    }
-
-    /**
-     * @return center needle rotation value of X (NOT center X of the needle shape.) according given width.
-     */
-    public float getNeedleCenterX(float needleWidth) {
-        return needleWidth / 2;
-    }
-
-    public float getNeedleCenterY(float needleHeight) {
-        return 3 * needleHeight / 4;
-    }
 
     // contains two pegs (as a number which saved in UserData) with the object between them.
     private final IntArray pegsSelectors = new IntArray(2);
     // to connect between data (two pegs numbers) and object which this lucky element.
     private ObjectMap<IntArray, Object> elements = new ObjectMap<IntArray, Object>();
-
-    /**
-     * @param elements contains all data with known their objects which have two pegs numbers for each object.
-     */
-    public void setElements(ObjectMap<IntArray, Object> elements) {
-        this.elements = elements;
-    }
-
-    /**
-     * @param object is between data (two numbers of pegs as known)
-     * @param data   two numbers of pegs.
-     */
-    public void addElementData(Object object, IntArray data) {
-        elements.put(data, object);
-    }
-
-    /**
-     * @return object between that two pegs.
-     */
-    public Object getLuckyWinElement() {
-        if (pegsSelectors.size > 0)
-            for (IntArray array : elements.keys())
-                if (array.contains(pegsSelectors.get(0)) && array.contains(pegsSelectors.get(1)))
-                    return elements.get(array);
-        return null;
-    }
 
     private final class SpinWheelWorldContact implements ContactListener {
         @Override
