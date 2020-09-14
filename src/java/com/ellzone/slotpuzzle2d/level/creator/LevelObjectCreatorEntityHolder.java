@@ -23,6 +23,8 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.utils.Array;
+import com.ellzone.slotpuzzle2d.spin.SpinWheel;
+import com.ellzone.slotpuzzle2d.spin.SpinWheelForSlotPuzzle;
 import com.ellzone.slotpuzzle2d.sprites.AnimatedReel;
 import com.ellzone.slotpuzzle2d.sprites.HoldLightButton;
 import com.ellzone.slotpuzzle2d.sprites.ReelHelper;
@@ -45,12 +47,14 @@ public class LevelObjectCreatorEntityHolder extends LevelObjectCreator {
     private LevelPointLightCallback levelPointLightCallback;
     private LevelConeLightCallback levelConeLightCallback;
     private LevelReelHelperCallback levelReelHelperCallback;
+    private LevelSpinWheelCallback levelSpinWheelCallback;
     private Array<ReelTile> reelTiles = new Array<>();
     private Array<HoldLightButton> lightButtons = new Array<>();
     private Array<AnimatedReel> reels = new Array<>();
     private Array<PointLight> pointLights = new Array<>();
     private Array<ConeLight> coneLights = new Array<>();
     private Array<SlotHandleSprite> handles = new Array<>();
+    private Array<SpinWheelForSlotPuzzle> spinWheels = new Array<>();
     private ReelHelper reelHelper;
 
     public LevelObjectCreatorEntityHolder(LevelCreatorInjectionInterface injection, World world, RayHandler rayHandler) {
@@ -129,6 +133,8 @@ public class LevelObjectCreatorEntityHolder extends LevelObjectCreator {
 
     public void addTo(ReelHelper reelHelper) { this.reelHelper = reelHelper; }
 
+    public void addTo(SpinWheelForSlotPuzzle spinWheel) { spinWheels.add(spinWheel); }
+
     public void addHoldLightButtonCallback(LevelHoldLightButtonCallback callback) {
         this.levelHoldLightButtonCallback = callback;
     }
@@ -153,6 +159,10 @@ public class LevelObjectCreatorEntityHolder extends LevelObjectCreator {
         this.levelReelHelperCallback = callback;
     }
 
+    public void addSpinWheelCallback(LevelSpinWheelCallback callback) {
+        this.levelSpinWheelCallback = callback;
+    }
+
     public void delegateToCallback(HoldLightButton holdLightButton) {
         if (levelHoldLightButtonCallback != null)
             levelHoldLightButtonCallback.onEvent(holdLightButton);
@@ -174,12 +184,12 @@ public class LevelObjectCreatorEntityHolder extends LevelObjectCreator {
     }
 
     public void delegateToCallback(AnimatedReel animatedReel) {
-        if (levelPointLightCallback != null)
+        if (levelAnimatedReelCallback != null)
             levelAnimatedReelCallback.onEvent(animatedReel);
     }
 
     public void delegateToCallback(SlotHandleSprite slotHandleSprite) {
-        if (levelPointLightCallback != null)
+        if (levelSlotHandleSpriteCallback != null)
             levelSlotHandleSpriteCallback.onEvent(slotHandleSprite);
     }
 
@@ -198,6 +208,11 @@ public class LevelObjectCreatorEntityHolder extends LevelObjectCreator {
             levelReelHelperCallback.onEvent(reelHelper);
     }
 
+    public void delegateToCallback(SpinWheelForSlotPuzzle spinWheel) {
+        if (levelSpinWheelCallback != null)
+            levelSpinWheelCallback.onEvent(spinWheel);
+    }
+
     public Array<HoldLightButton> getHoldLightButtons() {
         return lightButtons;
     }
@@ -208,4 +223,5 @@ public class LevelObjectCreatorEntityHolder extends LevelObjectCreator {
 
     public Array<SlotHandleSprite> getHandles() { return handles; }
 
+    public Array<SpinWheelForSlotPuzzle> getSpinWheels() { return spinWheels; }
 }

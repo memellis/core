@@ -41,6 +41,7 @@ import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
 import com.badlogic.gdx.maps.tiled.tiles.StaticTiledMapTile;
 import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
@@ -48,6 +49,8 @@ import com.ellzone.slotpuzzle2d.SlotPuzzle;
 import com.ellzone.slotpuzzle2d.SlotPuzzleConstants;
 import com.ellzone.slotpuzzle2d.effects.SpriteAccessor;
 import com.ellzone.slotpuzzle2d.level.LevelDoor;
+import com.ellzone.slotpuzzle2d.level.creator.LevelCreatorInjectionInterface;
+import com.ellzone.slotpuzzle2d.level.creator.LevelObjectCreatorEntityHolder;
 import com.ellzone.slotpuzzle2d.level.map.MapLevel1;
 import com.ellzone.slotpuzzle2d.level.map.MapLevel2;
 import com.ellzone.slotpuzzle2d.level.map.MapLevel3;
@@ -55,15 +58,19 @@ import com.ellzone.slotpuzzle2d.level.map.MapLevel4;
 import com.ellzone.slotpuzzle2d.level.map.MapLevel5;
 import com.ellzone.slotpuzzle2d.level.map.MapLevel6;
 import com.ellzone.slotpuzzle2d.level.map.MapLevel7;
+import com.ellzone.slotpuzzle2d.level.map.MapLevel8;
+import com.ellzone.slotpuzzle2d.level.map.MapLevelNameComparator;
 import com.ellzone.slotpuzzle2d.pixmap.PixmapDrawAction;
 import com.ellzone.slotpuzzle2d.scene.Hud;
 import com.ellzone.slotpuzzle2d.scene.MapTile;
+import com.ellzone.slotpuzzle2d.sprites.ReelSprites;
 import com.ellzone.slotpuzzle2d.sprites.level.LevelEntrance;
 import com.ellzone.slotpuzzle2d.sprites.sign.ScrollSign;
 import com.ellzone.slotpuzzle2d.tweenengine.BaseTween;
 import com.ellzone.slotpuzzle2d.tweenengine.SlotPuzzleTween;
 import com.ellzone.slotpuzzle2d.tweenengine.TweenCallback;
 import com.ellzone.slotpuzzle2d.tweenengine.TweenManager;
+import com.ellzone.slotpuzzle2d.utils.AssetsAnnotation;
 import com.ellzone.slotpuzzle2d.utils.FileUtils;
 import com.ellzone.slotpuzzle2d.utils.PixmapProcessors;
 
@@ -78,7 +85,7 @@ import static com.ellzone.slotpuzzle2d.level.creator.LevelCreator.HIDDEN_PATTERN
 import static com.ellzone.slotpuzzle2d.level.creator.LevelCreator.MINI_SLOT_MACHINE_LEVEL_TYPE;
 import static com.ellzone.slotpuzzle2d.level.creator.LevelCreator.PLAYING_CARD_LEVEL_TYPE;
 
-public class WorldScreen implements Screen {
+public class WorldScreen implements Screen, LevelCreatorInjectionInterface {
 	
     public static final String LOG_TAG = "SlotPuzzle_WorldScreen";
     public static final String LIBERATION_MONO_REGULAR_FONT_NAME = "LiberationMono-Regular.ttf";
@@ -98,6 +105,7 @@ public class WorldScreen implements Screen {
     public static final int ORTHO_VIEWPORT_HEIGHT = 10;
     public static final String LEVEL_DELIMETER = "-";
 	public static final String WORLD_LEVEL = "World Level";
+	private static final String SLOT_MACHINE_LAYER = "Slot Machine Components";
 
 	private SlotPuzzle game;
 	private Viewport viewport;
@@ -127,8 +135,9 @@ public class WorldScreen implements Screen {
     private boolean show = false;
 	private Hud hud	;
 	private int worldScreenScore = 0;
+    private World world;
 
-	public WorldScreen(SlotPuzzle game) {
+    public WorldScreen(SlotPuzzle game) {
 		this.game = game;
 		this.game.setWorldScreen(this);
 		createWorldScreen();
@@ -137,7 +146,8 @@ public class WorldScreen implements Screen {
 	private void createWorldScreen() {
 		scrollSigns = new Array<ScrollSign>();
 		levelEntrances = new Array<LevelEntrance>();
-		getAssets(game.annotationAssetManager);
+        world = new World(new Vector2(0, -10), true);
+        getAssets(game.annotationAssetManager);
 		loadWorld();
 		initialiseCamera();
 		initialiseUniversalTweenEngine();
@@ -187,7 +197,7 @@ public class WorldScreen implements Screen {
 		tweenManager = new TweenManager();
 	}
 	
-        private void initialiseFonts() {
+	private void initialiseFonts() {
 		SmartFontGenerator fontGen = new SmartFontGenerator();
 		FileHandle internalFontFile = Gdx.files.internal(LIBERATION_MONO_REGULAR_FONT_NAME);
 		FileHandle generatedFontDir = Gdx.files.local(GENERATED_FONTS_DIR);
@@ -304,8 +314,13 @@ public class WorldScreen implements Screen {
 
 	private void loadWorld() {
 		getMapProperties();
+		loadDoors();
+		loadEntities();
+	}
+
+	private void loadDoors() {
 		levelDoors = new Array();
-        levelDoors.setSize(worldMap.getLayers().get(WORLD_MAP_LEVEL_DOORS).getObjects().getByType(RectangleMapObject.class).size);
+		levelDoors.setSize(worldMap.getLayers().get(WORLD_MAP_LEVEL_DOORS).getObjects().getByType(RectangleMapObject.class).size);
 		for (MapObject mapObject : worldMap.getLayers().get(WORLD_MAP_LEVEL_DOORS).getObjects().getByType(RectangleMapObject.class)) {
 			LevelDoor levelDoor = new LevelDoor();
 			levelDoor.setLevelName(((RectangleMapObject) mapObject).getName());
@@ -318,7 +333,26 @@ public class WorldScreen implements Screen {
 		}
 	}
 
-    private int getLevelIndex(LevelDoor levelDoor) {
+	public void loadEntities() {
+		LevelObjectCreatorEntityHolder levelObjectCreator = new LevelObjectCreatorEntityHolder(this, world, null);
+		Array<RectangleMapObject> extractedLevelRectangleMapObjects = extractLevelAssets(worldMap);
+		levelObjectCreator.createLevel(extractedLevelRectangleMapObjects);
+	}
+
+	private Array<RectangleMapObject> extractLevelAssets(TiledMap level) {
+		Array<RectangleMapObject> levelRectangleMapObjects = getRectangleMapObjectsFromLevel(level);
+		MapLevelNameComparator mapLevelNameComparator = new MapLevelNameComparator();
+		levelRectangleMapObjects.sort(mapLevelNameComparator);
+		return levelRectangleMapObjects;
+	}
+
+	private Array<RectangleMapObject> getRectangleMapObjectsFromLevel(TiledMap level) {
+		return level.getLayers().get(SLOT_MACHINE_LAYER).
+				getObjects().getByType(RectangleMapObject.class);
+	}
+
+
+	private int getLevelIndex(LevelDoor levelDoor) {
         String[] levelNumber = levelDoor.getLevelName().split(LEVEL_DELIMETER);
         return Integer.parseInt(levelNumber[1]) - 1;
     }
@@ -340,6 +374,7 @@ public class WorldScreen implements Screen {
 		mapTiles.add(new MapTile(20, 20, 200, 200, SlotPuzzleConstants.VIRTUAL_WIDTH, SlotPuzzleConstants.VIRTUAL_HEIGHT, new MapLevel5(), tilesAtlas, this.camera, font, tweenManager, new Sprite(levelEntrances.get(4).getLevelEntrance())));
 		mapTiles.add(new MapTile(20, 20, 200, 200, SlotPuzzleConstants.VIRTUAL_WIDTH, SlotPuzzleConstants.VIRTUAL_HEIGHT, new MapLevel6(), tilesAtlas, this.camera, font, tweenManager, new Sprite(levelEntrances.get(5).getLevelEntrance())));
 		mapTiles.add(new MapTile(20, 20, 200, 200, SlotPuzzleConstants.VIRTUAL_WIDTH, SlotPuzzleConstants.VIRTUAL_HEIGHT, new MapLevel7(), tilesAtlas, this.camera, font, tweenManager, new Sprite(levelEntrances.get(6).getLevelEntrance())));
+		mapTiles.add(new MapTile(20, 20, 200, 200, SlotPuzzleConstants.VIRTUAL_WIDTH, SlotPuzzleConstants.VIRTUAL_HEIGHT, new MapLevel8(), tilesAtlas, this.camera, font, tweenManager, new Sprite(levelEntrances.get(7).getLevelEntrance())));
 	}
 
 	private void createHud() {
@@ -481,6 +516,31 @@ public class WorldScreen implements Screen {
 	public void dispose() {
         Gdx.app.log(LOG_TAG, "dispose() called.");
     }
+
+	@Override
+	public AnnotationAssetManager getAnnotationAssetManager() {
+		return null;
+	}
+
+	@Override
+	public ReelSprites getReelSprites() {
+		return null;
+	}
+
+	@Override
+	public Texture getSlotReelScrollTexture() {
+		return null;
+	}
+
+	@Override
+	public TweenManager getTweenManager() {
+		return null;
+	}
+
+	@Override
+	public TextureAtlas getSlothandleAtlas() {
+		return game.annotationAssetManager.get(AssetsAnnotation.SLOT_HANDLE);
+	}
 
 	public class MapGestureListener implements GestureListener {
 

@@ -95,8 +95,10 @@ import com.ellzone.slotpuzzle2d.prototypes.scrollingsign.ScrollingSign;
 import com.ellzone.slotpuzzle2d.prototypes.scrollingsign.ScrollingSignDynamicSignChange;
 import com.ellzone.slotpuzzle2d.prototypes.speechbubble.SpeechBubble;
 import com.ellzone.slotpuzzle2d.prototypes.spin.SpinReelMetaSpinScreen;
+import com.ellzone.slotpuzzle2d.prototypes.spin.SpinReelTileUsingBox2d;
 import com.ellzone.slotpuzzle2d.prototypes.spin.SpinScreen;
 import com.ellzone.slotpuzzle2d.prototypes.spin.SpinWheelUsingSpinWheelForSlotPuzzle;
+import com.ellzone.slotpuzzle2d.prototypes.spin.SpinWheelWithoutStage;
 import com.ellzone.slotpuzzle2d.prototypes.starfield.Starfield;
 import com.ellzone.slotpuzzle2d.prototypes.starfield.StarfieldUsingStarfieldObject;
 import com.ellzone.slotpuzzle2d.prototypes.tween.DelayFlash;
@@ -203,6 +205,7 @@ public class SPPrototypes {
         WayPoints2.class,
         RenderReelsUsingArtemis.class,
 	    SpeechBubble.class,
+		SpinReelTileUsingBox2d.class,
 	    SpinningSlots.class,
 		SpinningSlotsRotateHandleSprite.class,
 		SpinningSlotsRotateHandleSpriteUsingTweenEngine.class,
@@ -213,6 +216,7 @@ public class SPPrototypes {
         SpinningSlotsWithMatchesWinFlashes.class,
         SpinningSlotsWithMatchesWinFlashesLoadedLevel.class,
 		SpinScreen.class,
+		SpinWheelWithoutStage.class,
 		SpinWheelUsingSpinWheelForSlotPuzzle.class,
 		SpinReelMetaSpinScreen.class,
 		SlotPuzzleGame.class,
