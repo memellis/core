@@ -91,6 +91,18 @@ public class SpinWheelForSlotPuzzle {
         createNeedle();
     }
 
+    public void setUpSpinWheel() {
+        final TextureAtlas atlas = new TextureAtlas("spin/spin_wheel_ui.atlas");
+
+        setUpSpinWheelBody(atlas);
+
+        setUpSpinWheelSpinButton(atlas);
+
+        setUpSpinWheelNeedleBody(atlas);
+
+        setElementData();
+    }
+
     public void setUpSpinWheel(Stage stage) {
         final TextureAtlas atlas = new TextureAtlas("spin/spin_wheel_ui.atlas");
 
@@ -112,7 +124,11 @@ public class SpinWheelForSlotPuzzle {
     }
 
     public void updateCoordinates(Body body, Image image, float incX, float incY) {
-        image.setPosition((body.getPosition().x * SpinWheel.PPM) + incX, (body.getPosition().y * SpinWheel.PPM) + incY, Align.center);
+//        image.setPosition((body.getPosition().x * SpinWheel.PPM) + incX, (body.getPosition().y * SpinWheel.PPM) + incY, Align.center);
+        image.setPosition((
+                body.getPosition().x) + incX / SpinWheel.PPM,
+                (body.getPosition().y) + incY / SpinWheel.PPM,
+                Align.center);
         image.setRotation(body.getAngle() * MathUtils.radiansToDegrees);
     }
 
@@ -182,19 +198,23 @@ public class SpinWheelForSlotPuzzle {
         return null;
     }
 
-    private void setUpSpinWheelNeedleBody(TextureAtlas atlas, Stage stage) {
+    private void setUpSpinWheelNeedleBody(TextureAtlas atlas) {
         getNeedleBody().setUserData(needleImage = new Image(new Sprite(atlas.findRegion("needle"))));
+        needleImage.setWidth((needleImage.getWidth() * (diameter / 7.5f))  / SpinWheel.PPM);
+        needleImage.setHeight((needleImage.getHeight() * (diameter / 7.5f)) / SpinWheel.PPM);
         updateCoordinates(getNeedleBody(), needleImage, 0, -25F);
         needleImage.setOrigin(getNeedleCenterX(needleImage.getWidth()), getNeedleCenterY(needleImage.getHeight()));
+    }
+
+    private void setUpSpinWheelNeedleBody(TextureAtlas atlas, Stage stage) {
+        setUpSpinWheelNeedleBody(atlas);
         stage.addActor(needleImage);
     }
 
-    private void setUpSpinWheelSpinButton(TextureAtlas atlas, Stage stage) {
+    private Image setUpSpinWheelSpinButton(TextureAtlas atlas) {
         final Image btnSpin = new Image(atlas.findRegion("spin_button"));
         btnSpin.setOrigin(Align.center);
         btnSpin.setPosition(Gdx.graphics.getWidth() / 2, Gdx.graphics.getHeight() / 2, Align.center);
-        stage.addActor(btnSpin);
-
         btnSpin.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
@@ -202,13 +222,26 @@ public class SpinWheelForSlotPuzzle {
                 spin(MathUtils.random(5F, 30F));
             }
         });
+        return btnSpin;
+    }
+
+    private void setUpSpinWheelSpinButton(TextureAtlas atlas, Stage stage) {
+        stage.addActor(setUpSpinWheelSpinButton(atlas));
     }
 
     private void setUpSpinWheelBody(TextureAtlas atlas, Stage stage) {
+        setUpSpinWheelBody(atlas);
+        stage.addActor(wheelImage);
+    }
+
+    private void setUpSpinWheelBody(TextureAtlas atlas) {
         getWheelBody().setUserData(wheelImage = new Image(atlas.findRegion("spin_wheel")));
+        System.out.println(wheelImage.getWidth());
+        System.out.println(wheelImage.getHeight());
+        wheelImage.setWidth(diameter);
+        wheelImage.setHeight(diameter);
         updateCoordinates(getWheelBody(), wheelImage, 0, 0);
         wheelImage.setOrigin(Align.center);
-        stage.addActor(wheelImage);
     }
 
     private void setElementData() {

@@ -17,6 +17,7 @@
 package com.ellzone.slotpuzzle2d.screens;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input;
 import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.files.FileHandle;
@@ -27,6 +28,7 @@ import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.Sprite;
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.input.GestureDetector;
@@ -39,9 +41,14 @@ import com.badlogic.gdx.maps.tiled.TiledMapTile;
 import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
 import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
 import com.badlogic.gdx.maps.tiled.tiles.StaticTiledMapTile;
+import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Matrix4;
+import com.badlogic.gdx.math.Vector;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.World;
+import com.badlogic.gdx.scenes.scene2d.ui.Image;
+import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
@@ -63,6 +70,8 @@ import com.ellzone.slotpuzzle2d.level.map.MapLevelNameComparator;
 import com.ellzone.slotpuzzle2d.pixmap.PixmapDrawAction;
 import com.ellzone.slotpuzzle2d.scene.Hud;
 import com.ellzone.slotpuzzle2d.scene.MapTile;
+import com.ellzone.slotpuzzle2d.spin.SpinWheel;
+import com.ellzone.slotpuzzle2d.spin.SpinWheelForSlotPuzzle;
 import com.ellzone.slotpuzzle2d.sprites.ReelSprites;
 import com.ellzone.slotpuzzle2d.sprites.level.LevelEntrance;
 import com.ellzone.slotpuzzle2d.sprites.sign.ScrollSign;
@@ -86,7 +95,7 @@ import static com.ellzone.slotpuzzle2d.level.creator.LevelCreator.MINI_SLOT_MACH
 import static com.ellzone.slotpuzzle2d.level.creator.LevelCreator.PLAYING_CARD_LEVEL_TYPE;
 
 public class WorldScreen implements Screen, LevelCreatorInjectionInterface {
-	
+
     public static final String LOG_TAG = "SlotPuzzle_WorldScreen";
     public static final String LIBERATION_MONO_REGULAR_FONT_NAME = "LiberationMono-Regular.ttf";
     public static final String GENERATED_FONTS_DIR = "generated-fonts/";
@@ -136,6 +145,8 @@ public class WorldScreen implements Screen, LevelCreatorInjectionInterface {
 	private Hud hud	;
 	private int worldScreenScore = 0;
     private World world;
+    private LevelObjectCreatorEntityHolder levelObjectCreator;
+    private Array<SpinWheelForSlotPuzzle> spinWheels;
 
     public WorldScreen(SlotPuzzle game) {
 		this.game = game;
@@ -148,11 +159,11 @@ public class WorldScreen implements Screen, LevelCreatorInjectionInterface {
 		levelEntrances = new Array<LevelEntrance>();
         world = new World(new Vector2(0, -10), true);
         getAssets(game.annotationAssetManager);
-		loadWorld();
 		initialiseCamera();
 		initialiseUniversalTweenEngine();
 		initialiseLibGdx();
 		initialiseFonts();
+		loadWorld();
 		createLevelEntrances();
 		initialiseMap();
 		createPopUps();
@@ -196,7 +207,7 @@ public class WorldScreen implements Screen, LevelCreatorInjectionInterface {
 		SlotPuzzleTween.registerAccessor(Sprite.class, new SpriteAccessor());
 		tweenManager = new TweenManager();
 	}
-	
+
 	private void initialiseFonts() {
 		SmartFontGenerator fontGen = new SmartFontGenerator();
 		FileHandle internalFontFile = Gdx.files.internal(LIBERATION_MONO_REGULAR_FONT_NAME);
@@ -316,9 +327,10 @@ public class WorldScreen implements Screen, LevelCreatorInjectionInterface {
 		getMapProperties();
 		loadDoors();
 		loadEntities();
+		setUpEntities();
 	}
 
-	private void loadDoors() {
+    private void loadDoors() {
 		levelDoors = new Array();
 		levelDoors.setSize(worldMap.getLayers().get(WORLD_MAP_LEVEL_DOORS).getObjects().getByType(RectangleMapObject.class).size);
 		for (MapObject mapObject : worldMap.getLayers().get(WORLD_MAP_LEVEL_DOORS).getObjects().getByType(RectangleMapObject.class)) {
@@ -334,9 +346,10 @@ public class WorldScreen implements Screen, LevelCreatorInjectionInterface {
 	}
 
 	public void loadEntities() {
-		LevelObjectCreatorEntityHolder levelObjectCreator = new LevelObjectCreatorEntityHolder(this, world, null);
+        levelObjectCreator = new LevelObjectCreatorEntityHolder(this, world, null);
 		Array<RectangleMapObject> extractedLevelRectangleMapObjects = extractLevelAssets(worldMap);
 		levelObjectCreator.createLevel(extractedLevelRectangleMapObjects);
+		spinWheels = levelObjectCreator.getSpinWheels();
 	}
 
 	private Array<RectangleMapObject> extractLevelAssets(TiledMap level) {
@@ -365,7 +378,30 @@ public class WorldScreen implements Screen, LevelCreatorInjectionInterface {
 		tilePixelHeight = worldProps.get("tileheight", Integer.class);
 	}
 
-	private void createPopUps() {
+    private void setUpEntities() {
+        setUpSpinWheels();
+    }
+
+    private void setUpSpinWheels() {
+        for (SpinWheelForSlotPuzzle spinWheel : spinWheels)
+            setUpSpinWheel(spinWheel);
+    }
+
+    private void setUpSpinWheel(SpinWheelForSlotPuzzle spinWheel) {
+        spinWheel.setUpSpinWheel();
+        spinWheel.getWheelBody().setTransform(
+        		convertTileMapToWorldPostion(
+        				spinWheel.getWheelBody().getPosition()),
+				0);
+	}
+
+	private Vector2 convertTileMapToWorldPostion(Vector2 mapPostion) {
+    	return new Vector2(
+    			mapPostion.x / 40,
+				(160 - mapPostion.y) * 4);
+	}
+
+    private void createPopUps() {
 		mapTiles = new Array<MapTile>();
 		mapTiles.add(new MapTile(20, 20, 200, 200, SlotPuzzleConstants.VIRTUAL_WIDTH, SlotPuzzleConstants.VIRTUAL_HEIGHT, new MapLevel1(), tilesAtlas, this.camera, font, tweenManager, new Sprite(levelEntrances.get(0).getLevelEntrance())));
 		mapTiles.add(new MapTile(20, 20, 200, 200, SlotPuzzleConstants.VIRTUAL_WIDTH, SlotPuzzleConstants.VIRTUAL_HEIGHT, new MapLevel2(), tilesAtlas, this.camera, font, tweenManager, new Sprite(levelEntrances.get(1).getLevelEntrance())));
@@ -458,7 +494,42 @@ public class WorldScreen implements Screen, LevelCreatorInjectionInterface {
 
 	public void update(float delta) {
 		tweenManager.update(delta);
+		updateWorld(delta);
 		updateDynamicDoors(delta);
+		updateEntities(delta);
+		if (Gdx.input.isKeyPressed(Input.Keys.S))
+			for (SpinWheelForSlotPuzzle spinWheel : spinWheels)
+				spinWheel.spin(MathUtils.random(5F, 30F));
+	}
+
+	public void updateWorld(float delta) {
+			world.step(1 / 60f, 8, 2);
+	}
+
+	public void updateEntities(float delta) {
+		updateSpinWheels();
+	}
+
+	private void updateSpinWheels() {
+		for (SpinWheelForSlotPuzzle spinWheel : spinWheels)
+			updateSpinWheel(spinWheel);
+	}
+
+	private void updateSpinWheel(SpinWheelForSlotPuzzle spinWheel) {
+		if (!spinWheel.spinningStopped()) {
+			updateCoordinates(spinWheel.getWheelBody(), spinWheel.getWheelImage(), 0, 0);
+			updateCoordinates(spinWheel.getNeedleBody(), spinWheel.getNeedleImage(), 0, -25F);
+		} else {
+			System.out.println("lucky element is: " + spinWheel.getLuckyWinElement());
+		}
+	}
+
+	private void updateCoordinates(Body body, Image image, float incX, float incY) {
+		image.setPosition(
+				body.getPosition().x + incX / SpinWheel.PPM,
+				body.getPosition().y + incY / SpinWheel.PPM,
+				Align.center);
+		image.setRotation(body.getAngle() * MathUtils.radiansToDegrees);
 	}
 
 	@Override
@@ -469,17 +540,42 @@ public class WorldScreen implements Screen, LevelCreatorInjectionInterface {
                 Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
                 update(delta);
                 mapGestureListener.update();
-                renderer.render();
-                renderer.setView(camera);
-                camera.update();
-                game.batch.begin();
-                for (MapTile mapTile : mapTiles)
-                    mapTile.draw(game.batch);
-                font.draw(game.batch, message, 80, 100);
-                game.batch.end();
-				renderHud();
-            }
+				renderWorld();
+			}
         }
+	}
+
+	private void renderWorld() {
+		renderer.render();
+		renderer.setView(camera);
+		camera.update();
+		game.batch.begin();
+		renderMapTiles();
+		font.draw(game.batch, message, 80, 100);
+		game.batch.end();
+		renderer.getBatch().begin();
+		renderEntities((SpriteBatch) renderer.getBatch());
+		renderer.getBatch().end();
+		renderHud();
+	}
+
+	private void renderEntities(SpriteBatch batch) {
+		renderSpinWheels(batch);
+	}
+
+	private void renderSpinWheels(SpriteBatch batch) {
+		for (SpinWheelForSlotPuzzle spinWheel : spinWheels)
+			renderSpinWheel(spinWheel, batch);
+	}
+
+	private void renderSpinWheel(SpinWheelForSlotPuzzle spinWheel, SpriteBatch batch) {
+		spinWheel.getWheelImage().draw(batch, 1.0f);
+		spinWheel.getNeedleImage().draw(batch, 1.0f);
+	}
+
+	private void renderMapTiles() {
+		for (MapTile mapTile : mapTiles)
+			mapTile.draw(game.batch);
 	}
 
 	private void renderHud() {
@@ -658,19 +754,19 @@ public class WorldScreen implements Screen, LevelCreatorInjectionInterface {
 				camera.position.y = mapHeight;
 		}
 
-		private float screenXToWorldX(float x) {
+		public float screenXToWorldX(float x) {
 			return ((camera.position.x - aspectRatio * ORTHO_VIEWPORT_WIDTH) * tilePixelWidth) + ((x / screenOverCWWRatio) * (float)SlotPuzzleConstants.VIRTUAL_WIDTH / Gdx.graphics.getWidth());
 		}
 
-		private float screenYToWorldY(float y) {
+		public float screenYToWorldY(float y) {
             return ((camera.position.y - ORTHO_VIEWPORT_HEIGHT) * tilePixelHeight) + (( Gdx.graphics.getHeight() - y) / screenOverCWHRatio) * (float) SlotPuzzleConstants.VIRTUAL_HEIGHT / Gdx.graphics.getHeight();
 		}
 
-		private float worldXToScreenX(float wx) {
+		public float worldXToScreenX(float wx) {
 			return (wx  - ((camera.position.x - aspectRatio * ORTHO_VIEWPORT_WIDTH) * tilePixelWidth)) * screenOverCWWRatio;
 		}
 
-		private float worldYToScreenY(float wy) {
+		public float worldYToScreenY(float wy) {
 			return (wy - ((camera.position.y - ORTHO_VIEWPORT_HEIGHT) * tilePixelHeight)) * screenOverCWHRatio;
 		}
 	}

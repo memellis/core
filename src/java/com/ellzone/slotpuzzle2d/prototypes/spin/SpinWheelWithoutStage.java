@@ -113,7 +113,6 @@ public class SpinWheelWithoutStage extends SPPrototype {
         spinWheel.getWheelBody().setUserData(wheelImage = new Image(atlas.findRegion("spin_wheel")));
         updateCoordinates(spinWheel.getWheelBody(), wheelImage, 0, 0);
         wheelImage.setOrigin(Align.center);
-        stage.addActor(wheelImage);
     }
 
     private void updateCoordinates(Body body, Image image, float incX, float incY) {
