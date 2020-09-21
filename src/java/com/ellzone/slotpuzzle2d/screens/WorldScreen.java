@@ -43,7 +43,6 @@ import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
 import com.badlogic.gdx.maps.tiled.tiles.StaticTiledMapTile;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Matrix4;
-import com.badlogic.gdx.math.Vector;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.World;
@@ -71,7 +70,7 @@ import com.ellzone.slotpuzzle2d.pixmap.PixmapDrawAction;
 import com.ellzone.slotpuzzle2d.scene.Hud;
 import com.ellzone.slotpuzzle2d.scene.MapTile;
 import com.ellzone.slotpuzzle2d.spin.SpinWheel;
-import com.ellzone.slotpuzzle2d.spin.SpinWheelForSlotPuzzle;
+import com.ellzone.slotpuzzle2d.spin.SpinWheelSlotPuzzleTileMap;
 import com.ellzone.slotpuzzle2d.sprites.ReelSprites;
 import com.ellzone.slotpuzzle2d.sprites.level.LevelEntrance;
 import com.ellzone.slotpuzzle2d.sprites.sign.ScrollSign;
@@ -80,14 +79,11 @@ import com.ellzone.slotpuzzle2d.tweenengine.SlotPuzzleTween;
 import com.ellzone.slotpuzzle2d.tweenengine.TweenCallback;
 import com.ellzone.slotpuzzle2d.tweenengine.TweenManager;
 import com.ellzone.slotpuzzle2d.utils.AssetsAnnotation;
-import com.ellzone.slotpuzzle2d.utils.FileUtils;
 import com.ellzone.slotpuzzle2d.utils.PixmapProcessors;
 
 import net.dermetfan.gdx.assets.AnnotationAssetManager;
 
 import org.jrenner.smartfont.SmartFontGenerator;
-
-import java.io.IOException;
 
 import static com.ellzone.slotpuzzle2d.level.creator.LevelCreator.FALLING_REELS_LEVEL_TYPE;
 import static com.ellzone.slotpuzzle2d.level.creator.LevelCreator.HIDDEN_PATTERN_LEVEL_TYPE;
@@ -146,7 +142,7 @@ public class WorldScreen implements Screen, LevelCreatorInjectionInterface {
 	private int worldScreenScore = 0;
     private World world;
     private LevelObjectCreatorEntityHolder levelObjectCreator;
-    private Array<SpinWheelForSlotPuzzle> spinWheels;
+    private Array<SpinWheelSlotPuzzleTileMap> spinWheels;
 
     public WorldScreen(SlotPuzzle game) {
 		this.game = game;
@@ -215,11 +211,11 @@ public class WorldScreen implements Screen, LevelCreatorInjectionInterface {
 		generatedFontDir.mkdirs();
 
 		FileHandle generatedFontFile = Gdx.files.local("generated-fonts/LiberationMono-Regular.ttf");
-		try {
-			FileUtils.copyFile(internalFontFile, generatedFontFile);
-		} catch (IOException ex) {
-			Gdx.app.error(SlotPuzzleConstants.SLOT_PUZZLE, "Could not copy " + internalFontFile.file().getPath() + " to file " + generatedFontFile.file().getAbsolutePath() + " " + ex.getMessage());
-		}
+//		try {
+//			FileUtils.copyFile(internalFontFile, generatedFontFile);
+//		} catch (IOException ex) {
+//			Gdx.app.error(SlotPuzzleConstants.SLOT_PUZZLE, "Could not copy " + internalFontFile.file().getPath() + " to file " + generatedFontFile.file().getAbsolutePath() + " " + ex.getMessage());
+//		}
 		fontSmall = fontGen.createFont(generatedFontFile, FONT_SMALL, FONT_SMALL_SIZE);
 	}
 
@@ -383,22 +379,12 @@ public class WorldScreen implements Screen, LevelCreatorInjectionInterface {
     }
 
     private void setUpSpinWheels() {
-        for (SpinWheelForSlotPuzzle spinWheel : spinWheels)
+        for (SpinWheelSlotPuzzleTileMap spinWheel : spinWheels)
             setUpSpinWheel(spinWheel);
     }
 
-    private void setUpSpinWheel(SpinWheelForSlotPuzzle spinWheel) {
+    private void setUpSpinWheel(SpinWheelSlotPuzzleTileMap spinWheel) {
         spinWheel.setUpSpinWheel();
-        spinWheel.getWheelBody().setTransform(
-        		convertTileMapToWorldPostion(
-        				spinWheel.getWheelBody().getPosition()),
-				0);
-	}
-
-	private Vector2 convertTileMapToWorldPostion(Vector2 mapPostion) {
-    	return new Vector2(
-    			mapPostion.x / 40,
-				(160 - mapPostion.y) * 4);
 	}
 
     private void createPopUps() {
@@ -498,7 +484,7 @@ public class WorldScreen implements Screen, LevelCreatorInjectionInterface {
 		updateDynamicDoors(delta);
 		updateEntities(delta);
 		if (Gdx.input.isKeyPressed(Input.Keys.S))
-			for (SpinWheelForSlotPuzzle spinWheel : spinWheels)
+			for (SpinWheelSlotPuzzleTileMap spinWheel : spinWheels)
 				spinWheel.spin(MathUtils.random(5F, 30F));
 	}
 
@@ -511,11 +497,11 @@ public class WorldScreen implements Screen, LevelCreatorInjectionInterface {
 	}
 
 	private void updateSpinWheels() {
-		for (SpinWheelForSlotPuzzle spinWheel : spinWheels)
+		for (SpinWheelSlotPuzzleTileMap spinWheel : spinWheels)
 			updateSpinWheel(spinWheel);
 	}
 
-	private void updateSpinWheel(SpinWheelForSlotPuzzle spinWheel) {
+	private void updateSpinWheel(SpinWheelSlotPuzzleTileMap spinWheel) {
 		if (!spinWheel.spinningStopped()) {
 			updateCoordinates(spinWheel.getWheelBody(), spinWheel.getWheelImage(), 0, 0);
 			updateCoordinates(spinWheel.getNeedleBody(), spinWheel.getNeedleImage(), 0, -25F);
@@ -526,8 +512,8 @@ public class WorldScreen implements Screen, LevelCreatorInjectionInterface {
 
 	private void updateCoordinates(Body body, Image image, float incX, float incY) {
 		image.setPosition(
-				body.getPosition().x + incX / SpinWheel.PPM,
-				body.getPosition().y + incY / SpinWheel.PPM,
+				body.getPosition().x + (incX / SpinWheel.PPM),
+				body.getPosition().y + (incY / SpinWheel.PPM),
 				Align.center);
 		image.setRotation(body.getAngle() * MathUtils.radiansToDegrees);
 	}
@@ -564,11 +550,11 @@ public class WorldScreen implements Screen, LevelCreatorInjectionInterface {
 	}
 
 	private void renderSpinWheels(SpriteBatch batch) {
-		for (SpinWheelForSlotPuzzle spinWheel : spinWheels)
+		for (SpinWheelSlotPuzzleTileMap spinWheel : spinWheels)
 			renderSpinWheel(spinWheel, batch);
 	}
 
-	private void renderSpinWheel(SpinWheelForSlotPuzzle spinWheel, SpriteBatch batch) {
+	private void renderSpinWheel(SpinWheelSlotPuzzleTileMap spinWheel, SpriteBatch batch) {
 		spinWheel.getWheelImage().draw(batch, 1.0f);
 		spinWheel.getNeedleImage().draw(batch, 1.0f);
 	}

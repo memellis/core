@@ -46,7 +46,7 @@ import com.badlogic.gdx.utils.ObjectMap;
 import static com.badlogic.gdx.scenes.scene2d.actions.Actions.scaleTo;
 import static com.badlogic.gdx.scenes.scene2d.actions.Actions.sequence;
 
-public class SpinWheelForSlotPuzzle {
+public class SpinWheelForSlotPuzzle implements SpinWheelSlotPuzzle {
     public static final float PPM = 100f;
     private static final float STANDARD_SIZE = 512F;
     private static final short BIT_PEG = 4;
@@ -91,6 +91,7 @@ public class SpinWheelForSlotPuzzle {
         createNeedle();
     }
 
+    @Override
     public void setUpSpinWheel() {
         final TextureAtlas atlas = new TextureAtlas("spin/spin_wheel_ui.atlas");
 
@@ -103,6 +104,7 @@ public class SpinWheelForSlotPuzzle {
         setElementData();
     }
 
+    @Override
     public void setUpSpinWheel(Stage stage) {
         final TextureAtlas atlas = new TextureAtlas("spin/spin_wheel_ui.atlas");
 
@@ -115,19 +117,21 @@ public class SpinWheelForSlotPuzzle {
         setElementData();
     }
 
+    @Override
     public Image getWheelImage() {
         return wheelImage;
     }
 
+    @Override
     public Image getNeedleImage() {
         return needleImage;
     }
 
+    @Override
     public void updateCoordinates(Body body, Image image, float incX, float incY) {
-//        image.setPosition((body.getPosition().x * SpinWheel.PPM) + incX, (body.getPosition().y * SpinWheel.PPM) + incY, Align.center);
-        image.setPosition((
-                body.getPosition().x) + incX / SpinWheel.PPM,
-                (body.getPosition().y) + incY / SpinWheel.PPM,
+        image.setPosition(
+                body.getPosition().x + (incX / SpinWheel.PPM),
+                body.getPosition().y + (incY / SpinWheel.PPM),
                 Align.center);
         image.setRotation(body.getAngle() * MathUtils.radiansToDegrees);
     }
@@ -136,27 +140,33 @@ public class SpinWheelForSlotPuzzle {
      *
      * @param omega spin impulse the angular in units of kg*m*m/s. The Maximum value is 30 to avoid needle to slip from joints.
      */
+    @Override
     public void spin(float omega) {
         wheelCore.setAngularVelocity(MathUtils.clamp(omega, 0, 30));
         spinned = true;
     }
 
+    @Override
     public boolean spinningStopped() {
         return !wheelCore.isAwake();
     }
 
+    @Override
     public void setWorldContactListener(ContactListener listener) {
         world.setContactListener(listener);
     }
 
+    @Override
     public void setWorld(World world) {
         this.world = world;
     }
 
+    @Override
     public Body getWheelBody() {
         return wheelCore;
     }
 
+    @Override
     public Body getNeedleBody() {
         return needle;
     }
@@ -164,10 +174,12 @@ public class SpinWheelForSlotPuzzle {
     /**
      * @return center needle rotation value of X (NOT center X of the needle shape.) according given width.
      */
+    @Override
     public float getNeedleCenterX(float needleWidth) {
         return needleWidth / 2;
     }
 
+    @Override
     public float getNeedleCenterY(float needleHeight) {
         return 3 * needleHeight / 4;
     }
@@ -175,6 +187,7 @@ public class SpinWheelForSlotPuzzle {
     /**
      * @param elements contains all data with known their objects which have two pegs numbers for each object.
      */
+    @Override
     public void setElements(ObjectMap<IntArray, Object> elements) {
         this.elements = elements;
     }
@@ -183,6 +196,7 @@ public class SpinWheelForSlotPuzzle {
      * @param object is between data (two numbers of pegs as known)
      * @param data   two numbers of pegs.
      */
+    @Override
     public void addElementData(Object object, IntArray data) {
         elements.put(data, object);
     }
@@ -190,6 +204,7 @@ public class SpinWheelForSlotPuzzle {
     /**
      * @return object between that two pegs.
      */
+    @Override
     public Object getLuckyWinElement() {
         if (pegsSelectors.size > 0)
             for (IntArray array : elements.keys())
@@ -236,8 +251,6 @@ public class SpinWheelForSlotPuzzle {
 
     private void setUpSpinWheelBody(TextureAtlas atlas) {
         getWheelBody().setUserData(wheelImage = new Image(atlas.findRegion("spin_wheel")));
-        System.out.println(wheelImage.getWidth());
-        System.out.println(wheelImage.getHeight());
         wheelImage.setWidth(diameter);
         wheelImage.setHeight(diameter);
         updateCoordinates(getWheelBody(), wheelImage, 0, 0);

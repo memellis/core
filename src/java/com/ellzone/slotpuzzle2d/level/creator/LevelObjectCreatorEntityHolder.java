@@ -23,8 +23,8 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.utils.Array;
-import com.ellzone.slotpuzzle2d.spin.SpinWheel;
-import com.ellzone.slotpuzzle2d.spin.SpinWheelForSlotPuzzle;
+import com.ellzone.slotpuzzle2d.spin.SpinWheelSlotPuzzle;
+import com.ellzone.slotpuzzle2d.spin.SpinWheelSlotPuzzleTileMap;
 import com.ellzone.slotpuzzle2d.sprites.AnimatedReel;
 import com.ellzone.slotpuzzle2d.sprites.HoldLightButton;
 import com.ellzone.slotpuzzle2d.sprites.ReelHelper;
@@ -54,7 +54,7 @@ public class LevelObjectCreatorEntityHolder extends LevelObjectCreator {
     private Array<PointLight> pointLights = new Array<>();
     private Array<ConeLight> coneLights = new Array<>();
     private Array<SlotHandleSprite> handles = new Array<>();
-    private Array<SpinWheelForSlotPuzzle> spinWheels = new Array<>();
+    private Array<SpinWheelSlotPuzzleTileMap> spinWheels = new Array<>();
     private ReelHelper reelHelper;
 
     public LevelObjectCreatorEntityHolder(LevelCreatorInjectionInterface injection, World world, RayHandler rayHandler) {
@@ -133,7 +133,7 @@ public class LevelObjectCreatorEntityHolder extends LevelObjectCreator {
 
     public void addTo(ReelHelper reelHelper) { this.reelHelper = reelHelper; }
 
-    public void addTo(SpinWheelForSlotPuzzle spinWheel) { spinWheels.add(spinWheel); }
+    public void addTo(SpinWheelSlotPuzzleTileMap spinWheel) { spinWheels.add(spinWheel); }
 
     public void addHoldLightButtonCallback(LevelHoldLightButtonCallback callback) {
         this.levelHoldLightButtonCallback = callback;
@@ -208,7 +208,7 @@ public class LevelObjectCreatorEntityHolder extends LevelObjectCreator {
             levelReelHelperCallback.onEvent(reelHelper);
     }
 
-    public void delegateToCallback(SpinWheelForSlotPuzzle spinWheel) {
+    public void delegateToCallback(SpinWheelSlotPuzzleTileMap spinWheel) {
         if (levelSpinWheelCallback != null)
             levelSpinWheelCallback.onEvent(spinWheel);
     }
@@ -223,5 +223,5 @@ public class LevelObjectCreatorEntityHolder extends LevelObjectCreator {
 
     public Array<SlotHandleSprite> getHandles() { return handles; }
 
-    public Array<SpinWheelForSlotPuzzle> getSpinWheels() { return spinWheels; }
+    public Array<SpinWheelSlotPuzzleTileMap> getSpinWheels() { return spinWheels; }
 }

@@ -17,9 +17,9 @@
 package com.ellzone.slotpuzzle2d.level.creator;
 
 import com.badlogic.ashley.core.Component;
-import com.ellzone.slotpuzzle2d.spin.SpinWheelForSlotPuzzle;
+import com.ellzone.slotpuzzle2d.spin.SpinWheelSlotPuzzleTileMap;
 
 public interface LevelSpinWheelCallback {
-    public void onEvent(SpinWheelForSlotPuzzle source);
+    public void onEvent(SpinWheelSlotPuzzleTileMap source);
     public void addComponent(Component component);
 }
