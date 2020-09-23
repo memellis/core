@@ -229,7 +229,9 @@ public class SpinWheelForSlotPuzzle implements SpinWheelSlotPuzzle {
     private Image setUpSpinWheelSpinButton(TextureAtlas atlas) {
         final Image btnSpin = new Image(atlas.findRegion("spin_button"));
         btnSpin.setOrigin(Align.center);
-        btnSpin.setPosition(Gdx.graphics.getWidth() / 2, Gdx.graphics.getHeight() / 2, Align.center);
+        btnSpin.setWidth((btnSpin.getWidth() * (diameter / 7.5f))  / SpinWheel.PPM);
+        btnSpin.setHeight((btnSpin.getHeight() * (diameter / 7.5f)) / SpinWheel.PPM);
+        btnSpin.setPosition(x, y, Align.center);
         btnSpin.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
