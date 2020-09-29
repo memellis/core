@@ -67,6 +67,7 @@ public class SpinWheelUsingSpinWheelForSlotPuzzle extends SPPrototype {
     public void render() {
         final float delta = Math.min(1/60f, Gdx.graphics.getDeltaTime());
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+        update(delta);
 
         if (!spinWheel.spinningStopped()) {
             spinWheel.updateCoordinates(spinWheel.getWheelBody(), spinWheel.getWheelImage(), 0, 0);
@@ -81,13 +82,16 @@ public class SpinWheelUsingSpinWheelForSlotPuzzle extends SPPrototype {
 
         stage.act(delta);
         stage.draw();
-        update(delta);
+        if (box2dDebugRender)
+            box2dDebugRender();
+    }
+
+    private void box2dDebugRender() {
+        renderer.render(world, stage.getCamera().combined);
     }
 
     private void update(float delta) {
         world.step(1 / 60f, 8, 2);
-        if (box2dDebugRender)
-            renderer.render(world, stage.getCamera().combined);
     }
 
     @Override
