@@ -22,6 +22,7 @@ import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.g3d.particles.influencers.RegionInfluencer;
 import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.TmxMapLoader;
 import com.badlogic.gdx.math.MathUtils;
@@ -29,6 +30,7 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.BodyDef;
 import com.badlogic.gdx.utils.Array;
+import com.badlogic.gdx.utils.Timer;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import com.ellzone.slotpuzzle2d.SlotPuzzleConstants;
@@ -60,6 +62,7 @@ public class Box2DFallingSpinningReelsWithCatchBox extends SPPrototype {
     private Array<AnimatedReel> animatedReels;
     private float centreX = SlotPuzzleConstants.VIRTUAL_WIDTH / 2;
     private float centreY = SlotPuzzleConstants.VIRTUAL_HEIGHT / 2;
+    private int currentReel = 0;
 
     @Override
     public void create() {
@@ -67,13 +70,20 @@ public class Box2DFallingSpinningReelsWithCatchBox extends SPPrototype {
         batch = new SpriteBatch();
         viewport = new FitViewport(SlotPuzzleConstants.VIRTUAL_WIDTH, SlotPuzzleConstants.VIRTUAL_HEIGHT, new OrthographicCamera());
 
-        this.annotationAssetManager = loadAssets();
+        annotationAssetManager = loadAssets();
         initialiseUniversalTweenEngine();
+        animatedReelHelper = new AnimatedReelHelper(
+                annotationAssetManager, tweenManager, 4 * 6);
         animatedReels = animatedReelHelper.getAnimatedReels();
 
         physics = new PhysicsManagerCustomBodies(camera);
         bodyFactory = physics.getBodyFactory();
+        createCatchBox();
+        reelBoxes = createReelBoxes();
+        createStartReelTimer();
+    }
 
+    private void createCatchBox() {
         physics.createEdgeBody(BodyDef.BodyType.StaticBody,
                 centreX - 7 * 42 / 2,
                 centreY - 4 * 42 / 2,
@@ -89,8 +99,6 @@ public class Box2DFallingSpinningReelsWithCatchBox extends SPPrototype {
                 centreY - 4 * 42 / 2,
                 centreX + 7 * 42 / 2,
                 centreY + 4 * 42 / 2);
-
-        reelBoxes = createReelBoxes();
     }
 
     private AnnotationAssetManager loadAssets() {
@@ -104,7 +112,7 @@ public class Box2DFallingSpinningReelsWithCatchBox extends SPPrototype {
     private Array<Body> createReelBoxes() {
         Array<Body> reelBoxes = new Array<Body>();
         for (int row = 0; row < 4; row++) {
-            for (int column = 0; column < 7; column++) {
+            for (int column = 0; column < 6; column++) {
                 reelBoxes.add(physics.createBoxBody(BodyDef.BodyType.DynamicBody,
                         centreX - 7 * 40 / 2 + 20 + (column * 40),
                         SlotPuzzleConstants.VIRTUAL_HEIGHT + (row * 40) / 2,
@@ -122,6 +130,26 @@ public class Box2DFallingSpinningReelsWithCatchBox extends SPPrototype {
         SlotPuzzleTween.registerAccessor(ReelTile.class, new ReelAccessor());
         SlotPuzzleTween.registerAccessor(Sprite.class, new SpriteAccessor());
         tweenManager = new TweenManager();
+    }
+
+    private void createStartReelTimer() {
+        Timer.schedule(new Timer.Task(){
+                           @Override
+                           public void run() {
+                               startAReel();
+                           }
+                       }
+                , 0.0f
+                , 0.02f
+                , animatedReels.size
+        );
+    }
+
+    private void startAReel() {
+        if (currentReel < animatedReels.size) {
+            animatedReels.get(currentReel).setupSpinning();
+            animatedReels.get(currentReel++).getReel().setSpinning(true);
+        }
     }
 
     @Override
