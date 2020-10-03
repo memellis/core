@@ -128,7 +128,7 @@ public class ReelTile extends ReelSprite implements ReelTileInterface {
         return quotient * tileHeight;
     }
 
-    private void processSpinningState() {
+    public void processSpinningState() {
         float syModulus = sy % scrollTexture.getHeight();
         region.setRegion((int) sx, (int) syModulus, (int)reelDisplayWidth, (int)reelDisplayHeight);
         setRegion(region);
@@ -167,8 +167,6 @@ public class ReelTile extends ReelSprite implements ReelTileInterface {
     public float getSy() {
         return this.sy;
     }
-
-
 
     @Override
     public void setSx(float sx) {
