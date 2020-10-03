@@ -30,7 +30,11 @@ public class SpinWheelSlotPuzzleTileMap implements SpinWheelSlotPuzzle {
     public static final int MAP_HEIGHT = 16000;
     public static final int WORLD_WIDTH = 10000;
     public static final int WORLD_HEIGHT = 40000;
-    SpinWheelForSlotPuzzle spinWheel;
+
+    private SpinWheelForSlotPuzzle spinWheel;
+    private float worldPositionX;
+    private float worldPositionY;
+
     public SpinWheelSlotPuzzleTileMap(float diameter, float x, float y, int nPegs, World world) {
         spinWheel = new
                 SpinWheelForSlotPuzzle(
@@ -42,11 +46,21 @@ public class SpinWheelSlotPuzzleTileMap implements SpinWheelSlotPuzzle {
     }
 
     private float convertTileMapXToWorldPostionX(float x) {
-        return x / MAP_WIDTH * WORLD_WIDTH;
+        worldPositionX = x / MAP_WIDTH * WORLD_WIDTH;
+        return worldPositionX;
     }
 
     private float convertTileMapYToWorldPostionY(float y) {
-        return y / MAP_HEIGHT * WORLD_HEIGHT;
+        worldPositionY = y / MAP_HEIGHT * WORLD_HEIGHT;
+        return worldPositionY;
+    }
+
+    public float getWorldPositionX() {
+        return worldPositionX;
+    }
+
+    public float getWorldPositionY() {
+        return worldPositionY;
     }
 
     @Override

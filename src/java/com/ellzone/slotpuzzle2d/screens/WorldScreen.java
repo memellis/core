@@ -55,6 +55,7 @@ import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import com.ellzone.slotpuzzle2d.SlotPuzzle;
 import com.ellzone.slotpuzzle2d.SlotPuzzleConstants;
+import com.ellzone.slotpuzzle2d.camera.CameraLerp;
 import com.ellzone.slotpuzzle2d.effects.CameraAccessor;
 import com.ellzone.slotpuzzle2d.effects.SpriteAccessor;
 import com.ellzone.slotpuzzle2d.level.LevelDoor;
@@ -152,8 +153,7 @@ public class WorldScreen implements Screen, LevelCreatorInjectionInterface {
     private World world;
     private LevelObjectCreatorEntityHolder levelObjectCreator;
     private Array<SpinWheelSlotPuzzleTileMap> spinWheels;
-	private boolean cameraLerp = false;
-	private boolean cameraLerpStarted = false;
+    private CameraLerp cameraLerp;
 
 	public WorldScreen(SlotPuzzle game) {
 		this.game = game;
@@ -193,6 +193,7 @@ public class WorldScreen implements Screen, LevelCreatorInjectionInterface {
 		cwh = camera.viewportHeight * camera.zoom * tilePixelHeight;
 		screenOverCWWRatio = SlotPuzzleConstants.VIRTUAL_WIDTH / cww;
 		screenOverCWHRatio = SlotPuzzleConstants.VIRTUAL_HEIGHT / cwh;
+		cameraLerp = new CameraLerp(camera);
 	}
 
 	private void initialiseLibGdx() {
@@ -500,33 +501,20 @@ public class WorldScreen implements Screen, LevelCreatorInjectionInterface {
 			for (SpinWheelSlotPuzzleTileMap spinWheel : spinWheels)
 				spinWheel.spin(MathUtils.random(5F, 30F));
 
-		if (Gdx.input.isKeyPressed(Input.Keys.L) & !cameraLerpStarted)
-			setUpCameraLerp(camera, new Vector2(42.0f, 369.0f));
-	}
-
-	private void setUpCameraLerp(Camera camera, Vector2 cameraTarget) {
-		cameraLerp = true;
-		cameraLerpStarted = true;
-		Timeline.createSequence()
-				.push(SlotPuzzleTween.set(
-						camera,
-						CameraAccessor.POS_XY).
-						target(camera.position.x, camera.position.y))
-				.push(SlotPuzzleTween.to(
-						camera,
-						CameraAccessor.POS_XY,
-						5.0f).
-						target(cameraTarget.x, cameraTarget.y).
-						ease(Quart.INOUT))
-						.setCallback(endOfCameraLerpCallback)
-		        .start(tweenManager);
+		if (Gdx.input.isKeyPressed(Input.Keys.L) &
+			!cameraLerp.isCameraLerpStarted())
+			cameraLerp.setUpCameraLerp(
+					new Vector2(
+							spinWheels.get(0).getWorldPositionX() / SpinWheel.PPM,
+							spinWheels.get(0).getWorldPositionY() / SpinWheel.PPM - 15.0f),
+					endOfCameraLerpCallback)
+					.start(tweenManager);
 	}
 
 	TweenCallback endOfCameraLerpCallback = new TweenCallback() {
 		@Override
 		public void onEvent(int type, BaseTween<?> source) {
-			cameraLerpStarted = false;
-			cameraLerp = false;
+			cameraLerp.setCameraLerpStarted(false);
 			camera.zoom = 5.0f;
 		}
 	};
