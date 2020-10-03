@@ -21,6 +21,7 @@ import com.badlogic.gdx.Input;
 import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.files.FileHandle;
+import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
@@ -44,6 +45,7 @@ import com.badlogic.gdx.maps.tiled.tiles.StaticTiledMapTile;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
@@ -53,6 +55,7 @@ import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import com.ellzone.slotpuzzle2d.SlotPuzzle;
 import com.ellzone.slotpuzzle2d.SlotPuzzleConstants;
+import com.ellzone.slotpuzzle2d.effects.CameraAccessor;
 import com.ellzone.slotpuzzle2d.effects.SpriteAccessor;
 import com.ellzone.slotpuzzle2d.level.LevelDoor;
 import com.ellzone.slotpuzzle2d.level.creator.LevelCreatorInjectionInterface;
@@ -76,14 +79,20 @@ import com.ellzone.slotpuzzle2d.sprites.level.LevelEntrance;
 import com.ellzone.slotpuzzle2d.sprites.sign.ScrollSign;
 import com.ellzone.slotpuzzle2d.tweenengine.BaseTween;
 import com.ellzone.slotpuzzle2d.tweenengine.SlotPuzzleTween;
+import com.ellzone.slotpuzzle2d.tweenengine.Timeline;
 import com.ellzone.slotpuzzle2d.tweenengine.TweenCallback;
 import com.ellzone.slotpuzzle2d.tweenengine.TweenManager;
 import com.ellzone.slotpuzzle2d.utils.AssetsAnnotation;
+import com.ellzone.slotpuzzle2d.utils.FileUtils;
 import com.ellzone.slotpuzzle2d.utils.PixmapProcessors;
 
 import net.dermetfan.gdx.assets.AnnotationAssetManager;
 
 import org.jrenner.smartfont.SmartFontGenerator;
+
+import java.io.IOException;
+
+import aurelienribon.tweenengine.equations.Quart;
 
 import static com.ellzone.slotpuzzle2d.level.creator.LevelCreator.FALLING_REELS_LEVEL_TYPE;
 import static com.ellzone.slotpuzzle2d.level.creator.LevelCreator.HIDDEN_PATTERN_LEVEL_TYPE;
@@ -143,8 +152,10 @@ public class WorldScreen implements Screen, LevelCreatorInjectionInterface {
     private World world;
     private LevelObjectCreatorEntityHolder levelObjectCreator;
     private Array<SpinWheelSlotPuzzleTileMap> spinWheels;
+	private boolean cameraLerp = false;
+	private boolean cameraLerpStarted = false;
 
-    public WorldScreen(SlotPuzzle game) {
+	public WorldScreen(SlotPuzzle game) {
 		this.game = game;
 		this.game.setWorldScreen(this);
 		createWorldScreen();
@@ -172,16 +183,16 @@ public class WorldScreen implements Screen, LevelCreatorInjectionInterface {
 	}
 
 	private void initialiseCamera() {
-		this.camera = new OrthographicCamera();
-		this.viewport = new FitViewport(SlotPuzzleConstants.VIRTUAL_WIDTH, SlotPuzzleConstants.VIRTUAL_HEIGHT, this.camera);
-		this.aspectRatio = SlotPuzzleConstants.VIRTUAL_WIDTH / SlotPuzzleConstants.VIRTUAL_HEIGHT;
-		this.camera.setToOrtho(false, aspectRatio * ORTHO_VIEWPORT_WIDTH, ORTHO_VIEWPORT_HEIGHT);
-		this.camera.zoom = 2;
-		this.camera.update();
-		this.cww = camera.viewportWidth * camera.zoom * tilePixelWidth;
-		this.cwh = camera.viewportHeight * camera.zoom * tilePixelHeight;
-		this.screenOverCWWRatio = SlotPuzzleConstants.VIRTUAL_WIDTH / cww;
-		this.screenOverCWHRatio = SlotPuzzleConstants.VIRTUAL_HEIGHT / cwh;
+		camera = new OrthographicCamera();
+		viewport = new FitViewport(SlotPuzzleConstants.VIRTUAL_WIDTH, SlotPuzzleConstants.VIRTUAL_HEIGHT, this.camera);
+		aspectRatio = SlotPuzzleConstants.VIRTUAL_WIDTH / SlotPuzzleConstants.VIRTUAL_HEIGHT;
+		camera.setToOrtho(false, aspectRatio * ORTHO_VIEWPORT_WIDTH, ORTHO_VIEWPORT_HEIGHT);
+		camera.zoom = 2;
+		camera.update();
+		cww = camera.viewportWidth * camera.zoom * tilePixelWidth;
+		cwh = camera.viewportHeight * camera.zoom * tilePixelHeight;
+		screenOverCWWRatio = SlotPuzzleConstants.VIRTUAL_WIDTH / cww;
+		screenOverCWHRatio = SlotPuzzleConstants.VIRTUAL_HEIGHT / cwh;
 	}
 
 	private void initialiseLibGdx() {
@@ -201,6 +212,7 @@ public class WorldScreen implements Screen, LevelCreatorInjectionInterface {
 		SlotPuzzleTween.setWaypointsLimit(10);
 		SlotPuzzleTween.setCombinedAttributesLimit(3);
 		SlotPuzzleTween.registerAccessor(Sprite.class, new SpriteAccessor());
+		SlotPuzzleTween.registerAccessor(Camera.class, new CameraAccessor());
 		tweenManager = new TweenManager();
 	}
 
@@ -211,11 +223,12 @@ public class WorldScreen implements Screen, LevelCreatorInjectionInterface {
 		generatedFontDir.mkdirs();
 
 		FileHandle generatedFontFile = Gdx.files.local("generated-fonts/LiberationMono-Regular.ttf");
-//		try {
-//			FileUtils.copyFile(internalFontFile, generatedFontFile);
-//		} catch (IOException ex) {
-//			Gdx.app.error(SlotPuzzleConstants.SLOT_PUZZLE, "Could not copy " + internalFontFile.file().getPath() + " to file " + generatedFontFile.file().getAbsolutePath() + " " + ex.getMessage());
-//		}
+		if (!generatedFontFile.exists())
+			try {
+				FileUtils.copyFile(internalFontFile, generatedFontFile);
+			} catch (IOException ex) {
+				Gdx.app.error(SlotPuzzleConstants.SLOT_PUZZLE, "Could not copy " + internalFontFile.file().getPath() + " to file " + generatedFontFile.file().getAbsolutePath() + " " + ex.getMessage());
+			}
 		fontSmall = fontGen.createFont(generatedFontFile, FONT_SMALL, FONT_SMALL_SIZE);
 	}
 
@@ -486,10 +499,40 @@ public class WorldScreen implements Screen, LevelCreatorInjectionInterface {
 		if (Gdx.input.isKeyPressed(Input.Keys.S))
 			for (SpinWheelSlotPuzzleTileMap spinWheel : spinWheels)
 				spinWheel.spin(MathUtils.random(5F, 30F));
+
+		if (Gdx.input.isKeyPressed(Input.Keys.L) & !cameraLerpStarted)
+			setUpCameraLerp(camera, new Vector2(42.0f, 369.0f));
 	}
 
+	private void setUpCameraLerp(Camera camera, Vector2 cameraTarget) {
+		cameraLerp = true;
+		cameraLerpStarted = true;
+		Timeline.createSequence()
+				.push(SlotPuzzleTween.set(
+						camera,
+						CameraAccessor.POS_XY).
+						target(camera.position.x, camera.position.y))
+				.push(SlotPuzzleTween.to(
+						camera,
+						CameraAccessor.POS_XY,
+						5.0f).
+						target(cameraTarget.x, cameraTarget.y).
+						ease(Quart.INOUT))
+						.setCallback(endOfCameraLerpCallback)
+		        .start(tweenManager);
+	}
+
+	TweenCallback endOfCameraLerpCallback = new TweenCallback() {
+		@Override
+		public void onEvent(int type, BaseTween<?> source) {
+			cameraLerpStarted = false;
+			cameraLerp = false;
+			camera.zoom = 5.0f;
+		}
+	};
+
 	public void updateWorld(float delta) {
-			world.step(1 / 60f, 8, 2);
+		world.step(1 / 60f, 8, 2);
 	}
 
 	public void updateEntities(float delta) {
@@ -616,7 +659,7 @@ public class WorldScreen implements Screen, LevelCreatorInjectionInterface {
 
 	@Override
 	public TweenManager getTweenManager() {
-		return null;
+		return tweenManager;
 	}
 
 	@Override
