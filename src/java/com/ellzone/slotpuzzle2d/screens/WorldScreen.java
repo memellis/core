@@ -76,8 +76,10 @@ import com.ellzone.slotpuzzle2d.scene.MapTile;
 import com.ellzone.slotpuzzle2d.spin.SpinWheel;
 import com.ellzone.slotpuzzle2d.spin.SpinWheelSlotPuzzleTileMap;
 import com.ellzone.slotpuzzle2d.sprites.ReelSprites;
+import com.ellzone.slotpuzzle2d.sprites.SlotHandleSprite;
 import com.ellzone.slotpuzzle2d.sprites.level.LevelEntrance;
 import com.ellzone.slotpuzzle2d.sprites.sign.ScrollSign;
+import com.ellzone.slotpuzzle2d.sprites.slothandle.SlotHandleTileMap;
 import com.ellzone.slotpuzzle2d.tweenengine.BaseTween;
 import com.ellzone.slotpuzzle2d.tweenengine.SlotPuzzleTween;
 import com.ellzone.slotpuzzle2d.tweenengine.Timeline;
@@ -92,8 +94,6 @@ import net.dermetfan.gdx.assets.AnnotationAssetManager;
 import org.jrenner.smartfont.SmartFontGenerator;
 
 import java.io.IOException;
-
-import aurelienribon.tweenengine.equations.Quart;
 
 import static com.ellzone.slotpuzzle2d.level.creator.LevelCreator.FALLING_REELS_LEVEL_TYPE;
 import static com.ellzone.slotpuzzle2d.level.creator.LevelCreator.HIDDEN_PATTERN_LEVEL_TYPE;
@@ -154,6 +154,7 @@ public class WorldScreen implements Screen, LevelCreatorInjectionInterface {
     private LevelObjectCreatorEntityHolder levelObjectCreator;
     private Array<SpinWheelSlotPuzzleTileMap> spinWheels;
     private CameraLerp cameraLerp;
+	private Array<SlotHandleTileMap> slotHandles;
 
 	public WorldScreen(SlotPuzzle game) {
 		this.game = game;
@@ -360,6 +361,7 @@ public class WorldScreen implements Screen, LevelCreatorInjectionInterface {
 		Array<RectangleMapObject> extractedLevelRectangleMapObjects = extractLevelAssets(worldMap);
 		levelObjectCreator.createLevel(extractedLevelRectangleMapObjects);
 		spinWheels = levelObjectCreator.getSpinWheels();
+		slotHandles = levelObjectCreator.getSlotHandles();
 	}
 
 	private Array<RectangleMapObject> extractLevelAssets(TiledMap level) {
@@ -503,12 +505,20 @@ public class WorldScreen implements Screen, LevelCreatorInjectionInterface {
 
 		if (Gdx.input.isKeyPressed(Input.Keys.L) &
 			!cameraLerp.isCameraLerpStarted())
-			cameraLerp.setUpCameraLerp(
-					new Vector2(
-							spinWheels.get(0).getWorldPositionX() / SpinWheel.PPM,
-							spinWheels.get(0).getWorldPositionY() / SpinWheel.PPM - 15.0f),
-					endOfCameraLerpCallback)
-					.start(tweenManager);
+			moveCameraToSlotMachine();
+
+		if (Gdx.input.isKeyPressed(Input.Keys.P))
+			slotHandles.get(0).pullSlotHandle();
+
+	}
+
+	private void moveCameraToSlotMachine() {
+		cameraLerp.setUpCameraLerp(
+				new Vector2(
+						spinWheels.get(0).getWorldPositionX() / SpinWheel.PPM,
+						spinWheels.get(0).getWorldPositionY() / SpinWheel.PPM - 15.0f),
+				endOfCameraLerpCallback)
+				.start(tweenManager);
 	}
 
 	TweenCallback endOfCameraLerpCallback = new TweenCallback() {
@@ -578,6 +588,7 @@ public class WorldScreen implements Screen, LevelCreatorInjectionInterface {
 
 	private void renderEntities(SpriteBatch batch) {
 		renderSpinWheels(batch);
+		renderSlotHandles(batch);
 	}
 
 	private void renderSpinWheels(SpriteBatch batch) {
@@ -588,6 +599,15 @@ public class WorldScreen implements Screen, LevelCreatorInjectionInterface {
 	private void renderSpinWheel(SpinWheelSlotPuzzleTileMap spinWheel, SpriteBatch batch) {
 		spinWheel.getWheelImage().draw(batch, 1.0f);
 		spinWheel.getNeedleImage().draw(batch, 1.0f);
+	}
+
+	private void renderSlotHandles(SpriteBatch batch) {
+		for (SlotHandleTileMap slotHandle : slotHandles)
+			renderSlotHandle(slotHandle, batch);
+	}
+
+	private void renderSlotHandle(SlotHandleTileMap slotHandle, SpriteBatch batch) {
+		slotHandle.draw(batch);
 	}
 
 	private void renderMapTiles() {

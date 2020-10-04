@@ -20,6 +20,7 @@ import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.Pixmap;
+import com.ellzone.slotpuzzle2d.sprites.slothandle.SlotHandle;
 import com.ellzone.slotpuzzle2d.utils.PixmapProcessors;
 import com.badlogic.gdx.graphics.Texture;
 import com.ellzone.slotpuzzle2d.tweenengine.BaseTween;
@@ -31,7 +32,7 @@ import aurelienribon.tweenengine.equations.Sine;
 import com.ellzone.slotpuzzle2d.effects.SpriteAccessor;
 import com.badlogic.gdx.math.*;
 
-public class SlotHandleSprite {
+public class SlotHandleSprite implements SlotHandle {
 	public static final String SLOT_HANDLE = "slot_handle";
 	public static final String SLOT_HANDLE_BASE = "slot_handle_base";
 	private TextureAtlas slotHandleAtlas;
@@ -45,29 +46,47 @@ public class SlotHandleSprite {
 		defineSlotHandleSprite();
 	}
 
-	public SlotHandleSprite(TextureAtlas slotHandleAtlas, TweenManager tweenManager, float xPosition, float yPosition) {
+	public SlotHandleSprite(TextureAtlas slotHandleAtlas,
+							TweenManager tweenManager,
+							float xPosition,
+							float yPosition) {
 	    this(slotHandleAtlas, tweenManager);
 	    slotHandle.setPosition(xPosition, yPosition);
 	    slotHandleBase.setPosition(xPosition, yPosition - 20);
     }
 
-    public Sprite getSlotHandleSprite() {
+    @Override
+	public Sprite getSlotHandleSprite() {
 		return slotHandle;
 	}
 
+	@Override
 	public Sprite getSlotHandleBaseSprite() {
 		return slotHandleBase;
 	}
 
+	@Override
+	public void setSlotHandleSprite(Sprite sprite) {
+		slotHandle = sprite;
+	}
 
+	@Override
+	public void setSlotHandleBaseSprite(Sprite sprite) {
+		slotHandleBase = sprite;
+	}
+
+
+	@Override
 	public void pullSlotHandle() {
 		slotHandleSequence.start(tweenManager);
 	}
 
+	@Override
 	public Rectangle getBoundingRectangle() {
 		return slotHandle.getBoundingRectangle();
 	}
 
+	@Override
 	public void draw(SpriteBatch spriteBatch) {
 		slotHandleBase.draw(spriteBatch);
 		slotHandle.draw(spriteBatch);

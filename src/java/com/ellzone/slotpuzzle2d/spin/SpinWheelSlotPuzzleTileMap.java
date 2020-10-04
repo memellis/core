@@ -24,6 +24,7 @@ import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.utils.IntArray;
 import com.badlogic.gdx.utils.ObjectMap;
+import com.ellzone.slotpuzzle2d.utils.WorldScreenConvert;
 
 public class SpinWheelSlotPuzzleTileMap implements SpinWheelSlotPuzzle {
     public static final int MAP_WIDTH = 4000;
@@ -46,12 +47,12 @@ public class SpinWheelSlotPuzzleTileMap implements SpinWheelSlotPuzzle {
     }
 
     private float convertTileMapXToWorldPostionX(float x) {
-        worldPositionX = x / MAP_WIDTH * WORLD_WIDTH;
+        worldPositionX = WorldScreenConvert.convertTileMapXToWorldPostionX(x);
         return worldPositionX;
     }
 
     private float convertTileMapYToWorldPostionY(float y) {
-        worldPositionY = y / MAP_HEIGHT * WORLD_HEIGHT;
+        worldPositionY = WorldScreenConvert.convertTileMapYToWorldPostionY(y);
         return worldPositionY;
     }
 
