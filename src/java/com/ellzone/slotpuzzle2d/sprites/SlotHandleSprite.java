@@ -75,7 +75,6 @@ public class SlotHandleSprite implements SlotHandle {
 		slotHandleBase = sprite;
 	}
 
-
 	@Override
 	public void pullSlotHandle() {
 		slotHandleSequence.start(tweenManager);
@@ -131,5 +130,4 @@ public class SlotHandleSprite implements SlotHandle {
     private void delegateSlotHandleCallback(int type, BaseTween<?> source) {
         createSlotHandleTween();
 	}
-	
 }

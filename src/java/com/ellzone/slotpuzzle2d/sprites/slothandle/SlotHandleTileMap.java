@@ -40,6 +40,13 @@ public class SlotHandleTileMap implements SlotHandle {
                 convertTileMapYToWorldPostionY(yPosition) / 100);
         changeSpriteSize(slotHandle.getSlotHandleSprite(), 50);
         changeSpriteSize(slotHandle.getSlotHandleBaseSprite(), 50);
+        setSlotHandleOriginSize(22.0f, 10.0f, 50);
+    }
+
+    private void setSlotHandleOriginSize(float originX, float originY, float divisor) {
+        slotHandle.getSlotHandleSprite().setOrigin(
+                originX / divisor,
+                originY / divisor);
     }
 
     private Sprite changeSpriteSize(Sprite sprite, float divisor) {
