@@ -1,9 +1,12 @@
 package com.ellzone.slotpuzzle2d.sprites;
 
 import com.badlogic.gdx.audio.Sound;
+import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.ellzone.slotpuzzle2d.tweenengine.TweenManager;
 import com.ellzone.slotpuzzle2d.utils.AssetsAnnotation;
+import com.ellzone.slotpuzzle2d.utils.PixmapProcessors;
 
 import net.dermetfan.gdx.assets.AnnotationAssetManager;
 
@@ -62,6 +65,9 @@ public class SlotMachineAnimatedReel {
     }
 
     private Texture getReelTexture() {
-        return null;
+        ReelSprites reelSprites = new ReelSprites(annotationAssetManager);
+        Sprite[] sprites = reelSprites.getSprites();
+        Pixmap slotReelScrollPixmap = PixmapProcessors.createPixmapToAnimate(sprites);
+        return new Texture(slotReelScrollPixmap);
     }
 }

@@ -192,7 +192,8 @@ public class SpinningSlots extends SPPrototypeTemplate {
                     } else {
                         animatedReel.setEndReel(random.nextInt(sprites.length - 1));
                         animatedReel.reinitialise();
-                        animatedReel.getReel().startSpinning();
+                        animatedReel.setupSpinning();
+                        animatedReel.getReel().setSpinning(true);
                     }
                 }
             }
@@ -209,7 +210,8 @@ public class SpinningSlots extends SPPrototypeTemplate {
                     for  (AnimatedReel animatedReel : reels) {
                         animatedReel.setEndReel(random.nextInt(sprites.length - 1));
                         animatedReel.reinitialise();
-                        animatedReel.getReel().startSpinning();
+                        animatedReel.setupSpinning();
+                        animatedReel.getReel().setSpinning(true);
                     }
                 } else {
                 	reelStoppingSound.play();
