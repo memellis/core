@@ -62,7 +62,6 @@ public class SpinningSlotsWithThreeTilesDisplayed extends SPPrototypeTemplate {
 
     @Override
     protected void initialiseScreenOverride() {
-
     }
 
     @Override
@@ -190,41 +189,71 @@ public class SpinningSlotsWithThreeTilesDisplayed extends SPPrototypeTemplate {
 	
     public void handleInput() {
         if (Gdx.input.justTouched()) {
-            touch = touch.set(Gdx.input.getX(), Gdx.input.getY());
-			touch = viewport.unproject(touch);
-            for (AnimatedReel animatedReel : reels) {
-                if(animatedReel.getReel().getBoundingRectangle().contains(touch)) {
-                	if (animatedReel.getReel().isSpinning()) {
-                        if (animatedReel.getDampenedSineState() == DampenedSineParticle.DSState.UPDATING_DAMPENED_SINE) {
-                            reelSpriteHelp = animatedReel.getReel().getCurrentReel();
-                        	animatedReel.getReel().setEndReel(reelSpriteHelp - 1 < 0 ? 0 : reelSpriteHelp - 1);
-                        }
-                    } else {
-                        animatedReel.setEndReel(random.nextInt(sprites.length - 1));
-                        animatedReel.reinitialise();
-                        animatedReel.getReel().startSpinning();
-                    }
-                }
-            }
-            if (slotHandleSprite.getBoundingRectangle().contains(touch)) {
-            	boolean reelsNotSpinning = true;
-                for  (AnimatedReel animatedReel : reels) {
-                    if (animatedReel.getReel().isSpinning()) {
-                    	reelsNotSpinning = false;
-                    }
-                }
-                if (reelsNotSpinning) {
-			        slotHandleSprite.pullSlotHandle();
-                    pullLeverSound.play();
-                    for (AnimatedReel animatedReel : reels) {
-                        animatedReel.setEndReel(random.nextInt(sprites.length - 1));
-                        animatedReel.reinitialise();
-                        animatedReel.getReel().startSpinning();
-                    }
-                } else {
-                	reelStoppingSound.play();
-                }
-            }
+            convertTouchToScreen();
+            handleAnimatedReelsTouched();
+            handleHandleTouched();
         }
+    }
+
+    private void handleHandleTouched() {
+        if (isSlotHandleTouched()) {
+            if (isReelsNotSpinning())
+                pullTheSlotHanleAndSpinTheReels();
+            else
+                reelStoppingSound.play();
+        }
+    }
+
+    private boolean isSlotHandleTouched() {
+        return slotHandleSprite.getBoundingRectangle().contains(touch);
+    }
+
+    private boolean isReelsNotSpinning() {
+        boolean reelsNotSpinning = true;
+        for  (AnimatedReel animatedReel : reels) {
+            if (animatedReel.getReel().isSpinning())
+                reelsNotSpinning = false;
+        }
+        return reelsNotSpinning;
+    }
+
+    private void pullTheSlotHanleAndSpinTheReels() {
+        slotHandleSprite.pullSlotHandle();
+        pullLeverSound.play();
+        for (AnimatedReel animatedReel : reels)
+            setAnimatedReelSpinning(animatedReel);
+    }
+
+    private void handleAnimatedReelsTouched() {
+        for (AnimatedReel animatedReel : reels)
+            processIsAnimatedReelTouched(animatedReel);
+    }
+
+    private void processIsAnimatedReelTouched(AnimatedReel animatedReel) {
+        if(isAnimatedReelTouched(animatedReel)) {
+            if (animatedReel.getReel().isSpinning()) {
+                if (animatedReel.getDampenedSineState() == DampenedSineParticle.DSState.UPDATING_DAMPENED_SINE) {
+                    reelSpriteHelp = animatedReel.getReel().getCurrentReel();
+                    animatedReel.getReel().setEndReel(reelSpriteHelp - 1 < 0 ? 0 : reelSpriteHelp - 1);
+                }
+            } else
+                setAnimatedReelSpinning(animatedReel);
+        }
+    }
+
+    private void setAnimatedReelSpinning(AnimatedReel animatedReel) {
+        animatedReel.setEndReel(random.nextInt(sprites.length - 1));
+        animatedReel.reinitialise();
+        animatedReel.setupSpinning();
+        animatedReel.getReel().setSpinning(true);
+    }
+
+    private boolean isAnimatedReelTouched(AnimatedReel animatedReel) {
+        return animatedReel.getReel().getBoundingRectangle().contains(touch);
+    }
+
+    private void convertTouchToScreen() {
+        touch = touch.set(Gdx.input.getX(), Gdx.input.getY());
+        touch = viewport.unproject(touch);
     }
 }
