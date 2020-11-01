@@ -20,6 +20,7 @@ import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Vector2;
@@ -34,6 +35,7 @@ public class ReelTile extends ReelSprite implements ReelTileInterface {
     private float tileWidth;
     private float tileHeight;
     private float reelDisplayWidth = 0, reelDisplayHeight = 0;
+    private float screenDisplayWidth = 0, screenDisplayHeight = 0;
     private float destinationX;
     private float destinationY;
     private float sx = 0;
@@ -381,5 +383,19 @@ public class ReelTile extends ReelSprite implements ReelTileInterface {
     public void updateReelFlashSegments(float x, float y) {
         for (Vector2 reelFlashSegment : reelFlashSegments)
             reelFlashSegment.set(new Vector2(x, y));
+    }
+
+    public void setReelDisplaySize(float width, float height) {
+        screenDisplayWidth = width;
+        screenDisplayHeight = height;
+    }
+
+    public void draw(SpriteBatch spritebatch) {
+        spritebatch.draw(
+                region,
+                super.getX(),
+                super.getY(),
+                screenDisplayWidth == 0 ? region.getRegionWidth() : screenDisplayWidth,
+                screenDisplayHeight == 0 ? region.getRegionHeight() : screenDisplayHeight);
     }
 }
