@@ -167,11 +167,11 @@ public class WorldScreen implements Screen, LevelCreatorInjectionInterface {
 		levelEntrances = new Array<LevelEntrance>();
         world = new World(new Vector2(0, -10), true);
         getAssets(game.annotationAssetManager);
-		initialiseCamera();
 		initialiseUniversalTweenEngine();
+		loadWorld();
+		initialiseCamera();
 		initialiseLibGdx();
 		initialiseFonts();
-		loadWorld();
 		createLevelEntrances();
 		initialiseMap();
 		createPopUps();
@@ -792,11 +792,13 @@ public class WorldScreen implements Screen, LevelCreatorInjectionInterface {
 		}
 
 		public float screenXToWorldX(float x) {
-			return ((camera.position.x - aspectRatio * ORTHO_VIEWPORT_WIDTH) * tilePixelWidth) + ((x / screenOverCWWRatio) * (float)SlotPuzzleConstants.VIRTUAL_WIDTH / Gdx.graphics.getWidth());
+			return ((camera.position.x - aspectRatio * ORTHO_VIEWPORT_WIDTH) * tilePixelWidth) +
+					((x / screenOverCWWRatio) * (float)SlotPuzzleConstants.VIRTUAL_WIDTH / Gdx.graphics.getWidth());
 		}
 
 		public float screenYToWorldY(float y) {
-            return ((camera.position.y - ORTHO_VIEWPORT_HEIGHT) * tilePixelHeight) + (( Gdx.graphics.getHeight() - y) / screenOverCWHRatio) * (float) SlotPuzzleConstants.VIRTUAL_HEIGHT / Gdx.graphics.getHeight();
+            return ((camera.position.y - ORTHO_VIEWPORT_HEIGHT) * tilePixelHeight) +
+					(( Gdx.graphics.getHeight() - y) / screenOverCWHRatio) * (float) SlotPuzzleConstants.VIRTUAL_HEIGHT / Gdx.graphics.getHeight();
 		}
 
 		public float worldXToScreenX(float wx) {
