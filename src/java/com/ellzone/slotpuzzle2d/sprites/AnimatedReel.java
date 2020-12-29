@@ -25,6 +25,7 @@ import com.ellzone.slotpuzzle2d.physics.DampenedSineParticle;
 import com.ellzone.slotpuzzle2d.physics.SPPhysicsCallback;
 import com.ellzone.slotpuzzle2d.physics.SPPhysicsEvent;
 import com.ellzone.slotpuzzle2d.physics.Vector;
+import com.ellzone.slotpuzzle2d.sprites.reel.AnimatedReelInterface;
 import com.ellzone.slotpuzzle2d.tweenengine.BaseTween;
 import com.ellzone.slotpuzzle2d.tweenengine.SlotPuzzleTween;
 import com.ellzone.slotpuzzle2d.tweenengine.Timeline;
@@ -34,7 +35,7 @@ import com.ellzone.slotpuzzle2d.utils.Random;
 
 import aurelienribon.tweenengine.equations.Elastic;
 
-public class AnimatedReel {
+public class AnimatedReel implements AnimatedReelInterface {
 	private static float VELOCITY_MIN = 1;
 	private static float VELOCITY_MAX = 3;
 	private ReelTile reel;
@@ -105,6 +106,7 @@ public class AnimatedReel {
 		reelSlowingTargetTime = 3.0f;
 	}
 
+	@Override
 	public void setupSpinning() {
 		dampenedSine = new DampenedSineParticle(
 		        0,
@@ -166,38 +168,47 @@ public class AnimatedReel {
 		}
 	}
 	
+	@Override
 	public void setX(float x) {
 		reel.setX(x);
 	}
 	
+	@Override
 	public void setY(float y) {
 		reel.setY(y);
 	}
 	
+	@Override
 	public void setSx(float sx) {
 		reel.setSx(sx);
 	}
 	
+	@Override
 	public void setSy(float sy) {
 		reel.setSy(sy);
 	}
 	
+	@Override
 	public float getSx() {
 		return reel.getSx();
 	}
 	
+	@Override
 	public float getSy() {
 		return reel.getSy();
 	}
 	
+	@Override
 	public int getEndReel() {
 		return reel.getEndReel();
 	}
 	
+	@Override
 	public void setEndReel(int endReel) {
 		reel.setEndReel(endReel);
 	}
 	
+	@Override
 	public void update(float delta) {
 		reel.update(delta);
 		if (dampenedSine == null)
@@ -207,18 +218,22 @@ public class AnimatedReel {
             reel.setSy(dampenedSine.position.y);
    }
 	
+	@Override
 	public void draw(SpriteBatch spriteBatch) {
 		reel.draw(spriteBatch);
 	}
 
+	@Override
 	public void draw(ShapeRenderer shapeRenderer) {
 	    reel.drawFlashSegments(shapeRenderer);
     }
 
+	@Override
 	public ReelTile getReel() {
 		return reel;
 	}
 	
+	@Override
 	public void reinitialise() {
         reel.clearReelFlashSegments();
 		if (dampenedSine == null)
@@ -233,6 +248,7 @@ public class AnimatedReel {
         dampenedSine.velocityMin.y = getRandomVelocityMin();
 	}
 	
+	@Override
 	public DampenedSineParticle.DSState getDampenedSineState() {
 		return dampenedSine == null ? null : dampenedSine.getDSState();
 	}
