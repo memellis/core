@@ -104,8 +104,7 @@ public class LevelObjectCreator {
         }
     }
 
-
-    public AnnotationAssetManager annotationAssetManager() {
+    public AnnotationAssetManager getAnnotationAssetManager() {
         return levelCreatorInjectionInterface.getAnnotationAssetManager();
     }
 
