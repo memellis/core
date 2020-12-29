@@ -45,7 +45,6 @@ import com.badlogic.gdx.maps.tiled.tiles.StaticTiledMapTile;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
@@ -93,6 +92,7 @@ import net.dermetfan.gdx.assets.AnnotationAssetManager;
 import org.jrenner.smartfont.SmartFontGenerator;
 
 import java.io.IOException;
+import java.util.Random;
 
 import static com.ellzone.slotpuzzle2d.level.creator.LevelCreator.FALLING_REELS_LEVEL_TYPE;
 import static com.ellzone.slotpuzzle2d.level.creator.LevelCreator.HIDDEN_PATTERN_LEVEL_TYPE;
@@ -155,6 +155,7 @@ public class WorldScreen implements Screen, LevelCreatorInjectionInterface {
     private CameraLerp cameraLerp;
 	private Array<SlotHandleTileMap> slotHandles;
 	private Array<AnimatedReelTileMap> animatedReelsTileMap;
+	private Random random;
 
 	public WorldScreen(SlotPuzzle game) {
 		this.game = game;
@@ -163,6 +164,7 @@ public class WorldScreen implements Screen, LevelCreatorInjectionInterface {
 	}
 
 	private void createWorldScreen() {
+		random = new Random();
 		scrollSigns = new Array<ScrollSign>();
 		levelEntrances = new Array<LevelEntrance>();
         world = new World(new Vector2(0, -10), true);
@@ -508,9 +510,20 @@ public class WorldScreen implements Screen, LevelCreatorInjectionInterface {
 			!cameraLerp.isCameraLerpStarted())
 			moveCameraToSlotMachine();
 
-		if (Gdx.input.isKeyPressed(Input.Keys.P))
+		if (Gdx.input.isKeyPressed(Input.Keys.P)) {
 			slotHandles.get(0).pullSlotHandle();
+			for (AnimatedReelTileMap animatedReel : animatedReelsTileMap) {
+				setAnimatedReelSpinning(animatedReel);
+			}
+		}
 
+	}
+
+	private void setAnimatedReelSpinning(AnimatedReelTileMap animatedReel) {
+		animatedReel.setEndReel(random.nextInt(8 - 1));
+		animatedReel.reinitialise();
+		animatedReel.setupSpinning();
+		animatedReel.getReel().setSpinning(true);
 	}
 
 	private void moveCameraToSlotMachine() {
