@@ -76,13 +76,12 @@ import com.ellzone.slotpuzzle2d.scene.MapTile;
 import com.ellzone.slotpuzzle2d.spin.SpinWheel;
 import com.ellzone.slotpuzzle2d.spin.SpinWheelSlotPuzzleTileMap;
 import com.ellzone.slotpuzzle2d.sprites.ReelSprites;
-import com.ellzone.slotpuzzle2d.sprites.SlotHandleSprite;
 import com.ellzone.slotpuzzle2d.sprites.level.LevelEntrance;
+import com.ellzone.slotpuzzle2d.sprites.reel.AnimatedReelTileMap;
 import com.ellzone.slotpuzzle2d.sprites.sign.ScrollSign;
 import com.ellzone.slotpuzzle2d.sprites.slothandle.SlotHandleTileMap;
 import com.ellzone.slotpuzzle2d.tweenengine.BaseTween;
 import com.ellzone.slotpuzzle2d.tweenengine.SlotPuzzleTween;
-import com.ellzone.slotpuzzle2d.tweenengine.Timeline;
 import com.ellzone.slotpuzzle2d.tweenengine.TweenCallback;
 import com.ellzone.slotpuzzle2d.tweenengine.TweenManager;
 import com.ellzone.slotpuzzle2d.utils.AssetsAnnotation;
@@ -155,6 +154,7 @@ public class WorldScreen implements Screen, LevelCreatorInjectionInterface {
     private Array<SpinWheelSlotPuzzleTileMap> spinWheels;
     private CameraLerp cameraLerp;
 	private Array<SlotHandleTileMap> slotHandles;
+	private Array<AnimatedReelTileMap> animatedReelsTileMap;
 
 	public WorldScreen(SlotPuzzle game) {
 		this.game = game;
@@ -362,6 +362,7 @@ public class WorldScreen implements Screen, LevelCreatorInjectionInterface {
 		levelObjectCreator.createLevel(extractedLevelRectangleMapObjects);
 		spinWheels = levelObjectCreator.getSpinWheels();
 		slotHandles = levelObjectCreator.getSlotHandles();
+		animatedReelsTileMap = levelObjectCreator.getAnimatedReelsTileMap();
 	}
 
 	private Array<RectangleMapObject> extractLevelAssets(TiledMap level) {
@@ -535,6 +536,7 @@ public class WorldScreen implements Screen, LevelCreatorInjectionInterface {
 
 	public void updateEntities(float delta) {
 		updateSpinWheels();
+		updateAnimatedReels(delta);
 	}
 
 	private void updateSpinWheels() {
@@ -557,6 +559,15 @@ public class WorldScreen implements Screen, LevelCreatorInjectionInterface {
 				body.getPosition().y + (incY / SpinWheel.PPM),
 				Align.center);
 		image.setRotation(body.getAngle() * MathUtils.radiansToDegrees);
+	}
+
+	private void updateAnimatedReels(float delta) {
+		for (AnimatedReelTileMap animatedReel : animatedReelsTileMap)
+			updateAnimatedReel(animatedReel, delta);
+	}
+
+	private void updateAnimatedReel(AnimatedReelTileMap animatedReel, float delta) {
+		animatedReel.update(delta);
 	}
 
 	@Override
@@ -589,6 +600,7 @@ public class WorldScreen implements Screen, LevelCreatorInjectionInterface {
 	private void renderEntities(SpriteBatch batch) {
 		renderSpinWheels(batch);
 		renderSlotHandles(batch);
+		renderAnimatedReels(batch);
 	}
 
 	private void renderSpinWheels(SpriteBatch batch) {
@@ -608,6 +620,11 @@ public class WorldScreen implements Screen, LevelCreatorInjectionInterface {
 
 	private void renderSlotHandle(SlotHandleTileMap slotHandle, SpriteBatch batch) {
 		slotHandle.draw(batch);
+	}
+
+	private void renderAnimatedReels(SpriteBatch batch) {
+		for (AnimatedReelTileMap animatedReelTileMap : animatedReelsTileMap)
+			animatedReelTileMap.draw(batch);
 	}
 
 	private void renderMapTiles() {
@@ -652,7 +669,7 @@ public class WorldScreen implements Screen, LevelCreatorInjectionInterface {
 
 	@Override
 	public AnnotationAssetManager getAnnotationAssetManager() {
-		return null;
+		return game.annotationAssetManager;
 	}
 
 	@Override
