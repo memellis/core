@@ -390,7 +390,7 @@ public class ReelTile extends ReelSprite implements ReelTileInterface {
         screenDisplayHeight = height;
     }
 
-    public void draw(SpriteBatch spritebatch) {
+    public void drawOverride(SpriteBatch spritebatch) {
         spritebatch.draw(
                 region,
                 super.getX(),
