@@ -448,7 +448,7 @@ public class PlayScreen implements Screen, PlayInterface, LevelCreatorInjectionI
     private void deleteReelAnimation(ReelTile source) {
         Timeline.createSequence()
             .beginParallel()
-            .delay(random.nextFloat()*2.0f)
+            .delay(random.nextFloat() * 2.0f)
             .push(SlotPuzzleTween.to(source, SpriteAccessor.SCALE_XY, 0.5f).target(6, 6).ease(Quad.IN))
             .push(SlotPuzzleTween.to(source, SpriteAccessor.OPACITY, 0.5f).target(0).ease(Quad.IN))
             .end()
