@@ -1,3 +1,18 @@
+/*
+ Copyright 2011 See AUTHORS file.
+
+ Licensed under the Apache License, Version 2.0 (the "License");
+ you may not use this file except in compliance with the License.
+ You may obtain a copy of the License at
+
+ http://www.apache.org/licenses/LICENSE-2.0
+
+ Unless required by applicable law or agreed to in writing, software * distributed under the License is distributed on an "AS IS" BASIS,
+ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ See the License for the specific language governing permissions and
+ limitations under the License.
+ */
+
 package com.ellzone.slotpuzzle2d.prototypes.level.hiddenpattern;
 
 import com.badlogic.gdx.Application;
@@ -123,10 +138,12 @@ public class HiddenPatternFallingReelsAnimatedReelsManager extends SPPrototypeTe
     private boolean reelsStoppedMoving = false;
     private AnimatedReelsMatrixCreator animatedReelsMatrixCreator;
     private boolean gameOver = false;
+    private boolean debug = false;
 
     @Override
     protected void initialiseOverride() {
-        Gdx.app.setLogLevel(Application.LOG_DEBUG);
+        if (debug)
+            Gdx.app.setLogLevel(Application.LOG_DEBUG);
         touch = new Vector2();
         setSpritePositions();
         initialisePlayFiniteStateMachine();
@@ -346,7 +363,6 @@ public class HiddenPatternFallingReelsAnimatedReelsManager extends SPPrototypeTe
     private void delegateIntroSequenceCallback(int type) {
         switch (type) {
             case TweenCallback.END:
-                System.out.println("Intro Sequence finished");
                 hud.resetWorldTime(LEVEL_TIME_LENGTH_IN_SECONDS);
                 hud.resetWorldTime(120);
                 hud.startWorldTimer();
