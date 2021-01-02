@@ -410,11 +410,16 @@ public class LevelCreatorSimple {
     private void actionReelStoppedSpinning(ReelTileEvent event, ReelTile source) {
         source.stopSpinningSound();
         reelsSpinning--;
-        if (reelsSpinning < 1)
-            if ((playStateMachine.getStateMachine().getCurrentState() == PlayState.INTRO_SPINNING_SEQUENCE) |
-                (playStateMachine.getStateMachine().getCurrentState() == PlayState.FLASH) |
-                (playStateMachine.getStateMachine().getCurrentState() == PlayState.PLAY))
+        if (reelsSpinning < 1) {
+            if (playStateMachine == null) {
                 allReelsHaveStoppedSpinning();
+                return;
+            }
+            if ((playStateMachine.getStateMachine().getCurrentState() == PlayState.INTRO_SPINNING_SEQUENCE) |
+                    (playStateMachine.getStateMachine().getCurrentState() == PlayState.FLASH) |
+                    (playStateMachine.getStateMachine().getCurrentState() == PlayState.PLAY))
+                allReelsHaveStoppedSpinning();
+        }
     }
 
     public void allReelsHaveStoppedSpinning() {
@@ -437,7 +442,8 @@ public class LevelCreatorSimple {
     }
 
     private void actionReelStoppedFlashing(ReelTileEvent event, ReelTile reelTile) {
-        if (playStateMachine.getStateMachine().getCurrentState() == PlayState.PLAY) {
+
+        if ((playStateMachine != null) && (playStateMachine.getStateMachine().getCurrentState() == PlayState.PLAY)) {
             System.out.println("Reel stopped flashing Copy logic from PlayScreen");
         }
         reelScoreAnimation(reelTile);
@@ -587,7 +593,8 @@ public class LevelCreatorSimple {
 
     private void deleteReel(BaseTween<?> source) {
         ReelTile reel = (ReelTile) source.getUserData();
-        hud.addScore((reel.getEndReel() + 1) * reel.getScore());
+        if (hud != null)
+            hud.addScore((reel.getEndReel() + 1) * reel.getScore());
         int reelTileIndex = reelTiles.indexOf(reel, true);
         reel.deleteReelTile();
         reelBoxesToDelete.add(reelTileIndex);
