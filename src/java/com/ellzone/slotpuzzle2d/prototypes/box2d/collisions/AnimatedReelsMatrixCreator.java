@@ -57,6 +57,12 @@ public class AnimatedReelsMatrixCreator {
 
     public Array<AnimatedReel> createAnimatedReelsFromSlotPuzzleMatrix(
             int[][] slotPuzzleMatrix) {
+        return
+            createAnimatedReelsFromSlotPuzzleMatrix(slotPuzzleMatrix, false);
+    }
+
+    public Array<AnimatedReel> createAnimatedReelsFromSlotPuzzleMatrix(
+            int[][] slotPuzzleMatrix, boolean isSpinning) {
         Array<AnimatedReel> animatedReels = new Array<AnimatedReel>();
         int numberOfAnimatedReelsCreated = 0;
         for (int r = 0; r < slotPuzzleMatrix.length; r++) {
@@ -66,7 +72,8 @@ public class AnimatedReelsMatrixCreator {
                                 (int) PlayScreen.PUZZLE_GRID_START_X + (c * 40) + 20,
                                 ((slotPuzzleMatrix.length - 1 - r) * 40) + 40,
                                 slotPuzzleMatrix[r][c],
-                                numberOfAnimatedReelsCreated));
+                                numberOfAnimatedReelsCreated,
+                                isSpinning));
                 if (slotPuzzleMatrix[r][c] < 0)
                     animatedReels.get(numberOfAnimatedReelsCreated).getReel().deleteReelTile();
                 else
@@ -143,12 +150,26 @@ public class AnimatedReelsMatrixCreator {
         return animatedReel;
     }
 
+    private AnimatedReel createAnimatedReel(int x, int y, int endReel, int index, boolean isSpinning) {
+        AnimatedReel animatedReel = getAnimatedReel(x, y, endReel, isSpinning);
+        setUpReelTileInAnimatedReel(index, animatedReel);
+        return animatedReel;
+    }
+
     private AnimatedReel createAnimatedReel(
             int x, int y, int endReel, int index, int screenOffset) {
         AnimatedReel animatedReel = getAnimatedReel(x, y, endReel);
         setUpReelTileInAnimatedReel(index, animatedReel, screenOffset);
         return animatedReel;
     }
+
+    private AnimatedReel createAnimatedReel(
+            int x, int y, int endReel, int index, int screenOffset, boolean isSpinning) {
+        AnimatedReel animatedReel = getAnimatedReel(x, y, endReel, isSpinning);
+        setUpReelTileInAnimatedReel(index, animatedReel, screenOffset);
+        return animatedReel;
+    }
+
 
     private void setUpReelTileInAnimatedReel(int index, AnimatedReel animatedReel) {
         ReelTile reelTile = animatedReel.getReel();
@@ -185,8 +206,15 @@ public class AnimatedReelsMatrixCreator {
                 tweenManager);
         animatedReel.setSx(0);
         animatedReel.setEndReel(endReel);
-        animatedReel.setupSpinning();
-        animatedReel.getReel().startSpinning();
+        return animatedReel;
+    }
+
+    private AnimatedReel getAnimatedReel(int x, int y, int endReel, boolean isSpinning) {
+        AnimatedReel animatedReel = getAnimatedReel(x, y, endReel);
+        if (isSpinning) {
+            animatedReel.setupSpinning();
+            animatedReel.getReel().startSpinning();
+        }
         return animatedReel;
     }
 

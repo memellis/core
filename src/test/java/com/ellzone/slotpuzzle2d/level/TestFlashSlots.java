@@ -80,7 +80,7 @@ public class TestFlashSlots {
                   reelTiles);
          Array<ReelTileGridValue> matchedSlots = new Array<>();
          flashSlots.flashSlots(reelTiles);
-        assertFlashSlotsHasFinished(flashSlots);
+         assertFlashSlotsHasFinished(flashSlots);
     }
 
     @Test

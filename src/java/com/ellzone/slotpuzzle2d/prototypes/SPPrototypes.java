@@ -57,6 +57,7 @@ import com.ellzone.slotpuzzle2d.prototypes.events.GdxAiEntityMessaging;
 import com.ellzone.slotpuzzle2d.prototypes.framebuffer.FrameBufferParticleEffectSample;
 import com.ellzone.slotpuzzle2d.prototypes.gdxfreetype.GdxFreeType;
 import com.ellzone.slotpuzzle2d.prototypes.icons.DownloadMamuIcons;
+import com.ellzone.slotpuzzle2d.prototypes.level.bombreel.BombReel;
 import com.ellzone.slotpuzzle2d.prototypes.level.hiddenpattern.HiddenPatternFallingReelsAnimatedReelsManager;
 import com.ellzone.slotpuzzle2d.prototypes.level.hiddenpattern.HiddenPatternWithFallingReels;
 import com.ellzone.slotpuzzle2d.prototypes.level.minislotmachine.MiniSlotMachineLevelFallingReels;
@@ -137,6 +138,7 @@ public class SPPrototypes {
 		ButtonLightUsingLightButton.class,
         ButtonLightUsingLightButtonViaFrameBuffer.class,
         CollidingFallingReels.class,
+		BombReel.class,
         Box2DBoxesFallingFromSlotPuzzleMatrices.class,
         Box2dToggleActiveBoxBodies.class,
         Box2DFallingTest.class,

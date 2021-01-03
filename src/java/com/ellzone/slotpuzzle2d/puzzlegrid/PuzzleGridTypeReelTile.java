@@ -21,6 +21,7 @@ import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.GdxRuntimeException;
 import com.ellzone.slotpuzzle2d.SlotPuzzleConstants;
 import com.ellzone.slotpuzzle2d.screens.PlayScreen;
+import com.ellzone.slotpuzzle2d.sprites.AnimatedReel;
 import com.ellzone.slotpuzzle2d.sprites.ReelTile;
 
 import java.text.MessageFormat;
@@ -29,6 +30,8 @@ import java.util.Set;
 import java.util.Stack;
 
 import static com.ellzone.slotpuzzle2d.puzzlegrid.ReelTileGridValue.Compass;
+import static com.ellzone.slotpuzzle2d.screens.PlayScreen.GAME_LEVEL_HEIGHT;
+import static com.ellzone.slotpuzzle2d.screens.PlayScreen.GAME_LEVEL_WIDTH;
 
 public class PuzzleGridTypeReelTile {
     public static final float FLOAT_ROUNDING_DELTA_FOR_BOX2D = 1.0f;
@@ -602,12 +605,12 @@ public class PuzzleGridTypeReelTile {
                     else
                         matchGrid[r][c] = new ReelTileGridValue(reelLevel.get(i), r, c, i, reelLevel.get(i).getEndReel());
                 }
-//                Gdx.app.debug(SlotPuzzleConstants.SLOT_PUZZLE, MessageFormat.format("r={0} c={1} x={2} y={3} dx={4} dy={5} i={6} v={7}",
-//                        r, c,
-//                        reelLevel.get(i).getX(), reelLevel.get(i).getY(),
-//                        reelLevel.get(i).getDestinationX(), reelLevel.get(i).getDestinationY(),
-//                        i,
-//                        reelLevel.get(i).getEndReel()));
+                Gdx.app.debug(SlotPuzzleConstants.SLOT_PUZZLE, MessageFormat.format("r={0} c={1} x={2} y={3} dx={4} dy={5} i={6} v={7}",
+                        r, c,
+                        reelLevel.get(i).getX(), reelLevel.get(i).getY(),
+                        reelLevel.get(i).getDestinationX(), reelLevel.get(i).getDestinationY(),
+                        i,
+                        reelLevel.get(i).getEndReel()));
             } else
                 Gdx.app.debug(SlotPuzzleConstants.SLOT_PUZZLE, "I don't respond to ***r="+r+" c="+c);
         }
@@ -793,4 +796,22 @@ public class PuzzleGridTypeReelTile {
         }
         return grid;
     }
+
+    public static void printSlotMatrix(Array<AnimatedReel> animatedReels) {
+        PuzzleGridTypeReelTile.printGrid(
+                PuzzleGridTypeReelTile.populateMatchGridStatic(
+                        PuzzleGridTypeReelTile.getReelTilesFromAnimatedReels(animatedReels),
+                        GAME_LEVEL_WIDTH,
+                        GAME_LEVEL_HEIGHT)
+        );
+        System.out.println();
+    }
+
+    public static Array<ReelTile> getReelTilesFromAnimatedReels(Array<AnimatedReel> animatedReels) {
+        Array<ReelTile> reelTiles = new Array<>();
+        for (AnimatedReel animatedReel : animatedReels)
+            reelTiles.add(animatedReel.getReel());
+        return reelTiles;
+    }
+
 }
