@@ -23,7 +23,7 @@ public class TestBombReel {
     private AnimatedReelsMatrixCreator animatedReelsMatrixCreator;
 
     @Test
-    public void testBombReel() throws Exception {
+    public void testWithOneBombReel() throws Exception {
         Gdx.app = new MyGDXApplication();
         Array<AnimatedReel> animatedReels = new Array<>();
         animatedReelsMatrixCreator = new AnimatedReelsMatrixCreator();
@@ -40,5 +40,25 @@ public class TestBombReel {
         ReelTileGridValue[][] puzzleGrid = matchSlots.getPuzzleGrid();
         Array<ReelTileGridValue> matchedSlots = matchSlots.getMatchedSlots();
         assertThat(matchedSlots.size, is(equalTo(0)));
+    }
+
+    @Test
+    public void testWithTwoBombReels() {
+        Gdx.app = new MyGDXApplication();
+        Array<AnimatedReel> animatedReels = new Array<>();
+        animatedReelsMatrixCreator = new AnimatedReelsMatrixCreator();
+        animatedReels = animatedReelsMatrixCreator.createAnimatedReelsFromSlotPuzzleMatrix(
+                SlotPuzzleMatrices.createMatrixFWithTwoBombs(), false);
+        PuzzleGridTypeReelTile.printSlotMatrix(animatedReels);
+
+        MatchSlots matchSlots = new MatchSlots(
+                PuzzleGridTypeReelTile.getReelTilesFromAnimatedReels(animatedReels),
+                GAME_LEVEL_WIDTH,
+                GAME_LEVEL_HEIGHT)
+                .invoke();
+        PuzzleGridTypeReelTile puzzleGridTypeReelTile = matchSlots.getPuzzleGridTypeReelTile();
+        ReelTileGridValue[][] puzzleGrid = matchSlots.getPuzzleGrid();
+        Array<ReelTileGridValue> matchedSlots = matchSlots.getMatchedSlots();
+        assertThat(matchedSlots.size, is(equalTo(2)));
     }
 }
