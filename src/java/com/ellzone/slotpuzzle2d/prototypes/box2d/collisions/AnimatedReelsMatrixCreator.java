@@ -58,7 +58,7 @@ public class AnimatedReelsMatrixCreator {
     public Array<AnimatedReel> createAnimatedReelsFromSlotPuzzleMatrix(
             int[][] slotPuzzleMatrix) {
         return
-            createAnimatedReelsFromSlotPuzzleMatrix(slotPuzzleMatrix, false);
+            createAnimatedReelsFromSlotPuzzleMatrix(slotPuzzleMatrix, true);
     }
 
     public Array<AnimatedReel> createAnimatedReelsFromSlotPuzzleMatrix(

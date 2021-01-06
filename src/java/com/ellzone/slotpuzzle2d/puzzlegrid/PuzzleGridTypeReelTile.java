@@ -22,6 +22,7 @@ import com.badlogic.gdx.utils.GdxRuntimeException;
 import com.ellzone.slotpuzzle2d.SlotPuzzleConstants;
 import com.ellzone.slotpuzzle2d.screens.PlayScreen;
 import com.ellzone.slotpuzzle2d.sprites.AnimatedReel;
+import com.ellzone.slotpuzzle2d.sprites.ReelHelper;
 import com.ellzone.slotpuzzle2d.sprites.ReelTile;
 
 import java.text.MessageFormat;
@@ -814,4 +815,42 @@ public class PuzzleGridTypeReelTile {
         return reelTiles;
     }
 
+    public static Array<ReelTileGridValue> getSurroundingReelTiles(Array<ReelTileGridValue> matchedSlots) {
+        Array<ReelTileGridValue> surroundingReelTiles = new Array<>();
+        if (matchedSlots == null)
+            return null;
+        for (ReelTileGridValue matchedSlot : matchedSlots)
+            surroundingReelTiles =
+                    getSurroundingReelTilesForMatchedSlot(matchedSlot, matchedSlots, surroundingReelTiles);
+
+        for (ReelTileGridValue matchedSlot : matchedSlots) {
+            if (surroundingReelTiles.contains(matchedSlot, true))
+                surroundingReelTiles.removeValue(matchedSlot, true);
+        }
+
+        return surroundingReelTiles;
+    }
+
+    private static Array<ReelTileGridValue> getSurroundingReelTilesForMatchedSlot(
+            ReelTileGridValue matchedSlot,
+            Array<ReelTileGridValue> matchedSlots,
+            Array<ReelTileGridValue> currentSurroundingReelTiles) {
+        if (matchedSlot.getNReelTileGridValue() != null)
+            currentSurroundingReelTiles.add(matchedSlot.getNReelTileGridValue());
+        if (matchedSlot.getNeReelTileGridValue() != null)
+            currentSurroundingReelTiles.add(matchedSlot.getNeReelTileGridValue());
+        if (matchedSlot.getEReelTileGridValue() != null)
+            currentSurroundingReelTiles.add(matchedSlot.getEReelTileGridValue());
+        if (matchedSlot.getSeReelTileGridValue() != null)
+            currentSurroundingReelTiles.add(matchedSlot.getSeReelTileGridValue());
+        if (matchedSlot.getSReelTileGridValue() != null)
+            currentSurroundingReelTiles.add(matchedSlot.getSReelTileGridValue());
+        if (matchedSlot.getSwReelTileGridValue() != null)
+            currentSurroundingReelTiles.add(matchedSlot.getSwReelTileGridValue());
+        if (matchedSlot.getWReelTileGridValue() != null)
+            currentSurroundingReelTiles.add(matchedSlot.getWReelTileGridValue());
+        if (matchedSlot.getNwReelTileGridValue() != null)
+            currentSurroundingReelTiles.add(matchedSlot.getNwReelTileGridValue());
+        return currentSurroundingReelTiles;
+    }
 }

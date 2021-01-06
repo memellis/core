@@ -68,7 +68,7 @@ public class TestMatchSlots {
     }
 
     @Test
-    public void testMacthSLotWithThreeReelsWithOneReelSpinning() {
+    public void testMatchSlotWithThreeReelsWithOneReelSpinning() {
         Gdx.app = new MyGDXApplication();
         ReelPrepare reelPrepare = new ReelPrepare();
         int[][] matrix = getMatrix(SlotPuzzleMatrices.createMatrixWithThreeBoxes());
