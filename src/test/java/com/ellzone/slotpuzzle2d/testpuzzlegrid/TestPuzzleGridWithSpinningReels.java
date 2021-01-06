@@ -16,7 +16,9 @@ package com.ellzone.slotpuzzle2d.testpuzzlegrid;
  limitations under the License.
  */
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.utils.Array;
+import com.ellzone.slotpuzzle2d.gdx.MyGDXApplication;
 import com.ellzone.slotpuzzle2d.prototypes.box2d.collisions.AnimatedReelsMatrixCreator;
 import com.ellzone.slotpuzzle2d.prototypes.box2d.collisions.SlotPuzzleMatrices;
 import com.ellzone.slotpuzzle2d.puzzlegrid.PuzzleGridTypeReelTile;
@@ -37,6 +39,7 @@ public class TestPuzzleGridWithSpinningReels {
 
     @Test
     public void testGridWithSpinningReel() {
+        Gdx.app = new MyGDXApplication();
         animatedReelsMatrixCreator = new AnimatedReelsMatrixCreator();
         int [][] matrix = SlotPuzzleMatrices.createMatrixWithTwoBoxes();
         animatedReels = animatedReelsMatrixCreator.createAnimatedReelsFromSlotPuzzleMatrix(
