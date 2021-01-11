@@ -649,7 +649,13 @@ public class PuzzleGridTypeReelTile {
         return puzzleGrid;
     }
 
-    private ReelTileGridValue[][] setCompassPoint(ReelTileGridValue[][] puzzleGrid, int r, int c, int r1, int c1, Compass compassPoint) {
+    private ReelTileGridValue[][] setCompassPoint(
+            ReelTileGridValue[][] puzzleGrid,
+            int r,
+            int c,
+            int r1,
+            int c1,
+            Compass compassPoint) {
        if (isWithinGrid(puzzleGrid, r1, c1)) {
             if (puzzleGrid[r][c].value == puzzleGrid[r1][c1].value) {
                 puzzleGrid[r][c].setCompassPoint(compassPoint, puzzleGrid[r1][c1]);
@@ -664,10 +670,48 @@ public class PuzzleGridTypeReelTile {
                                   % Compass.getLenth());
     }
 
-    private boolean isWithinGrid(ReelTileGridValue[][] puzzleGrid, int r, int c) {
+    public boolean isWithinGrid(ReelTileGridValue[][] puzzleGrid, int r, int c) {
         return(r >= 0) & (r < puzzleGrid.length) &
               (c >= 0) & (c < puzzleGrid[0].length);
     }
+
+    public ReelTileGridValue[][] createGridLinksWithoutMatch(ReelTileGridValue[][] puzzleGrid) {
+        for (int r = 0; r < puzzleGrid.length; r++) {
+            for (int c = 0; c < puzzleGrid[0].length; c++) {
+                puzzleGrid = createGridLinkWithoutMatch(puzzleGrid, r, c);
+            }
+        }
+        return puzzleGrid;
+    }
+
+    private ReelTileGridValue[][] createGridLinkWithoutMatch(ReelTileGridValue[][] puzzleGrid, int r, int c) {
+        puzzleGrid = setCompassPointWithoutMatch(puzzleGrid, r    , c    ,r - 1, c       , Compass.NORTH);
+        puzzleGrid = setCompassPointWithoutMatch(puzzleGrid, r    , c    ,r - 1,c + 1, Compass.NORTHEAST);
+        puzzleGrid = setCompassPointWithoutMatch(puzzleGrid, r    , c    , r       ,c + 1, Compass.EAST);
+        puzzleGrid = setCompassPointWithoutMatch(puzzleGrid, r    , c    ,r + 1,c + 1, Compass.SOUTHEAST);
+        puzzleGrid = setCompassPointWithoutMatch(puzzleGrid, r    , c    ,r + 1, c       , Compass.SOUTH);
+        puzzleGrid = setCompassPointWithoutMatch(puzzleGrid, r    , c    ,r + 1,c - 1, Compass.SOUTHWEST);
+        puzzleGrid = setCompassPointWithoutMatch(puzzleGrid, r    , c    , r       ,c - 1, Compass.WEST);
+        puzzleGrid = setCompassPointWithoutMatch(puzzleGrid, r    , c    ,r - 1,c - 1, Compass.NORTHWEST);
+        return puzzleGrid;
+    }
+
+    private ReelTileGridValue[][] setCompassPointWithoutMatch(
+            ReelTileGridValue[][] puzzleGrid,
+            int r,
+            int c,
+            int r1,
+            int c1,
+            Compass compassPoint) {
+        if (isWithinGrid(puzzleGrid, r1, c1)) {
+            if ((puzzleGrid[r][c].value >= 0) & (puzzleGrid[r1][c1].value >= 0)) {
+                puzzleGrid[r][c].setCompassPoint(compassPoint, puzzleGrid[r1][c1]);
+                puzzleGrid[r1][c1].setCompassPoint(getOppositeCompassPoint(compassPoint), puzzleGrid[r][c]);
+            }
+        }
+        return puzzleGrid;
+    }
+
 
     public static int getRowFromLevel(float y, int levelHeight) {
         int row = (int) (y - PlayScreen.PUZZLE_GRID_START_Y) / PlayScreen.TILE_HEIGHT;

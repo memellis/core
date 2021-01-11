@@ -40,11 +40,28 @@ public class TestGetSurroundingReelTiles {
         Gdx.app = new MyGDXApplication();
         Array<AnimatedReel> animatedReels = getAnimatedReels(SlotPuzzleMatrices.createMatrixFWithTwoBombs());
 
-        Array<ReelTileGridValue> matchedSlots = getMatchedSlots(animatedReels);
+        MatchSlots matchSlots = getMatchedSlots(animatedReels);
+        Array<ReelTileGridValue> matchedSlots = matchSlots.getMatchedSlots();
         Array<ReelTileGridValue> surroundingReelTiles =
                 PuzzleGridTypeReelTile.getSurroundingReelTiles(matchedSlots);
 
         assertThat(surroundingReelTiles.size, is(equalTo(0)));
+    }
+
+    @Test
+    public void testGetSurroundingReelWithTwoReelTilesAndSurroundingReelTiles() {
+        Gdx.app = new MyGDXApplication();
+        Array<AnimatedReel> animatedReels =
+                getAnimatedReels(SlotPuzzleMatrices.createMatrixFWithTwoBombsSurroundedByReelTiles());
+
+        MatchSlots matchSlots = getMatchedSlots(animatedReels);
+        Array<ReelTileGridValue> matchedSlots = matchSlots.getMatchedSlots();
+        ReelTileGridValue gridWithLinks[][] = matchSlots.createGridLinksWithoutMatch();
+
+        Array<ReelTileGridValue> surroundingReelTiles =
+                PuzzleGridTypeReelTile.getSurroundingReelTiles(matchedSlots);
+
+        assertThat(surroundingReelTiles.size, is(equalTo(10)));
     }
 
     private Array<AnimatedReel> getAnimatedReels(int[][] matrixFWithOneBomb) {
@@ -56,14 +73,11 @@ public class TestGetSurroundingReelTiles {
         return animatedReels;
     }
 
-    private Array<ReelTileGridValue> getMatchedSlots(Array<AnimatedReel> animatedReels) {
-        MatchSlots matchSlots = new MatchSlots(
+    private MatchSlots getMatchedSlots(Array<AnimatedReel> animatedReels) {
+        return new MatchSlots(
                 PuzzleGridTypeReelTile.getReelTilesFromAnimatedReels(animatedReels),
                 GAME_LEVEL_WIDTH,
                 GAME_LEVEL_HEIGHT)
                 .invoke();
-        PuzzleGridTypeReelTile puzzleGridTypeReelTile = matchSlots.getPuzzleGridTypeReelTile();
-        ReelTileGridValue[][] puzzleGrid = matchSlots.getPuzzleGrid();
-        return matchSlots.getMatchedSlots();
     }
 }
