@@ -12,7 +12,6 @@ import com.ellzone.slotpuzzle2d.sprites.AnimatedReel;
 import com.ellzone.slotpuzzle2d.sprites.ReelTile;
 
 import org.junit.Test;
-import org.mockito.internal.matchers.ArrayEquals;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
@@ -59,19 +58,36 @@ public class TestNonMatchGridLinks {
         int pointIndex = 0;
         for (int neighbourCount = 0; neighbourCount<cell.reelTileNeighbours.length; neighbourCount++)
             if (cell.gridValueNeighbours[neighbourCount] != null) {
-                while ((pointIndex < cell.gridValueNeighbours.length) &&
-                        (grid[compassPoints.get(pointIndex).getR()]
-                            [compassPoints.get(pointIndex).getC()].value < 0))
-                    pointIndex++;
-                if ((pointIndex < cell.gridValueNeighbours.length) &&
-                    (grid[compassPoints.get(pointIndex).getR()]
-                            [compassPoints.get(pointIndex).getC()].value >= 0))
+                pointIndex = advanceToNonDeletedReel(cell, grid, compassPoints, pointIndex);
+                if (isNonDeletedReel(cell, grid,compassPoints, pointIndex))
                     assertThat(
                             cell.gridValueNeighbours[neighbourCount],
                             is(equalTo(grid[compassPoints.get(pointIndex).getR()]
                                            [compassPoints.get(pointIndex).getC()])));
                 pointIndex++;
             }
+    }
+
+    private int advanceToNonDeletedReel(
+            ReelTileGridValue cell,
+            ReelTileGridValue[][] grid,
+            Array<Point> compassPoints,
+            int pointIndex) {
+        while ((pointIndex < cell.gridValueNeighbours.length) &&
+                (grid[compassPoints.get(pointIndex).getR()]
+                     [compassPoints.get(pointIndex).getC()].value < 0))
+            pointIndex++;
+        return pointIndex;
+    }
+
+    private boolean isNonDeletedReel(
+            ReelTileGridValue cell,
+            ReelTileGridValue[][] grid,
+            Array<Point> compassPoints,
+            int pointIndex) {
+        return ((pointIndex < cell.gridValueNeighbours.length) &&
+                (grid[compassPoints.get(pointIndex).getR()]
+                [compassPoints.get(pointIndex).getC()].value >= 0));
     }
 
     private Array<Point> getValidPoints(
