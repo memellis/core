@@ -23,8 +23,7 @@ public class TestNonMatchGridLinks {
     public void testNonMatchGridLinks() {
         Gdx.app = new MyGDXApplication();
         PuzzleGridTypeReelTile puzzleGridTypeReelTile = new PuzzleGridTypeReelTile();
-        int[][] grid = SlotPuzzleMatrices.
-                createMatrixFWithTwoBombsSurroundedByReelTilesTopLeft();
+        int[][] grid = SlotPuzzleMatrices.createMatrixFWithTwoBombsSurroundedByReelTilesTopLeft();
         Array<AnimatedReel> animatedReels = getAnimatedReels(grid);
         AnimatedReelsMatrixCreator animatedReelsMatrixCreator = new AnimatedReelsMatrixCreator();
         Array<ReelTile> reelTiles = animatedReelsMatrixCreator.

@@ -18,6 +18,9 @@ package com.ellzone.slotpuzzle2d.puzzlegrid;
 
 import com.ellzone.slotpuzzle2d.sprites.ReelTile;
 
+import java.util.Arrays;
+import java.util.Objects;
+
 public class ReelTileGridValue extends TupleValueIndex {
     public ReelTile reelTile;
     private boolean discovered = false;
@@ -37,7 +40,7 @@ public class ReelTileGridValue extends TupleValueIndex {
             return compasses.length - 1;
         }
 
-        public static int getLenth() {
+        public static int getLength() {
             return compasses.length;
         }
      };
@@ -246,5 +249,22 @@ public class ReelTileGridValue extends TupleValueIndex {
 
     public boolean getDiscovered() {
         return discovered;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        ReelTileGridValue that = (ReelTileGridValue) o;
+        return discovered == that.discovered &&
+                Objects.equals(reelTile, that.reelTile);
+    }
+
+    @Override
+    public int hashCode() {
+        int result = Objects.hash(reelTile, discovered);
+        result = 31 * result + Arrays.hashCode(reelTileNeighbours);
+        result = 31 * result + Arrays.hashCode(gridValueNeighbours);
+        return result;
     }
 }

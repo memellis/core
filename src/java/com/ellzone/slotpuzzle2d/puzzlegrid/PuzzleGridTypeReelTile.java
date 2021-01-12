@@ -22,10 +22,10 @@ import com.badlogic.gdx.utils.GdxRuntimeException;
 import com.ellzone.slotpuzzle2d.SlotPuzzleConstants;
 import com.ellzone.slotpuzzle2d.screens.PlayScreen;
 import com.ellzone.slotpuzzle2d.sprites.AnimatedReel;
-import com.ellzone.slotpuzzle2d.sprites.ReelHelper;
 import com.ellzone.slotpuzzle2d.sprites.ReelTile;
 
 import java.text.MessageFormat;
+import java.util.Comparator;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.Stack;
@@ -667,7 +667,7 @@ public class PuzzleGridTypeReelTile {
 
     private Compass getOppositeCompassPoint(Compass compassPoint) {
         return Compass.getCompass((compassPoint.ordinal() + Compass.values().length / 2)
-                                  % Compass.getLenth());
+                                  % Compass.getLength());
     }
 
     public boolean isWithinGrid(ReelTileGridValue[][] puzzleGrid, int r, int c) {
@@ -859,42 +859,69 @@ public class PuzzleGridTypeReelTile {
         return reelTiles;
     }
 
-    public static Array<ReelTileGridValue> getSurroundingReelTiles(Array<ReelTileGridValue> matchedSlots) {
+    public static Array<ReelTileGridValue> getSurroundingReelTiles(
+            Array<ReelTileGridValue> matchedSlots,
+            final ReelTileGridValue[][] grid) {
         Array<ReelTileGridValue> surroundingReelTiles = new Array<>();
         if (matchedSlots == null)
             return null;
         for (ReelTileGridValue matchedSlot : matchedSlots)
             surroundingReelTiles =
-                    getSurroundingReelTilesForMatchedSlot(matchedSlot, matchedSlots, surroundingReelTiles);
+                    getSurroundingReelTilesForMatchedSlot(matchedSlot, grid, surroundingReelTiles);
+
+        if (surroundingReelTiles == null)
+            return null;
 
         for (ReelTileGridValue matchedSlot : matchedSlots) {
-            if (surroundingReelTiles.contains(matchedSlot, true))
-                surroundingReelTiles.removeValue(matchedSlot, true);
+            if (surroundingReelTiles.contains(matchedSlot, false))
+                surroundingReelTiles.removeValue(matchedSlot, false);
         }
+
+        surroundingReelTiles.sort(new Comparator<ReelTileGridValue>() {
+            @Override
+            public int compare(ReelTileGridValue o1, ReelTileGridValue o2) {
+                return (o1.r * grid[0].length + o1.c) - (o2.r * grid[0].length + o2.c);
+            }
+        });
 
         return surroundingReelTiles;
     }
 
     private static Array<ReelTileGridValue> getSurroundingReelTilesForMatchedSlot(
             ReelTileGridValue matchedSlot,
-            Array<ReelTileGridValue> matchedSlots,
+            ReelTileGridValue[][] grid,
             Array<ReelTileGridValue> currentSurroundingReelTiles) {
-        if (matchedSlot.getNReelTileGridValue() != null)
-            currentSurroundingReelTiles.add(matchedSlot.getNReelTileGridValue());
-        if (matchedSlot.getNeReelTileGridValue() != null)
-            currentSurroundingReelTiles.add(matchedSlot.getNeReelTileGridValue());
-        if (matchedSlot.getEReelTileGridValue() != null)
-            currentSurroundingReelTiles.add(matchedSlot.getEReelTileGridValue());
-        if (matchedSlot.getSeReelTileGridValue() != null)
-            currentSurroundingReelTiles.add(matchedSlot.getSeReelTileGridValue());
-        if (matchedSlot.getSReelTileGridValue() != null)
-            currentSurroundingReelTiles.add(matchedSlot.getSReelTileGridValue());
-        if (matchedSlot.getSwReelTileGridValue() != null)
-            currentSurroundingReelTiles.add(matchedSlot.getSwReelTileGridValue());
-        if (matchedSlot.getWReelTileGridValue() != null)
-            currentSurroundingReelTiles.add(matchedSlot.getWReelTileGridValue());
-        if (matchedSlot.getNwReelTileGridValue() != null)
-            currentSurroundingReelTiles.add(matchedSlot.getNwReelTileGridValue());
+        if (grid == null)
+            return null;
+        if (grid[matchedSlot.r][matchedSlot.c].getNReelTileGridValue() != null)
+            addReelTile(currentSurroundingReelTiles,
+                    grid[matchedSlot.r][matchedSlot.c].getNReelTileGridValue());
+        if (grid[matchedSlot.r][matchedSlot.c].getNeReelTileGridValue() != null)
+            addReelTile(currentSurroundingReelTiles,
+                    grid[matchedSlot.r][matchedSlot.c].getNeReelTileGridValue());
+        if (grid[matchedSlot.r][matchedSlot.c].getEReelTileGridValue() != null)
+            addReelTile(currentSurroundingReelTiles,
+                    grid[matchedSlot.r][matchedSlot.c].getEReelTileGridValue());
+        if (grid[matchedSlot.r][matchedSlot.c].getSeReelTileGridValue() != null)
+            addReelTile(currentSurroundingReelTiles,
+                    grid[matchedSlot.r][matchedSlot.c].getSeReelTileGridValue());
+        if (grid[matchedSlot.r][matchedSlot.c].getSReelTileGridValue() != null)
+            addReelTile(currentSurroundingReelTiles,
+                    grid[matchedSlot.r][matchedSlot.c].getSReelTileGridValue());
+        if (grid[matchedSlot.r][matchedSlot.c].getSwReelTileGridValue() != null)
+            addReelTile(currentSurroundingReelTiles,
+                    grid[matchedSlot.r][matchedSlot.c].getSwReelTileGridValue());
+        if (grid[matchedSlot.r][matchedSlot.c].getWReelTileGridValue() != null)
+            addReelTile(currentSurroundingReelTiles,
+                    grid[matchedSlot.r][matchedSlot.c].getWReelTileGridValue());
+        if (grid[matchedSlot.r][matchedSlot.c].getNwReelTileGridValue() != null)
+            addReelTile(currentSurroundingReelTiles,
+                    grid[matchedSlot.r][matchedSlot.c].getNwReelTileGridValue());
         return currentSurroundingReelTiles;
+    }
+
+    private static void addReelTile(Array<ReelTileGridValue> reelTiles, ReelTileGridValue reelTile) {
+        if (!reelTiles.contains(reelTile, false))
+            reelTiles.add(reelTile);
     }
 }
