@@ -67,13 +67,13 @@ public class TestBombReel {
 
     private Array<AnimatedReel> getAnimatedReels(int[][] matrixFWithOneBomb) {
         Array<AnimatedReel> animatedReels = new Array<>();
-        animatedReelsMatrixCreator = new AnimatedReelsMatrixCreator();
+        AnimatedReelsMatrixCreator animatedReelsMatrixCreator = new AnimatedReelsMatrixCreator();
         animatedReels = animatedReelsMatrixCreator.createAnimatedReelsFromSlotPuzzleMatrix(
                 matrixFWithOneBomb, false);
         PuzzleGridTypeReelTile.printSlotMatrix(animatedReels);
         return animatedReels;
     }
-    
+
     private Array<TupleValueIndex> getMatrixEntriesNotDeleted(int[][] matrix) {
         Array<TupleValueIndex> nonDeletedEntries = new Array<>();
         for (int r = 0; r < matrix.length; r++) {
