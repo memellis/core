@@ -95,18 +95,19 @@ public class BombReel extends SPPrototype implements InputProcessor {
     private Stage stage;
     private PhysicsManagerCustomBodies physicsEngine;
     private MessageManager messageManager;
-    private com.ellzone.slotpuzzle2d.physics.contact.AnimatedReelsManager animatedReelsManager;
+    private AnimatedReelsManager animatedReelsManager;
     private int slotMatrixCycleIndex;
     private Boolean isAutoFall;
     private int numberOfReelBoxesAsleep = 0;
     private int numberOfReelBoxesCreated = 0;
     int[] matrixIdentifier = new int[PlayScreen.GAME_LEVEL_WIDTH];
     private boolean cycleDynamic = true;
-    private boolean testingFullMatrixDeleteingReelBox = false;
-    private boolean testingFullMatrixDeleteingReelBoxes = false;
+    private boolean testBombReel = true;
     private int reelToDelete = 84;
     private Array<Integer> reelsToDelete;
     private AnimatedReelsMatrixCreator animatedReelsMatrixCreator;
+    private boolean reelsHaveFallen = false;
+    private boolean debugSet = false;
 
     @Override
     public void create() {
@@ -118,11 +119,6 @@ public class BombReel extends SPPrototype implements InputProcessor {
         initialiseUniversalTweenEngine();
         isAutoFall = false;
         slotMatrixCycleIndex = 0;
-        reelsToDelete = new Array<>();
-        reelsToDelete.add(84);
-        reelsToDelete.add(72);
-        reelsToDelete.add(48);
-        reelsToDelete.add(36);
         createScrollReelTexture();
         createPhysicsEngine();
         animatedReelsMatrixCreator = new AnimatedReelsMatrixCreator(
@@ -205,15 +201,15 @@ public class BombReel extends SPPrototype implements InputProcessor {
     }
 
     private void initialiseReelSlots() {
-        if (testingFullMatrixDeleteingReelBoxes)
-            testFullMatrixDeletingReelBoxesSetUp();
+        if (testBombReel)
+            testBombReelSetUp();
         else
             cycleSlotMatrix();
     }
 
-    private void testFullMatrixDeletingReelBoxesSetUp() {
+    private void testBombReelSetUp() {
         animatedReels = animatedReelsMatrixCreator.createAnimatedReelsFromSlotPuzzleMatrix(
-                SlotPuzzleMatrices.createMatrixWithAFullMatrix());
+                SlotPuzzleMatrices.createMatrixFWithTwoBombsSurroundedByReelTilesTopLeft(), false);
         numberOfReelsToFall = animatedReelsMatrixCreator.getNumberOfReelsToFall();
     }
 
@@ -319,17 +315,14 @@ public class BombReel extends SPPrototype implements InputProcessor {
         physicsEngine.draw(batch);
         renderReelBoxes(batch, reelBoxBodies);
         if (isReelsStoppingMoving()) {
-            if (testingFullMatrixDeleteingReelBox)
-                deleteAReel();
-            else {
-                if (testingFullMatrixDeleteingReelBoxes)
-                    deleteReels();
-                else
-                if (isAutoFall) {
-                    cycleSlotMatrix();
-                    reCreateBoxes();
-                    setBoxesActive();
-                }
+            if (!reelsHaveFallen) {
+                reelsHaveFallen = true;
+                System.out.println("ReelsStoppedFalling");
+            }
+            if (isAutoFall) {
+                cycleSlotMatrix();
+                reCreateBoxes();
+                setBoxesActive();
             }
         }
         physicsEngine.draw(batch);
@@ -410,6 +403,8 @@ public class BombReel extends SPPrototype implements InputProcessor {
         reelTile.setOrigin(0, 0);
         reelTile.setSize(40, 40);
         reelTile.setRotation(angle);
+        if (debugSet)
+            reelTile.saveRegion();
         reelTile.draw(batch);
     }
 
@@ -430,6 +425,7 @@ public class BombReel extends SPPrototype implements InputProcessor {
         }
         if (keycode == Input.Keys.D) {
             System.out.println("Debug");
+            debugSet = true;
             animatedReelsManager.printSlotMatrix();
             return true;
         }
