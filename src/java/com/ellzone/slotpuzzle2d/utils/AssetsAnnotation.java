@@ -39,8 +39,8 @@ public class AssetsAnnotation {
             LEVEL6 = "levels/level 6 - 40x40.tmx",
             LEVEL6_COMPONENT_BASED = "levels/level 6 component based - 40x40.tmx",
             LEVEL7 = "levels/level 7 - 40x40.tmx",
-
-    WORLD_MAP = "levels/WorldMap.tmx";
+            LEVLE8 = "levels/level 8 - 40x40.tmx",
+            WORLD_MAP = "levels/WorldMap.tmx";
 
     @AnnotationAssetManager.Asset(TextureAtlas.class)
     public final static

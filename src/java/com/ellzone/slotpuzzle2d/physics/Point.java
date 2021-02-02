@@ -18,12 +18,18 @@ package com.ellzone.slotpuzzle2d.physics;
 
 public class Point {
     public float x, y;
+    public int intX, intY;
     
     public Point() {};
     
     public Point(float x, float y) {
     	this.x = x;
     	this.y = y;
+    }
+
+    public Point(int x, int y) {
+        this.intX = x;
+        this.intY = y;
     }
     
     public float getX() {
@@ -41,6 +47,14 @@ public class Point {
     public void setY(float y) {
         this.y = y;
     }
+
+    public int getIntX() { return intX; }
+
+    public int getIntY() { return intY; }
+
+    public void setIntX(int x) { this.intX = x; }
+
+    public void setIntY(int y) { this.intY = y; }
 
     public Point getLocation() {
         return new Point(this.x, this.y);

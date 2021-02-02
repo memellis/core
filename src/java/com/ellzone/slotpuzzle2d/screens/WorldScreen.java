@@ -448,6 +448,8 @@ public class WorldScreen implements Screen, LevelCreatorInjectionInterface {
 			game.setScreen(new PlayScreenMiniSlotMachine(game, levelDoors.get(levelNumber), selectedTile));
 		if (levelDoors.get(levelNumber).getLevelType().equals(FALLING_REELS_LEVEL_TYPE))
 			game.setScreen(new PlayScreenFallingReels(game, levelDoors.get(levelNumber), selectedTile));
+		if (levelDoors.get(levelNumber).getLevelType().equals("NewGameMechanic"))
+			game.setScreen(new PlayScreenFallingReels(game, levelDoors.get(levelNumber), selectedTile));
 	}
 
 	@Override

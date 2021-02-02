@@ -47,6 +47,18 @@ public class MatchSlots {
         return matchedSlots;
     }
 
+    public ReelTileGridValue[][] populateMatchGrid(int[][] puzzleGrid) {
+        return puzzleGridTypeReelTile.populateMatchGrid(puzzleGrid);
+    }
+
+    public ReelTileGridValue[][] createGridLinks() {
+        return puzzleGridTypeReelTile.createGridLinks(puzzleGrid);
+    }
+
+    public ReelTileGridValue[][] createGridLinksWithoutMatch() {
+        return puzzleGridTypeReelTile.createGridLinksWithoutMatch(puzzleGrid);
+    }
+
     public MatchSlots invoke() {
         puzzleGridTypeReelTile = new PuzzleGridTypeReelTile();
         puzzleGrid = puzzleGridTypeReelTile.populateMatchGrid(reelTiles, mapWidth, mapHeight);
