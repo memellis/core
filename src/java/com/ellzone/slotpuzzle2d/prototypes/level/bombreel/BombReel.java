@@ -45,6 +45,7 @@ import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.ellzone.slotpuzzle2d.SlotPuzzleConstants;
 import com.ellzone.slotpuzzle2d.effects.ReelAccessor;
 import com.ellzone.slotpuzzle2d.effects.SpriteAccessor;
+import com.ellzone.slotpuzzle2d.level.MatchSlots;
 import com.ellzone.slotpuzzle2d.physics.PhysicsManagerCustomBodies;
 import com.ellzone.slotpuzzle2d.physics.ReelSink;
 import com.ellzone.slotpuzzle2d.physics.contact.AnimatedReelsManager;
@@ -52,6 +53,8 @@ import com.ellzone.slotpuzzle2d.physics.contact.BoxHittingBoxContactListener;
 import com.ellzone.slotpuzzle2d.prototypes.SPPrototype;
 import com.ellzone.slotpuzzle2d.prototypes.box2d.collisions.AnimatedReelsMatrixCreator;
 import com.ellzone.slotpuzzle2d.prototypes.box2d.collisions.SlotPuzzleMatrices;
+import com.ellzone.slotpuzzle2d.puzzlegrid.PuzzleGridTypeReelTile;
+import com.ellzone.slotpuzzle2d.puzzlegrid.ReelTileGridValue;
 import com.ellzone.slotpuzzle2d.screens.PlayScreen;
 import com.ellzone.slotpuzzle2d.sprites.AnimatedReel;
 import com.ellzone.slotpuzzle2d.sprites.ReelSprites;
@@ -67,6 +70,8 @@ import net.dermetfan.gdx.assets.AnnotationAssetManager;
 import static com.ellzone.slotpuzzle2d.messaging.MessageType.ReelSinkReelsLeftToFall;
 import static com.ellzone.slotpuzzle2d.messaging.MessageType.ReelsLeftToFall;
 import static com.ellzone.slotpuzzle2d.messaging.MessageType.SwapReelsAboveMe;
+import static com.ellzone.slotpuzzle2d.screens.PlayScreen.GAME_LEVEL_HEIGHT;
+import static com.ellzone.slotpuzzle2d.screens.PlayScreen.GAME_LEVEL_WIDTH;
 
 public class BombReel extends SPPrototype implements InputProcessor {
     public static final int SCREEN_OFFSET = 400;
@@ -237,7 +242,6 @@ public class BombReel extends SPPrototype implements InputProcessor {
                 matrixIdentifier,
                 PlayScreen.GAME_LEVEL_WIDTH,
                 PlayScreen.GAME_LEVEL_HEIGHT);
-        System.out.println();
         animatedReels = animatedReelsMatrixCreator.createAnimatedReelsFromSlotPuzzleMatrix(dynamicGrid);
         numberOfReelsToFall = animatedReelsMatrixCreator.getNumberOfReelsToFall();
         slotMatrixCycleIndex++;
@@ -317,6 +321,7 @@ public class BombReel extends SPPrototype implements InputProcessor {
         if (isReelsStoppingMoving()) {
             if (!reelsHaveFallen) {
                 reelsHaveFallen = true;
+                processReelsHaveFallen();
                 System.out.println("ReelsStoppedFalling");
             }
             if (isAutoFall) {
@@ -331,15 +336,45 @@ public class BombReel extends SPPrototype implements InputProcessor {
         renderFps(updateTime);
     }
 
-    private void deleteAReel() {
-        if (reelToDelete >= 0)
-            if (!animatedReels.get(reelToDelete).getReel().isReelTileDeleted()) {
-                deleteTheReel(reelToDelete);
-                reelToDelete -= 12;
-                if (reelToDelete < 0)
-                    animatedReelsManager.printSlotMatrix();
-            }
+    private void processReelsHaveFallen() {
+        Array<ReelTileGridValue> matchedSlots = getMatchedSlots(animatedReels);
+        PuzzleGridTypeReelTile puzzleGridTypeReelTile = new PuzzleGridTypeReelTile();
+        Array<ReelTile> reelTiles = PuzzleGridTypeReelTile.getReelTilesFromAnimatedReels(animatedReels);
+
+        ReelTileGridValue[][] matchGrid =
+                puzzleGridTypeReelTile.populateMatchGrid(
+                        reelTiles, PlayScreen.GAME_LEVEL_WIDTH, PlayScreen.GAME_LEVEL_HEIGHT);
+        ReelTileGridValue[][] linkGrid = puzzleGridTypeReelTile.createGridLinksWithoutMatch(matchGrid);
+        Array<ReelTileGridValue> surroundingReelTiles =
+                PuzzleGridTypeReelTile.getSurroundingReelTiles(matchedSlots, linkGrid);
+        if (surroundingReelTiles.size > 0)
+            explodeSurroundingReels(surroundingReelTiles);
     }
+
+    private Array<ReelTileGridValue> getMatchedSlots(Array<AnimatedReel> animatedReels) {
+        MatchSlots matchSlots = new MatchSlots(
+                PuzzleGridTypeReelTile.getReelTilesFromAnimatedReels(animatedReels),
+                GAME_LEVEL_WIDTH,
+                GAME_LEVEL_HEIGHT)
+                .invoke();
+        PuzzleGridTypeReelTile puzzleGridTypeReelTile = matchSlots.getPuzzleGridTypeReelTile();
+        ReelTileGridValue[][] puzzleGrid = matchSlots.getPuzzleGrid();
+        return matchSlots.getMatchedSlots();
+    }
+
+    private void explodeSurroundingReels(Array<ReelTileGridValue> surroundingReelTiles) {
+
+    }
+
+//    private void deleteAReel() {
+//        if (reelToDelete >= 0)
+//            if (!animatedReels.get(reelToDelete).getReel().isReelTileDeleted()) {
+//                deleteTheReel(reelToDelete);
+//                reelToDelete -= 12;
+//                if (reelToDelete < 0)
+//                    animatedReelsManager.printSlotMatrix();
+//            }
+//    }
 
     private void deleteTheReel(int reelToDelete) {
         reelBoxBodies.get(reelToDelete).setActive(false);

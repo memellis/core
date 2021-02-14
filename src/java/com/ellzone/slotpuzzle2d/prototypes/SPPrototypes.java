@@ -58,6 +58,8 @@ import com.ellzone.slotpuzzle2d.prototypes.framebuffer.FrameBufferParticleEffect
 import com.ellzone.slotpuzzle2d.prototypes.gdxfreetype.GdxFreeType;
 import com.ellzone.slotpuzzle2d.prototypes.icons.DownloadMamuIcons;
 import com.ellzone.slotpuzzle2d.prototypes.level.bombreel.BombReel;
+import com.ellzone.slotpuzzle2d.prototypes.level.bombreel.ExplosionDemo;
+import com.ellzone.slotpuzzle2d.prototypes.level.bombreel.ParticleEffectExplosion;
 import com.ellzone.slotpuzzle2d.prototypes.level.hiddenpattern.HiddenPatternFallingReelsAnimatedReelsManager;
 import com.ellzone.slotpuzzle2d.prototypes.level.hiddenpattern.HiddenPatternWithFallingReels;
 import com.ellzone.slotpuzzle2d.prototypes.level.minislotmachine.MiniSlotMachineLevelFallingReels;
@@ -148,6 +150,7 @@ public class SPPrototypes {
 		DownloadMamuIcons.class,
         EdgeShapes.class,
         EdgeShapesBigCatchBox.class,
+		ExplosionDemo.class,
 		FrameBufferParticleEffectSample.class,
         GdxAiEntityMessaging.class,
         GdxFreeType.class,
@@ -169,6 +172,7 @@ public class SPPrototypes {
         Particle4.class,
         Particle5.class,
         Particle6.class,
+		ParticleEffectExplosion.class,
 		Particle1ExtendingParticleTemplate.class,																										   
 		Particle2ExtendingParticleTemplate.class,					
 		Particle3ExtendingParticleTemplate.class,																																														   //Dynamic.class,																						   
