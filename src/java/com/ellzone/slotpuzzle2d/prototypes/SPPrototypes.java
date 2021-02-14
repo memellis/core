@@ -45,6 +45,7 @@ import com.ellzone.slotpuzzle2d.prototypes.box2d.EdgeShapesBigCatchBox;
 import com.ellzone.slotpuzzle2d.prototypes.box2d.Light;
 import com.ellzone.slotpuzzle2d.prototypes.box2d.collisions.Box2DBoxesFallingFromSlotPuzzleMatrices;
 import com.ellzone.slotpuzzle2d.prototypes.box2d.collisions.Box2dToggleActiveBoxBodies;
+import com.ellzone.slotpuzzle2d.prototypes.box2d.effects.Box2dParticleEffects;
 import com.ellzone.slotpuzzle2d.prototypes.cylinder.Render3DCylinder1;
 import com.ellzone.slotpuzzle2d.prototypes.cylinder.Render3DCylinder2;
 import com.ellzone.slotpuzzle2d.prototypes.cylinder.Render3DCylinder3;
@@ -147,6 +148,7 @@ public class SPPrototypes {
         Box2DFallingReels.class,
         Box2dFallingReelsWithCatchBox.class,
         Box2DFallingSpinningReelsWithCatchBox.class,
+		Box2dParticleEffects.class,
 		DownloadMamuIcons.class,
         EdgeShapes.class,
         EdgeShapesBigCatchBox.class,
