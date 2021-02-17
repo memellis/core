@@ -27,9 +27,12 @@ import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
+import com.badlogic.gdx.graphics.g2d.ParticleEffect;
+import com.badlogic.gdx.graphics.g2d.ParticleEffectPool;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.TmxMapLoader;
@@ -38,6 +41,7 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer;
 import com.badlogic.gdx.physics.box2d.World;
+import com.badlogic.gdx.physics.box2d.graphics.ParticleEmitterBox2D;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.TimeUtils;
@@ -75,6 +79,7 @@ import static com.ellzone.slotpuzzle2d.screens.PlayScreen.GAME_LEVEL_WIDTH;
 
 public class BombReel extends SPPrototype implements InputProcessor {
     public static final int SCREEN_OFFSET = 400;
+    private final int MAX_NBR = 30;
     private OrthographicCamera camera;
     private ShapeRenderer renderer;
     private Box2DDebugRenderer debugRenderer;
@@ -113,6 +118,9 @@ public class BombReel extends SPPrototype implements InputProcessor {
     private AnimatedReelsMatrixCreator animatedReelsMatrixCreator;
     private boolean reelsHaveFallen = false;
     private boolean debugSet = false;
+    private Array<ParticleEffect> explosionEffects;
+    private boolean exploding = false;
+    private ParticleEffectPool bombExplosionPool;
 
     @Override
     public void create() {
@@ -137,6 +145,7 @@ public class BombReel extends SPPrototype implements InputProcessor {
         animatedReelsManager = new AnimatedReelsManager(animatedReels, reelBoxBodies);
         animatedReelsManager.setNumberOfReelsToFall(numberOfReelsToFall);
         messageManager = setUpMessageManager();
+        explosionGenerator();
     }
 
     private void setUpReelSprites() {
@@ -218,6 +227,17 @@ public class BombReel extends SPPrototype implements InputProcessor {
         numberOfReelsToFall = animatedReelsMatrixCreator.getNumberOfReelsToFall();
     }
 
+    private void explosionGenerator() {
+        explosionEffects = new Array<>();
+        TextureAtlas textureAtlas = new TextureAtlas();
+        textureAtlas.addRegion(
+                "particle",
+                new TextureRegion(new Texture("box2d_particle_effects/particle.png")));
+        ParticleEffect explosionEffect = new ParticleEffect();
+        explosionEffect.load(Gdx.files.internal("bomb/particle_explosion.p"), textureAtlas);
+        bombExplosionPool = new ParticleEffectPool(explosionEffect,MAX_NBR*2,  MAX_NBR*2);
+    }
+
     private void cycleSlotMatrix() {
         if (cycleDynamic)
             cycleDynamicSlotMatrix();
@@ -287,7 +307,19 @@ public class BombReel extends SPPrototype implements InputProcessor {
         physicsEngine.update(dt);
         updateAnimatedReels(dt);
         updateReelBoxes();
+        updateBombExplosion(dt);
     }
+
+    private void updateBombExplosion(float dt) {
+        for (int i = explosionEffects.size - 1; i >= 0; i--) {
+            ParticleEffect explosionEffect = explosionEffects.get(i);
+            explosionEffect.update(dt);
+
+            if (explosionEffect.isComplete())
+                explosionEffects.removeIndex(i);
+        }
+    }
+
 
     private void updateReelBoxes() {
         if (animatedReelsManager.getNumberOfReelsToFall() == 0)
@@ -313,12 +345,13 @@ public class BombReel extends SPPrototype implements InputProcessor {
         update(dt);
 
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+
         stage.draw();
         camera.update();
 
         physicsEngine.draw(batch);
         renderReelBoxes(batch, reelBoxBodies);
-        if (isReelsStoppingMoving()) {
+         if (isReelsStoppingMoving() & isReelsStoppedSpinning()) {
             if (!reelsHaveFallen) {
                 reelsHaveFallen = true;
                 processReelsHaveFallen();
@@ -331,9 +364,27 @@ public class BombReel extends SPPrototype implements InputProcessor {
             }
         }
         physicsEngine.draw(batch);
-
         renderWorld();
+        renderBombExplosions();
         renderFps(updateTime);
+    }
+
+    private boolean isReelsStoppedSpinning() {
+        for (AnimatedReel animatedReel : animatedReels) {
+            if (animatedReel.getReel().isSpinning())
+                return false;
+        }
+        return true;
+    }
+
+    private void renderBombExplosions() {
+        batch.setProjectionMatrix(viewport.getCamera().combined);
+        batch.begin();
+        for (int i = explosionEffects.size - 1; i >= 0; i--) {
+            ParticleEffect explosionEffect = explosionEffects.get(i);
+            explosionEffect.draw(batch);
+        }
+        batch.end();
     }
 
     private void processReelsHaveFallen() {
@@ -363,18 +414,19 @@ public class BombReel extends SPPrototype implements InputProcessor {
     }
 
     private void explodeSurroundingReels(Array<ReelTileGridValue> surroundingReelTiles) {
-
+        for (int i = surroundingReelTiles.size - 1; i >= 0; i--) {
+            ParticleEffect explosionEffect = bombExplosionPool.obtain();
+            explosionEffect.getEmitters().add(
+                    new ParticleEmitterBox2D(world, explosionEffect.getEmitters().first()));
+            explosionEffect.getEmitters().removeIndex(0);
+            explosionEffect.setPosition(
+                    surroundingReelTiles.get(i).reelTile.getX() + surroundingReelTiles.get(i).reelTile.getWidth() / 2,
+                    surroundingReelTiles.get(i).reelTile.getY() + surroundingReelTiles.get(i).reelTile.getHeight() / 2);
+            explosionEffect.start();
+            explosionEffects.add(explosionEffect);
+            deleteTheReel(surroundingReelTiles.get(i).reelTile.getIndex());
+        }
     }
-
-//    private void deleteAReel() {
-//        if (reelToDelete >= 0)
-//            if (!animatedReels.get(reelToDelete).getReel().isReelTileDeleted()) {
-//                deleteTheReel(reelToDelete);
-//                reelToDelete -= 12;
-//                if (reelToDelete < 0)
-//                    animatedReelsManager.printSlotMatrix();
-//            }
-//    }
 
     private void deleteTheReel(int reelToDelete) {
         reelBoxBodies.get(reelToDelete).setActive(false);
@@ -438,8 +490,6 @@ public class BombReel extends SPPrototype implements InputProcessor {
         reelTile.setOrigin(0, 0);
         reelTile.setSize(40, 40);
         reelTile.setRotation(angle);
-        if (debugSet)
-            reelTile.saveRegion();
         reelTile.draw(batch);
     }
 
@@ -491,6 +541,7 @@ public class BombReel extends SPPrototype implements InputProcessor {
                 reelBoxBodies);
         animatedReelsManager.setAnimatedReels(animatedReels);
         animatedReelsManager.setReelBodies(reelBoxBodies);
+        reelsHaveFallen = false;
     }
 
     private void reinitialiseAnimatedReel(AnimatedReel animatedReel) {
