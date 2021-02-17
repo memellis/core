@@ -495,8 +495,10 @@ public class BombReel extends SPPrototype implements InputProcessor {
 
     @Override
     public boolean touchDown(int x, int y, int pointer, int button) {
-        if (button == Input.Buttons.LEFT)
+        if (button == Input.Buttons.LEFT) {
+            initialiseReelSlots();
             reCreateBoxes();
+        }
         else
             setBoxesActive();
         return true;
