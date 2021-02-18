@@ -642,7 +642,6 @@ public class LevelCreatorSimple {
     }
 
     public void createStartRandomReelBoxTimer() {
-        System.out.println("createStartRandomReelBoxTimer");
         Timer.schedule(new Timer.Task(){
                            @Override
                            public void run() {
@@ -655,7 +654,6 @@ public class LevelCreatorSimple {
 
     private void timeTocreateRandomReplacementReelBox() {
         itisTimeForRandomReplacementReelBox = true;
-        System.out.println("itisTimeForRandomReplacementReelBox set true");
     }
 
     private void createRandomReplacementReelBox() {
