@@ -75,7 +75,6 @@ public class Ball extends Image {
         if(exploding) {
             explosionEffect.draw(batch);
         }
-
     }
 
     @Override
