@@ -112,6 +112,7 @@ import com.ellzone.slotpuzzle2d.prototypes.tween.Dynamic;
 import com.ellzone.slotpuzzle2d.prototypes.tween.Flash;
 import com.ellzone.slotpuzzle2d.prototypes.tween.GameOverPopUp;
 import com.ellzone.slotpuzzle2d.prototypes.tween.IntroSequence;
+import com.ellzone.slotpuzzle2d.prototypes.tween.IntroSequenceSpinningReelsWithBombSet;
 import com.ellzone.slotpuzzle2d.prototypes.tween.IntroSequenceWithSpinningReels;
 import com.ellzone.slotpuzzle2d.prototypes.tween.LevelOverPopUpUsingLevelPopUp;
 import com.ellzone.slotpuzzle2d.prototypes.tween.LevelPopUp;
@@ -206,6 +207,7 @@ public class SPPrototypes {
         GameOverPopUp.class,
         IntroSequence.class,
         IntroSequenceWithSpinningReels.class,
+		IntroSequenceSpinningReelsWithBombSet.class,
         LevelOverPopUpUsingLevelPopUp.class,
         LevelPopUp.class,
         LevelPopUpUsingLevelPopUp.class,

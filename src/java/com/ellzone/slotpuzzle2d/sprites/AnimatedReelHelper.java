@@ -19,6 +19,7 @@ package com.ellzone.slotpuzzle2d.sprites;
 import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.utils.Array;
 import com.ellzone.slotpuzzle2d.tweenengine.TweenManager;
 import com.ellzone.slotpuzzle2d.utils.AssetsAnnotation;
@@ -45,21 +46,40 @@ public class AnimatedReelHelper {
     private int spriteWidth, spriteHeight;
     private int reelDisplayHeight = 0;
 
-    public AnimatedReelHelper(AnnotationAssetManager annotationAssetManager,
-                              TweenManager tweenManager,
-                              int numberOfAnimatedReels) {
+    public AnimatedReelHelper(
+            AnnotationAssetManager annotationAssetManager,
+            TweenManager tweenManager,
+            int numberOfAnimatedReels) {
         this.annotationAssetManager = annotationAssetManager;
         this.tweenManager = tweenManager;
         this.numberOfAnimatedReels = numberOfAnimatedReels;
         create(annotationAssetManager);
     }
 
-    public AnimatedReelHelper(AnnotationAssetManager annotationAssetManager, TweenManager tweenManager, int numberOfAnimatedReels, int reelDisplayHeight) {
+    public AnimatedReelHelper(
+            AnnotationAssetManager annotationAssetManager,
+            TweenManager tweenManager,
+            int numberOfAnimatedReels,
+            int reelDisplayHeight) {
         this.annotationAssetManager = annotationAssetManager;
         this.tweenManager = tweenManager;
         this.numberOfAnimatedReels = numberOfAnimatedReels;
         this.reelDisplayHeight = reelDisplayHeight;
         create(annotationAssetManager);
+    }
+
+    public AnimatedReelHelper(
+            AnnotationAssetManager annotationAssetManager,
+            TweenManager tweenManager,
+            int numberOfAnimatedReels,
+            int reelDisplayHeight,
+            ReelSprites extendedSprites) {
+        this.annotationAssetManager = annotationAssetManager;
+        this.tweenManager = tweenManager;
+        this.numberOfAnimatedReels = numberOfAnimatedReels;
+        this.reelDisplayHeight = reelDisplayHeight;
+        this.reelSprites = extendedSprites;
+        createWithExtendedSprites(annotationAssetManager);
     }
 
     private void create(AnnotationAssetManager annotationAssetManager) {
@@ -68,7 +88,21 @@ public class AnimatedReelHelper {
         initialiseReelSlots();
     }
 
-     private void getAssets(AnnotationAssetManager annotationAssetManager) {
+    private void createWithExtendedSprites(AnnotationAssetManager annotationAssetManager) {
+        getAssets(annotationAssetManager);
+        addExtendedSprites();
+        initialiseReelSlots();
+    }
+
+    private void addExtendedSprites() {
+        spriteWidth = reelSprites.getReelWidth();
+        spriteHeight = reelSprites.getReelHeight();
+        if (reelDisplayHeight == 0)
+            reelDisplayHeight = spriteHeight;
+    }
+
+
+    private void getAssets(AnnotationAssetManager annotationAssetManager) {
         this.pullLeverSound = annotationAssetManager.get(AssetsAnnotation.SOUND_PULL_LEVER);
         this.reelSpinningSound = annotationAssetManager.get(AssetsAnnotation.SOUND_REEL_SPINNING);
         this.reelStoppingSound = annotationAssetManager.get(AssetsAnnotation.SOUND_REEL_STOPPED);
@@ -88,7 +122,19 @@ public class AnimatedReelHelper {
         slotReelScrollPixmap = PixmapProcessors.createPixmapToAnimate(reelSprites.getSprites());
         slotReelScrollTexture = new Texture(slotReelScrollPixmap);
         for (int i = 0; i < numberOfAnimatedReels; i++) {
-            AnimatedReel animatedReel = new AnimatedReel(slotReelScrollTexture, 0, 0, spriteWidth, spriteHeight, spriteWidth, reelDisplayHeight, 0, null, reelStoppingSound, tweenManager);
+            AnimatedReel animatedReel =
+                    new AnimatedReel(
+                            slotReelScrollTexture,
+                            0,
+                            0,
+                            spriteWidth,
+                            spriteHeight,
+                            spriteWidth,
+                            reelDisplayHeight,
+                            0,
+                            null,
+                            reelStoppingSound,
+                            tweenManager);
             animatedReel.setSx(0);
             animatedReel.setEndReel(Random.getInstance().nextInt(reelSprites.getSprites().length - 1));
             animatedReels.add(animatedReel);

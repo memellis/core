@@ -19,6 +19,7 @@ package com.ellzone.slotpuzzle2d.prototypes.tween;
 import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Sprite;
+import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.Timer;
@@ -30,6 +31,7 @@ import com.ellzone.slotpuzzle2d.sprites.AnimatedReelHelper;
 import com.ellzone.slotpuzzle2d.sprites.ReelTile;
 import com.ellzone.slotpuzzle2d.tweenengine.SlotPuzzleTween;
 import com.ellzone.slotpuzzle2d.tweenengine.Timeline;
+import com.ellzone.slotpuzzle2d.utils.AssetsAnnotation;
 import com.ellzone.slotpuzzle2d.utils.TimeStamp;
 
 import java.util.Random;
@@ -39,7 +41,7 @@ import aurelienribon.tweenengine.equations.Cubic;
 import aurelienribon.tweenengine.equations.Quad;
 import aurelienribon.tweenengine.equations.Quart;
 
-public class IntroSequenceWithSpinningReels extends SPPrototypeTemplate {
+public class IntroSequenceSpinningReelsWithBombSet  extends SPPrototypeTemplate {
     private Pixmap slotReelScrollPixmap;
     private Texture slotReelScrollTexture;
     private Random random;
@@ -51,14 +53,23 @@ public class IntroSequenceWithSpinningReels extends SPPrototypeTemplate {
     @Override
     protected void initialiseOverride() {
         random = new Random();
+        addBombSprite();
         animatedReelHelper = new AnimatedReelHelper(
-          annotationAssetManager,
-          tweenManager,
-          16
+                annotationAssetManager,
+                tweenManager,
+                16,
+                0,
+                reelSprites
         );
         reels = animatedReelHelper.getReelTiles();
         createIntroSequence();
         createStartReelTimer();
+    }
+
+    private void addBombSprite() {
+        TextureAtlas reelAtlas = annotationAssetManager.get(AssetsAnnotation.REELS_EXTENDED);
+        Sprite sprite = reelAtlas.createSprite(AssetsAnnotation.BOMB40x40);
+        reelSprites.addSprite(reelAtlas.createSprite(AssetsAnnotation.BOMB40x40));
     }
 
     @Override
@@ -108,11 +119,11 @@ public class IntroSequenceWithSpinningReels extends SPPrototypeTemplate {
 
     private void createStartReelTimer() {
         Timer.schedule(new Timer.Task(){
-                          @Override
-                          public void run() {
-                              startAReel();
-                          }
-                      }
+                           @Override
+                           public void run() {
+                               startAReel();
+                           }
+                       }
                 , 1.0f
                 , 0.1f
                 , reels.size

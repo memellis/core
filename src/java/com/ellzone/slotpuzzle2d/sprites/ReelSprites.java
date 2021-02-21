@@ -22,6 +22,8 @@ import com.ellzone.slotpuzzle2d.utils.AssetsAnnotation;
 
 import net.dermetfan.gdx.assets.AnnotationAssetManager;
 
+import java.util.Arrays;
+
 public class ReelSprites {
     public final static String REEL_PACK_ATLAS = "reel/reels.pack.atlas";
     public final static String CHERRY = "cherry 40x40";
@@ -70,6 +72,13 @@ public class ReelSprites {
 
     public Sprite[] getSprites() {
         return reels;
+    }
+
+    public void addSprite(Sprite sprite) {
+        Sprite[] increasedReels = new Sprite[reels.length + 1];
+        System.arraycopy(reels, 0, increasedReels, 0, reels.length);
+        increasedReels[reels.length] = sprite;
+        reels = increasedReels;
     }
 
     public void dispose() {

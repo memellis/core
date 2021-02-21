@@ -47,6 +47,7 @@ public class AssetsAnnotation {
         String
             CARDDECK = "playingcards/carddeck.atlas",
             REELS = "reel/reels.pack.atlas",
+            REELS_EXTENDED = "reel/reels_extended.pack.atlas",
             SLOT_HANDLE = "slot_handle/slot_handle.pack.atlas",
             SLOT_HANDLE_ANIMATION = "handle/handle.pack.atlas",
             SPLASH = "splash/pack.atlas",
@@ -92,6 +93,7 @@ public class AssetsAnnotation {
             PEAR40x40 = "pear 40x40",
             TOMATO = "tomato",
             TOMATO40x40 = "tomato 40x40",
+            BOMB40x40 = "bomb 40x40",
             GAME_POPUP = "GamePopUp",
             LEVEL_SPRITE = "level",
             BONUS = "Bonus",
