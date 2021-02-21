@@ -399,7 +399,7 @@ public class SlotPuzzleMatrices {
     public static int[][] createMatrixFWithTwoBombsSurroundedByReelTilesTopLeft() {
         String matrixToInput = "12 x 9\n"
                 + " 0  1  2  3 -1 -1 -1 -1 -1 -1  -1  -1\n"
-                + " 1  9  9  4 -1 -1 -1 -1 -1 -1  -1  -1\n"
+                + " 1  8  8  4 -1 -1 -1 -1 -1 -1  -1  -1\n"
                 + " 0  7  6  5 -1 -1 -1 -1 -1 -1  -1  -1\n"
                 + "-1 -1 -1 -1 -1 -1 -1 -1 -1 -1  -1  -1\n"
                 + "-1 -1 -1 -1 -1 -1 -1 -1 -1 -1  -1  -1\n"

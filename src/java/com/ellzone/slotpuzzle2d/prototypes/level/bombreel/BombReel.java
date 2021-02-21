@@ -124,34 +124,57 @@ public class BombReel extends SPPrototype implements InputProcessor {
 
     @Override
     public void create() {
+        createGameEngine();
+        createScreenWorld();
+    }
+
+    private void createGameEngine() {
         setGdxEngine();
         initialiseDisplay();
         setUpFont();
         loadAssets();
         setUpReelSprites();
+        addBombSprite();
         initialiseUniversalTweenEngine();
+    }
+
+    private void createScreenWorld() {
         isAutoFall = false;
         slotMatrixCycleIndex = 0;
         createScrollReelTexture();
         createPhysicsEngine();
+        setupAnimatedReelsMatrixCreator();
+        initialiseReelSlots();
+        createPhysicsWorld();
+        setupAnimatedReelsManager();
+        messageManager = setUpMessageManager();
+        explosionGenerator();
+    }
+
+    private void setupAnimatedReelsMatrixCreator() {
         animatedReelsMatrixCreator = new AnimatedReelsMatrixCreator(
                 physicsEngine,
                 slotReelScrollTexture,
                 spriteWidth,
                 spriteHeight,
                 tweenManager);
-        initialiseReelSlots();
-        createPhysicsWorld();
+    }
+
+    private void setupAnimatedReelsManager() {
         animatedReelsManager = new AnimatedReelsManager(animatedReels, reelBoxBodies);
         animatedReelsManager.setNumberOfReelsToFall(numberOfReelsToFall);
-        messageManager = setUpMessageManager();
-        explosionGenerator();
     }
 
     private void setUpReelSprites() {
         reelSprites = new ReelSprites(annotationAssetManager);
         spriteWidth = reelSprites.getReelWidth();
         spriteHeight = reelSprites.getReelHeight();
+    }
+
+    private void addBombSprite() {
+        TextureAtlas reelAtlas = annotationAssetManager.get(AssetsAnnotation.REELS_EXTENDED);
+        Sprite sprite = reelAtlas.createSprite(AssetsAnnotation.BOMB40x40);
+        reelSprites.addSprite(reelAtlas.createSprite(AssetsAnnotation.BOMB40x40));
     }
 
     private void setUpFont() {
@@ -354,6 +377,7 @@ public class BombReel extends SPPrototype implements InputProcessor {
          if (isReelsStoppingMoving() & isReelsStoppedSpinning()) {
             if (!reelsHaveFallen) {
                 reelsHaveFallen = true;
+                animatedReelsManager.printSlotMatrix();
                 processReelsHaveFallen();
                 System.out.println("ReelsStoppedFalling");
             }
@@ -392,12 +416,15 @@ public class BombReel extends SPPrototype implements InputProcessor {
         PuzzleGridTypeReelTile puzzleGridTypeReelTile = new PuzzleGridTypeReelTile();
         Array<ReelTile> reelTiles = PuzzleGridTypeReelTile.getReelTilesFromAnimatedReels(animatedReels);
 
+
         ReelTileGridValue[][] matchGrid =
                 puzzleGridTypeReelTile.populateMatchGrid(
                         reelTiles, PlayScreen.GAME_LEVEL_WIDTH, PlayScreen.GAME_LEVEL_HEIGHT);
         ReelTileGridValue[][] linkGrid = puzzleGridTypeReelTile.createGridLinksWithoutMatch(matchGrid);
         Array<ReelTileGridValue> surroundingReelTiles =
                 PuzzleGridTypeReelTile.getSurroundingReelTiles(matchedSlots, linkGrid);
+        if (matchedSlots.size > 0)
+            explodeSurroundingReels(matchedSlots);
         if (surroundingReelTiles.size > 0)
             explodeSurroundingReels(surroundingReelTiles);
     }
