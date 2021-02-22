@@ -21,7 +21,9 @@ import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.utils.Array;
 import com.ellzone.slotpuzzle2d.prototypes.SPPrototype;
 
 public class AnimateBombViaSpriteSheet extends SPPrototype {
@@ -29,8 +31,9 @@ public class AnimateBombViaSpriteSheet extends SPPrototype {
     private static final int FRAME_COLS = 7, FRAME_ROWS = 2;
 
     // Objects used
-    Animation<TextureRegion> bombAnimation; // Must declare frame type (TextureRegion)
+    Array<Animation<TextureRegion>> bombAnimations;
     Texture bombSheet;
+    TextureAtlas atlas;
     SpriteBatch spriteBatch;
 
     // A variable for tracking elapsed time for the animation
@@ -41,6 +44,8 @@ public class AnimateBombViaSpriteSheet extends SPPrototype {
 
         // Load the sprite sheet as a Texture
         bombSheet = new Texture(Gdx.files.internal("bomb/bomb40x40.png"));
+
+        atlas = new TextureAtlas(Gdx.files.internal("bomb/bomb_animation.pack.atlas"));
 
         // Use the split utility method to create a 2D array of TextureRegions. This is
         // possible because this sprite sheet contains frames of equal size and they are
@@ -59,25 +64,42 @@ public class AnimateBombViaSpriteSheet extends SPPrototype {
             }
         }
 
-        // Initialize the Animation with the frame interval and array of frames
-        bombAnimation = new Animation<TextureRegion>(0.025f, walkFrames);
+        bombAnimations = new Array<Animation<TextureRegion>>();
 
-        // Instantiate a SpriteBatch for drawing and reset the elapsed animation
-        // time to 0
+        // Initialize the Animation with the frame interval and array of frames
+        bombAnimations.add(new Animation<TextureRegion>(0.1f, walkFrames));
+        bombAnimations.add(
+                new Animation<TextureRegion>(
+                        0.1f,
+                        atlas.findRegions("bomb"),
+                        Animation.PlayMode.LOOP));
+
         spriteBatch = new SpriteBatch();
         stateTime = 0f;
     }
 
     @Override
     public void render() {
-        Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT); // Clear screen
-        stateTime += Gdx.graphics.getDeltaTime(); // Accumulate elapsed animation time
+        Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+        stateTime += Gdx.graphics.getDeltaTime();
 
         // Get current frame of animation for the current stateTime
-        TextureRegion currentFrame = bombAnimation.getKeyFrame(stateTime, true);
+//        TextureRegion currentFrame = bombAnimation.getKeyFrame(stateTime, true);
+        int count = 0;
         spriteBatch.begin();
-        spriteBatch.draw(currentFrame, 50, 50); // Draw current frame at (50, 50)
+        for (Animation bombAnimation : bombAnimations)
+            drawAnimationCurrentFrame(
+                    spriteBatch,
+                    (TextureRegion) bombAnimation.getKeyFrame(stateTime, true),
+                    50 * count++,
+                    (int) Gdx.graphics.getHeight() / 2);
+//        spriteBatch.draw(currentFrame, 50, 50); // Draw current frame at (50, 50)
         spriteBatch.end();
+    }
+
+    private void drawAnimationCurrentFrame(
+            SpriteBatch spriteBatch, TextureRegion currentFrame, int x, int y) {
+        spriteBatch.draw(currentFrame, x, y);
     }
 
     @Override
