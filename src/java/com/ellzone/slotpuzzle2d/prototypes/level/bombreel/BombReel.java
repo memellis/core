@@ -246,7 +246,7 @@ public class BombReel extends SPPrototype implements InputProcessor {
 
     private void testBombReelSetUp() {
         animatedReels = animatedReelsMatrixCreator.createAnimatedReelsFromSlotPuzzleMatrix(
-                SlotPuzzleMatrices.createMatrixFWithTwoBombsSurroundedByReelTilesTopLeft(), false);
+                SlotPuzzleMatrices.createMatrixFWithTwoBombsSurroundedBySomeReelTiles(), false);
         numberOfReelsToFall = animatedReelsMatrixCreator.getNumberOfReelsToFall();
     }
 
@@ -424,9 +424,9 @@ public class BombReel extends SPPrototype implements InputProcessor {
         Array<ReelTileGridValue> surroundingReelTiles =
                 PuzzleGridTypeReelTile.getSurroundingReelTiles(matchedSlots, linkGrid);
         if (matchedSlots.size > 0)
-            explodeSurroundingReels(matchedSlots);
+            explodeReelsTiles(matchedSlots);
         if (surroundingReelTiles.size > 0)
-            explodeSurroundingReels(surroundingReelTiles);
+            explodeReelsTiles(surroundingReelTiles);
     }
 
     private Array<ReelTileGridValue> getMatchedSlots(Array<AnimatedReel> animatedReels) {
@@ -440,18 +440,18 @@ public class BombReel extends SPPrototype implements InputProcessor {
         return matchSlots.getMatchedSlots();
     }
 
-    private void explodeSurroundingReels(Array<ReelTileGridValue> surroundingReelTiles) {
-        for (int i = surroundingReelTiles.size - 1; i >= 0; i--) {
+    private void explodeReelsTiles(Array<ReelTileGridValue> reelTiles) {
+        for (int i = reelTiles.size - 1; i >= 0; i--) {
             ParticleEffect explosionEffect = bombExplosionPool.obtain();
             explosionEffect.getEmitters().add(
                     new ParticleEmitterBox2D(world, explosionEffect.getEmitters().first()));
             explosionEffect.getEmitters().removeIndex(0);
             explosionEffect.setPosition(
-                    surroundingReelTiles.get(i).reelTile.getX() + surroundingReelTiles.get(i).reelTile.getWidth() / 2,
-                    surroundingReelTiles.get(i).reelTile.getY() + surroundingReelTiles.get(i).reelTile.getHeight() / 2);
+                    reelTiles.get(i).reelTile.getX() + reelTiles.get(i).reelTile.getWidth() / 2,
+                    reelTiles.get(i).reelTile.getY() + reelTiles.get(i).reelTile.getHeight() / 2);
             explosionEffect.start();
             explosionEffects.add(explosionEffect);
-            deleteTheReel(surroundingReelTiles.get(i).reelTile.getIndex());
+            deleteTheReel(reelTiles.get(i).reelTile.getIndex());
         }
     }
 
