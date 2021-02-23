@@ -26,6 +26,7 @@ import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.ParticleEffect;
 import com.badlogic.gdx.graphics.g2d.ParticleEffectPool;
@@ -79,6 +80,7 @@ import static com.ellzone.slotpuzzle2d.screens.PlayScreen.GAME_LEVEL_WIDTH;
 
 public class BombReel extends SPPrototype implements InputProcessor {
     public static final int SCREEN_OFFSET = 400;
+    public static final int BOMB_REEL = 8;
     private final int MAX_NBR = 30;
     private OrthographicCamera camera;
     private ShapeRenderer renderer;
@@ -121,6 +123,11 @@ public class BombReel extends SPPrototype implements InputProcessor {
     private Array<ParticleEffect> explosionEffects;
     private boolean exploding = false;
     private ParticleEffectPool bombExplosionPool;
+    private TextureAtlas bombAtlas;
+    private Array<Animation<TextureRegion>> bombAnimations;
+    private Array<ReelTileGridValue> bombFuses;
+    private boolean bombFusesReached;
+    private float stateTime;
 
     @Override
     public void create() {
@@ -149,6 +156,7 @@ public class BombReel extends SPPrototype implements InputProcessor {
         setupAnimatedReelsManager();
         messageManager = setUpMessageManager();
         explosionGenerator();
+        stateTime = 0f;
     }
 
     private void setupAnimatedReelsMatrixCreator() {
@@ -207,11 +215,12 @@ public class BombReel extends SPPrototype implements InputProcessor {
     }
 
     private void getAssets() {
+        bombAtlas = annotationAssetManager.get(AssetsAnnotation.BOMB_ANIMATION);
         slotHandleAtlas = annotationAssetManager.get(AssetsAnnotation.SLOT_HANDLE);
         pullLeverSound = annotationAssetManager.get(AssetsAnnotation.SOUND_PULL_LEVER);
         reelSpinningSound = annotationAssetManager.get(AssetsAnnotation.SOUND_REEL_SPINNING);
         reelStoppingSound = annotationAssetManager.get(AssetsAnnotation.SOUND_REEL_STOPPED);
-    }
+     }
 
     private void setUpAssetManager() {
         annotationAssetManager = new AnnotationAssetManager();
@@ -259,7 +268,25 @@ public class BombReel extends SPPrototype implements InputProcessor {
         ParticleEffect explosionEffect = new ParticleEffect();
         explosionEffect.load(Gdx.files.internal("bomb/particle_explosion.p"), textureAtlas);
         bombExplosionPool = new ParticleEffectPool(explosionEffect,MAX_NBR*2,  MAX_NBR*2);
+        addBombAnimation();
     }
+
+    private void addBombAnimation() {
+        bombAnimations = new Array<Animation<TextureRegion>>();
+        bombAnimations.add(
+                new Animation<TextureRegion>(
+                        0.1f,
+                        bombAtlas.findRegions("bomb"),
+                        Animation.PlayMode.LOOP));
+        bombAnimations.add(
+                new Animation<TextureRegion>(
+                        0.1f,
+                        bombAtlas.findRegions("bomb"),
+                        Animation.PlayMode.LOOP));
+        bombFuses = new Array<>();
+        bombFusesReached = false;
+    }
+
 
     private void cycleSlotMatrix() {
         if (cycleDynamic)
@@ -331,6 +358,7 @@ public class BombReel extends SPPrototype implements InputProcessor {
         updateAnimatedReels(dt);
         updateReelBoxes();
         updateBombExplosion(dt);
+
     }
 
     private void updateBombExplosion(float dt) {
@@ -364,6 +392,7 @@ public class BombReel extends SPPrototype implements InputProcessor {
         long start = TimeUtils.nanoTime();
         float dt = Gdx.graphics.getDeltaTime();
         float updateTime = (TimeUtils.nanoTime() - start) / 1000000000.0f;
+        stateTime += dt;
 
         update(dt);
 
@@ -389,9 +418,35 @@ public class BombReel extends SPPrototype implements InputProcessor {
         }
         physicsEngine.draw(batch);
         renderWorld();
+        renderBombFuseaAnimations(batch);
         renderBombExplosions();
         renderFps(updateTime);
     }
+
+    private void renderBombFuseaAnimations(SpriteBatch batch) {
+        batch.begin();
+        for (int i = bombFuses.size - 1; i >= 0; i--) {
+            drawAnimationCurrentFrame(
+                    batch,
+                    (TextureRegion) bombAnimations.get(i).getKeyFrame(stateTime, false),
+                    bombFuses.get(i).getReelTile().getX(),
+                    bombFuses.get(i).getReelTile().getY()
+            );
+            if (bombAnimations.get(i).isAnimationFinished(stateTime)) {
+                if (i == 0) {
+                    processExplosions(bombFuses);
+                    bombFuses.removeRange(0, bombFuses.size - 1);
+                }
+            }
+        }
+        batch.end();
+    }
+
+    private void drawAnimationCurrentFrame(
+            SpriteBatch spriteBatch, TextureRegion currentFrame, float x, float y) {
+        spriteBatch.draw(currentFrame, x, y);
+    }
+
 
     private boolean isReelsStoppedSpinning() {
         for (AnimatedReel animatedReel : animatedReels) {
@@ -413,10 +468,12 @@ public class BombReel extends SPPrototype implements InputProcessor {
 
     private void processReelsHaveFallen() {
         Array<ReelTileGridValue> matchedSlots = getMatchedSlots(animatedReels);
+        addToBombFuseAnimtion(matchedSlots);
+    }
+
+    private void processExplosions(Array<ReelTileGridValue> matchedSlots) {
         PuzzleGridTypeReelTile puzzleGridTypeReelTile = new PuzzleGridTypeReelTile();
         Array<ReelTile> reelTiles = PuzzleGridTypeReelTile.getReelTilesFromAnimatedReels(animatedReels);
-
-
         ReelTileGridValue[][] matchGrid =
                 puzzleGridTypeReelTile.populateMatchGrid(
                         reelTiles, PlayScreen.GAME_LEVEL_WIDTH, PlayScreen.GAME_LEVEL_HEIGHT);
@@ -427,6 +484,16 @@ public class BombReel extends SPPrototype implements InputProcessor {
             explodeReelsTiles(matchedSlots);
         if (surroundingReelTiles.size > 0)
             explodeReelsTiles(surroundingReelTiles);
+    }
+
+    private void addToBombFuseAnimtion(Array<ReelTileGridValue> matchedSlots) {
+        if (!bombFusesReached)
+            for (ReelTileGridValue reelTileGridValue : matchedSlots) {
+                if (reelTileGridValue.reelTile.getEndReel() == BOMB_REEL) {
+                    bombFuses.add(reelTileGridValue);
+                    stateTime = 0;
+                }
+            }
     }
 
     private Array<ReelTileGridValue> getMatchedSlots(Array<AnimatedReel> animatedReels) {

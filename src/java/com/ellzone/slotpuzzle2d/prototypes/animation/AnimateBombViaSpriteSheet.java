@@ -83,8 +83,6 @@ public class AnimateBombViaSpriteSheet extends SPPrototype {
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
         stateTime += Gdx.graphics.getDeltaTime();
 
-        // Get current frame of animation for the current stateTime
-//        TextureRegion currentFrame = bombAnimation.getKeyFrame(stateTime, true);
         int count = 0;
         spriteBatch.begin();
         for (Animation bombAnimation : bombAnimations)
@@ -93,7 +91,6 @@ public class AnimateBombViaSpriteSheet extends SPPrototype {
                     (TextureRegion) bombAnimation.getKeyFrame(stateTime, true),
                     50 * count++,
                     (int) Gdx.graphics.getHeight() / 2);
-//        spriteBatch.draw(currentFrame, 50, 50); // Draw current frame at (50, 50)
         spriteBatch.end();
     }
 

@@ -52,7 +52,8 @@ public class AssetsAnnotation {
             SLOT_HANDLE_ANIMATION = "handle/handle.pack.atlas",
             SPLASH = "splash/pack.atlas",
             SPLASH3 = "splash/splash3.pack.atlas",
-            TILES = "tiles/tiles.pack.atlas";
+            TILES = "tiles/tiles.pack.atlas",
+            BOMB_ANIMATION = "bomb/bomb_animation.pack.atlas";
 
     @AnnotationAssetManager.Asset(Texture.class)
     public final static
