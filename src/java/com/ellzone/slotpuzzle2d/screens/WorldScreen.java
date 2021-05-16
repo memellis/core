@@ -120,6 +120,7 @@ public class WorldScreen implements Screen, LevelCreatorInjectionInterface {
     public static final String LEVEL_DELIMETER = "-";
 	public static final String WORLD_LEVEL = "World Level";
 	private static final String SLOT_MACHINE_LAYER = "Slot Machine Components";
+	public static final String BOMBS_LEVEL_TYPE = "BombsLevel";
 
 	private SlotPuzzle game;
 	private Viewport viewport;
@@ -448,7 +449,7 @@ public class WorldScreen implements Screen, LevelCreatorInjectionInterface {
 			game.setScreen(new PlayScreenMiniSlotMachine(game, levelDoors.get(levelNumber), selectedTile));
 		if (levelDoors.get(levelNumber).getLevelType().equals(FALLING_REELS_LEVEL_TYPE))
 			game.setScreen(new PlayScreenFallingReels(game, levelDoors.get(levelNumber), selectedTile));
-		if (levelDoors.get(levelNumber).getLevelType().equals("NewGameMechanic"))
+		if (levelDoors.get(levelNumber).getLevelType().equals(BOMBS_LEVEL_TYPE))
 			game.setScreen(new PlayScreenFallingReels(game, levelDoors.get(levelNumber), selectedTile));
 	}
 
