@@ -64,6 +64,7 @@ import com.ellzone.slotpuzzle2d.level.hidden.HiddenPattern;
 import com.ellzone.slotpuzzle2d.level.hidden.HiddenPlayingCard;
 import com.ellzone.slotpuzzle2d.level.map.MapLevelNameComparator;
 import com.ellzone.slotpuzzle2d.level.popups.PlayScreenPopUps;
+import com.ellzone.slotpuzzle2d.level.reel.ReelType;
 import com.ellzone.slotpuzzle2d.level.sequence.PlayScreenIntroSequence;
 import com.ellzone.slotpuzzle2d.physics.DampenedSineParticle;
 import com.ellzone.slotpuzzle2d.puzzlegrid.PuzzleGridType;
@@ -89,7 +90,6 @@ import com.ellzone.slotpuzzle2d.utils.TimeStamp;
 
 import net.dermetfan.gdx.assets.AnnotationAssetManager;
 
-import java.sql.Timestamp;
 import java.util.Random;
 
 import aurelienribon.tweenengine.equations.Quad;
@@ -172,6 +172,7 @@ public class PlayScreen implements Screen, PlayInterface, LevelCreatorInjectionI
     protected AudioManager audioManager;
     protected MessageManager messageManager;
     private int currentReel = 0;
+    private String addReel;
 
     public PlayScreen(SlotPuzzle game, LevelDoor levelDoor, MapTile mapTile) {
         this.game = game;
@@ -202,7 +203,6 @@ public class PlayScreen implements Screen, PlayInterface, LevelCreatorInjectionI
         initialiseTweenEngine();
         getAssets(game.annotationAssetManager);
         createSprites();
-        slotReelScrollTexture = createSlotReelScrollTexture();
         audioManager = new AudioManager(game.annotationAssetManager);
     }
 
@@ -222,7 +222,7 @@ public class PlayScreen implements Screen, PlayInterface, LevelCreatorInjectionI
     }
 
     private Texture createSlotReelScrollTexture() {
-        Pixmap slotReelScrollPixmap = PixmapProcessors.createPixmapToAnimate(sprites);
+        Pixmap slotReelScrollPixmap = PixmapProcessors.createPixmapToAnimate(reelSprites.getSprites());
         return new Texture(slotReelScrollPixmap);
     }
 
@@ -255,6 +255,10 @@ public class PlayScreen implements Screen, PlayInterface, LevelCreatorInjectionI
     }
 
     private void loadLevel() {
+        getMapProperties(level);
+        if (addReel.equals(ReelType.Bomb.name))
+            addBombSprite();
+        slotReelScrollTexture = createSlotReelScrollTexture();
         LevelObjectCreatorEntityHolder levelObjectCreator = new LevelObjectCreatorEntityHolder(this, world, rayHandler);
         Array<RectangleMapObject> extractedLevelRectangleMapObjects = extractLevelAssets(level);
         levelObjectCreator.createLevel(extractedLevelRectangleMapObjects);
@@ -263,9 +267,15 @@ public class PlayScreen implements Screen, PlayInterface, LevelCreatorInjectionI
         levelLoader.createLevel(GAME_LEVEL_WIDTH, GAME_LEVEL_HEIGHT);
         reelsSpinning = reelTiles.size;
         hiddenPattern = levelLoader.getHiddenPattern();
-        getMapProperties(level);
         flashSlots = new FlashSlots(tweenManager, mapWidth, mapHeight, reelTiles);
     }
+
+    private void addBombSprite() {
+        TextureAtlas reelAtlas = game.annotationAssetManager.get(AssetsAnnotation.REELS_EXTENDED);
+        Sprite sprite = reelAtlas.createSprite(AssetsAnnotation.BOMB40x40);
+        reelSprites.addSprite(reelAtlas.createSprite(AssetsAnnotation.BOMB40x40));
+    }
+
 
     protected void getLevelEntities(LevelObjectCreatorEntityHolder levelObjectCreator) {
         animatedReels = levelObjectCreator.getAnimatedReels();
@@ -383,6 +393,7 @@ public class PlayScreen implements Screen, PlayInterface, LevelCreatorInjectionI
         MapProperties mapProperties = level.getProperties();
         mapWidth = mapProperties.get(WIDTH_KEY, Integer.class);
         mapHeight = mapProperties.get(HEIGHT_KEY, Integer.class);
+        addReel = mapProperties.get("AddReel", String.class) == null ? "" :  mapProperties.get("AddReel", String.class) ;
     }
 
     private void createReelIntroSequence() {
@@ -853,7 +864,7 @@ public class PlayScreen implements Screen, PlayInterface, LevelCreatorInjectionI
 
     protected void renderSpinHelper() {
         if (displaySpinHelp)
-            sprites[displaySpinHelpSprite].draw(game.batch);
+            reelSprites.getSprites()[displaySpinHelpSprite].draw(game.batch);
     }
 
     protected void renderScore() {
