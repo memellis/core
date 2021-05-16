@@ -16,7 +16,7 @@
 package com.ellzone.slotpuzzle2d.messaging;
 
 public enum MessageType {
-    AddedCompoenent("AddComponent", 0),
+    AddedComponent("AddComponent", 0),
     RemovedComponent("RemoveComponent", 1),
     AddedEntity("AddedEntity", 2),
     RemovedEntity("RemovedEntity",3),
@@ -39,7 +39,7 @@ public enum MessageType {
         this.index = index;
     }
 
-    public static int getNumberOfTypes() {
+    public static int getNumberOfMessageTypes() {
         return MessageType.values().length;
     }
 }
