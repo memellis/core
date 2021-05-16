@@ -76,6 +76,7 @@ public class LevelCreatorSimple {
     public static final String PLAYING_CARD_LEVEL_TYPE = "PlayingCard";
     public static final String BONUS_LEVEL_TYPE = "BonusLevelType";
     public static final String FALLING_REELS_LEVEL_TYPE = "FallingReels";
+    public static final String BOMBS_LEVEL_TYPE = "BombsLevel";
     public static final String REELS_LAYER_NAME = "Reels";
     public static final int OFF_PLAY_SCREEN_OFFSET = 420;
 
@@ -439,13 +440,13 @@ public class LevelCreatorSimple {
             if (testForJackpot(reelTiles, levelWidth, levelHeight))
                 iWonABonus();
         }
+        if (levelDoor.getLevelType().equals(BOMBS_LEVEL_TYPE)) {
+            if (testForJackpot(reelTiles, levelWidth, levelHeight))
+                iWonABonus();
+        }
     }
 
     private void actionReelStoppedFlashing(ReelTileEvent event, ReelTile reelTile) {
-
-        if ((playStateMachine != null) && (playStateMachine.getStateMachine().getCurrentState() == PlayState.PLAY)) {
-            System.out.println("Reel stopped flashing Copy logic from PlayScreen");
-        }
         reelScoreAnimation(reelTile);
         deleteReelAnimation(reelTile);
     }
@@ -584,9 +585,12 @@ public class LevelCreatorSimple {
                     if (levelDoor.getLevelType().equals(PLAYING_CARD_LEVEL_TYPE))
                         testPlayingCardLevelWon(levelWidth, levelHeight);
                     if (levelDoor.getLevelType().equals(HIDDEN_PATTERN_LEVEL_TYPE))
-                        testForHiddenPlatternLevelWon(levelWidth, levelHeight);
+                        testForHiddenPatternLevelWon(levelWidth, levelHeight);
                     if (levelDoor.getLevelType().equals(BONUS_LEVEL_TYPE))
                         testForBonusLevelWon(levelWidth, levelHeight);
+                    if (levelDoor.getLevelType().equals(BOMBS_LEVEL_TYPE))
+                        testForBonusLevelWon(levelWidth, levelHeight);
+
             }
         }
     };
@@ -610,7 +614,7 @@ public class LevelCreatorSimple {
             iWonTheLevel();
     }
 
-    private void testForHiddenPlatternLevelWon(int levelWidth, int levelHeight) {
+    private void testForHiddenPatternLevelWon(int levelWidth, int levelHeight) {
         PuzzleGridType puzzleGrid = new PuzzleGridType();
         TupleValueIndex[][] matchGrid = puzzleGridTypeReelTile.populateMatchGrid(reelTiles, levelWidth, levelHeight);
         puzzleGrid.matchGridSlots(matchGrid);
@@ -645,14 +649,14 @@ public class LevelCreatorSimple {
         Timer.schedule(new Timer.Task(){
                            @Override
                            public void run() {
-                                timeTocreateRandomReplacementReelBox();
+                                timeToCreateRandomReplacementReelBox();
                            }
                        }
                 , (Random.getInstance().nextFloat() + 1.0f) * 5
         );
     }
 
-    private void timeTocreateRandomReplacementReelBox() {
+    private void timeToCreateRandomReplacementReelBox() {
         itisTimeForRandomReplacementReelBox = true;
     }
 

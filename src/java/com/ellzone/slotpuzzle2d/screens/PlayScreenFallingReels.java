@@ -237,7 +237,8 @@ public class PlayScreenFallingReels extends PlayScreen {
                 default:
                     break;
             }
-            if (playStateMachine.getStateMachine().getCurrentState() == PlayState.PLAY && playState != PlayStates.BONUS_LEVEL_ENDED) {
+            if (playStateMachine.getStateMachine().getCurrentState() == PlayState.PLAY &&
+                playState != PlayStates.BONUS_LEVEL_ENDED) {
                 Gdx.app.debug(SLOTPUZZLE_SCREEN, "Play");
                 processIsTileClicked();
             }
