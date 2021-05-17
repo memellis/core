@@ -79,7 +79,7 @@ public class PlayScreenMiniSlotMachine extends PlayScreen {
         slotHandles = levelObjectCreator.getHandles();
     }
 
-    protected LevelLoader getLevelLoader() {
+    protected LevelLoader createLevelLoader() {
         LevelLoader levelLoader = new LevelLoader(game.annotationAssetManager, levelDoor, super.mapTile, animatedReels);
         levelLoader.setStoppedSpinningCallback(new LevelCallback() {
             @Override

@@ -92,11 +92,6 @@ public class BombExplosion {
                         0.1f,
                         bombAtlas.findRegions("bomb"),
                         Animation.PlayMode.LOOP));
-        bombAnimations.add(
-                new Animation<TextureRegion>(
-                        0.1f,
-                        bombAtlas.findRegions("bomb"),
-                        Animation.PlayMode.LOOP));
         bombFuses = new Array<>();
      }
 
@@ -120,11 +115,11 @@ public class BombExplosion {
         for (int i = bombFuses.size - 1; i >= 0; i--) {
             drawAnimationCurrentFrame(
                     batch,
-                    (TextureRegion) bombAnimations.get(i).getKeyFrame(stateTime, false),
+                    (TextureRegion) bombAnimations.get(0).getKeyFrame(stateTime, false),
                     bombFuses.get(i).getReelTile().getX(),
                     bombFuses.get(i).getReelTile().getY()
             );
-            if (bombAnimations.get(i).isAnimationFinished(stateTime)) {
+            if (bombAnimations.get(0).isAnimationFinished(stateTime)) {
                 if (i == 0) {
                     processExplosions(bombFuses);
                     bombFuses.removeRange(0, bombFuses.size - 1);

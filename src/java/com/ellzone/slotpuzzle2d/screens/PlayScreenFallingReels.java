@@ -18,7 +18,6 @@ package com.ellzone.slotpuzzle2d.screens;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.ai.msg.MessageManager;
-import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.maps.tiled.TiledMap;
@@ -61,6 +60,7 @@ import static com.ellzone.slotpuzzle2d.messaging.MessageType.SwapReelsAboveMe;
 
 public class PlayScreenFallingReels extends PlayScreen {
     public static final int LEVEL_TIME_LENGTH = 120;
+    public static final String BOMBS_LEVEL_TYPE = "BombsLevel";
     private PhysicsManagerCustomBodies physics;
     private Box2DDebugRenderer debugRenderer;
     private int currentReel = 0;
@@ -87,13 +87,13 @@ public class PlayScreenFallingReels extends PlayScreen {
         initialiseDependencies();
         setupPlayScreen();
         initialisePhysics();
-        loadlevel();
+        loadLevel();
         messageManager = setUpMessageManager();
         activateReelBoxes();
         createReelIntroSequence();
     }
 
-    private void loadlevel() {
+    private void loadLevel() {
         createLevelCreator(level);
         reelBoxes = levelCreator.getReelBoxes();
         setupAnimatedReelsManager();
@@ -101,6 +101,7 @@ public class PlayScreenFallingReels extends PlayScreen {
 
     private void createLevelCreator(TiledMap level) {
         levelCreator = new LevelCreatorSimple(
+                world,
                 levelDoor,
                 animatedReels,
                 reelTiles,
@@ -111,8 +112,7 @@ public class PlayScreenFallingReels extends PlayScreen {
                 physics,
                 GAME_LEVEL_WIDTH,
                 GAME_LEVEL_HEIGHT,
-                playStateMachine,
-                hud);
+                playStateMachine, hud);
     }
 
     private void setupAnimatedReelsManager() {
@@ -363,7 +363,7 @@ public class PlayScreenFallingReels extends PlayScreen {
         renderSpinHelper();
         game.batch.end();
         renderReelBoxes(game.batch, reelBoxes);
-        levelCreator.render(game.batch, 0);
+        levelCreator.render(game.batch, 0, viewport);
         if (isReelsStoppedMoving())
             processReelsStoppedMoving();
         else

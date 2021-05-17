@@ -86,7 +86,6 @@ import com.ellzone.slotpuzzle2d.tweenengine.TweenManager;
 import com.ellzone.slotpuzzle2d.utils.AssetsAnnotation;
 import com.ellzone.slotpuzzle2d.utils.FrameRate;
 import com.ellzone.slotpuzzle2d.utils.PixmapProcessors;
-import com.ellzone.slotpuzzle2d.utils.TimeStamp;
 
 import net.dermetfan.gdx.assets.AnnotationAssetManager;
 
@@ -263,7 +262,7 @@ public class PlayScreen implements Screen, PlayInterface, LevelCreatorInjectionI
         Array<RectangleMapObject> extractedLevelRectangleMapObjects = extractLevelAssets(level);
         levelObjectCreator.createLevel(extractedLevelRectangleMapObjects);
         getLevelEntities(levelObjectCreator);
-        levelLoader = getLevelLoader();
+        levelLoader = createLevelLoader();
         levelLoader.createLevel(GAME_LEVEL_WIDTH, GAME_LEVEL_HEIGHT);
         reelsSpinning = reelTiles.size;
         hiddenPattern = levelLoader.getHiddenPattern();
@@ -296,7 +295,7 @@ public class PlayScreen implements Screen, PlayInterface, LevelCreatorInjectionI
                     getObjects().getByType(RectangleMapObject.class);
     }
 
-    protected LevelLoader getLevelLoader() {
+    protected LevelLoader createLevelLoader() {
         LevelLoader levelLoader =
                 new LevelLoader(game.annotationAssetManager, levelDoor, mapTile, animatedReels);
         levelLoader.setStoppedSpinningCallback(stoppedSpinningCallback);

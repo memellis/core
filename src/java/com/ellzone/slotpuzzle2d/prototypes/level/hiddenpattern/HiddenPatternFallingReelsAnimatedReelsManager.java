@@ -226,6 +226,7 @@ public class HiddenPatternFallingReelsAnimatedReelsManager extends SPPrototypeTe
 
     private void createLevelCreator(TiledMap level) {
         levelCreator = new LevelCreatorSimple(
+                world,
                 levelDoor,
                 animatedReels,
                 reelTiles,
@@ -475,7 +476,7 @@ public class HiddenPatternFallingReelsAnimatedReelsManager extends SPPrototypeTe
     private void delegateRender() {
         tileMapRenderer.render();
         renderReelBoxes(batch, reelBoxes);
-        levelCreator.render(batch, 0);
+        levelCreator.render(batch, 0, viewport);
         renderSpinHelper();
         if (isReelsStoppedMoving())
             processReelsStoppedMoving();

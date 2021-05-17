@@ -27,9 +27,12 @@ import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.BodyDef;
+import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.Timer;
+import com.badlogic.gdx.utils.viewport.Viewport;
 import com.ellzone.slotpuzzle2d.SlotPuzzleConstants;
+import com.ellzone.slotpuzzle2d.effects.BombExplosion;
 import com.ellzone.slotpuzzle2d.effects.ScoreAccessor;
 import com.ellzone.slotpuzzle2d.effects.SpriteAccessor;
 import com.ellzone.slotpuzzle2d.finitestatemachine.PlayState;
@@ -37,6 +40,7 @@ import com.ellzone.slotpuzzle2d.finitestatemachine.PlayStateMachine;
 import com.ellzone.slotpuzzle2d.finitestatemachine.PlayStates;
 import com.ellzone.slotpuzzle2d.level.FlashSlots;
 import com.ellzone.slotpuzzle2d.level.LevelDoor;
+import com.ellzone.slotpuzzle2d.level.MatchSlots;
 import com.ellzone.slotpuzzle2d.level.creator.utils.FilterReelBoxes;
 import com.ellzone.slotpuzzle2d.level.hidden.HiddenPlayingCard;
 import com.ellzone.slotpuzzle2d.physics.PhysicsManagerCustomBodies;
@@ -69,6 +73,8 @@ import aurelienribon.tweenengine.equations.Quad;
 
 import static com.ellzone.slotpuzzle2d.prototypes.level.minislotmachine.MiniSlotMachineLevelPrototypeSimpleScenario.HEIGHT_KEY;
 import static com.ellzone.slotpuzzle2d.prototypes.level.minislotmachine.MiniSlotMachineLevelPrototypeSimpleScenario.WIDTH_KEY;
+import static com.ellzone.slotpuzzle2d.screens.PlayScreen.GAME_LEVEL_HEIGHT;
+import static com.ellzone.slotpuzzle2d.screens.PlayScreen.GAME_LEVEL_WIDTH;
 
 public class LevelCreatorSimple {
     public static final String HIDDEN_PATTERN_LEVEL_TYPE = "HiddenPattern";
@@ -80,6 +86,7 @@ public class LevelCreatorSimple {
     public static final String REELS_LAYER_NAME = "Reels";
     public static final int OFF_PLAY_SCREEN_OFFSET = 420;
 
+    private World world;
     private LevelDoor levelDoor;
     private TiledMap level;
     private HiddenPlayingCard hiddenPlayingCard;
@@ -124,9 +131,11 @@ public class LevelCreatorSimple {
     private int myReelsToFallIndex;
     private Hud hud;
     private boolean endOfGame = false;
-    private boolean itisTimeForRandomReplacementReelBox = false;
+    private boolean itIsTimeForRandomReplacementReelBox = false;
+    private BombExplosion bombExplosion;
 
-    public LevelCreatorSimple (
+    public LevelCreatorSimple(
+            World world,
             LevelDoor levelDoor,
             Array<AnimatedReel> animatedReels,
             Array<ReelTile> reelTiles,
@@ -138,6 +147,7 @@ public class LevelCreatorSimple {
             int levelWidth,
             int levelHeight,
             PlayStates playState) {
+        this.world = world;
         this.levelDoor = levelDoor;
         this.animatedReels = animatedReels;
         this.reelTiles = reelTiles;
@@ -152,8 +162,8 @@ public class LevelCreatorSimple {
         initialise(levelDoor, reelTiles, level, tweenManager, levelWidth, levelHeight);
     }
 
-    public LevelCreatorSimple (
-            LevelDoor levelDoor,
+    public LevelCreatorSimple(
+            World world, LevelDoor levelDoor,
             Array<AnimatedReel> animatedReels,
             Array<ReelTile> reelTiles,
             TiledMap level,
@@ -196,7 +206,16 @@ public class LevelCreatorSimple {
         reelsToFall = new Array<TupleValueIndex>();
         getMapProperties(level);
         flashSlots = new FlashSlots(tweenManager, mapWidth, mapHeight, reelTiles);
+        if (levelDoor.getLevelType().equals(BOMBS_LEVEL_TYPE))
+            initialiseBombs();
     }
+
+    private void initialiseBombs() {
+        bombExplosion = new BombExplosion(annotationAssetManager, world);
+        bombExplosion.addDeleteReelCallback(deleteAReelCallback);
+        bombExplosion.initialise();
+    }
+
 
     private void setUpLevelUsingSlotPuzzleMatrix() {
         animatedReelsMatrixCreator = new AnimatedReelsMatrixCreator();
@@ -441,9 +460,22 @@ public class LevelCreatorSimple {
                 iWonABonus();
         }
         if (levelDoor.getLevelType().equals(BOMBS_LEVEL_TYPE)) {
+            Array<ReelTileGridValue> matchedSlots = getMatchedSlots(animatedReels);
+            bombExplosion.addToBombFuseAnimation(matchedSlots, animatedReels);
             if (testForJackpot(reelTiles, levelWidth, levelHeight))
                 iWonABonus();
         }
+    }
+
+    private Array<ReelTileGridValue> getMatchedSlots(Array<AnimatedReel> animatedReels) {
+        MatchSlots matchSlots = new MatchSlots(
+                PuzzleGridTypeReelTile.getReelTilesFromAnimatedReels(animatedReels),
+                GAME_LEVEL_WIDTH,
+                GAME_LEVEL_HEIGHT)
+                .invoke();
+        PuzzleGridTypeReelTile puzzleGridTypeReelTile = matchSlots.getPuzzleGridTypeReelTile();
+        ReelTileGridValue[][] puzzleGrid = matchSlots.getPuzzleGrid();
+        return matchSlots.getMatchedSlots();
     }
 
     private void actionReelStoppedFlashing(ReelTileEvent event, ReelTile reelTile) {
@@ -493,7 +525,8 @@ public class LevelCreatorSimple {
                 if (grid[r][c] != null)
                     if (!reelTiles.get(grid[r][c].getIndex()).isReelTileDeleted())
                         hiddenPattern = false;
-            }         }
+            }
+        }
         return hiddenPattern;
     }
 
@@ -595,8 +628,19 @@ public class LevelCreatorSimple {
         }
     };
 
+    private LevelCallback deleteAReelCallback = new LevelCallback() {
+        @Override
+        public void onEvent(ReelTile source) {
+            deleteAReel(source);
+        }
+    };
+
     private void deleteReel(BaseTween<?> source) {
         ReelTile reel = (ReelTile) source.getUserData();
+        deleteAReel(reel);
+    }
+
+    private void deleteAReel(ReelTile reel) {
         if (hud != null)
             hud.addScore((reel.getEndReel() + 1) * reel.getScore());
         int reelTileIndex = reelTiles.indexOf(reel, true);
@@ -633,6 +677,7 @@ public class LevelCreatorSimple {
     public void update(float dt) {
         physics.update(dt);
         updateReelBoxes();
+        bombExplosion.updateBombExplosion(dt);
         deleteReelBoxes(reelBoxesToDelete);
         if (!endOfGame)
             if (enableCreateReplacementReelsBoxesFeature) {
@@ -641,7 +686,7 @@ public class LevelCreatorSimple {
                     reelBoxesToBeCreated = false;
                 }
             } else
-                if (itisTimeForRandomReplacementReelBox)
+                if (itIsTimeForRandomReplacementReelBox)
                     createRandomReplacementReelBox();
     }
 
@@ -657,11 +702,11 @@ public class LevelCreatorSimple {
     }
 
     private void timeToCreateRandomReplacementReelBox() {
-        itisTimeForRandomReplacementReelBox = true;
+        itIsTimeForRandomReplacementReelBox = true;
     }
 
     private void createRandomReplacementReelBox() {
-        itisTimeForRandomReplacementReelBox = false;
+        itIsTimeForRandomReplacementReelBox = false;
 
         if (replacementReelBoxes.size == 0)
             return;
@@ -676,10 +721,12 @@ public class LevelCreatorSimple {
         createStartRandomReelBoxTimer();
     }
 
-    public void render(SpriteBatch batch, float dt) {
+    public void render(SpriteBatch batch, float dt, Viewport viewport) {
         batch.begin();
         renderScore(batch);
         batch.end();
+        bombExplosion.renderBombFuseAnimations(batch);
+        bombExplosion.renderBombExplosions(batch, viewport);
     }
 
     private void renderScore(SpriteBatch batch) {
