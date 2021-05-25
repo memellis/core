@@ -16,7 +16,7 @@
 package com.ellzone.slotpuzzle2d.prototypes.typewriter;
 
 import com.badlogic.gdx.Screen;
-import com.ellzone.slotpuzzle2d.SlotPuzzle;
+import com.ellzone.slotpuzzle2d.SlotPuzzleGame;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import net.dermetfan.gdx.Typewriter;
 import com.badlogic.gdx.Gdx;
@@ -25,12 +25,12 @@ import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.math.Interpolation;
 
 public class TypewriterScreen implements Screen {
-	private SlotPuzzle game;
+	private SlotPuzzleGame game;
 	private BitmapFont font;
 	private String text = "This is a long multiline string. Some text that you can read through in a RPG, that scrolls like in the pokemon games or something"; 
 	private Typewriter typewriter = new Typewriter(); 
 	
-	public TypewriterScreen(SlotPuzzle game) {
+	public TypewriterScreen(SlotPuzzleGame game) {
 		this.game = game;
 		defineTypeWriterScreen();
 	}

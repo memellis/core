@@ -42,7 +42,6 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer;
 import com.badlogic.gdx.physics.box2d.World;
-import com.badlogic.gdx.physics.box2d.graphics.ParticleEmitterBox2D;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.TimeUtils;
@@ -60,9 +59,9 @@ import com.ellzone.slotpuzzle2d.physics.contact.BoxHittingBoxContactListener;
 import com.ellzone.slotpuzzle2d.prototypes.SPPrototype;
 import com.ellzone.slotpuzzle2d.prototypes.box2d.collisions.AnimatedReelsMatrixCreator;
 import com.ellzone.slotpuzzle2d.prototypes.box2d.collisions.SlotPuzzleMatrices;
+import com.ellzone.slotpuzzle2d.puzzlegrid.GridSize;
 import com.ellzone.slotpuzzle2d.puzzlegrid.PuzzleGridTypeReelTile;
 import com.ellzone.slotpuzzle2d.puzzlegrid.ReelTileGridValue;
-import com.ellzone.slotpuzzle2d.screens.PlayScreen;
 import com.ellzone.slotpuzzle2d.sprites.AnimatedReel;
 import com.ellzone.slotpuzzle2d.sprites.ReelSprites;
 import com.ellzone.slotpuzzle2d.sprites.ReelTile;
@@ -77,8 +76,6 @@ import net.dermetfan.gdx.assets.AnnotationAssetManager;
 import static com.ellzone.slotpuzzle2d.messaging.MessageType.ReelSinkReelsLeftToFall;
 import static com.ellzone.slotpuzzle2d.messaging.MessageType.ReelsLeftToFall;
 import static com.ellzone.slotpuzzle2d.messaging.MessageType.SwapReelsAboveMe;
-import static com.ellzone.slotpuzzle2d.screens.PlayScreen.GAME_LEVEL_HEIGHT;
-import static com.ellzone.slotpuzzle2d.screens.PlayScreen.GAME_LEVEL_WIDTH;
 
 public class BombReel extends SPPrototype implements InputProcessor {
     public static final int SCREEN_OFFSET = 400;
@@ -114,7 +111,7 @@ public class BombReel extends SPPrototype implements InputProcessor {
     private Boolean isAutoFall;
     private int numberOfReelBoxesAsleep = 0;
     private int numberOfReelBoxesCreated = 0;
-    int[] matrixIdentifier = new int[PlayScreen.GAME_LEVEL_WIDTH];
+    int[] matrixIdentifier = new int[SlotPuzzleConstants.GAME_LEVEL_WIDTH];
     private boolean cycleDynamic = true;
     private boolean testBombReel = true;
     private int reelToDelete = 84;
@@ -285,12 +282,12 @@ public class BombReel extends SPPrototype implements InputProcessor {
         setColumnValues(matrixIdentifier, slotMatrixCycleIndex);
         int dynamicGrid[][] = SlotPuzzleMatrices.createDynamicMatrix(
                 matrixIdentifier,
-                PlayScreen.GAME_LEVEL_WIDTH,
-                PlayScreen.GAME_LEVEL_HEIGHT);
+                SlotPuzzleConstants.GAME_LEVEL_WIDTH,
+                SlotPuzzleConstants.GAME_LEVEL_HEIGHT);
         animatedReels = animatedReelsMatrixCreator.createAnimatedReelsFromSlotPuzzleMatrix(dynamicGrid);
         numberOfReelsToFall = animatedReelsMatrixCreator.getNumberOfReelsToFall();
         slotMatrixCycleIndex++;
-        slotMatrixCycleIndex %= Math.pow(2, PlayScreen.GAME_LEVEL_HEIGHT);
+        slotMatrixCycleIndex %= Math.pow(2, SlotPuzzleConstants.GAME_LEVEL_HEIGHT);
     }
 
     private void setColumnValues(int[] matrixIdentifier, int matrixValue) {
@@ -402,8 +399,9 @@ public class BombReel extends SPPrototype implements InputProcessor {
     private Array<ReelTileGridValue> getMatchedSlots(Array<AnimatedReel> animatedReels) {
         MatchSlots matchSlots = new MatchSlots(
                 PuzzleGridTypeReelTile.getReelTilesFromAnimatedReels(animatedReels),
-                GAME_LEVEL_WIDTH,
-                GAME_LEVEL_HEIGHT)
+                new GridSize(
+                        SlotPuzzleConstants.GAME_LEVEL_WIDTH,
+                        SlotPuzzleConstants.GAME_LEVEL_HEIGHT))
                 .invoke();
         PuzzleGridTypeReelTile puzzleGridTypeReelTile = matchSlots.getPuzzleGridTypeReelTile();
         ReelTileGridValue[][] puzzleGrid = matchSlots.getPuzzleGrid();

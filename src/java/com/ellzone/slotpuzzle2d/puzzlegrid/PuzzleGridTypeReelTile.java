@@ -31,14 +31,15 @@ import java.util.Set;
 import java.util.Stack;
 
 import static com.ellzone.slotpuzzle2d.puzzlegrid.ReelTileGridValue.Compass;
-import static com.ellzone.slotpuzzle2d.screens.PlayScreen.GAME_LEVEL_HEIGHT;
-import static com.ellzone.slotpuzzle2d.screens.PlayScreen.GAME_LEVEL_WIDTH;
+import static com.ellzone.slotpuzzle2d.SlotPuzzleConstants.GAME_LEVEL_HEIGHT;
+import static com.ellzone.slotpuzzle2d.SlotPuzzleConstants.GAME_LEVEL_WIDTH;
 
 public class PuzzleGridTypeReelTile {
     public static final float FLOAT_ROUNDING_DELTA_FOR_BOX2D = 1.0f;
 
-    public Array<ReelTile> checkGrid(Array<ReelTile> reelLevel, int levelWidth, int levelHeight) {
-        TupleValueIndex[][] grid = populateMatchGrid(reelLevel, levelWidth , levelHeight);
+    public Array<ReelTile> checkGrid(Array<ReelTile> reelLevel,
+                                     GridSize levelGridSize) {
+        TupleValueIndex[][] grid = populateMatchGrid(reelLevel, levelGridSize);
         int arraySizeR = grid.length;
         int arraySizeC = grid[0].length;
 
@@ -51,7 +52,8 @@ public class PuzzleGridTypeReelTile {
         return reelLevel;
     }
 
-    public ReelTileGridValue[][] initialiseGrid(ReelTileGridValue[][] workingGrid, ReelTileGridValue[][] puzzleGrid) {
+    public ReelTileGridValue[][] initialiseGrid(
+            ReelTileGridValue[][] workingGrid, ReelTileGridValue[][] puzzleGrid) {
         for (int r = 0; r < workingGrid.length; r++) {
             for (int c = 0; c < workingGrid[r].length; c++) {
                 if (puzzleGrid[r][c] == null) {
@@ -176,7 +178,8 @@ public class PuzzleGridTypeReelTile {
         return workingGrid;
     }
 
-    private Array<ReelTileGridValue> getMatchedRowSlots(ReelTileGridValue[][] puzzleGrid, Array<ReelTileGridValue> matchedSlots) {
+    private Array<ReelTileGridValue> getMatchedRowSlots(
+            ReelTileGridValue[][] puzzleGrid, Array<ReelTileGridValue> matchedSlots) {
         int arraySizeR = puzzleGrid.length;
         int arraySizeC = puzzleGrid[0].length;
 
@@ -377,9 +380,10 @@ public class PuzzleGridTypeReelTile {
         return workingGrid;
     }
 
-    public Array<ReelTile> adjustForAnyLonelyReels(Array<ReelTile> levelReel, int levelWidth, int levelHeight) {
+    public Array<ReelTile> adjustForAnyLonelyReels(Array<ReelTile> levelReel,
+                                                   GridSize levelGridSize) {
         PuzzleGridType puzzleGrid = new PuzzleGridType();
-        TupleValueIndex[][] grid = populateMatchGrid(levelReel, levelWidth, levelHeight);
+        TupleValueIndex[][] grid = populateMatchGrid(levelReel, levelGridSize);
         Array<TupleValueIndex> lonelyTiles = puzzleGrid.getLonelyTiles(grid);
         for (TupleValueIndex lonelyTile : lonelyTiles) {
             if (lonelyTile.r == 0) {
@@ -388,10 +392,10 @@ public class PuzzleGridTypeReelTile {
             } else if (lonelyTile.c == 0) {
                 levelReel.get(grid[lonelyTile.r][lonelyTile.c].index)
                          .setEndReel(levelReel.get(grid[lonelyTile.r][lonelyTile.c + 1].index).getEndReel());
-            } else if (lonelyTile.r == levelHeight - 1) {
+            } else if (lonelyTile.r == levelGridSize.getRows() - 1) {
                 levelReel.get(grid[lonelyTile.r][lonelyTile.c].index)
                          .setEndReel(levelReel.get(grid[lonelyTile.r - 1][lonelyTile.c].index).getEndReel());
-            } else if (lonelyTile.c == levelWidth - 1) {
+            } else if (lonelyTile.c == levelGridSize.getColumns() - 1) {
                 levelReel.get(grid[lonelyTile.r][lonelyTile.c].index)
                          .setEndReel(levelReel.get(grid[lonelyTile.r][lonelyTile.c - 1].index).getEndReel());
             } else {
@@ -423,9 +427,9 @@ public class PuzzleGridTypeReelTile {
         }
     }
 
-    public static void printMatchGrid(Array<ReelTile> reelLevel, int gridWidth, int gridHeight) {
+    public static void printMatchGrid(Array<ReelTile> reelLevel, GridSize levelGridSize) {
         PuzzleGridTypeReelTile.printGrid(
-                PuzzleGridTypeReelTile.populateMatchGridStatic(reelLevel, gridWidth, gridHeight));
+                PuzzleGridTypeReelTile.populateMatchGridStatic(reelLevel, levelGridSize));
     }
 
     private static ReelTileGridValue[][] copyGrid(ReelTileGridValue[][] puzzleGrid) {
@@ -564,8 +568,14 @@ public class PuzzleGridTypeReelTile {
         return null;
     }
 
-    public ReelTileGridValue[][] populateMatchGrid(Array<ReelTile> reelLevel, int gridWidth, int gridHeight) {
-        ReelTileGridValue[][] matchGrid = new ReelTileGridValue[gridHeight][gridWidth];
+    public ReelTileGridValue[][] populateMatchGrid(Array<ReelTile> reelLevel,
+                                                   GridSize levelGridSize) {
+        int gridHeight = levelGridSize.getRows();
+        int gridWidth = levelGridSize.getColumns();
+        if (gridWidth == 20)
+            System.out.println("This is wrong!");
+        ReelTileGridValue[][] matchGrid =
+                new ReelTileGridValue[gridHeight][gridWidth];
         int r, c;
         for (int i = 0; i < reelLevel.size; i++) {
             c = getColumnFromLevel(reelLevel.get(i).getDestinationX());
@@ -577,21 +587,32 @@ public class PuzzleGridTypeReelTile {
                     if (reelLevel.get(i).isSpinning())
                         matchGrid[r][c] = new ReelTileGridValue(r, c, i, -2);
                     else
-                        matchGrid[r][c] = new ReelTileGridValue(reelLevel.get(i), r, c, i, reelLevel.get(i).getEndReel());
+                        matchGrid[r][c] = new ReelTileGridValue(
+                                reelLevel.get(i),
+                                r,
+                                c,
+                                i,
+                                reelLevel.get(i).getEndReel());
                 }
-                Gdx.app.debug(SlotPuzzleConstants.SLOT_PUZZLE, MessageFormat.format("r={0} c={1} x={2} y={3} dx={4} dy={5} i={6} v={7}",
-                              r, c,
-                              reelLevel.get(i).getX(), reelLevel.get(i).getY(),
-                              reelLevel.get(i).getDestinationX(), reelLevel.get(i).getDestinationY(),
-                              i,
-                              reelLevel.get(i).getEndReel()));
+                Gdx.app.debug(
+                        SlotPuzzleConstants.SLOT_PUZZLE,
+                        MessageFormat.format("r={0} c={1} x={2} y={3} dx={4} dy={5} i={6} v={7}",
+                        r,
+                        c,
+                        reelLevel.get(i).getX(), reelLevel.get(i).getY(),
+                        reelLevel.get(i).getDestinationX(), reelLevel.get(i).getDestinationY(),
+                        i,
+                        reelLevel.get(i).getEndReel()));
             } else
                 Gdx.app.debug(SlotPuzzleConstants.SLOT_PUZZLE, "I don't respond to ***r="+r+" c="+c);
         }
         return matchGrid;
     }
 
-    public static ReelTileGridValue[][] populateMatchGridStatic(Array<ReelTile> reelLevel, int gridWidth, int gridHeight) {
+    public static ReelTileGridValue[][] populateMatchGridStatic(Array<ReelTile> reelLevel,
+                                                                GridSize levelGridSize) {
+        int gridHeight = levelGridSize.getRows();
+        int gridWidth = levelGridSize.getColumns();
         ReelTileGridValue[][] matchGrid = new ReelTileGridValue[gridHeight][gridWidth];
         int r, c;
         for (int i = 0; i < reelLevel.size; i++) {
@@ -714,13 +735,13 @@ public class PuzzleGridTypeReelTile {
 
 
     public static int getRowFromLevel(float y, int levelHeight) {
-        int row = (int) (y - PlayScreen.PUZZLE_GRID_START_Y) / PlayScreen.TILE_HEIGHT;
+        int row = (int) (y - PlayScreen.PUZZLE_GRID_START_Y) / SlotPuzzleConstants.TILE_HEIGHT;
         row = levelHeight - 1 - row;
         return row;
     }
 
     public static int getColumnFromLevel(float x) {
-        int column = (int) (x - PlayScreen.PUZZLE_GRID_START_X) / PlayScreen.TILE_WIDTH;
+        int column = (int) (x - PlayScreen.PUZZLE_GRID_START_X) / SlotPuzzleConstants.TILE_WIDTH;
         return column;
     }
 
@@ -846,8 +867,7 @@ public class PuzzleGridTypeReelTile {
         PuzzleGridTypeReelTile.printGrid(
                 PuzzleGridTypeReelTile.populateMatchGridStatic(
                         PuzzleGridTypeReelTile.getReelTilesFromAnimatedReels(animatedReels),
-                        GAME_LEVEL_WIDTH,
-                        GAME_LEVEL_HEIGHT)
+                        new GridSize(GAME_LEVEL_HEIGHT, GAME_LEVEL_WIDTH))
         );
         System.out.println();
     }

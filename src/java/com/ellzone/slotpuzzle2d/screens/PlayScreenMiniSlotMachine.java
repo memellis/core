@@ -22,7 +22,7 @@ import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.Array;
-import com.ellzone.slotpuzzle2d.SlotPuzzle;
+import com.ellzone.slotpuzzle2d.SlotPuzzleGame;
 import com.ellzone.slotpuzzle2d.effects.ScoreAccessor;
 import com.ellzone.slotpuzzle2d.finitestatemachine.PlayState;
 import com.ellzone.slotpuzzle2d.finitestatemachine.PlayStates;
@@ -62,7 +62,7 @@ public class PlayScreenMiniSlotMachine extends PlayScreen {
     private Array<SlotHandleSprite> slotHandles;
     private Array<ReelTile> reelsToFlash;
 
-    public PlayScreenMiniSlotMachine(SlotPuzzle game, LevelDoor levelDoor, MapTile mapTile) {
+    public PlayScreenMiniSlotMachine(SlotPuzzleGame game, LevelDoor levelDoor, MapTile mapTile) {
         super(game, levelDoor, mapTile);
         initialiseMiniSlotMachine();
     }

@@ -44,7 +44,7 @@ import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer;
 import com.badlogic.gdx.physics.box2d.World;
 import box2dLight.PointLight;
 import box2dLight.RayHandler;
-import com.ellzone.slotpuzzle2d.SlotPuzzle;
+import com.ellzone.slotpuzzle2d.SlotPuzzleGame;
 import com.ellzone.slotpuzzle2d.utils.Version;
 import com.ellzone.slotpuzzle2d.effects.ReelAccessor;
 import com.ellzone.slotpuzzle2d.effects.ReelLetterAccessor;
@@ -92,7 +92,7 @@ public class IntroScreenPrototype extends InputAdapter implements Screen {
 	private static final float PIXELS_PER_METER = 100;
 	public static final float ONE_SECOND = 1.0f;
 
-    private SlotPuzzle game;
+    private SlotPuzzleGame game;
     private Texture textTexture;
     private Pixmap slotReelPixmap;
     private Texture slotReelTexture;
@@ -130,7 +130,7 @@ public class IntroScreenPrototype extends InputAdapter implements Screen {
     private float sceneWidth = SlotPuzzleConstants.VIRTUAL_WIDTH / SlotPuzzleConstants.PIXELS_PER_METER;
     private float sceneHeight = SlotPuzzleConstants.VIRTUAL_HEIGHT / SlotPuzzleConstants.PIXELS_PER_METER;
 
-    public IntroScreenPrototype(SlotPuzzle game) {
+    public IntroScreenPrototype(SlotPuzzleGame game) {
         this.game = game;
         defineIntroScreen();
     }
@@ -571,7 +571,7 @@ public class IntroScreenPrototype extends InputAdapter implements Screen {
         }
     }
 
-    public SlotPuzzle getGame() {
+    public SlotPuzzleGame getGame() {
         return this.game;
     }
 }

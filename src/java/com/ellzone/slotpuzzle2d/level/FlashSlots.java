@@ -19,6 +19,7 @@ package com.ellzone.slotpuzzle2d.level;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.utils.Array;
 import com.ellzone.slotpuzzle2d.effects.ReelAccessor;
+import com.ellzone.slotpuzzle2d.puzzlegrid.GridSize;
 import com.ellzone.slotpuzzle2d.puzzlegrid.PuzzleGridTypeReelTile;
 import com.ellzone.slotpuzzle2d.puzzlegrid.ReelTileGridValue;
 import com.ellzone.slotpuzzle2d.puzzlegrid.TupleValueIndex;
@@ -37,17 +38,18 @@ public class FlashSlots {
 
     private Timeline reelFlashSeq;
     private TweenManager tweenManager;
-    private int mapWidth, mapHeight;
+    private GridSize levelGridSize;
     private Array<ReelTile> reelTiles;
     Array<ReelTileGridValue> matchedSlotsCopy;
     private int numberOfReelsFlashing, numberOfReelsToDelete;
     private boolean startedFlashing;
     private boolean finishedMatchingSlots;
 
-    public FlashSlots(TweenManager tweenManager, int mapWidth, int mapHeight, Array<ReelTile> reelTiles) {
+    public FlashSlots(TweenManager tweenManager,
+                      GridSize levelGridSize,
+                      Array<ReelTile> reelTiles) {
         this.tweenManager = tweenManager;
-        this.mapWidth = mapWidth;
-        this.mapHeight = mapHeight;
+        this.levelGridSize = levelGridSize;
         this.reelTiles = reelTiles;
         initialiseFlashSlots();
     }
@@ -60,7 +62,7 @@ public class FlashSlots {
     }
 
     public ReelTileGridValue[][] flashSlots(Array<ReelTile> reelTiles) {
-        MatchSlots matchSlots = new MatchSlots(reelTiles, mapWidth, mapHeight).invoke();
+        MatchSlots matchSlots = new MatchSlots(reelTiles, levelGridSize).invoke();
         PuzzleGridTypeReelTile puzzleGridTypeReelTile = matchSlots.getPuzzleGridTypeReelTile();
         ReelTileGridValue[][] puzzleGrid = matchSlots.getPuzzleGrid();
         Array<ReelTileGridValue> matchedSlots = matchSlots.getMatchedSlots();

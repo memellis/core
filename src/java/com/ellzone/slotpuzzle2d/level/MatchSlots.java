@@ -17,22 +17,21 @@
 package com.ellzone.slotpuzzle2d.level;
 
 import com.badlogic.gdx.utils.Array;
+import com.ellzone.slotpuzzle2d.puzzlegrid.GridSize;
 import com.ellzone.slotpuzzle2d.puzzlegrid.PuzzleGridTypeReelTile;
 import com.ellzone.slotpuzzle2d.puzzlegrid.ReelTileGridValue;
 import com.ellzone.slotpuzzle2d.sprites.ReelTile;
 
 public class MatchSlots {
-    private final int mapWidth;
-    private final int mapHeight;
+    private  GridSize levelGridSize;
     private Array<ReelTile> reelTiles;
     private PuzzleGridTypeReelTile puzzleGridTypeReelTile;
     private ReelTileGridValue[][] puzzleGrid;
     private Array<ReelTileGridValue> matchedSlots;
 
-    public MatchSlots(Array<ReelTile> reelTiles, int mapWidth, int mapHeight) {
+    public MatchSlots(Array<ReelTile> reelTiles, GridSize levelGridSize) {
         this.reelTiles = reelTiles;
-        this.mapWidth = mapWidth;
-        this.mapHeight = mapHeight;
+        this.levelGridSize = levelGridSize;
     }
 
     public PuzzleGridTypeReelTile getPuzzleGridTypeReelTile() {
@@ -61,7 +60,9 @@ public class MatchSlots {
 
     public MatchSlots invoke() {
         puzzleGridTypeReelTile = new PuzzleGridTypeReelTile();
-        puzzleGrid = puzzleGridTypeReelTile.populateMatchGrid(reelTiles, mapWidth, mapHeight);
+        puzzleGrid = puzzleGridTypeReelTile.populateMatchGrid(
+                reelTiles,
+                levelGridSize);
 
         matchedSlots = puzzleGridTypeReelTile.matchGridSlots(puzzleGrid);
         Array<ReelTileGridValue> duplicateMatchedSlots = PuzzleGridTypeReelTile.findDuplicateMatches(matchedSlots);

@@ -45,7 +45,7 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
-import com.ellzone.slotpuzzle2d.SlotPuzzle;
+import com.ellzone.slotpuzzle2d.SlotPuzzleGame;
 import com.ellzone.slotpuzzle2d.SlotPuzzleConstants;
 import com.ellzone.slotpuzzle2d.effects.SpriteAccessor;
 import com.ellzone.slotpuzzle2d.level.LevelDoor;
@@ -108,10 +108,10 @@ public class WorldScreenPrototype implements Screen {
     private Array<ScrollSign> scrollSigns;
     private Array<LevelEntrance> levelEntrances;
     private Array<MapTile> mapTiles;
-    private SlotPuzzle game;
+    private SlotPuzzleGame game;
     private InputMultiplexer inputMultiplexer;
 
-    public WorldScreenPrototype(SlotPuzzle game) {
+    public WorldScreenPrototype(SlotPuzzleGame game) {
         this.game = game;
         game.setWorldScreen(this);
         createWorldScreen();

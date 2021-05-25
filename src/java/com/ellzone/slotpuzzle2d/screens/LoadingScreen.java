@@ -25,14 +25,14 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
-import com.ellzone.slotpuzzle2d.SlotPuzzle;
+import com.ellzone.slotpuzzle2d.SlotPuzzleGame;
 import com.ellzone.slotpuzzle2d.SlotPuzzleConstants;
 import com.ellzone.slotpuzzle2d.utils.AssetsAnnotation;
 
 import net.dermetfan.gdx.assets.AnnotationAssetManager;
 
 public class LoadingScreen implements Screen{
-    private SlotPuzzle game;
+    private SlotPuzzleGame game;
 	private Viewport viewport;
 	private Stage stage;
 	private OrthographicCamera camera;
@@ -40,7 +40,7 @@ public class LoadingScreen implements Screen{
 	private Vector2 pbPos;
 	private boolean show = false;
 
-    public LoadingScreen(SlotPuzzle game) {
+    public LoadingScreen(SlotPuzzleGame game) {
     	this.game = game;
     	defineLoadingScreen();
     }

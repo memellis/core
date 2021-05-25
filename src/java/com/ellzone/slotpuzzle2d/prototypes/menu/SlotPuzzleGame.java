@@ -21,7 +21,6 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.OrthographicCamera;
-import com.ellzone.slotpuzzle2d.SlotPuzzle;
 import com.ellzone.slotpuzzle2d.prototypes.SPPrototype;
 
 public class SlotPuzzleGame extends SPPrototype implements Screen {
@@ -31,14 +30,14 @@ public class SlotPuzzleGame extends SPPrototype implements Screen {
     public final static float V_WIDTH = 800;
     public final static float V_HEIGHT = 480;
 
-    private SlotPuzzle game;
+    private com.ellzone.slotpuzzle2d.SlotPuzzleGame game;
     private Screen previousScreen;
 	private Screen screen;
 	private Screen worldScreen;
 
     @Override
     public void create() {
-        this.game = new SlotPuzzle();
+        this.game = new com.ellzone.slotpuzzle2d.SlotPuzzleGame();
         game.create();
         setLogLevel();
 	    batch = game.batch;

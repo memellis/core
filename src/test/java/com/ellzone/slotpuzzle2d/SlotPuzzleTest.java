@@ -52,7 +52,7 @@ public class SlotPuzzleTest {
     protected LibGdxFactory mLibGdxFactory;
 
     @InjectMocks
-    protected SlotPuzzle slotPuzzle;
+    protected SlotPuzzleGame slotPuzzle;
 
     @InjectMocks
     protected LibGdxFactory lowLevelSingleton;
@@ -72,7 +72,7 @@ public class SlotPuzzleTest {
         Gdx.app = mock(Application.class);
 
         when(mLibGdxFactory.newSpriteBatch()).thenReturn(mock(SpriteBatch.class));
-        when(mLibGdxFactory.newLoadScreen(any(SlotPuzzle.class))).thenReturn(mock(LoadingScreen.class));
+        when(mLibGdxFactory.newLoadScreen(any(SlotPuzzleGame.class))).thenReturn(mock(LoadingScreen.class));
         when(mLibGdxFactory.newAnnotationAssetManager()).thenReturn(mock(AnnotationAssetManager.class));
     }
 

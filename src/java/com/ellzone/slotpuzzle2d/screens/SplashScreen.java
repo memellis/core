@@ -26,7 +26,7 @@ import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
-import com.ellzone.slotpuzzle2d.SlotPuzzle;
+import com.ellzone.slotpuzzle2d.SlotPuzzleGame;
 import com.ellzone.slotpuzzle2d.effects.SpriteAccessor;
 import com.ellzone.slotpuzzle2d.utils.Assets;
 import com.ellzone.slotpuzzle2d.utils.AssetsAnnotation;
@@ -46,7 +46,7 @@ import aurelienribon.tweenengine.equations.Quint;
 
 public class SplashScreen implements Screen {
     private static final int PX_PER_METER = 400;
-    private SlotPuzzle game;
+    private SlotPuzzleGame game;
     private final OrthographicCamera camera = new OrthographicCamera();
     private float wpw;
     private float wph;
@@ -67,7 +67,7 @@ public class SplashScreen implements Screen {
     private enum NextScreen {LOADINGSCREEN, SPLASHSCREEN, INTROSCREEN, PLAYSCREEN, ENDOFGAMESCREEN, CREDITSSCREEN};
     private NextScreen nextScreen;
 
-    public SplashScreen(SlotPuzzle game) {
+    public SplashScreen(SlotPuzzleGame game) {
         this.game = game;
         defineSplashScreen();
     }

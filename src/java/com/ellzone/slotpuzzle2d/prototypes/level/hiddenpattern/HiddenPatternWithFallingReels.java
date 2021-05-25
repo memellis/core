@@ -47,6 +47,7 @@ import com.ellzone.slotpuzzle2d.level.LevelDoor;
 import com.ellzone.slotpuzzle2d.level.creator.LevelCreatorInjectionInterface;
 import com.ellzone.slotpuzzle2d.level.creator.LevelCreatorSimple;
 import com.ellzone.slotpuzzle2d.level.creator.LevelObjectCreatorEntityHolder;
+import com.ellzone.slotpuzzle2d.level.creator.GameLevel;
 import com.ellzone.slotpuzzle2d.level.map.MapLevelNameComparator;
 import com.ellzone.slotpuzzle2d.level.sequence.PlayScreenIntroSequence;
 import com.ellzone.slotpuzzle2d.physics.contact.B2ContactListenerReelSink;
@@ -55,6 +56,7 @@ import com.ellzone.slotpuzzle2d.physics.PhysicsManagerCustomBodies;
 import com.ellzone.slotpuzzle2d.physics.ReelSink;
 import com.ellzone.slotpuzzle2d.physics.ReelSinkInterface;
 import com.ellzone.slotpuzzle2d.prototypes.SPPrototypeTemplate;
+import com.ellzone.slotpuzzle2d.puzzlegrid.GridSize;
 import com.ellzone.slotpuzzle2d.puzzlegrid.PuzzleGridType;
 import com.ellzone.slotpuzzle2d.puzzlegrid.PuzzleGridTypeReelTile;
 import com.ellzone.slotpuzzle2d.puzzlegrid.ReelTileGridValue;
@@ -84,8 +86,6 @@ import static com.ellzone.slotpuzzle2d.level.creator.LevelCreatorSimple.REELS_LA
 import static com.ellzone.slotpuzzle2d.level.creator.LevelCreatorSimpleScenario.BONUS_LEVEL_TYPE;
 import static com.ellzone.slotpuzzle2d.prototypes.level.minislotmachine.MiniSlotMachineLevelPrototypeWithLevelCreator.MINI_SLOT_MACHINE_LEVEL_NAME;
 import static com.ellzone.slotpuzzle2d.prototypes.level.minislotmachine.MiniSlotMachineLevelPrototypeWithLevelCreator.numberOfReelsToHitSinkBottom;
-import static com.ellzone.slotpuzzle2d.screens.PlayScreen.GAME_LEVEL_HEIGHT;
-import static com.ellzone.slotpuzzle2d.screens.PlayScreen.GAME_LEVEL_WIDTH;
 
 public class HiddenPatternWithFallingReels extends SPPrototypeTemplate
         implements LevelCreatorInjectionInterface, ReelSinkInterface {
@@ -184,18 +184,20 @@ public class HiddenPatternWithFallingReels extends SPPrototypeTemplate
         initialiseReels();
 
         levelCreator = new LevelCreatorSimple(
-                world,
-                levelDoor,
-                reels,
-                reelTiles,
-                level,
-                annotationAssetManager,
-                (TextureAtlas) annotationAssetManager.get(AssetsAnnotation.CARDDECK),
-                tweenManager,
-                physics,
-                GAME_LEVEL_WIDTH,
-                GAME_LEVEL_HEIGHT,
-                PlayStates.INITIALISING);
+                new GameLevel(
+                        world,
+                        physics,
+                        levelDoor,
+                        reels,
+                        reelTiles,
+                        level,
+                        annotationAssetManager,
+                        (TextureAtlas) annotationAssetManager.get(AssetsAnnotation.CARDDECK),
+                        tweenManager,
+                        new GridSize(
+                                SlotPuzzleConstants.GAME_LEVEL_WIDTH,
+                                SlotPuzzleConstants.GAME_LEVEL_HEIGHT),
+                        PlayStates.INITIALISING));
         reelBoxes = levelCreator.getReelBoxes();
     }
 
@@ -208,8 +210,11 @@ public class HiddenPatternWithFallingReels extends SPPrototypeTemplate
     }
 
     private void createViewPorts() {
-        lightViewport = new FitViewport((float) VIRTUAL_WIDTH / PIXELS_PER_METER, (float) VIRTUAL_HEIGHT / PIXELS_PER_METER);
-        lightViewport.getCamera().position.set( (float) VIRTUAL_WIDTH / PIXELS_PER_METER * 0.5f,
+        lightViewport = new FitViewport(
+                (float) VIRTUAL_WIDTH / PIXELS_PER_METER,
+                (float) VIRTUAL_HEIGHT / PIXELS_PER_METER);
+        lightViewport.getCamera().position.set(
+                (float) VIRTUAL_WIDTH / PIXELS_PER_METER * 0.5f,
                 (float) VIRTUAL_HEIGHT / PIXELS_PER_METER * 0.5f,
                 0);
         lightViewport.getCamera().update();
@@ -246,15 +251,19 @@ public class HiddenPatternWithFallingReels extends SPPrototypeTemplate
     public void dealWithReelHittingReel(ReelTile reelTileA, ReelTile reelTileB)  {
         int rA, cA, rB, cB;
 
-        if (numberOfReelsToHitSinkBottom < GAME_LEVEL_WIDTH)
+        if (numberOfReelsToHitSinkBottom < SlotPuzzleConstants.GAME_LEVEL_HEIGHT)
             return;
 
         if (!introSequenceFinished)
             return;
 
-        rA = PuzzleGridTypeReelTile.getRowFromLevel(reelTileA.getDestinationY(), GAME_LEVEL_HEIGHT);
+        rA = PuzzleGridTypeReelTile.getRowFromLevel(
+                reelTileA.getDestinationY(),
+                SlotPuzzleConstants.GAME_LEVEL_HEIGHT);
         cA = PuzzleGridTypeReelTile.getColumnFromLevel(reelTileA.getDestinationX());
-        rB = PuzzleGridTypeReelTile.getRowFromLevel(reelTileB.getDestinationY(), GAME_LEVEL_HEIGHT);
+        rB = PuzzleGridTypeReelTile.getRowFromLevel(
+                reelTileB.getDestinationY(),
+                SlotPuzzleConstants.GAME_LEVEL_HEIGHT);
         cB = PuzzleGridTypeReelTile.getColumnFromLevel(reelTileB.getDestinationX());
 
         if ((Math.abs(rA - rB) == 1) & (cA == cB))
@@ -282,7 +291,11 @@ public class HiddenPatternWithFallingReels extends SPPrototypeTemplate
 
     private void processReelTileHit(ReelTile reelTile) {
         reelTile.setY(reelTile.getDestinationY());
-        levelCreator.printMatchGrid(reelTiles, 12, 9);
+        levelCreator.printMatchGrid(
+                reelTiles,
+                new GridSize(
+                        SlotPuzzleConstants.GAME_LEVEL_WIDTH,
+                        SlotPuzzleConstants.GAME_LEVEL_HEIGHT));
         Body reelbox = reelBoxes.get(reelTile.getIndex());
         if (PhysicsManagerCustomBodies.isStopped(reelbox)) {
             if (levelCreator.getPlayState() == PlayStates.INTRO_SPINNING)
@@ -294,17 +307,34 @@ public class HiddenPatternWithFallingReels extends SPPrototypeTemplate
         if (rA > rB) {
             swapReelsAboveMe(reelTileB, reelTileA);
             reelsLeftToFall(rB, cB);
-            levelCreator.printMatchGrid(reelTiles, 12, 9);
+            levelCreator.printMatchGrid(
+                    reelTiles,
+                    new GridSize(
+                            SlotPuzzleConstants.GAME_LEVEL_WIDTH,
+                            SlotPuzzleConstants.GAME_LEVEL_HEIGHT)
+            );
         } else {
             swapReelsAboveMe(reelTileA, reelTileB);
             reelsLeftToFall(rA, cA);
-            levelCreator.printMatchGrid(reelTiles, 12, 9);
+            levelCreator.printMatchGrid(
+                    reelTiles,
+                    new GridSize(
+                            SlotPuzzleConstants.GAME_LEVEL_WIDTH,
+                            SlotPuzzleConstants.GAME_LEVEL_HEIGHT)
+            );
         }
     }
 
     private void swapReelsAboveMe(ReelTile reelTileA, ReelTile reelTileB) {
-        TupleValueIndex[] reelsAboveMe = PuzzleGridType.getReelsAboveMe(levelCreator.populateMatchGrid(reelTiles, GAME_LEVEL_WIDTH, GAME_LEVEL_HEIGHT),
-                PuzzleGridTypeReelTile.getRowFromLevel(reelTileA.getDestinationY(), GAME_LEVEL_HEIGHT),
+        TupleValueIndex[] reelsAboveMe = PuzzleGridType.getReelsAboveMe(
+                levelCreator.populateMatchGrid(reelTiles,
+                        new GridSize(
+                                SlotPuzzleConstants.GAME_LEVEL_WIDTH,
+                                SlotPuzzleConstants.GAME_LEVEL_HEIGHT)
+                        ),
+                PuzzleGridTypeReelTile.getRowFromLevel(
+                        reelTileA.getDestinationY(),
+                        SlotPuzzleConstants.GAME_LEVEL_HEIGHT),
                 PuzzleGridTypeReelTile.getColumnFromLevel(reelTileA.getDestinationX()));
 
         swapReels(reelTileA, reelTileB);
@@ -325,8 +355,16 @@ public class HiddenPatternWithFallingReels extends SPPrototypeTemplate
     }
 
     private void swapReelsAboveMe(ReelTile reelTile) {
-        TupleValueIndex[] reelsAboveMe = PuzzleGridType.getReelsAboveMe(levelCreator.populateMatchGrid(reelTiles, GAME_LEVEL_WIDTH, GAME_LEVEL_HEIGHT),
-                PuzzleGridTypeReelTile.getRowFromLevel(reelTile.getDestinationY(), GAME_LEVEL_HEIGHT),
+        TupleValueIndex[] reelsAboveMe = PuzzleGridType.getReelsAboveMe(
+                levelCreator.populateMatchGrid(
+                        reelTiles,
+                        new GridSize(
+                                SlotPuzzleConstants.GAME_LEVEL_WIDTH,
+                                SlotPuzzleConstants.GAME_LEVEL_HEIGHT
+                        )),
+                PuzzleGridTypeReelTile.getRowFromLevel(
+                        reelTile.getDestinationY(),
+                        SlotPuzzleConstants.GAME_LEVEL_HEIGHT),
                 PuzzleGridTypeReelTile.getColumnFromLevel(reelTile.getDestinationX()));
 
         swapReels(reelTile);
@@ -549,7 +587,12 @@ public class HiddenPatternWithFallingReels extends SPPrototypeTemplate
             switchPlayState(playState);
             System.out.println("playState="+playState);
             System.out.println("numberOfReelsFlashing="+levelCreator.getNumberOfReelsFlashing());
-            levelCreator.printMatchGrid(reelTiles, 12, 9);
+            levelCreator.printMatchGrid(
+                    reelTiles,
+                    new GridSize(
+                            SlotPuzzleConstants.GAME_LEVEL_WIDTH,
+                            SlotPuzzleConstants.GAME_LEVEL_HEIGHT
+                    ));
         }
         if (Gdx.input.isKeyPressed(Input.Keys.D))
             System.out.println("Debug key pressed - use this to insert a breakpoint");
@@ -617,17 +660,25 @@ public class HiddenPatternWithFallingReels extends SPPrototypeTemplate
         int touchY = Gdx.input.getY();
         Vector2 newPoints = new Vector2(touchX, touchY);
         newPoints = viewport.unproject(newPoints);
-        int c = (int) (newPoints.x - PlayScreen.PUZZLE_GRID_START_X) / PlayScreen.TILE_WIDTH;
-        int r = (int) (newPoints.y - PlayScreen.PUZZLE_GRID_START_Y) / PlayScreen.TILE_HEIGHT;
-        r = GAME_LEVEL_HEIGHT - 1 - r ;
+        int c = (int) (newPoints.x - PlayScreen.PUZZLE_GRID_START_X) / SlotPuzzleConstants.TILE_WIDTH;
+        int r = (int) (newPoints.y - PlayScreen.PUZZLE_GRID_START_Y) / SlotPuzzleConstants.TILE_HEIGHT;
+        r = SlotPuzzleConstants.GAME_LEVEL_HEIGHT - 1 - r ;
         return new Vector2(c, r);
     }
 
     private void processTileClicked(Vector2 tileClicked) {
         int r = (int) tileClicked.y;
         int c = (int) tileClicked.x;
-        if (r>=0 && r<GAME_LEVEL_HEIGHT && c>=0 && c<GAME_LEVEL_WIDTH) {
-            ReelTileGridValue[][] grid = levelCreator.populateMatchGrid(reelTiles, GAME_LEVEL_WIDTH, GAME_LEVEL_HEIGHT);
+        if (r >= 0 &&
+                r < SlotPuzzleConstants.GAME_LEVEL_HEIGHT &&
+                c >= 0 &&
+                c < SlotPuzzleConstants.GAME_LEVEL_WIDTH) {
+            ReelTileGridValue[][] grid =
+                    levelCreator.populateMatchGrid(
+                            reelTiles,
+                            new GridSize(
+                                    SlotPuzzleConstants.GAME_LEVEL_WIDTH,
+                                    SlotPuzzleConstants.GAME_LEVEL_HEIGHT));
             if (grid[r][c] != null) {
                 ReelTile reel = reelTiles.get(grid[r][c].index);
                 AnimatedReel animatedReel = levelCreator.getAnimatedReels().get(grid[r][c].index);

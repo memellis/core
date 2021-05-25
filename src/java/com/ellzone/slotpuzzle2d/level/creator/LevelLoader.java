@@ -24,6 +24,7 @@ import com.ellzone.slotpuzzle2d.level.card.Card;
 import com.ellzone.slotpuzzle2d.level.hidden.HiddenPattern;
 import com.ellzone.slotpuzzle2d.level.hidden.HiddenPlayingCard;
 import com.ellzone.slotpuzzle2d.level.hidden.HiddenShape;
+import com.ellzone.slotpuzzle2d.puzzlegrid.GridSize;
 import com.ellzone.slotpuzzle2d.puzzlegrid.PuzzleGridTypeReelTile;
 import com.ellzone.slotpuzzle2d.puzzlegrid.TupleValueIndex;
 import com.ellzone.slotpuzzle2d.scene.MapTile;
@@ -45,12 +46,12 @@ import static com.ellzone.slotpuzzle2d.level.creator.LevelCreator.PLAYING_CARD_L
 public class LevelLoader {
     private final AnnotationAssetManager annotationAssetManager;
     private LevelDoor levelDoor;
-    private MapTile mapTile;
+    private MapTile mapTileLevel;
     private TiledMap tiledMapLevel;
     private AnimatedReelHelper animatedReelHelper;
     private Array<ReelTile> reelTiles;
     private Array<AnimatedReel> animatedReels;
-    private int levelWidth, levelHeight;
+    private GridSize levelGridSize;
  	private Array<Card> cards;
     private Array<Integer> hiddenPlayingCards;
     private LevelCallback stoppedSpinningCallback, stoppedFlashingCallback;
@@ -58,17 +59,20 @@ public class LevelLoader {
     private PuzzleGridTypeReelTile puzzleGridTypeReelTile;
     private int reelsFromLevel;
 
-    public LevelLoader(AnnotationAssetManager annotationAssetManager, LevelDoor levelDoor, MapTile mapTile, Array<AnimatedReel> animatedReels) {
+    public LevelLoader(
+            AnnotationAssetManager annotationAssetManager,
+            LevelDoor levelDoor,
+            MapTile mapTileLevel,
+            Array<AnimatedReel> animatedReels) {
         this.annotationAssetManager = annotationAssetManager;
         this.levelDoor = levelDoor;
-        this.mapTile = mapTile;
+        this.mapTileLevel = mapTileLevel;
         this.animatedReels = animatedReels;
         reelTiles = new Array<>();
     }
 
-    public Array<AnimatedReel> createLevel(int levelWidth, int levelHeight) {
-        this.levelWidth = levelWidth;
-        this.levelHeight = levelHeight;
+    public Array<AnimatedReel> createAnimatedReelsInLevel(GridSize levelGridSize) {
+        this.levelGridSize = levelGridSize;
         puzzleGridTypeReelTile = new PuzzleGridTypeReelTile();
         tiledMapLevel = getLevelAssets(annotationAssetManager);
         if (levelDoor.getLevelType().equals(PLAYING_CARD_LEVEL_TYPE))
@@ -77,8 +81,8 @@ public class LevelLoader {
             initialiseHiddenShape();
         initialiseReelTiles(animatedReels);
         if (!levelDoor.getLevelType().equals(MINI_SLOT_MACHINE_LEVEL_TYPE)) {
-            reelTiles = checkLevel(reelTiles, levelWidth, levelHeight);
-            reelTiles = adjustForAnyLonelyReels(reelTiles, levelWidth, levelHeight);
+            reelTiles = checkLevel(reelTiles, levelGridSize);
+            reelTiles = adjustForAnyLonelyReels(reelTiles, levelGridSize);
         }
         return animatedReels;
     }
@@ -145,16 +149,19 @@ public class LevelLoader {
         stoppedFlashingCallback.onEvent(source);
     }
 
-    private Array<ReelTile> checkLevel(Array<ReelTile> reelLevel, int levelWidth, int levelHeight) {
-        return puzzleGridTypeReelTile.checkGrid(reelLevel, levelWidth, levelHeight);
+    private Array<ReelTile> checkLevel(Array<ReelTile> reelLevel, GridSize levelGridSize) {
+        return puzzleGridTypeReelTile.checkGrid(reelLevel, levelGridSize);
     }
 
-    private Array<ReelTile> adjustForAnyLonelyReels(Array<ReelTile> levelReel, int levelWidth, int levelHeight) {
-        return puzzleGridTypeReelTile.adjustForAnyLonelyReels(levelReel, levelWidth, levelHeight);
+    private Array<ReelTile> adjustForAnyLonelyReels(
+            Array<ReelTile> levelReel,
+            GridSize levelGridSize) {
+        return puzzleGridTypeReelTile.adjustForAnyLonelyReels(levelReel, levelGridSize);
     }
 
-    public TupleValueIndex[][] populateMatchGrid(Array<ReelTile> reelLevel, int levelWidth, int levelHeight) {
-        return puzzleGridTypeReelTile.populateMatchGrid(reelLevel, levelWidth, levelHeight);
+    public TupleValueIndex[][] populateMatchGrid(Array<ReelTile> reelLevel,
+                                                 GridSize levelGridSize) {
+        return puzzleGridTypeReelTile.populateMatchGrid(reelLevel, levelGridSize);
     }
 
     public Array<ReelTile> getReelTiles() {

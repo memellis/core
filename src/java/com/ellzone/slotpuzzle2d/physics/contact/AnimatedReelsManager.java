@@ -19,8 +19,10 @@ import com.badlogic.gdx.ai.msg.Telegram;
 import com.badlogic.gdx.ai.msg.Telegraph;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.utils.Array;
+import com.ellzone.slotpuzzle2d.SlotPuzzleConstants;
 import com.ellzone.slotpuzzle2d.messaging.MessageType;
 import com.ellzone.slotpuzzle2d.physics.PhysicsManagerCustomBodies;
+import com.ellzone.slotpuzzle2d.puzzlegrid.GridSize;
 import com.ellzone.slotpuzzle2d.puzzlegrid.Point;
 import com.ellzone.slotpuzzle2d.puzzlegrid.PuzzleGridType;
 import com.ellzone.slotpuzzle2d.puzzlegrid.PuzzleGridTypeReelTile;
@@ -31,8 +33,6 @@ import com.ellzone.slotpuzzle2d.sprites.ReelTile;
 import java.util.HashSet;
 
 import static com.ellzone.slotpuzzle2d.prototypes.box2d.collisions.Box2DBoxesFallingFromSlotPuzzleMatrices.SCREEN_OFFSET;
-import static com.ellzone.slotpuzzle2d.screens.PlayScreen.GAME_LEVEL_HEIGHT;
-import static com.ellzone.slotpuzzle2d.screens.PlayScreen.GAME_LEVEL_WIDTH;
 
 public class AnimatedReelsManager implements Telegraph {
     private static final float BOTTOM_ROW = 40.0f;
@@ -214,9 +214,12 @@ public class AnimatedReelsManager implements Telegraph {
         return PuzzleGridType.getReelsAboveMe(
             PuzzleGridTypeReelTile.populateMatchGridStatic(
                     reelTiles,
-                    GAME_LEVEL_WIDTH,
-                    GAME_LEVEL_HEIGHT),
-            PuzzleGridTypeReelTile.getRowFromLevel(reelTile.getDestinationY(), GAME_LEVEL_HEIGHT),
+                    new GridSize(
+                            SlotPuzzleConstants.GAME_LEVEL_WIDTH,
+                            SlotPuzzleConstants.GAME_LEVEL_HEIGHT)),
+            PuzzleGridTypeReelTile.getRowFromLevel(
+                    reelTile.getDestinationY(),
+                    SlotPuzzleConstants.GAME_LEVEL_HEIGHT),
             PuzzleGridTypeReelTile.getColumnFromLevel(reelTile.getDestinationX()));
     }
 
@@ -257,7 +260,8 @@ public class AnimatedReelsManager implements Telegraph {
     private void processReelsLeftToFall(ReelTile currentReelTile, TupleValueIndex[] reelsAboveMe) {
         for (int i = 0; i < reelsAboveMe.length; i++) {
             if (PuzzleGridTypeReelTile.getRowFromLevel(
-                    currentReelTile.getDestinationY(), GAME_LEVEL_HEIGHT) - 1 == reelsAboveMe[i].getR()) {
+                    currentReelTile.getDestinationY(),
+                    SlotPuzzleConstants.GAME_LEVEL_HEIGHT) - 1 == reelsAboveMe[i].getR()) {
                 recordDecrementReelsLeftToFall(animatedReels.get(reelsAboveMe[i].index).getReel());
             }
             currentReelTile = animatedReels.get(reelsAboveMe[i].index).getReel();
@@ -265,8 +269,10 @@ public class AnimatedReelsManager implements Telegraph {
     }
 
     private boolean isReelFallenBelowDestinationRow(ReelTile currentReelTile) {
-        int currentRow = PuzzleGridTypeReelTile.getRowFromLevel(currentReelTile.getY(), GAME_LEVEL_HEIGHT);
-        int destinationRow = PuzzleGridTypeReelTile.getRowFromLevel(currentReelTile.getDestinationY(), GAME_LEVEL_HEIGHT);
+        int currentRow = PuzzleGridTypeReelTile.getRowFromLevel(
+                currentReelTile.getY(), SlotPuzzleConstants.GAME_LEVEL_HEIGHT);
+        int destinationRow = PuzzleGridTypeReelTile.getRowFromLevel(
+                currentReelTile.getDestinationY(), SlotPuzzleConstants.GAME_LEVEL_HEIGHT);
         return destinationRow < currentRow;
     }
 
@@ -369,8 +375,10 @@ public class AnimatedReelsManager implements Telegraph {
         PuzzleGridTypeReelTile.printGrid(
                 PuzzleGridTypeReelTile.populateMatchGridStatic(
                         reelTiles,
-                        GAME_LEVEL_WIDTH,
-                        GAME_LEVEL_HEIGHT)
+                        new GridSize(
+                                SlotPuzzleConstants.GAME_LEVEL_WIDTH,
+                                SlotPuzzleConstants.GAME_LEVEL_HEIGHT)
+                )
         );
         System.out.println();
     }
@@ -385,9 +393,11 @@ public class AnimatedReelsManager implements Telegraph {
     }
 
     private boolean isDuplicateReel(ReelTile reelTile) {
-        int r = PuzzleGridTypeReelTile.getRowFromLevel(reelTile.getDestinationY(), GAME_LEVEL_HEIGHT);
+        int r = PuzzleGridTypeReelTile.getRowFromLevel(
+                reelTile.getDestinationY(),
+                SlotPuzzleConstants.GAME_LEVEL_HEIGHT);
         int c = PuzzleGridTypeReelTile.getColumnFromLevel(reelTile.getDestinationX());
-        Point point = new Point(r, c, GAME_LEVEL_WIDTH);
+        Point point = new Point(r, c, SlotPuzzleConstants.GAME_LEVEL_WIDTH);
         boolean isNotADuplicate = reelPoints.add(point);
         if (!isNotADuplicate)
             reelPoints.add(point);

@@ -49,6 +49,7 @@ import com.ellzone.slotpuzzle2d.physics.SPPhysicsCallback;
 import com.ellzone.slotpuzzle2d.physics.SPPhysicsEvent;
 import com.ellzone.slotpuzzle2d.physics.Vector;
 import com.ellzone.slotpuzzle2d.prototypes.SPPrototypeTemplate;
+import com.ellzone.slotpuzzle2d.puzzlegrid.GridSize;
 import com.ellzone.slotpuzzle2d.puzzlegrid.PuzzleGridType;
 import com.ellzone.slotpuzzle2d.puzzlegrid.PuzzleGridTypeReelTile;
 import com.ellzone.slotpuzzle2d.puzzlegrid.ReelTileGridValue;
@@ -188,7 +189,7 @@ public class MiniSlotMachineLevelFallingReels extends SPPrototypeTemplate {
     }
 
     private void createSlotReelTexture() {
-        slotReelPixmap = new Pixmap(PlayScreen.TILE_WIDTH, PlayScreen.TILE_HEIGHT, Pixmap.Format.RGBA8888);
+        slotReelPixmap = new Pixmap(SlotPuzzleConstants.TILE_WIDTH, SlotPuzzleConstants.TILE_HEIGHT, Pixmap.Format.RGBA8888);
         slotReelPixmap = PixmapProcessors.createDynamicScrollAnimatedPixmap(reelSprites.getSprites(), reelSprites.getSprites().length);
         slotReelTexture = new Texture(slotReelPixmap);
         slotReelScrollPixmap = new Pixmap((int) reelSprites.getReelWidth(), (int) reelSprites.getReelHeight(), Pixmap.Format.RGBA8888);
@@ -370,10 +371,10 @@ public class MiniSlotMachineLevelFallingReels extends SPPrototypeTemplate {
     private Array<ReelTile> populateLevel(TiledMap level, Array<ReelTile> reelTiles) {
         for (MapObject mapObject : level.getLayers().get(REEL_OBJECT_LAYER).getObjects().getByType(RectangleMapObject.class)) {
             Rectangle mapRectangle = ((RectangleMapObject) mapObject).getRectangle();
-            int c = (int) (mapRectangle.getX() - PlayScreen.PUZZLE_GRID_START_X) / PlayScreen.TILE_WIDTH;
-            int r = (int) (mapRectangle.getY() - PlayScreen.PUZZLE_GRID_START_Y) / PlayScreen.TILE_HEIGHT;
-            r = PlayScreen.GAME_LEVEL_HEIGHT - r;
-            if ((r >= 0) & (r <= PlayScreen.GAME_LEVEL_HEIGHT) & (c >= 0) & (c <= PlayScreen.GAME_LEVEL_WIDTH)) {
+            int c = (int) (mapRectangle.getX() - PlayScreen.PUZZLE_GRID_START_X) / SlotPuzzleConstants.TILE_WIDTH;
+            int r = (int) (mapRectangle.getY() - PlayScreen.PUZZLE_GRID_START_Y) / SlotPuzzleConstants.TILE_HEIGHT;
+            r = SlotPuzzleConstants.GAME_LEVEL_HEIGHT - r;
+            if ((r >= 0) & (r <= SlotPuzzleConstants.GAME_LEVEL_HEIGHT) & (c >= 0) & (c <= SlotPuzzleConstants.GAME_LEVEL_WIDTH)) {
                 addReel(mapRectangle, reelTiles);
             } else {
                 Gdx.app.debug(SlotPuzzleConstants.SLOT_PUZZLE, "I don't respond to grid r=" + r + " c=" + c + ". There it won't be added to the level! Sort it out in a level editor.");
@@ -471,10 +472,10 @@ public class MiniSlotMachineLevelFallingReels extends SPPrototypeTemplate {
         for (Integer hiddenPlayingCard : hiddenPlayingCards) {
             MapObject mapObject = miniSlotmachineLevel.getLayers().get(HIDDEN_PATTERN_LAYER_NAME).getObjects().getByType(RectangleMapObject.class).get(hiddenPlayingCard.intValue());
             Rectangle mapRectangle = ((RectangleMapObject) mapObject).getRectangle();
-            for (int ro = (int) (mapRectangle.getX()); ro < (int) (mapRectangle.getX() + mapRectangle.getWidth()); ro += PlayScreen.TILE_WIDTH) {
-                for (int co = (int) (mapRectangle.getY()) ; co < (int) (mapRectangle.getY() + mapRectangle.getHeight()); co += PlayScreen.TILE_HEIGHT) {
-                    int c = (int) (ro - PlayScreen.PUZZLE_GRID_START_X) / PlayScreen.TILE_WIDTH;
-                    int r = (int) (co - PlayScreen.PUZZLE_GRID_START_Y) / PlayScreen.TILE_HEIGHT;
+            for (int ro = (int) (mapRectangle.getX()); ro < (int) (mapRectangle.getX() + mapRectangle.getWidth()); ro += SlotPuzzleConstants.TILE_WIDTH) {
+                for (int co = (int) (mapRectangle.getY()) ; co < (int) (mapRectangle.getY() + mapRectangle.getHeight()); co += SlotPuzzleConstants.TILE_HEIGHT) {
+                    int c = (int) (ro - PlayScreen.PUZZLE_GRID_START_X) / SlotPuzzleConstants.TILE_WIDTH;
+                    int r = (int) (co - PlayScreen.PUZZLE_GRID_START_Y) / SlotPuzzleConstants.TILE_HEIGHT;
                     r = GAME_LEVEL_HEIGHT - r;
                     if ((r >= 0) & (r <= GAME_LEVEL_HEIGHT) & (c >= 0) & (c <= GAME_LEVEL_WIDTH)) {
                         if (grid[r][c] != null) {
@@ -495,8 +496,8 @@ public class MiniSlotMachineLevelFallingReels extends SPPrototypeTemplate {
         boolean hiddenPattern = true;
         for (MapObject mapObject : miniSlotmachineLevel.getLayers().get(HIDDEN_PATTERN_LAYER_NAME).getObjects().getByType(RectangleMapObject.class)) {
             Rectangle mapRectangle = ((RectangleMapObject) mapObject).getRectangle();
-            int c = (int) (mapRectangle.getX() - PlayScreen.PUZZLE_GRID_START_X) / PlayScreen.TILE_WIDTH;
-            int r = (int) (mapRectangle.getY() - PlayScreen.PUZZLE_GRID_START_Y) / PlayScreen.TILE_HEIGHT;
+            int c = (int) (mapRectangle.getX() - PlayScreen.PUZZLE_GRID_START_X) / SlotPuzzleConstants.TILE_WIDTH;
+            int r = (int) (mapRectangle.getY() - PlayScreen.PUZZLE_GRID_START_Y) / SlotPuzzleConstants.TILE_HEIGHT;
             r = GAME_LEVEL_HEIGHT - r;
             if ((r >= 0) & (r <= GAME_LEVEL_HEIGHT) & (c >= 0) & (c <= GAME_LEVEL_WIDTH)) {
                 if (grid[r][c] != null) {
@@ -527,7 +528,9 @@ public class MiniSlotMachineLevelFallingReels extends SPPrototypeTemplate {
 
     private ReelTileGridValue[][] flashSlots(Array<ReelTile> reelTiles) {
         PuzzleGridTypeReelTile puzzleGridTypeReelTile = new PuzzleGridTypeReelTile();
-        ReelTileGridValue[][] puzzleGrid = puzzleGridTypeReelTile.populateMatchGrid(reelTiles,  mapWidth, mapHeight);
+        ReelTileGridValue[][] puzzleGrid = puzzleGridTypeReelTile.populateMatchGrid(
+                reelTiles,  new GridSize(mapWidth, mapHeight)
+        );
 
         Array<ReelTileGridValue> matchedSlots = puzzleGridTypeReelTile.matchGridSlots(puzzleGrid);
         Array<ReelTileGridValue> duplicateMatchedSlots = PuzzleGridTypeReelTile.findDuplicateMatches(matchedSlots);
@@ -592,8 +595,8 @@ public class MiniSlotMachineLevelFallingReels extends SPPrototypeTemplate {
         TupleValueIndex[][] matchGrid = new TupleValueIndex[9][12];
         int r, c;
         for (int i = 0; i < reelLevel.size; i++) {
-            c = (int) (reelLevel.get(i).getX() - PlayScreen.PUZZLE_GRID_START_X) / PlayScreen.TILE_WIDTH;
-            r = (int) (reelLevel.get(i).getY() - PlayScreen.PUZZLE_GRID_START_Y) / PlayScreen.TILE_HEIGHT;
+            c = (int) (reelLevel.get(i).getX() - PlayScreen.PUZZLE_GRID_START_X) / SlotPuzzleConstants.TILE_WIDTH;
+            r = (int) (reelLevel.get(i).getY() - PlayScreen.PUZZLE_GRID_START_Y) / SlotPuzzleConstants.TILE_HEIGHT;
             r = GAME_LEVEL_HEIGHT - r;
             if ((r >= 0) & (r <= GAME_LEVEL_HEIGHT) & (c >= 0) & (c <= GAME_LEVEL_WIDTH)) {
                 if (reelLevel.get(i).isReelTileDeleted()) {
@@ -778,8 +781,8 @@ public class MiniSlotMachineLevelFallingReels extends SPPrototypeTemplate {
         int touchY = Gdx.input.getY();
         Vector2 newPoints = new Vector2(touchX, touchY);
         newPoints = viewport.unproject(newPoints);
-        int c = (int) (newPoints.x - PlayScreen.PUZZLE_GRID_START_X) / PlayScreen.TILE_WIDTH;
-        int r = (int) (newPoints.y - PlayScreen.PUZZLE_GRID_START_Y) / PlayScreen.TILE_HEIGHT;
+        int c = (int) (newPoints.x - PlayScreen.PUZZLE_GRID_START_X) / SlotPuzzleConstants.TILE_WIDTH;
+        int r = (int) (newPoints.y - PlayScreen.PUZZLE_GRID_START_Y) / SlotPuzzleConstants.TILE_HEIGHT;
         r = GAME_LEVEL_HEIGHT - r;
         if ((r >= 0) & (r <= GAME_LEVEL_HEIGHT) & (c >= 0) & (c <= GAME_LEVEL_WIDTH)) {
             TupleValueIndex[][] grid = populateMatchGrid(reelTiles);

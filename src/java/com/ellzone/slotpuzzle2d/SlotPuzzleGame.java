@@ -29,7 +29,7 @@ import net.dermetfan.gdx.assets.AnnotationAssetManager;
 
 import java.util.Properties;
 
-public class SlotPuzzle extends Game {
+public class SlotPuzzleGame extends Game {
 	public SpriteBatch batch;
 	public AnnotationAssetManager annotationAssetManager;
 	private Screen worldScreen;
@@ -44,29 +44,28 @@ public class SlotPuzzle extends Game {
 	
 	private void setLogLevel() {
 		String logLevel = System.getProperty(SlotPuzzleConstants.LIBGDX_LOGLEVEL_PROPERTY);
-		if (logLevel != null) {
-			if (logLevel.equals(SlotPuzzleConstants.DEBUG))
-				Gdx.app.setLogLevel(Application.LOG_DEBUG);
-			else if (logLevel.equals(SlotPuzzleConstants.INFO))
-				Gdx.app.setLogLevel(Application.LOG_INFO);				
-			else if (logLevel.equals(SlotPuzzleConstants.ERROR) )
-				Gdx.app.setLogLevel(Application.LOG_ERROR);
-		} else {
+		if (logLevel != null)
+			setApplicationLogLevel(logLevel);
+		else {
 			logLevel= System.getenv(SlotPuzzleConstants.LIBGDX_LOGLEVEL);
-			if ((logLevel != null) && (logLevel != "")) {
-				if (logLevel.equals(SlotPuzzleConstants.DEBUG))
-					Gdx.app.setLogLevel(Application.LOG_DEBUG);	
-				else if (logLevel.equals(SlotPuzzleConstants.INFO))
-					Gdx.app.setLogLevel(Application.LOG_INFO);				
-				else if (logLevel.equals(SlotPuzzleConstants.ERROR))
-					Gdx.app.setLogLevel(Application.LOG_ERROR);
-			}
+			if ((logLevel != null) && (logLevel != ""))
+				setApplicationLogLevel(logLevel);
 		}
+	}
+
+	private void setApplicationLogLevel(String logLevel) {
+		if (logLevel.equals(SlotPuzzleConstants.DEBUG))
+			Gdx.app.setLogLevel(Application.LOG_DEBUG);
+		else if (logLevel.equals(SlotPuzzleConstants.INFO))
+			Gdx.app.setLogLevel(Application.LOG_INFO);
+		else if (logLevel.equals(SlotPuzzleConstants.ERROR))
+			Gdx.app.setLogLevel(Application.LOG_ERROR);
 	}
 
 	private AnnotationAssetManager loadAssets(AnnotationAssetManager annotationAssetManager) {
 		annotationAssetManager = LibGdxFactory.getInstance().newAnnotationAssetManager();
-		annotationAssetManager.setLoader(TiledMap.class, new TmxMapLoader(new InternalFileHandleResolver()));
+		annotationAssetManager.setLoader(
+				TiledMap.class, new TmxMapLoader(new InternalFileHandleResolver()));
 		annotationAssetManager.load(new AssetsAnnotation());
 		annotationAssetManager.finishLoading();
 		return annotationAssetManager;

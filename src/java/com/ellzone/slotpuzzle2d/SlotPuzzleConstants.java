@@ -16,15 +16,30 @@
 
 package com.ellzone.slotpuzzle2d;
 
-public class SlotPuzzleConstants {
-    public final static String SLOT_PUZZLE = "Slot Puzzle";
+public final class SlotPuzzleConstants {
     public final static int VIRTUAL_WIDTH = 800;
     public final static int VIRTUAL_HEIGHT = 480;
     public final static int PIXELS_PER_METER = 100;
-    public static final float EARTH_GRAVITY = -9.8f;
+    public final static float EARTH_GRAVITY = -9.8f;
+    public final static int TILE_WIDTH = 40;
+    public final static int TILE_HEIGHT = 40;
+    public static final int GAME_LEVEL_WIDTH = 12;
+    public static final int GAME_LEVEL_HEIGHT = 9;
+
+    public final static String SLOT_PUZZLE = "Slot Puzzle";
     public final static String DEBUG = "DEBUG";
     public final static String INFO = "INFO";
     public final static String ERROR = "ERROR";
     public final static String LIBGDX_LOGLEVEL_PROPERTY = "libgdx.logLevel";
     public final static String LIBGDX_LOGLEVEL = "LIBGDX_LOGLEVEL";
+
+    public static final String BOMBS_LEVEL_TYPE = "BombsLevel";
+    public static final String HIDDEN_PATTERN_LEVEL_TYPE = "HiddenPattern";
+    public static final String HIDDEN_PATTERN_LAYER_NAME = "Hidden Pattern Object";
+    public static final String PLAYING_CARD_LEVEL_TYPE = "PlayingCard";
+    public static final String BONUS_LEVEL_TYPE = "BonusLevelType";
+    public static final String FALLING_REELS_LEVEL_TYPE = "FallingReels";
+
+    private SlotPuzzleConstants() {
+    }
 }

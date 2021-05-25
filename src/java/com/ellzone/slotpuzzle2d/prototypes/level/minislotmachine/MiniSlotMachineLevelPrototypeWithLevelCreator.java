@@ -47,6 +47,7 @@ import com.ellzone.slotpuzzle2d.physics.DampenedSineParticle;
 import com.ellzone.slotpuzzle2d.physics.PhysicsManagerCustomBodies;
 import com.ellzone.slotpuzzle2d.physics.Vector;
 import com.ellzone.slotpuzzle2d.prototypes.SPPrototypeTemplate;
+import com.ellzone.slotpuzzle2d.puzzlegrid.GridSize;
 import com.ellzone.slotpuzzle2d.puzzlegrid.PuzzleGridType;
 import com.ellzone.slotpuzzle2d.puzzlegrid.PuzzleGridTypeReelTile;
 import com.ellzone.slotpuzzle2d.puzzlegrid.TupleValueIndex;
@@ -110,8 +111,6 @@ class MiniSlotMachinePrototypeWithLevelCreator {
  */
 
 public class MiniSlotMachineLevelPrototypeWithLevelCreator extends SPPrototypeTemplate {
-    public static final int GAME_LEVEL_WIDTH = 12;
-    public static final int GAME_LEVEL_HEIGHT = 9;
     public static final String REEL_OBJECT_LAYER = "ReelSprites";
     public static final String HIDDEN_PATTERN_LEVEL_TYPE = "HiddenPattern";
     public static final String PLAYING_CARD_LEVEL_TYPE = "PlayingCard";
@@ -164,6 +163,9 @@ public class MiniSlotMachineLevelPrototypeWithLevelCreator extends SPPrototypeTe
     private Body reelSinkLhs, reelSinkRhs, reelSinkBottom;
     private float centreX = SlotPuzzleConstants.VIRTUAL_WIDTH / 2;
     private float centreY = SlotPuzzleConstants.VIRTUAL_HEIGHT / 2;
+    private final GridSize levelGridSize =
+            new GridSize(
+                    SlotPuzzleConstants.GAME_LEVEL_WIDTH, SlotPuzzleConstants.GAME_LEVEL_HEIGHT);
 
     @Override
     protected void initialiseOverride() {
@@ -186,8 +188,7 @@ public class MiniSlotMachineLevelPrototypeWithLevelCreator extends SPPrototypeTe
                 carddeckAtlas,
                 tweenManager,
                 physics,
-                GAME_LEVEL_WIDTH,
-                GAME_LEVEL_HEIGHT,
+                levelGridSize,
                 PlayStates.INITIALISING,
                 hud);
         levelCreator.setPlayState(PlayStates.INITIALISING);
@@ -240,10 +241,17 @@ public class MiniSlotMachineLevelPrototypeWithLevelCreator extends SPPrototypeTe
     }
 
     private void createSlotReelTexture() {
-        slotReelPixmap = new Pixmap(PlayScreen.TILE_WIDTH, PlayScreen.TILE_HEIGHT, Pixmap.Format.RGBA8888);
-        slotReelPixmap = PixmapProcessors.createDynamicScrollAnimatedPixmap(reelSprites.getSprites(), reelSprites.getSprites().length);
+        slotReelPixmap = new Pixmap(
+                SlotPuzzleConstants.TILE_WIDTH,
+                SlotPuzzleConstants.TILE_HEIGHT,
+                Pixmap.Format.RGBA8888);
+        slotReelPixmap = PixmapProcessors.createDynamicScrollAnimatedPixmap(
+                reelSprites.getSprites(), reelSprites.getSprites().length);
         slotReelTexture = new Texture(slotReelPixmap);
-        slotReelScrollPixmap = new Pixmap((int) reelSprites.getReelWidth(), (int) reelSprites.getReelHeight(), Pixmap.Format.RGBA8888);
+        slotReelScrollPixmap = new Pixmap(
+                (int) reelSprites.getReelWidth(),
+                (int) reelSprites.getReelHeight(),
+                Pixmap.Format.RGBA8888);
         slotReelScrollPixmap = PixmapProcessors.createPixmapToAnimate(reelSprites.getSprites());
         slotReelScrollTexture = new Texture(slotReelScrollPixmap);
         slotReelScrollheight = slotReelScrollTexture.getHeight();
@@ -279,7 +287,7 @@ public class MiniSlotMachineLevelPrototypeWithLevelCreator extends SPPrototypeTe
         this.font = new BitmapFont();
         this.sW = SlotPuzzleConstants.VIRTUAL_WIDTH;
         this.sH = SlotPuzzleConstants.VIRTUAL_HEIGHT;
-        reelTiles = new Array<ReelTile>();
+        reelTiles = new Array<>();
     }
 
      public void handleInput(float dt) {
@@ -334,11 +342,14 @@ public class MiniSlotMachineLevelPrototypeWithLevelCreator extends SPPrototypeTe
         int touchY = Gdx.input.getY();
         Vector2 newPoints = new Vector2(touchX, touchY);
         newPoints = viewport.unproject(newPoints);
-        int c = (int) (newPoints.x - PlayScreen.PUZZLE_GRID_START_X) / PlayScreen.TILE_WIDTH;
-        int r = (int) (newPoints.y - PlayScreen.PUZZLE_GRID_START_Y) / PlayScreen.TILE_HEIGHT;
-        r = GAME_LEVEL_HEIGHT - 1 - r ;
-        if ((r >= 0) & (r <= GAME_LEVEL_HEIGHT) & (c >= 0) & (c <= GAME_LEVEL_WIDTH)) {
-            TupleValueIndex[][] grid = levelCreator.populateMatchGrid(reelTiles, GAME_LEVEL_WIDTH, GAME_LEVEL_HEIGHT);
+        int c = (int) (newPoints.x - PlayScreen.PUZZLE_GRID_START_X) / SlotPuzzleConstants.TILE_WIDTH;
+        int r = (int) (newPoints.y - PlayScreen.PUZZLE_GRID_START_Y) / SlotPuzzleConstants.TILE_HEIGHT;
+        r = levelGridSize.getHeight() - 1 - r ;
+        if ((r >= 0) & (r <= levelGridSize.getHeight()) & (c >= 0) & (c <= levelGridSize.getWidth())) {
+            TupleValueIndex[][] grid =
+                    levelCreator.populateMatchGrid(
+                            reelTiles,
+                            levelGridSize);
             System.out.println("touched r="+r+" c="+c);
             if (grid[r][c] != null) {
                 System.out.println("grid["+r+","+c+"].index="+grid[r][c].index);
@@ -505,7 +516,9 @@ public class MiniSlotMachineLevelPrototypeWithLevelCreator extends SPPrototypeTe
             System.out.println("In dealWithHitSinkBottom + reelTile="+reelTile);
             System.out.println("reelTileA.destinationX="+reelTile.getDestinationX());
             System.out.println("reelTileA.destinationY="+reelTile.getDestinationY());
-            int r = PuzzleGridTypeReelTile.getRowFromLevel(reelTile.getDestinationY(), GAME_LEVEL_HEIGHT);
+            int r = PuzzleGridTypeReelTile.getRowFromLevel(
+                    reelTile.getDestinationY(),
+                    levelGridSize.getHeight());
             int c = PuzzleGridTypeReelTile.getColumnFromLevel(reelTile.getDestinationX());
             System.out.println("reelTileA r="+r+" c="+c+" v="+reelTile.getEndReel() );
 
@@ -516,7 +529,11 @@ public class MiniSlotMachineLevelPrototypeWithLevelCreator extends SPPrototypeTe
                 reelTile.setY(120);
                 reelTile.setDestinationY(120);
             }
-            levelCreator.printMatchGrid(reelTiles, GAME_LEVEL_WIDTH, GAME_LEVEL_HEIGHT);
+            levelCreator.printMatchGrid(
+                    reelTiles,
+                    new GridSize(
+                            SlotPuzzleConstants.GAME_LEVEL_WIDTH,
+                            SlotPuzzleConstants.GAME_LEVEL_HEIGHT));
         }
     }
 
@@ -527,10 +544,14 @@ public class MiniSlotMachineLevelPrototypeWithLevelCreator extends SPPrototypeTe
         System.out.println("reelTileA.destinationY="+reelTileA.getDestinationY());
         System.out.println("reelTileB.destinationX="+reelTileB.getDestinationX());
         System.out.println("reelTileB.destinationY="+reelTileB.getDestinationY());
-        rA = PuzzleGridTypeReelTile.getRowFromLevel(reelTileA.getDestinationY(), GAME_LEVEL_HEIGHT);
+        rA = PuzzleGridTypeReelTile.getRowFromLevel(
+                reelTileA.getDestinationY(),
+                levelGridSize.getHeight());
         cA = PuzzleGridTypeReelTile.getColumnFromLevel(reelTileA.getDestinationX());
         System.out.println("reelTileA r="+rA+" c="+cA+" v="+reelTileA.getEndReel() );
-        rB = PuzzleGridTypeReelTile.getRowFromLevel(reelTileB.getDestinationY(), GAME_LEVEL_HEIGHT);
+        rB = PuzzleGridTypeReelTile.getRowFromLevel(
+                reelTileB.getDestinationY(),
+                levelGridSize.getHeight());
         cB = PuzzleGridTypeReelTile.getColumnFromLevel(reelTileB.getDestinationX());
         System.out.println("reelTileB r="+rB+" c="+cB+" v="+reelTileB.getEndReel());
         if ((Math.abs(rA - rB) == 1) & (cA == cB)) {
@@ -561,7 +582,7 @@ public class MiniSlotMachineLevelPrototypeWithLevelCreator extends SPPrototypeTe
                         } else {
                             swapReelsAboveMe(reelTileA, reelTileB);
                         }
-                        levelCreator.printMatchGrid(reelTiles, GAME_LEVEL_WIDTH, GAME_LEVEL_HEIGHT);
+                        levelCreator.printMatchGrid(reelTiles, levelGridSize);
                     }
                     if (Math.abs(rA - rB) == 1) {
                         System.out.println("Difference between rows is == 1");
@@ -570,7 +591,7 @@ public class MiniSlotMachineLevelPrototypeWithLevelCreator extends SPPrototypeTe
                         } else {
                             swapReelsAboveMe(reelTileA, reelTileB);
                         }
-                        levelCreator.printMatchGrid(reelTiles, GAME_LEVEL_WIDTH, GAME_LEVEL_HEIGHT);
+                        levelCreator.printMatchGrid(reelTiles, levelGridSize);
                     }
                     if (Math.abs(rA - rB) == 0) {
                         System.out.println("Difference between rows is == 0. I shouldn't get this.");
@@ -584,12 +605,16 @@ public class MiniSlotMachineLevelPrototypeWithLevelCreator extends SPPrototypeTe
     }
 
     private void swapReelsAboveMe(ReelTile reelTileA, ReelTile reelTileB) {
-        TupleValueIndex[] reelsAboveMe = PuzzleGridType.getReelsAboveMe(levelCreator.populateMatchGrid(reelTiles, GAME_LEVEL_WIDTH, GAME_LEVEL_HEIGHT),
-                PuzzleGridTypeReelTile.getRowFromLevel(reelTileA.getDestinationY(), GAME_LEVEL_HEIGHT),
+        TupleValueIndex[] reelsAboveMe = PuzzleGridType.getReelsAboveMe(
+                levelCreator.populateMatchGrid(reelTiles, levelGridSize),
+                PuzzleGridTypeReelTile.getRowFromLevel(
+                        reelTileA.getDestinationY(), levelGridSize.getHeight()),
                 PuzzleGridTypeReelTile.getColumnFromLevel(reelTileA.getDestinationX()));
 
         float savedDestinationY = reelTileA.getDestinationY();
-        int reelHasFallenFrom = levelCreator.findReel((int)reelTileB.getDestinationX(), (int) reelTileB.getDestinationY() + 40);
+        int reelHasFallenFrom = levelCreator.findReel(
+                (int)reelTileB.getDestinationX(),
+                (int) reelTileB.getDestinationY() + 40);
         ReelTile deletedReel = reelTiles.get(reelHasFallenFrom);
 
         reelTileA.setDestinationY(reelTileB.getDestinationY() + 40);
@@ -605,7 +630,9 @@ public class MiniSlotMachineLevelPrototypeWithLevelCreator extends SPPrototypeTe
             System.out.println("currentReel destination r="+getRow(currentReel.getDestinationY())+" c="+getColumn(currentReel.getDestinationX()));
 
             savedDestinationY = reelTiles.get(reelsAboveMe[reelsAboveMeIndex].getIndex()).getDestinationY();
-            reelHasFallenFrom = levelCreator.findReel((int) currentReel.getDestinationX(), (int) currentReel.getDestinationY() + 40);
+            reelHasFallenFrom = levelCreator.findReel(
+                    (int) currentReel.getDestinationX(),
+                    (int) currentReel.getDestinationY() + 40);
             deletedReel = reelTiles.get(reelHasFallenFrom);
 
             reelTiles.get(reelsAboveMe[reelsAboveMeIndex].getIndex()).setDestinationY(currentReel.getDestinationY() + 40);
@@ -614,21 +641,28 @@ public class MiniSlotMachineLevelPrototypeWithLevelCreator extends SPPrototypeTe
             deletedReel.setDestinationY(savedDestinationY);
             deletedReel.setY(savedDestinationY);
 
-            System.out.println("reelTileA.destinationY="+reelTiles.get(reelsAboveMe[reelsAboveMeIndex].getIndex()).getDestinationY());
-            System.out.println("reelTileB.destinationY="+reelTiles.get(reelsAboveMe[reelsAboveMeIndex].getIndex()).getY());
-            int rA = PuzzleGridTypeReelTile.getRowFromLevel(reelTiles.get(reelsAboveMe[reelsAboveMeIndex].getIndex()).getDestinationY(), GAME_LEVEL_HEIGHT);
-            System.out.println("reelTileA r="+rA+" v="+reelTiles.get(reelsAboveMe[reelsAboveMeIndex].getIndex()).getEndReel() );
-            int rB = PuzzleGridTypeReelTile.getRowFromLevel(reelTileB.getDestinationY(), GAME_LEVEL_HEIGHT);
+            System.out.println("reelTileA.destinationY="+
+                    reelTiles.get(reelsAboveMe[reelsAboveMeIndex].getIndex()).getDestinationY());
+            System.out.println("reelTileB.destinationY="+
+                    reelTiles.get(reelsAboveMe[reelsAboveMeIndex].getIndex()).getY());
+            int rA = PuzzleGridTypeReelTile.getRowFromLevel(
+                    reelTiles.get(reelsAboveMe[reelsAboveMeIndex].getIndex()).getDestinationY(),
+                    levelGridSize.getHeight());
+            System.out.println("reelTileA r="+rA+" v="+
+                    reelTiles.get(reelsAboveMe[reelsAboveMeIndex].getIndex()).getEndReel() );
+            int rB = PuzzleGridTypeReelTile.getRowFromLevel(
+                    reelTileB.getDestinationY(),
+                    levelGridSize.getHeight());
             int cB = PuzzleGridTypeReelTile.getColumnFromLevel(reelTileB.getDestinationX());
             System.out.println("reelTileB r="+rB+" c="+cB+" v="+reelTileB.getEndReel());
 
             currentReel = reelTiles.get(reelsAboveMe[reelsAboveMeIndex].getIndex());
         }
-        levelCreator.printMatchGrid(reelTiles, GAME_LEVEL_WIDTH, GAME_LEVEL_HEIGHT);
+        levelCreator.printMatchGrid(reelTiles, levelGridSize);
     }
 
     private int getRow(float y) {
-        return PuzzleGridTypeReelTile.getRowFromLevel(y, GAME_LEVEL_HEIGHT);
+        return PuzzleGridTypeReelTile.getRowFromLevel(y, levelGridSize.getHeight());
     }
 
     private int getColumn(float x) {

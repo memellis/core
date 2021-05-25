@@ -52,7 +52,6 @@ import com.ellzone.slotpuzzle2d.physics.ReelSink;
 import com.ellzone.slotpuzzle2d.physics.contact.AnimatedReelsManager;
 import com.ellzone.slotpuzzle2d.physics.contact.BoxHittingBoxContactListener;
 import com.ellzone.slotpuzzle2d.prototypes.SPPrototype;
-import com.ellzone.slotpuzzle2d.screens.PlayScreen;
 import com.ellzone.slotpuzzle2d.sprites.AnimatedReel;
 import com.ellzone.slotpuzzle2d.sprites.ReelSprites;
 import com.ellzone.slotpuzzle2d.sprites.ReelTile;
@@ -101,7 +100,7 @@ public class Box2DBoxesFallingFromSlotPuzzleMatrices extends SPPrototype impleme
     private Boolean isAutoFall;
     private int numberOfReelBoxesAsleep = 0;
     private int numberOfReelBoxesCreated = 0;
-    int[] matrixIdentifier = new int[PlayScreen.GAME_LEVEL_WIDTH];
+    int[] matrixIdentifier = new int[SlotPuzzleConstants.GAME_LEVEL_WIDTH];
     private boolean cycleDynamic = true;
     private boolean testingFullMatrixDeleteingReelBox = false;
     private boolean testingFullMatrixDeleteingReelBoxes = false;
@@ -240,13 +239,13 @@ public class Box2DBoxesFallingFromSlotPuzzleMatrices extends SPPrototype impleme
         setColumnValues(matrixIdentifier, slotMatrixCycleIndex);
         int dynamicGrid[][] = SlotPuzzleMatrices.createDynamicMatrix(
                 matrixIdentifier,
-                PlayScreen.GAME_LEVEL_WIDTH,
-                PlayScreen.GAME_LEVEL_HEIGHT);
+                SlotPuzzleConstants.GAME_LEVEL_WIDTH,
+                SlotPuzzleConstants.GAME_LEVEL_HEIGHT);
         System.out.println();
         animatedReels = animatedReelsMatrixCreator.createAnimatedReelsFromSlotPuzzleMatrix(dynamicGrid);
         numberOfReelsToFall = animatedReelsMatrixCreator.getNumberOfReelsToFall();
         slotMatrixCycleIndex++;
-        slotMatrixCycleIndex %= Math.pow(2, PlayScreen.GAME_LEVEL_HEIGHT);
+        slotMatrixCycleIndex %= Math.pow(2, SlotPuzzleConstants.GAME_LEVEL_HEIGHT);
     }
 
     private void setColumnValues(int[] matrixIdentifier, int matrixValue) {

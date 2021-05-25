@@ -52,7 +52,7 @@ import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
-import com.ellzone.slotpuzzle2d.SlotPuzzle;
+import com.ellzone.slotpuzzle2d.SlotPuzzleGame;
 import com.ellzone.slotpuzzle2d.SlotPuzzleConstants;
 import com.ellzone.slotpuzzle2d.camera.CameraLerp;
 import com.ellzone.slotpuzzle2d.effects.CameraAccessor;
@@ -122,7 +122,7 @@ public class WorldScreen implements Screen, LevelCreatorInjectionInterface {
 	private static final String SLOT_MACHINE_LAYER = "Slot Machine Components";
 	public static final String BOMBS_LEVEL_TYPE = "BombsLevel";
 
-	private SlotPuzzle game;
+	private SlotPuzzleGame game;
 	private Viewport viewport;
 	private OrthographicCamera camera;
 	private TiledMap worldMap;
@@ -158,7 +158,7 @@ public class WorldScreen implements Screen, LevelCreatorInjectionInterface {
 	private Array<AnimatedReelTileMap> animatedReelsTileMap;
 	private Random random;
 
-	public WorldScreen(SlotPuzzle game) {
+	public WorldScreen(SlotPuzzleGame game) {
 		this.game = game;
 		this.game.setWorldScreen(this);
 		createWorldScreen();

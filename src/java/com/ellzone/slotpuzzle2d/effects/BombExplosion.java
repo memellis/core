@@ -28,19 +28,16 @@ import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.physics.box2d.graphics.ParticleEmitterBox2D;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.viewport.Viewport;
+import com.ellzone.slotpuzzle2d.SlotPuzzleConstants;
 import com.ellzone.slotpuzzle2d.level.creator.LevelCallback;
+import com.ellzone.slotpuzzle2d.puzzlegrid.GridSize;
 import com.ellzone.slotpuzzle2d.puzzlegrid.PuzzleGridTypeReelTile;
 import com.ellzone.slotpuzzle2d.puzzlegrid.ReelTileGridValue;
-import com.ellzone.slotpuzzle2d.screens.PlayScreen;
 import com.ellzone.slotpuzzle2d.sprites.AnimatedReel;
 import com.ellzone.slotpuzzle2d.sprites.ReelTile;
 import com.ellzone.slotpuzzle2d.utils.AssetsAnnotation;
 
 import net.dermetfan.gdx.assets.AnnotationAssetManager;
-
-import java.util.Arrays;
-
-import javax.xml.soap.Text;
 
 public class BombExplosion {
     private final int MAX_NBR = 30;
@@ -149,7 +146,11 @@ public class BombExplosion {
         Array<ReelTile> reelTiles = PuzzleGridTypeReelTile.getReelTilesFromAnimatedReels(animatedReels);
         ReelTileGridValue[][] matchGrid =
                 puzzleGridTypeReelTile.populateMatchGrid(
-                        reelTiles, PlayScreen.GAME_LEVEL_WIDTH, PlayScreen.GAME_LEVEL_HEIGHT);
+                        reelTiles,
+                        new GridSize(
+                                SlotPuzzleConstants.GAME_LEVEL_WIDTH,
+                                SlotPuzzleConstants.GAME_LEVEL_HEIGHT)
+                );
         ReelTileGridValue[][] linkGrid = puzzleGridTypeReelTile.createGridLinksWithoutMatch(matchGrid);
         Array<ReelTileGridValue> surroundingReelTiles =
                 PuzzleGridTypeReelTile.getSurroundingReelTiles(matchedSlots, linkGrid);

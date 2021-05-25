@@ -14,17 +14,34 @@
  limitations under the License.
  */
 
-package com.ellzone.slotpuzzle2d.screens;
+package com.ellzone.slotpuzzle2d.puzzlegrid;
 
-import com.ellzone.slotpuzzle2d.SlotPuzzleGame;
-import com.ellzone.slotpuzzle2d.level.LevelDoor;
-import com.ellzone.slotpuzzle2d.scene.MapTile;
+public class GridSize {
+    private int rows;
+    private int columns;
 
-public class PlayScreenHiddenPattern extends PlayScreen {
+    public GridSize(int width, int height) {
+        this.rows = height;
+        this.columns = width;
+    }
 
-    public static final int LEVEL_TIME_LENGTH = 120;
+    public int getColumns() {
+        return columns;
+    }
 
-    public PlayScreenHiddenPattern(SlotPuzzleGame game, LevelDoor levelDoor, MapTile mapTile) {
-        super(game, levelDoor, mapTile);
+    public void setColumns(int columns) {
+        this.columns = columns;
+    }
+
+    public int getWidth() { return  columns; }
+
+    public int getRows() {
+        return rows;
+    }
+
+    public int getHeight() { return rows; }
+
+    public void setRows(int rows) {
+        this.rows = rows;
     }
 }

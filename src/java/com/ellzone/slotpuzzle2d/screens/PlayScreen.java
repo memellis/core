@@ -42,7 +42,7 @@ import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.Timer;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
-import com.ellzone.slotpuzzle2d.SlotPuzzle;
+import com.ellzone.slotpuzzle2d.SlotPuzzleGame;
 import com.ellzone.slotpuzzle2d.SlotPuzzleConstants;
 import com.ellzone.slotpuzzle2d.audio.AudioManager;
 import com.ellzone.slotpuzzle2d.effects.ReelAccessor;
@@ -67,6 +67,7 @@ import com.ellzone.slotpuzzle2d.level.popups.PlayScreenPopUps;
 import com.ellzone.slotpuzzle2d.level.reel.ReelType;
 import com.ellzone.slotpuzzle2d.level.sequence.PlayScreenIntroSequence;
 import com.ellzone.slotpuzzle2d.physics.DampenedSineParticle;
+import com.ellzone.slotpuzzle2d.puzzlegrid.GridSize;
 import com.ellzone.slotpuzzle2d.puzzlegrid.PuzzleGridType;
 import com.ellzone.slotpuzzle2d.puzzlegrid.PuzzleGridTypeReelTile;
 import com.ellzone.slotpuzzle2d.puzzlegrid.TupleValueIndex;
@@ -104,10 +105,6 @@ import static com.ellzone.slotpuzzle2d.messaging.MessageType.PlayAudio;
 import static com.ellzone.slotpuzzle2d.messaging.MessageType.StopAudio;
 
 public class PlayScreen implements Screen, PlayInterface, LevelCreatorInjectionInterface {
-    public static final int TILE_WIDTH = 40;
-    public static final int TILE_HEIGHT = 40;
-    public static final int GAME_LEVEL_WIDTH = 12;
-    public static final int GAME_LEVEL_HEIGHT = 9;
     public static final int SLOT_REEL_OBJECT_LAYER = 2;
     public static final float PUZZLE_GRID_START_X = 160.0f;
     public static final float PUZZLE_GRID_START_Y = 40.0f;
@@ -116,7 +113,7 @@ public class PlayScreen implements Screen, PlayInterface, LevelCreatorInjectionI
     public static final String WIDTH_KEY = "width";
     public static final String HEIGHT_KEY = "height";
 
-    protected SlotPuzzle game;
+    protected SlotPuzzleGame game;
     protected Viewport viewport, lightViewport;
     protected OrthographicCamera camera = new OrthographicCamera();
     protected LevelDoor levelDoor;
@@ -165,7 +162,7 @@ public class PlayScreen implements Screen, PlayInterface, LevelCreatorInjectionI
     private Texture slotReelScrollTexture;
     protected ReelSprites reelSprites;
     private int[][] reelGrid = new int[3][3];
-    private Array<Array<Vector2>> rowMacthesToDraw;
+    private Array<Array<Vector2>> rowMatchesToDraw;
     protected ShapeRenderer shapeRenderer;
     protected FrameRate framerate;
     protected AudioManager audioManager;
@@ -173,7 +170,7 @@ public class PlayScreen implements Screen, PlayInterface, LevelCreatorInjectionI
     private int currentReel = 0;
     private String addReel;
 
-    public PlayScreen(SlotPuzzle game, LevelDoor levelDoor, MapTile mapTile) {
+    public PlayScreen(SlotPuzzleGame game, LevelDoor levelDoor, MapTile mapTile) {
         this.game = game;
         this.levelDoor = levelDoor;
         this.mapTile = mapTile;
@@ -243,7 +240,7 @@ public class PlayScreen implements Screen, PlayInterface, LevelCreatorInjectionI
         sH = SlotPuzzleConstants.VIRTUAL_HEIGHT;
         playScreenPopUps = new PlayScreenPopUps(tilesAtlas, (int) sW, (int) sH, game.batch, tweenManager, levelDoor);
         playScreenPopUps.initialise();
-        rowMacthesToDraw = new Array<Array<Vector2>>();
+        rowMatchesToDraw = new Array<Array<Vector2>>();
         shapeRenderer = new ShapeRenderer();
     }
 
@@ -258,15 +255,26 @@ public class PlayScreen implements Screen, PlayInterface, LevelCreatorInjectionI
         if (addReel.equals(ReelType.Bomb.name))
             addBombSprite();
         slotReelScrollTexture = createSlotReelScrollTexture();
-        LevelObjectCreatorEntityHolder levelObjectCreator = new LevelObjectCreatorEntityHolder(this, world, rayHandler);
+        LevelObjectCreatorEntityHolder levelObjectCreator =
+                new LevelObjectCreatorEntityHolder(this, world, rayHandler);
         Array<RectangleMapObject> extractedLevelRectangleMapObjects = extractLevelAssets(level);
         levelObjectCreator.createLevel(extractedLevelRectangleMapObjects);
         getLevelEntities(levelObjectCreator);
         levelLoader = createLevelLoader();
-        levelLoader.createLevel(GAME_LEVEL_WIDTH, GAME_LEVEL_HEIGHT);
+        levelLoader.createAnimatedReelsInLevel(
+                new GridSize(
+                        SlotPuzzleConstants.GAME_LEVEL_WIDTH,
+                        SlotPuzzleConstants.GAME_LEVEL_HEIGHT)
+        );
         reelsSpinning = reelTiles.size;
         hiddenPattern = levelLoader.getHiddenPattern();
-        flashSlots = new FlashSlots(tweenManager, mapWidth, mapHeight, reelTiles);
+        flashSlots = new FlashSlots(
+                tweenManager,
+                new GridSize(
+                        SlotPuzzleConstants.GAME_LEVEL_WIDTH,
+                        SlotPuzzleConstants.GAME_LEVEL_HEIGHT
+                ),
+                reelTiles);
     }
 
     private void addBombSprite() {
@@ -346,10 +354,15 @@ public class PlayScreen implements Screen, PlayInterface, LevelCreatorInjectionI
         viewport = new FitViewport(SlotPuzzleConstants.VIRTUAL_WIDTH, SlotPuzzleConstants.VIRTUAL_HEIGHT, camera);
         stage = new Stage(viewport, game.batch);
 
-        lightViewport = new FitViewport((float) VIRTUAL_WIDTH / PIXELS_PER_METER, (float) VIRTUAL_HEIGHT / PIXELS_PER_METER);
-        lightViewport.getCamera().position.set( (float) VIRTUAL_WIDTH / PIXELS_PER_METER * 0.5f,
-                (float) VIRTUAL_HEIGHT / PIXELS_PER_METER * 0.5f,
-                0);
+        lightViewport = new FitViewport(
+                (float) VIRTUAL_WIDTH / PIXELS_PER_METER,
+                (float) VIRTUAL_HEIGHT / PIXELS_PER_METER);
+        lightViewport.
+                getCamera().
+                position.
+                set( (float) VIRTUAL_WIDTH / PIXELS_PER_METER * 0.5f,
+                     (float) VIRTUAL_HEIGHT / PIXELS_PER_METER * 0.5f,
+                     0);
         lightViewport.getCamera().update();
         lightViewport.update(VIRTUAL_WIDTH, VIRTUAL_HEIGHT);
     }
@@ -441,17 +454,22 @@ public class PlayScreen implements Screen, PlayInterface, LevelCreatorInjectionI
 
     private boolean isHiddenPatternRevealed(Array<ReelTile> reelTiles) {
         TupleValueIndex[][] matchGrid = flashSlots.flashSlots(reelTiles);
-        return hiddenPattern.isHiddenPatternRevealed(matchGrid, reelTiles, GAME_LEVEL_WIDTH, GAME_LEVEL_HEIGHT);
+        return hiddenPattern.isHiddenPatternRevealed(matchGrid, reelTiles, SlotPuzzleConstants.GAME_LEVEL_WIDTH, SlotPuzzleConstants.GAME_LEVEL_HEIGHT);
     }
 
     private boolean isHiddenPlayingCardsRevealed(Array<ReelTile> reelTiles) {
         TupleValueIndex[][] matchGrid = flashSlots.flashSlots(reelTiles);
-        return hiddenPattern.isHiddenPatternRevealed(matchGrid, reelTiles, GAME_LEVEL_WIDTH, GAME_LEVEL_HEIGHT);
+        return hiddenPattern.isHiddenPatternRevealed(matchGrid, reelTiles, SlotPuzzleConstants.GAME_LEVEL_WIDTH, SlotPuzzleConstants.GAME_LEVEL_HEIGHT);
     }
 
     private boolean testForAnyLonelyReels(Array<ReelTile> levelReel) {
         PuzzleGridType puzzleGrid = new PuzzleGridType();
-        TupleValueIndex[][] grid = levelLoader.populateMatchGrid(levelReel, GAME_LEVEL_WIDTH , GAME_LEVEL_HEIGHT);
+        TupleValueIndex[][] grid =
+                levelLoader.populateMatchGrid(
+                        levelReel,
+                        new GridSize(
+                                SlotPuzzleConstants.GAME_LEVEL_WIDTH,
+                                SlotPuzzleConstants.GAME_LEVEL_HEIGHT));
         return puzzleGrid.anyLonelyTiles(grid);
     }
 
@@ -459,8 +477,14 @@ public class PlayScreen implements Screen, PlayInterface, LevelCreatorInjectionI
         Timeline.createSequence()
             .beginParallel()
             .delay(random.nextFloat() * 2.0f)
-            .push(SlotPuzzleTween.to(source, SpriteAccessor.SCALE_XY, 0.5f).target(6, 6).ease(Quad.IN))
-            .push(SlotPuzzleTween.to(source, SpriteAccessor.OPACITY, 0.5f).target(0).ease(Quad.IN))
+            .push(SlotPuzzleTween.to(
+                    source,
+                    SpriteAccessor.SCALE_XY,
+                   0.5f).target(6, 6).ease(Quad.IN))
+            .push(SlotPuzzleTween.to(
+                    source,
+                    SpriteAccessor.OPACITY,
+                   0.5f).target(0).ease(Quad.IN))
             .end()
             .setUserData(source)
             .setCallback(deleteReelCallback)
@@ -526,9 +550,12 @@ public class PlayScreen implements Screen, PlayInterface, LevelCreatorInjectionI
 
     private void processIsTileClicked(float touchX, float touchY) {
         int c = PuzzleGridTypeReelTile.getColumnFromLevel(touchX);
-        int r = PuzzleGridTypeReelTile.getRowFromLevel(touchY, GAME_LEVEL_HEIGHT);
-        if ((r >= 0) & (r <= GAME_LEVEL_HEIGHT) & (c >= 0) & (c <= GAME_LEVEL_WIDTH)) {
-            TupleValueIndex[][] grid = levelLoader.populateMatchGrid(reelTiles, GAME_LEVEL_WIDTH, GAME_LEVEL_HEIGHT);
+        int r = PuzzleGridTypeReelTile.getRowFromLevel(touchY, SlotPuzzleConstants.GAME_LEVEL_HEIGHT);
+        if ((r >= 0) & (r <= SlotPuzzleConstants.GAME_LEVEL_HEIGHT) & (c >= 0) & (c <= SlotPuzzleConstants.GAME_LEVEL_WIDTH)) {
+            TupleValueIndex[][] grid = levelLoader.populateMatchGrid(reelTiles,
+                    new GridSize(
+                            SlotPuzzleConstants.GAME_LEVEL_WIDTH,
+                            SlotPuzzleConstants.GAME_LEVEL_HEIGHT));
             ReelTile reelTile = reelTiles.get(grid[r][c].index);
             AnimatedReel animatedReel = animatedReels.get(grid[r][c].index);
             if (!reelTile.isReelTileDeleted()) {
@@ -545,17 +572,30 @@ public class PlayScreen implements Screen, PlayInterface, LevelCreatorInjectionI
 
     private void testPlayingCardLevelWon() {
         PuzzleGridType puzzleGrid = new PuzzleGridType();
-        TupleValueIndex[][] matchGrid = levelLoader.populateMatchGrid(reelTiles, GAME_LEVEL_WIDTH, GAME_LEVEL_HEIGHT);
+        TupleValueIndex[][] matchGrid =
+                levelLoader.populateMatchGrid(
+                        reelTiles,
+                        new GridSize(
+                                SlotPuzzleConstants.GAME_LEVEL_WIDTH,
+                                SlotPuzzleConstants.GAME_LEVEL_HEIGHT));
         puzzleGrid.matchGridSlots(matchGrid);
-        if (hiddenPattern.isHiddenPatternRevealed(matchGrid, reelTiles, GAME_LEVEL_WIDTH, GAME_LEVEL_HEIGHT))
+        if (hiddenPattern.isHiddenPatternRevealed(matchGrid, reelTiles, SlotPuzzleConstants.GAME_LEVEL_WIDTH, SlotPuzzleConstants.GAME_LEVEL_HEIGHT))
             iWonTheLevel();
     }
 
     private void testForHiddenPlatternLevelWon() {
         PuzzleGridType puzzleGrid = new PuzzleGridType();
-        TupleValueIndex[][] matchGrid = levelLoader.populateMatchGrid(reelTiles, GAME_LEVEL_WIDTH, GAME_LEVEL_HEIGHT);
+        TupleValueIndex[][] matchGrid =
+                levelLoader.populateMatchGrid(
+                        reelTiles,
+                        new GridSize(
+                                SlotPuzzleConstants.GAME_LEVEL_WIDTH,
+                                SlotPuzzleConstants.GAME_LEVEL_HEIGHT));
         puzzleGrid.matchGridSlots(matchGrid);
-        if (hiddenPattern.isHiddenPatternRevealed(matchGrid, reelTiles, GAME_LEVEL_WIDTH, GAME_LEVEL_HEIGHT))
+        if (hiddenPattern.isHiddenPatternRevealed(
+                matchGrid,
+                reelTiles,
+                SlotPuzzleConstants.GAME_LEVEL_WIDTH, SlotPuzzleConstants.GAME_LEVEL_HEIGHT))
             iWonTheLevel();
     }
 

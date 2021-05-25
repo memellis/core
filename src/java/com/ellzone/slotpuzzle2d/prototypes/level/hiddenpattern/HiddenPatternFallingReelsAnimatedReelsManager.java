@@ -59,6 +59,7 @@ import com.ellzone.slotpuzzle2d.physics.contact.BoxHittingBoxContactListener;
 import com.ellzone.slotpuzzle2d.prototypes.SPPrototypeTemplate;
 import com.ellzone.slotpuzzle2d.physics.contact.AnimatedReelsManager;
 import com.ellzone.slotpuzzle2d.prototypes.box2d.collisions.AnimatedReelsMatrixCreator;
+import com.ellzone.slotpuzzle2d.puzzlegrid.GridSize;
 import com.ellzone.slotpuzzle2d.puzzlegrid.ReelTileGridValue;
 import com.ellzone.slotpuzzle2d.scene.Hud;
 import com.ellzone.slotpuzzle2d.screens.PlayScreen;
@@ -88,8 +89,6 @@ import static com.ellzone.slotpuzzle2d.messaging.MessageType.ReelSinkReelsLeftTo
 import static com.ellzone.slotpuzzle2d.messaging.MessageType.ReelsLeftToFall;
 import static com.ellzone.slotpuzzle2d.messaging.MessageType.SwapReelsAboveMe;
 import static com.ellzone.slotpuzzle2d.prototypes.level.minislotmachine.MiniSlotMachineLevelPrototypeWithLevelCreator.MINI_SLOT_MACHINE_LEVEL_NAME;
-import static com.ellzone.slotpuzzle2d.screens.PlayScreen.GAME_LEVEL_HEIGHT;
-import static com.ellzone.slotpuzzle2d.screens.PlayScreen.GAME_LEVEL_WIDTH;
 import static com.ellzone.slotpuzzle2d.screens.PlayScreen.LEVEL_TIME_LENGTH_IN_SECONDS;
 
 public class HiddenPatternFallingReelsAnimatedReelsManager extends SPPrototypeTemplate
@@ -235,8 +234,9 @@ public class HiddenPatternFallingReelsAnimatedReelsManager extends SPPrototypeTe
                 (TextureAtlas) annotationAssetManager.get(AssetsAnnotation.CARDDECK),
                 tweenManager,
                 physics,
-                GAME_LEVEL_WIDTH,
-                GAME_LEVEL_HEIGHT,
+                new GridSize(
+                        SlotPuzzleConstants.GAME_LEVEL_WIDTH,
+                        SlotPuzzleConstants.GAME_LEVEL_HEIGHT),
                 playStateMachine,
                 hud);
     }
@@ -594,7 +594,12 @@ public class HiddenPatternFallingReelsAnimatedReelsManager extends SPPrototypeTe
 
     private void handleMforMatrixPrintKeyPressed() {
         System.out.println();
-        levelCreator.printMatchGrid(reelTiles, GAME_LEVEL_WIDTH, GAME_LEVEL_HEIGHT);
+        levelCreator.printMatchGrid(
+                reelTiles,
+                new GridSize(
+                        SlotPuzzleConstants.GAME_LEVEL_WIDTH,
+                        SlotPuzzleConstants.GAME_LEVEL_HEIGHT)
+        );
     }
 
     private Vector2 getTileClicked() {
@@ -602,17 +607,25 @@ public class HiddenPatternFallingReelsAnimatedReelsManager extends SPPrototypeTe
         int touchY = Gdx.input.getY();
         Vector2 newPoints = new Vector2(touchX, touchY);
         newPoints = viewport.unproject(newPoints);
-        int c = (int) (newPoints.x - PlayScreen.PUZZLE_GRID_START_X) / PlayScreen.TILE_WIDTH;
-        int r = (int) (newPoints.y - PlayScreen.PUZZLE_GRID_START_Y) / PlayScreen.TILE_HEIGHT;
-        r = GAME_LEVEL_HEIGHT - 1 - r ;
+        int c = (int) (newPoints.x - PlayScreen.PUZZLE_GRID_START_X) / SlotPuzzleConstants.TILE_WIDTH;
+        int r = (int) (newPoints.y - PlayScreen.PUZZLE_GRID_START_Y) / SlotPuzzleConstants.TILE_HEIGHT;
+        r = SlotPuzzleConstants.GAME_LEVEL_HEIGHT - 1 - r ;
         return new Vector2(c, r);
     }
 
     private void processTileClicked(Vector2 tileClicked) {
         int r = (int) tileClicked.y;
         int c = (int) tileClicked.x;
-        if (r>=0 && r<GAME_LEVEL_HEIGHT && c>=0 && c<GAME_LEVEL_WIDTH) {
-            ReelTileGridValue[][] grid = levelCreator.populateMatchGrid(reelTiles, GAME_LEVEL_WIDTH, GAME_LEVEL_HEIGHT);
+        if (r >= 0 &&
+                r < SlotPuzzleConstants.GAME_LEVEL_HEIGHT &&
+                c >= 0 &&
+                c < SlotPuzzleConstants.GAME_LEVEL_WIDTH) {
+            ReelTileGridValue[][] grid = levelCreator.populateMatchGrid(
+                    reelTiles,
+                    new GridSize(
+                            SlotPuzzleConstants.GAME_LEVEL_WIDTH,
+                            SlotPuzzleConstants.GAME_LEVEL_HEIGHT)
+            );
             if (grid[r][c] != null) {
                 ReelTile reel = reelTiles.get(grid[r][c].index);
                 AnimatedReel animatedReel = levelCreator.getAnimatedReels().get(grid[r][c].index);

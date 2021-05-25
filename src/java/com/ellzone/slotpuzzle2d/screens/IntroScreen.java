@@ -47,9 +47,8 @@ import com.badlogic.gdx.scenes.scene2d.ui.TextButton.TextButtonStyle;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
-import com.ellzone.slotpuzzle2d.SlotPuzzle;
+import com.ellzone.slotpuzzle2d.SlotPuzzleGame;
 import com.ellzone.slotpuzzle2d.SlotPuzzleConstants;
-import com.ellzone.slotpuzzle2d.utils.Version;
 import com.ellzone.slotpuzzle2d.audio.MusicManager;
 import com.ellzone.slotpuzzle2d.audio.MusicPlayer;
 import com.ellzone.slotpuzzle2d.effects.ReelAccessor;
@@ -108,7 +107,7 @@ public class IntroScreen extends InputAdapter implements Screen {
     private static final String COPYRIGHT_YEAR_AUTHOR_TEXT = COPYRIGHT + "2020 " + AUTHOR_TEXT;
     private static final String LAUNCH_BUTTON_LABEL = "LAUNCH!";
     public static final float ONE_SECOND = 1.0f;
-    private SlotPuzzle game;
+    private SlotPuzzleGame game;
     private Texture textTexture;
     private Pixmap slotReelPixmap;
     private Texture slotReelTexture;
@@ -159,7 +158,7 @@ public class IntroScreen extends InputAdapter implements Screen {
     private MusicPlayer musicPlayer;
     private VersionInfo versionInfo;
 
-    public IntroScreen(SlotPuzzle game) {
+    public IntroScreen(SlotPuzzleGame game) {
         this.game = game;
         defineIntroScreen();
     }
@@ -573,7 +572,7 @@ public class IntroScreen extends InputAdapter implements Screen {
         	fontLarge.dispose();
     }
 
-    public SlotPuzzle getGame() {
+    public SlotPuzzleGame getGame() {
         return this.game;
     }
 }

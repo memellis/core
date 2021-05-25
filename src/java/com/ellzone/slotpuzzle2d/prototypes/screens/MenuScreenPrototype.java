@@ -29,7 +29,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
-import com.ellzone.slotpuzzle2d.SlotPuzzle;
+import com.ellzone.slotpuzzle2d.SlotPuzzleGame;
 import com.ellzone.slotpuzzle2d.level.LevelDoor;
 import com.ellzone.slotpuzzle2d.prototypes.SPPrototypesGame;
 import com.ellzone.slotpuzzle2d.prototypes.map.WorldScreenPrototype;
@@ -40,7 +40,7 @@ import com.ellzone.slotpuzzle2d.utils.UiUtils;
 import java.util.Random;
 
 public class MenuScreenPrototype implements Screen {
-    private SlotPuzzle game;
+    private SlotPuzzleGame game;
     private LevelDoor levelDoor;
     private MapTile mapTile;
     private Viewport viewport;
@@ -53,7 +53,7 @@ public class MenuScreenPrototype implements Screen {
     private Random random;
     private boolean endOfGameScreen = false;
 
-    public MenuScreenPrototype(SlotPuzzle game, LevelDoor levelDoor, MapTile mapTile) {
+    public MenuScreenPrototype(SlotPuzzleGame game, LevelDoor levelDoor, MapTile mapTile) {
         this.game = game;
         this.levelDoor = levelDoor;
         this.mapTile = mapTile;

@@ -30,7 +30,7 @@ import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
-import com.ellzone.slotpuzzle2d.SlotPuzzle;
+import com.ellzone.slotpuzzle2d.SlotPuzzleGame;
 import com.ellzone.slotpuzzle2d.level.LevelDoor;
 import com.ellzone.slotpuzzle2d.level.map.MapLevel1;
 import com.ellzone.slotpuzzle2d.prototypes.SPPrototypesGame;
@@ -46,7 +46,7 @@ import com.ellzone.slotpuzzle2d.prototypes.typewriter.TypewriterScreen;
 
 public class MenuScreen implements Screen {
     private static final String TILE_PACK_ATLAS = "tiles/tiles.pack.atlas";
-    SlotPuzzle game;
+    SlotPuzzleGame game;
     Skin skin;
     Stage stage;
     FitViewport viewport;
@@ -65,7 +65,7 @@ public class MenuScreen implements Screen {
     private TextureAtlas tilesAtlas;
     float w, h;
 
-    public MenuScreen(SlotPuzzle game) {
+    public MenuScreen(SlotPuzzleGame game) {
         this.game = game;
 	    defineMenuScreen();
     }

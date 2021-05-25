@@ -26,20 +26,20 @@ import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.utils.viewport.FillViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
-import com.ellzone.slotpuzzle2d.SlotPuzzle;
+import com.ellzone.slotpuzzle2d.SlotPuzzleGame;
 import com.ellzone.slotpuzzle2d.SlotPuzzleConstants;
 import com.ellzone.slotpuzzle2d.utils.FileUtils;
 
 import aurelienribon.tweenengine.TweenManager;
 
 public class MenuScreen implements Screen {
-	private SlotPuzzle game;
+	private SlotPuzzleGame game;
 	private Viewport viewport;
 	private Stage stage;
  	private TweenManager tweenManager = new TweenManager();
 	private boolean isLoaded = false;
 
-	public MenuScreen(SlotPuzzle game) {
+	public MenuScreen(SlotPuzzleGame game) {
 		this.game = game;
 		defineMenuScreen();
 		testFileCopy();

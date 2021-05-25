@@ -13,8 +13,8 @@ import com.ellzone.slotpuzzle2d.sprites.ReelTile;
 
 import org.junit.Test;
 
-import static com.ellzone.slotpuzzle2d.screens.PlayScreen.GAME_LEVEL_HEIGHT;
-import static com.ellzone.slotpuzzle2d.screens.PlayScreen.GAME_LEVEL_WIDTH;
+import static com.ellzone.slotpuzzle2d.SlotPuzzleConstants.GAME_LEVEL_HEIGHT;
+import static com.ellzone.slotpuzzle2d.SlotPuzzleConstants.GAME_LEVEL_WIDTH;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.is;

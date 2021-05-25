@@ -47,6 +47,7 @@ import com.ellzone.slotpuzzle2d.physics.PhysicsManagerCustomBodies;
 import com.ellzone.slotpuzzle2d.physics.contact.AnimatedReelsManager;
 import com.ellzone.slotpuzzle2d.prototypes.box2d.collisions.AnimatedReelsMatrixCreator;
 import com.ellzone.slotpuzzle2d.prototypes.box2d.collisions.SlotPuzzleMatrices;
+import com.ellzone.slotpuzzle2d.puzzlegrid.GridSize;
 import com.ellzone.slotpuzzle2d.puzzlegrid.PuzzleGridType;
 import com.ellzone.slotpuzzle2d.puzzlegrid.PuzzleGridTypeReelTile;
 import com.ellzone.slotpuzzle2d.puzzlegrid.ReelTileGridValue;
@@ -73,22 +74,14 @@ import aurelienribon.tweenengine.equations.Quad;
 
 import static com.ellzone.slotpuzzle2d.prototypes.level.minislotmachine.MiniSlotMachineLevelPrototypeSimpleScenario.HEIGHT_KEY;
 import static com.ellzone.slotpuzzle2d.prototypes.level.minislotmachine.MiniSlotMachineLevelPrototypeSimpleScenario.WIDTH_KEY;
-import static com.ellzone.slotpuzzle2d.screens.PlayScreen.GAME_LEVEL_HEIGHT;
-import static com.ellzone.slotpuzzle2d.screens.PlayScreen.GAME_LEVEL_WIDTH;
 
 public class LevelCreatorSimple {
-    public static final String HIDDEN_PATTERN_LEVEL_TYPE = "HiddenPattern";
-    public static final String HIDDEN_PATTERN_LAYER_NAME = "Hidden Pattern Object";
-    public static final String PLAYING_CARD_LEVEL_TYPE = "PlayingCard";
-    public static final String BONUS_LEVEL_TYPE = "BonusLevelType";
-    public static final String FALLING_REELS_LEVEL_TYPE = "FallingReels";
-    public static final String BOMBS_LEVEL_TYPE = "BombsLevel";
     public static final String REELS_LAYER_NAME = "Reels";
     public static final int OFF_PLAY_SCREEN_OFFSET = 420;
 
     private World world;
     private LevelDoor levelDoor;
-    private TiledMap level;
+    private TiledMap levelTileMap;
     private HiddenPlayingCard hiddenPlayingCard;
     private Array<Integer> hiddenPlayingCards;
     private TweenManager tweenManager;
@@ -96,12 +89,9 @@ public class LevelCreatorSimple {
     private Array<AnimatedReel> animatedReels;
     private Array<ReelTile> reelTiles;
     private AnnotationAssetManager annotationAssetManager;
-    private TextureAtlas carddeckAtlas;
+    private TextureAtlas cardDeckAtlas;
     private PhysicsManagerCustomBodies physics;
-    private int levelWidth,
-            levelHeight,
-            reelsSpinning,
-            reelsFlashing;
+    private int reelsSpinning, reelsFlashing;
     private PlayStates playState;
     private boolean win = false, gameOver = false;
     private Array<Score> scores;
@@ -111,6 +101,7 @@ public class LevelCreatorSimple {
     private Array<Integer> reelBoxesToDelete;
     private PuzzleGridTypeReelTile puzzleGridTypeReelTile;
     private int numberOfReelBoxesToReplace, numberOfReelBoxesToDelete;
+    private GridSize levelGridSize;
     boolean matchedReels = false;
     boolean reelsAboveHaveFallen = false;
     private Array<TupleValueIndex> reelsToFall;
@@ -134,32 +125,24 @@ public class LevelCreatorSimple {
     private boolean itIsTimeForRandomReplacementReelBox = false;
     private BombExplosion bombExplosion;
 
-    public LevelCreatorSimple(
-            World world,
-            LevelDoor levelDoor,
-            Array<AnimatedReel> animatedReels,
-            Array<ReelTile> reelTiles,
-            TiledMap level,
-            AnnotationAssetManager annotationAssetManager,
-            TextureAtlas carddeckAtlas,
-            TweenManager tweenManager,
-            PhysicsManagerCustomBodies physics,
-            int levelWidth,
-            int levelHeight,
-            PlayStates playState) {
-        this.world = world;
-        this.levelDoor = levelDoor;
-        this.animatedReels = animatedReels;
-        this.reelTiles = reelTiles;
-        this.level = level;
-        this.tweenManager = tweenManager;
-        this.annotationAssetManager = annotationAssetManager;
-        this.carddeckAtlas = carddeckAtlas;
-        this.physics = physics;
-        this.levelWidth = levelWidth;
-        this.levelHeight = levelHeight;
-        this.playState = playState;
-        initialise(levelDoor, reelTiles, level, tweenManager, levelWidth, levelHeight);
+    public LevelCreatorSimple(GameLevel simpleLevel) {
+        this.world = simpleLevel.getWorld();
+        this.levelDoor = simpleLevel.getLevelDoor();
+        this.animatedReels = simpleLevel.getAnimatedReels();
+        this.reelTiles = simpleLevel.getReelTiles();
+        this.levelTileMap = simpleLevel.getLevelTileMap();
+        this.tweenManager = simpleLevel.getTweenManager();
+        this.annotationAssetManager = simpleLevel.getAnnotationAssetManager();
+        this.cardDeckAtlas = simpleLevel.getCardDeckAtlas();
+        this.physics = simpleLevel.getPhysics();
+        this.levelGridSize = simpleLevel.getLevelGridSize();
+        this.playState = simpleLevel.getPlayState();
+        initialise(
+                simpleLevel.getLevelDoor(),
+                simpleLevel.getReelTiles(),
+                simpleLevel.getLevelTileMap(),
+                simpleLevel.getTweenManager(),
+                simpleLevel.getLevelGridSize());
     }
 
     public LevelCreatorSimple(
@@ -168,36 +151,38 @@ public class LevelCreatorSimple {
             Array<ReelTile> reelTiles,
             TiledMap level,
             AnnotationAssetManager annotationAssetManager,
-            TextureAtlas carddeckAtlas,
+            TextureAtlas cardDeckAtlas,
             TweenManager tweenManager,
             PhysicsManagerCustomBodies physics,
-            int levelWidth,
-            int levelHeight,
+            GridSize levelGridSize,
             PlayStateMachine playStateMachine,
             Hud hud) {
         this.levelDoor = levelDoor;
         this.animatedReels = animatedReels;
         this.reelTiles = reelTiles;
-        this.level = level;
+        this.levelTileMap = level;
         this.tweenManager = tweenManager;
         this.annotationAssetManager = annotationAssetManager;
-        this.carddeckAtlas = carddeckAtlas;
+        this.cardDeckAtlas = cardDeckAtlas;
         this.physics = physics;
-        this.levelWidth = levelWidth;
-        this.levelHeight = levelHeight;
+        this.levelGridSize = levelGridSize;
         this.playStateMachine = playStateMachine;
         this.hud = hud;
         myReelsToFall.addAll(9, 10, 11, 12);
         myReelsToFallEndReel.addAll(7,7,7,7);
-        initialise(levelDoor, reelTiles, level, tweenManager, levelWidth, levelHeight);
+        initialise(levelDoor, reelTiles, level, tweenManager, levelGridSize);
     }
 
-    private void initialise(LevelDoor levelDoor, Array<ReelTile> reelTiles, TiledMap level, TweenManager tweenManager, int levelWidth, int levelHeight) {
+    private void initialise(LevelDoor levelDoor,
+                            Array<ReelTile> reelTiles,
+                            TiledMap level,
+                            TweenManager tweenManager,
+                            GridSize levelGridSize) {
         puzzleGridTypeReelTile = new PuzzleGridTypeReelTile();
         reelBoxes = new Array<>();
         replacementReelBoxes = new Array<>();
         reelBoxesToDelete = new Array<>();
-        reelTiles = createLevel(levelDoor, level, reelTiles, levelWidth, levelHeight);
+        reelTiles = createLevel(levelDoor, level, reelTiles, levelGridSize);
         if (usePreparedSlotPuzzleMatrix)
             setUpLevelUsingSlotPuzzleMatrix();
         reelsSpinning = reelBoxes.size - 1;
@@ -205,8 +190,8 @@ public class LevelCreatorSimple {
         scores = new Array<Score>();
         reelsToFall = new Array<TupleValueIndex>();
         getMapProperties(level);
-        flashSlots = new FlashSlots(tweenManager, mapWidth, mapHeight, reelTiles);
-        if (levelDoor.getLevelType().equals(BOMBS_LEVEL_TYPE))
+        flashSlots = new FlashSlots(tweenManager, levelGridSize, reelTiles);
+        if (levelDoor.getLevelType().equals(SlotPuzzleConstants.BOMBS_LEVEL_TYPE))
             initialiseBombs();
     }
 
@@ -226,7 +211,7 @@ public class LevelCreatorSimple {
         reelBoxes = animatedReelsMatrixCreator.updateBoxBodiesFromAnimatedReels(
                 animatedReels,
                 reelBoxes);
-        printMatchGrid(reelTiles, 12, 9);
+        printMatchGrid(reelTiles, new GridSize(12, 9));
     }
 
     private Array<RectangleMapObject> getRectangleMapObjectsByName(TiledMap level, String layerName, String name) {
@@ -249,42 +234,47 @@ public class LevelCreatorSimple {
             LevelDoor levelDoor,
             TiledMap level,
             Array<ReelTile> reelTiles,
-            int levelWidth,
-            int levelHeight) {
-        if (levelDoor.getLevelType().equals(PLAYING_CARD_LEVEL_TYPE))
-            hiddenPlayingCard = new HiddenPlayingCard(level, carddeckAtlas);
+            GridSize levelGridSize) {
+        if (levelDoor.getLevelType().equals(SlotPuzzleConstants.PLAYING_CARD_LEVEL_TYPE))
+            hiddenPlayingCard = new HiddenPlayingCard(level, cardDeckAtlas);
 
-        reelTiles = populateLevel(level, reelTiles, levelWidth, levelHeight);
-        reelTiles = checkLevel(reelTiles, levelWidth, levelHeight);
-        reelTiles = adjustForAnyLonelyReels(reelTiles, levelWidth, levelHeight);
+        reelTiles = populateLevel(level, reelTiles, levelGridSize);
+        reelTiles = checkLevel(reelTiles, levelGridSize);
+        reelTiles = adjustForAnyLonelyReels(reelTiles, levelGridSize);
         return reelTiles;
     }
 
-    private Array<ReelTile> checkLevel(Array<ReelTile> reelLevel, int levelWidth, int levelHeight) {
-        ReelTileGridValue[][] grid = puzzleGridTypeReelTile.populateMatchGrid(reelLevel, levelWidth, levelHeight);
+    private Array<ReelTile> checkLevel(Array<ReelTile> reelLevel, GridSize levelGridSize) {
+        ReelTileGridValue[][] grid = puzzleGridTypeReelTile.populateMatchGrid(
+                reelLevel, levelGridSize);
         int arraySizeR = grid.length;
         int arraySizeC = grid[0].length;
 
         for (int r = 0; r < arraySizeR; r++)
             for (int c = 0; c < arraySizeC; c++) {
                 if (grid[r][c] == null) {
-                    Gdx.app.debug(SlotPuzzleConstants.SLOT_PUZZLE, "Found null grid tile. r=" + r + " c= " + c + ". I will therefore create a deleted entry for the tile.");
+                    Gdx.app.debug(
+                            SlotPuzzleConstants.SLOT_PUZZLE,
+                            "Found null grid tile. r=" + r + " c= " + c + ". I will therefore create a deleted entry for the tile.");
                     grid[r][c] = new ReelTileGridValue(r, c, -1, -1);
                 }
             }
         return reelLevel;
     }
 
-    Array<ReelTile> adjustForAnyLonelyReels(Array<ReelTile> levelReel, int levelWidth, int levelHeight) {
+    Array<ReelTile> adjustForAnyLonelyReels(Array<ReelTile> levelReel, GridSize levelGridSize) {
         PuzzleGridType puzzleGrid = new PuzzleGridType();
-        TupleValueIndex[][] grid = puzzleGridTypeReelTile.populateMatchGrid(levelReel, levelWidth, levelHeight);
+        TupleValueIndex[][] grid = puzzleGridTypeReelTile.populateMatchGrid(levelReel, levelGridSize);
         Array<TupleValueIndex> lonelyTiles = puzzleGrid.getLonelyTiles(grid);
         for (TupleValueIndex lonelyTile : lonelyTiles)
             adjustAnyLonelyTileAtEdge(levelReel, grid, lonelyTile);
         return levelReel;
     }
 
-    private void adjustAnyLonelyTileAtEdge(Array<ReelTile> levelReel, TupleValueIndex[][] grid, TupleValueIndex lonelyTile) {
+    private void adjustAnyLonelyTileAtEdge(
+            Array<ReelTile> levelReel,
+            TupleValueIndex[][] grid,
+            TupleValueIndex lonelyTile) {
         if (lonelyTile.r == 0) {
             adjustAdjacentTileEndReel(
                     levelReel.get(grid[lonelyTile.r][lonelyTile.c].index),
@@ -299,14 +289,14 @@ public class LevelCreatorSimple {
                     grid,
                     lonelyTile.r,
                     lonelyTile.c + 1);
-        } else if (lonelyTile.r == levelHeight - 1) {
+        } else if (lonelyTile.r == levelGridSize.getHeight() - 1) {
             adjustAdjacentTileEndReel(
                     levelReel.get(grid[lonelyTile.r][lonelyTile.c].index),
                     levelReel,
                     grid,
                     lonelyTile.r - 1,
                     lonelyTile.c);
-        } else if (lonelyTile.c == levelWidth - 1) {
+        } else if (lonelyTile.c == levelGridSize.getWidth() - 1) {
             adjustAdjacentTileEndReel(
                     levelReel.get(grid[lonelyTile.r][lonelyTile.c].index),
                     levelReel,
@@ -341,39 +331,49 @@ public class LevelCreatorSimple {
         }
     }
 
-    private Array<ReelTile> populateLevel(TiledMap level, Array<ReelTile> reelTiles, int levelWidth, int levelHeight) {
+    private Array<ReelTile> populateLevel(
+            TiledMap level,
+            Array<ReelTile> reelTiles,
+            GridSize levelGridSize) {
         int index = 0;
         for (MapObject mapObject : getRectangleMapObjectsByName(level, REELS_LAYER_NAME, "Reel")) {
             Rectangle mapRectangle = ((RectangleMapObject) mapObject).getRectangle();
             int c = getColumnFromLevel(mapRectangle.getX());
-            int r = getRowFromLevel(mapRectangle.getY(), levelHeight);
+            int r = getRowFromLevel(mapRectangle.getY(), levelGridSize.getHeight());
 
-            if ((r >= 0) & (r <= levelHeight) & (c >= 0) & (c <= levelWidth)) {
+            if ((r >= 0) &
+                    (r <= levelGridSize.getHeight()) &
+                    (c >= 0) &
+                    (c <= levelGridSize.getWidth())) {
                 addReel(mapRectangle, reelTiles, index);
                 index++;
             } else
-                Gdx.app.debug(SlotPuzzleConstants.SLOT_PUZZLE, "I don't respond to grid r=" + r + " c=" + c + ". There it won't be added to the level! Sort it out in a level editor.");
+                Gdx.app.debug(
+                        SlotPuzzleConstants.SLOT_PUZZLE,
+                        "I don't respond to grid r=" + r + " c=" + c +
+                                ". There it won't be added to the level! Sort it out in a level editor.");
 
         }
         return reelTiles;
     }
 
-    public ReelTileGridValue[][] populateMatchGrid(Array<ReelTile> reelLevel, int gridWidth, int gridHeight) {
-        return puzzleGridTypeReelTile.populateMatchGrid(reelLevel, gridWidth, gridHeight);
+    public ReelTileGridValue[][] populateMatchGrid(
+            Array<ReelTile> reelLevel, GridSize levelGridSize) {
+        return puzzleGridTypeReelTile.populateMatchGrid(reelLevel, levelGridSize);
     }
 
-    public void printMatchGrid(Array<ReelTile> reelLevel, int gridWidth, int gridHeight) {
-        PuzzleGridTypeReelTile.printGrid(populateMatchGrid(reelLevel, gridWidth, gridHeight));
+    public void printMatchGrid(Array<ReelTile> reelLevel, GridSize levelGridSize) {
+        PuzzleGridTypeReelTile.printGrid(populateMatchGrid(reelLevel, levelGridSize));
     }
 
     private int getRowFromLevel(float y, int levelHeight) {
-        int row = (int) (y - PlayScreen.PUZZLE_GRID_START_Y) / PlayScreen.TILE_HEIGHT;
+        int row = (int) (y - PlayScreen.PUZZLE_GRID_START_Y) / SlotPuzzleConstants.TILE_HEIGHT;
         row = levelHeight - 1 - row;
         return row;
     }
 
     private int getColumnFromLevel(float x) {
-        int column = (int) (x  - PlayScreen.PUZZLE_GRID_START_X) / PlayScreen.TILE_WIDTH;
+        int column = (int) (x  - PlayScreen.PUZZLE_GRID_START_X) / SlotPuzzleConstants.TILE_WIDTH;
         return column;
     }
 
@@ -443,26 +443,26 @@ public class LevelCreatorSimple {
     }
 
     public void allReelsHaveStoppedSpinning() {
-        if (levelDoor.getLevelType().equals(HIDDEN_PATTERN_LEVEL_TYPE)) {
-            if (testForHiddenPatternRevealed(reelTiles, levelWidth, levelHeight))
+        if (levelDoor.getLevelType().equals(SlotPuzzleConstants.HIDDEN_PATTERN_LEVEL_TYPE)) {
+            if (testForHiddenPatternRevealed(reelTiles, levelGridSize))
                 iWonTheLevel();
         }
-        if (levelDoor.getLevelType().equals(PLAYING_CARD_LEVEL_TYPE)) {
-            if (testForHiddenPlayingCardsRevealed(reelTiles, levelWidth, levelHeight))
+        if (levelDoor.getLevelType().equals(SlotPuzzleConstants.PLAYING_CARD_LEVEL_TYPE)) {
+            if (testForHiddenPlayingCardsRevealed(reelTiles, levelGridSize))
                 iWonTheLevel();
         }
-        if (levelDoor.getLevelType().equals(BONUS_LEVEL_TYPE)) {
-            if (testForJackpot(reelTiles, levelWidth, levelHeight))
+        if (levelDoor.getLevelType().equals(SlotPuzzleConstants.BONUS_LEVEL_TYPE)) {
+            if (testForJackpot(reelTiles, levelGridSize))
                 iWonABonus();
         }
-        if (levelDoor.getLevelType().equals(FALLING_REELS_LEVEL_TYPE)) {
-            if (testForJackpot(reelTiles, levelWidth, levelHeight))
+        if (levelDoor.getLevelType().equals(SlotPuzzleConstants.FALLING_REELS_LEVEL_TYPE)) {
+            if (testForJackpot(reelTiles, levelGridSize))
                 iWonABonus();
         }
-        if (levelDoor.getLevelType().equals(BOMBS_LEVEL_TYPE)) {
+        if (levelDoor.getLevelType().equals(SlotPuzzleConstants.BOMBS_LEVEL_TYPE)) {
             Array<ReelTileGridValue> matchedSlots = getMatchedSlots(animatedReels);
             bombExplosion.addToBombFuseAnimation(matchedSlots, animatedReels);
-            if (testForJackpot(reelTiles, levelWidth, levelHeight))
+            if (testForJackpot(reelTiles, levelGridSize))
                 iWonABonus();
         }
     }
@@ -470,8 +470,7 @@ public class LevelCreatorSimple {
     private Array<ReelTileGridValue> getMatchedSlots(Array<AnimatedReel> animatedReels) {
         MatchSlots matchSlots = new MatchSlots(
                 PuzzleGridTypeReelTile.getReelTilesFromAnimatedReels(animatedReels),
-                GAME_LEVEL_WIDTH,
-                GAME_LEVEL_HEIGHT)
+                levelGridSize)
                 .invoke();
         PuzzleGridTypeReelTile puzzleGridTypeReelTile = matchSlots.getPuzzleGridTypeReelTile();
         ReelTileGridValue[][] puzzleGrid = matchSlots.getPuzzleGrid();
@@ -483,12 +482,14 @@ public class LevelCreatorSimple {
         deleteReelAnimation(reelTile);
     }
 
-    private boolean testForHiddenPatternRevealed(Array<ReelTile> levelReel, int levelWidth, int levelHeight) {
+    private boolean testForHiddenPatternRevealed(
+            Array<ReelTile> levelReel, GridSize levelGridSize) {
         TupleValueIndex[][] matchGrid = flashSlots.flashSlots(reelTiles);
         return hiddenPatternRevealed(matchGrid);
     }
 
-    private boolean testForHiddenPlayingCardsRevealed(Array<ReelTile> levelReel, int levelWidth, int levelHeight) {
+    private boolean testForHiddenPlayingCardsRevealed(
+            Array<ReelTile> levelReel, GridSize levelGridSize) {
         TupleValueIndex[][] matchGrid = flashSlots.flashSlots(reelTiles);
         return hiddenPlayingCardsRevealed(matchGrid);
     }
@@ -496,19 +497,24 @@ public class LevelCreatorSimple {
     private boolean hiddenPlayingCardsRevealed(TupleValueIndex[][] grid) {
         boolean hiddenPlayingCardsRevealed = true;
         for (Integer hiddenPlayingCard : hiddenPlayingCards) {
-            MapObject mapObject = level.getLayers().get(HIDDEN_PATTERN_LAYER_NAME).getObjects().getByType(RectangleMapObject.class).get(hiddenPlayingCard.intValue());
+            MapObject mapObject = levelTileMap.getLayers()
+                    .get(SlotPuzzleConstants.HIDDEN_PATTERN_LAYER_NAME)
+                    .getObjects().getByType(RectangleMapObject.class)
+                    .get(hiddenPlayingCard.intValue());
             Rectangle mapRectangle = ((RectangleMapObject) mapObject).getRectangle();
-            for (int ro = (int) (mapRectangle.getX()); ro < (int) (mapRectangle.getX() + mapRectangle.getWidth()); ro += PlayScreen.TILE_WIDTH) {
-                for (int co = (int) (mapRectangle.getY()); co < (int) (mapRectangle.getY() + mapRectangle.getHeight()); co += PlayScreen.TILE_HEIGHT) {
+            for (int ro = (int) (mapRectangle.getX()); ro < (int) (mapRectangle.getX() + mapRectangle.getWidth()); ro += SlotPuzzleConstants.TILE_WIDTH) {
+                for (int co = (int) (mapRectangle.getY()); co < (int) (mapRectangle.getY() + mapRectangle.getHeight()); co += SlotPuzzleConstants.TILE_HEIGHT) {
                     int c = getColumnFromLevel(ro);
-                    int r = getRowFromLevel(co, levelHeight);
+                    int r = getRowFromLevel(co, levelGridSize.getHeight());
 
-                    if ((r >= 0) & (r <= levelHeight) & (c >= 0) & (c <= levelWidth)) {
+                    if ((r >= 0) &
+                            (r <= levelGridSize.getWidth()) &
+                            (c >= 0) &
+                            (c <= levelGridSize.getWidth())) {
                         if (grid[r][c] != null)
                             if (!reelTiles.get(grid[r][c].getIndex()).isReelTileDeleted())
                                 hiddenPlayingCardsRevealed = false;
-                    } //else
-//                        Gdx.app.debug(SlotPuzzleConstants.SLOT_PUZZLE, "I don't respond to r=" + r + "c=" + c);
+                    }
                 }
             }
         }
@@ -517,11 +523,19 @@ public class LevelCreatorSimple {
 
     private boolean hiddenPatternRevealed(TupleValueIndex[][] grid) {
         boolean hiddenPattern = true;
-        for (MapObject mapObject : level.getLayers().get(HIDDEN_PATTERN_LAYER_NAME).getObjects().getByType(RectangleMapObject.class)) {
+        for (MapObject mapObject : levelTileMap
+                .getLayers()
+                .get(SlotPuzzleConstants
+                        .HIDDEN_PATTERN_LAYER_NAME)
+                .getObjects()
+                .getByType(RectangleMapObject.class)) {
             Rectangle mapRectangle = ((RectangleMapObject) mapObject).getRectangle();
             int c = getColumnFromLevel(mapRectangle.getX());
-            int r = getRowFromLevel(mapRectangle.getY(), levelHeight);
-            if ((r >= 0) & (r <= levelHeight) & (c >= 0) & (c <= levelWidth)) {
+            int r = getRowFromLevel(mapRectangle.getY(), levelGridSize.getHeight());
+            if ((r >= 0) &
+                    (r <= levelGridSize.getHeight()) &
+                    (c >= 0) &
+                    (c <= levelGridSize.getWidth())) {
                 if (grid[r][c] != null)
                     if (!reelTiles.get(grid[r][c].getIndex()).isReelTileDeleted())
                         hiddenPattern = false;
@@ -530,7 +544,7 @@ public class LevelCreatorSimple {
         return hiddenPattern;
     }
 
-    private boolean testForJackpot(Array<ReelTile> levelReel, int levelWidth, int levelHeight) {
+    private boolean testForJackpot(Array<ReelTile> levelReel, GridSize levelGridSize) {
         flashSlots.flashSlots(levelReel);
         return flashSlots.getMatchedSlots().size <= 0;
     }
@@ -615,15 +629,14 @@ public class LevelCreatorSimple {
             switch (type) {
                 case TweenCallback.COMPLETE:
                     deleteReel(source);
-                    if (levelDoor.getLevelType().equals(PLAYING_CARD_LEVEL_TYPE))
-                        testPlayingCardLevelWon(levelWidth, levelHeight);
-                    if (levelDoor.getLevelType().equals(HIDDEN_PATTERN_LEVEL_TYPE))
-                        testForHiddenPatternLevelWon(levelWidth, levelHeight);
-                    if (levelDoor.getLevelType().equals(BONUS_LEVEL_TYPE))
-                        testForBonusLevelWon(levelWidth, levelHeight);
-                    if (levelDoor.getLevelType().equals(BOMBS_LEVEL_TYPE))
-                        testForBonusLevelWon(levelWidth, levelHeight);
-
+                    if (levelDoor.getLevelType().equals(SlotPuzzleConstants.PLAYING_CARD_LEVEL_TYPE))
+                        testPlayingCardLevelWon(levelGridSize);
+                    if (levelDoor.getLevelType().equals(SlotPuzzleConstants.HIDDEN_PATTERN_LEVEL_TYPE))
+                        testForHiddenPatternLevelWon(levelGridSize);
+                    if (levelDoor.getLevelType().equals(SlotPuzzleConstants.BONUS_LEVEL_TYPE))
+                        testForBonusLevelWon(levelGridSize);
+                    if (levelDoor.getLevelType().equals(SlotPuzzleConstants.BOMBS_LEVEL_TYPE))
+                        testForBonusLevelWon(levelGridSize);
             }
         }
     };
@@ -650,25 +663,28 @@ public class LevelCreatorSimple {
             replacementReelBoxes.add(reelTileIndex);
     }
 
-    private void testPlayingCardLevelWon(int levelWidth, int levelHeight) {
+    private void testPlayingCardLevelWon(GridSize levelGridSize) {
         PuzzleGridType puzzleGrid = new PuzzleGridType();
-        TupleValueIndex[][] matchGrid = puzzleGridTypeReelTile.populateMatchGrid(reelTiles, levelWidth, levelHeight);
+        TupleValueIndex[][] matchGrid = puzzleGridTypeReelTile.populateMatchGrid(
+                reelTiles, levelGridSize);
         puzzleGrid.matchGridSlots(matchGrid);
         if (hiddenPlayingCardsRevealed(matchGrid))
             iWonTheLevel();
     }
 
-    private void testForHiddenPatternLevelWon(int levelWidth, int levelHeight) {
+    private void testForHiddenPatternLevelWon(GridSize levelGridSize) {
         PuzzleGridType puzzleGrid = new PuzzleGridType();
-        TupleValueIndex[][] matchGrid = puzzleGridTypeReelTile.populateMatchGrid(reelTiles, levelWidth, levelHeight);
+        TupleValueIndex[][] matchGrid = puzzleGridTypeReelTile.populateMatchGrid(
+                reelTiles, levelGridSize);
         puzzleGrid.matchGridSlots(matchGrid);
         if (hiddenPatternRevealed(matchGrid))
             iWonTheLevel();
     }
 
-    private void testForBonusLevelWon(int levelWidth, int levelHeight) {
+    private void testForBonusLevelWon(GridSize levelGridSize) {
         PuzzleGridType puzzleGrid = new PuzzleGridType();
-        TupleValueIndex[][] matchGrid = puzzleGridTypeReelTile.populateMatchGrid(reelTiles, levelWidth, levelHeight);
+        TupleValueIndex[][] matchGrid = puzzleGridTypeReelTile.populateMatchGrid(
+                reelTiles, levelGridSize);
         puzzleGrid.matchGridSlots(matchGrid);
         if (hiddenPatternRevealed(matchGrid))
             iWonTheLevel();

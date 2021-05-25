@@ -23,12 +23,12 @@ import com.badlogic.gdx.maps.objects.RectangleMapObject;
 import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.utils.Array;
+import com.ellzone.slotpuzzle2d.SlotPuzzleConstants;
 import com.ellzone.slotpuzzle2d.level.card.Card;
 import com.ellzone.slotpuzzle2d.level.creator.LevelCreator;
 import com.ellzone.slotpuzzle2d.level.card.Suit;
 import com.ellzone.slotpuzzle2d.puzzlegrid.PuzzleGridTypeReelTile;
 import com.ellzone.slotpuzzle2d.puzzlegrid.TupleValueIndex;
-import com.ellzone.slotpuzzle2d.screens.PlayScreen;
 import com.ellzone.slotpuzzle2d.sprites.ReelTile;
 import com.ellzone.slotpuzzle2d.utils.Random;
 
@@ -135,8 +135,8 @@ public class HiddenPlayingCard extends HiddenPattern {
     private boolean isHiddenPlayingCardRevealed(TupleValueIndex[][] grid, Array<ReelTile> reelTiles, int levelWidth, int levelHeight, Integer hiddenPlayingCard) {
         MapObject mapObject = level.getLayers().get(HIDDEN_PATTERN_LAYER_NAME).getObjects().getByType(RectangleMapObject.class).get(hiddenPlayingCard);
         Rectangle mapRectangle = ((RectangleMapObject) mapObject).getRectangle();
-        for (int co = (int) (mapRectangle.getX()); co < (int) (mapRectangle.getX() + mapRectangle.getWidth()); co += PlayScreen.TILE_WIDTH) {
-            for (int ro = (int) (mapRectangle.getY()); ro < (int) (mapRectangle.getY() + mapRectangle.getHeight()); ro += PlayScreen.TILE_HEIGHT) {
+        for (int co = (int) (mapRectangle.getX()); co < (int) (mapRectangle.getX() + mapRectangle.getWidth()); co += SlotPuzzleConstants.TILE_WIDTH) {
+            for (int ro = (int) (mapRectangle.getY()); ro < (int) (mapRectangle.getY() + mapRectangle.getHeight()); ro += SlotPuzzleConstants.TILE_HEIGHT) {
                 int c = PuzzleGridTypeReelTile.getColumnFromLevel(co);
                 int r = PuzzleGridTypeReelTile.getRowFromLevel(ro, levelHeight);
                 if ((r >= 0) & (r <= levelHeight) & (c >= 0) & (c <= levelWidth)) {

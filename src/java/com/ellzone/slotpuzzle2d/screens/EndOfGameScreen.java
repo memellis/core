@@ -35,7 +35,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.viewport.FillViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
-import com.ellzone.slotpuzzle2d.SlotPuzzle;
+import com.ellzone.slotpuzzle2d.SlotPuzzleGame;
 import com.ellzone.slotpuzzle2d.SlotPuzzleConstants;
 import com.ellzone.slotpuzzle2d.effects.ReelAccessor;
 import com.ellzone.slotpuzzle2d.effects.ReelLetterAccessor;
@@ -77,7 +77,7 @@ public class EndOfGameScreen implements Screen {
 	private Array<ReelLetterTile> reelLetterTiles;
     private Array<DampenedSineParticle> dampenedSines;
     private int numReelLettersSpinning, numReelLetterSpinLoops;
-    private SlotPuzzle game;
+    private SlotPuzzleGame game;
 	private Viewport viewport;
 	private Stage stage;
 	private Timeline endReelSeq; 
@@ -87,7 +87,7 @@ public class EndOfGameScreen implements Screen {
 	private Vector accelerator, accelerate, velocity, velocityMin;
 	private float acceleratorY, accelerateY, acceleratorFriction, velocityFriction, velocityY, velocityYMin;
 	
-	public EndOfGameScreen(SlotPuzzle game) {
+	public EndOfGameScreen(SlotPuzzleGame game) {
 		this.game = game;
 		createEndOfGameScreen();
 		initialiseTweenEngine();

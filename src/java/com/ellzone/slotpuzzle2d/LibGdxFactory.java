@@ -20,42 +20,26 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.ellzone.slotpuzzle2d.screens.LoadingScreen;
 import net.dermetfan.gdx.assets.AnnotationAssetManager;
 
-/** Class designed for giving ability to easy mock all low level LibGdx objects. */
 public class LibGdxFactory {
 
-    /**
-     * Singleton instance.
-     */
     private static LibGdxFactory instance = new LibGdxFactory();
 
-    /**
-     * Hidden constructor.
-     */
     private LibGdxFactory() {
-        // do nothing
     }
 
-    /**
-     * private constructor, allows Mockito to replace instance by Mock object.
-     */
     private LibGdxFactory(final LibGdxFactory mock) {
         instance = mock;
     }
 
-    /**
-     * Get instance.
-     */
     public static LibGdxFactory getInstance() {
         return instance;
     }
-
-  /* [ UNIT TESTING/MOCKS ] ================================================================================================================================ */
 
     public SpriteBatch newSpriteBatch() {
         return new SpriteBatch();
     }
 
-    public LoadingScreen newLoadScreen(SlotPuzzle game) {
+    public LoadingScreen newLoadScreen(SlotPuzzleGame game) {
         return new LoadingScreen(game);
     }
 

@@ -28,7 +28,7 @@ import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.Timer;
-import com.ellzone.slotpuzzle2d.SlotPuzzle;
+import com.ellzone.slotpuzzle2d.SlotPuzzleGame;
 import com.ellzone.slotpuzzle2d.SlotPuzzleConstants;
 import com.ellzone.slotpuzzle2d.finitestatemachine.PlayState;
 import com.ellzone.slotpuzzle2d.finitestatemachine.PlayStates;
@@ -40,6 +40,7 @@ import com.ellzone.slotpuzzle2d.physics.PhysicsManagerCustomBodies;
 import com.ellzone.slotpuzzle2d.physics.ReelSink;
 import com.ellzone.slotpuzzle2d.physics.contact.AnimatedReelsManager;
 import com.ellzone.slotpuzzle2d.physics.contact.BoxHittingBoxContactListener;
+import com.ellzone.slotpuzzle2d.puzzlegrid.GridSize;
 import com.ellzone.slotpuzzle2d.puzzlegrid.ReelTileGridValue;
 import com.ellzone.slotpuzzle2d.scene.MapTile;
 import com.ellzone.slotpuzzle2d.sprites.AnimatedReel;
@@ -74,7 +75,7 @@ public class PlayScreenFallingReels extends PlayScreen {
     private boolean reelsStoppedMoving = false;
     private SlowMotion slowMotion;
 
-    public PlayScreenFallingReels(SlotPuzzle game, LevelDoor levelDoor, MapTile mapTile) {
+    public PlayScreenFallingReels(SlotPuzzleGame game, LevelDoor levelDoor, MapTile mapTile) {
         super(game, levelDoor, mapTile);
         initialiseFallingReels();
     }
@@ -110,9 +111,11 @@ public class PlayScreenFallingReels extends PlayScreen {
                 (TextureAtlas) game.annotationAssetManager.get(AssetsAnnotation.CARDDECK),
                 tweenManager,
                 physics,
-                GAME_LEVEL_WIDTH,
-                GAME_LEVEL_HEIGHT,
-                playStateMachine, hud);
+                new GridSize(
+                        SlotPuzzleConstants.GAME_LEVEL_WIDTH,
+                        SlotPuzzleConstants.GAME_LEVEL_HEIGHT),
+                playStateMachine,
+                hud);
     }
 
     private void setupAnimatedReelsManager() {
@@ -266,17 +269,21 @@ public class PlayScreenFallingReels extends PlayScreen {
         int touchY = Gdx.input.getY();
         Vector2 newPoints = new Vector2(touchX, touchY);
         newPoints = viewport.unproject(newPoints);
-        int c = (int) (newPoints.x - PlayScreen.PUZZLE_GRID_START_X) / PlayScreen.TILE_WIDTH;
-        int r = (int) (newPoints.y - PlayScreen.PUZZLE_GRID_START_Y) / PlayScreen.TILE_HEIGHT;
-        r = GAME_LEVEL_HEIGHT - 1 - r ;
+        int c = (int) (newPoints.x - PlayScreen.PUZZLE_GRID_START_X) / SlotPuzzleConstants.TILE_WIDTH;
+        int r = (int) (newPoints.y - PlayScreen.PUZZLE_GRID_START_Y) / SlotPuzzleConstants.TILE_HEIGHT;
+        r = SlotPuzzleConstants.GAME_LEVEL_HEIGHT - 1 - r ;
         return new Vector2(c, r);
     }
 
     private void processTileClicked(Vector2 tileClicked) {
         int r = (int) tileClicked.y;
         int c = (int) tileClicked.x;
-        if (r>=0 && r<GAME_LEVEL_HEIGHT && c>=0 && c<GAME_LEVEL_WIDTH) {
-            ReelTileGridValue[][] grid = levelCreator.populateMatchGrid(reelTiles, GAME_LEVEL_WIDTH, GAME_LEVEL_HEIGHT);
+        if (r>=0 && r< SlotPuzzleConstants.GAME_LEVEL_HEIGHT && c>=0 && c< SlotPuzzleConstants.GAME_LEVEL_WIDTH) {
+            ReelTileGridValue[][] grid = levelCreator.populateMatchGrid(
+                    reelTiles,
+                    new GridSize(
+                            SlotPuzzleConstants.GAME_LEVEL_WIDTH,
+                            SlotPuzzleConstants.GAME_LEVEL_HEIGHT));
             if (grid[r][c] != null) {
                 ReelTile reel = reelTiles.get(grid[r][c].index);
                 AnimatedReel animatedReel = levelCreator.getAnimatedReels().get(grid[r][c].index);
