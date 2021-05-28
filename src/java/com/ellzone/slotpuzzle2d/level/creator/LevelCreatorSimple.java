@@ -88,6 +88,7 @@ public class LevelCreatorSimple {
     private Timeline reelFlashSeq;
     private Array<AnimatedReel> animatedReels;
     private Array<ReelTile> reelTiles;
+
     private AnnotationAssetManager annotationAssetManager;
     private TextureAtlas cardDeckAtlas;
     private PhysicsManagerCustomBodies physics;
@@ -146,7 +147,8 @@ public class LevelCreatorSimple {
     }
 
     public LevelCreatorSimple(
-            World world, LevelDoor levelDoor,
+            World box2dWorld,
+            LevelDoor levelDoor,
             Array<AnimatedReel> animatedReels,
             Array<ReelTile> reelTiles,
             TiledMap level,
@@ -168,8 +170,8 @@ public class LevelCreatorSimple {
         this.levelGridSize = levelGridSize;
         this.playStateMachine = playStateMachine;
         this.hud = hud;
-        myReelsToFall.addAll(9, 10, 11, 12);
-        myReelsToFallEndReel.addAll(7,7,7,7);
+//        myReelsToFall.addAll(9, 10, 11, 12);
+//        myReelsToFallEndReel.addAll(7,7,7,7);
         initialise(levelDoor, reelTiles, level, tweenManager, levelGridSize);
     }
 

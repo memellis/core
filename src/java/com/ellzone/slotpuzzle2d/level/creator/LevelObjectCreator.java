@@ -131,7 +131,7 @@ public class LevelObjectCreator {
     }
 
     public TextureAtlas getSlotHandleAtlas() {
-        return levelCreatorInjectionInterface.getSlothandleAtlas();
+        return levelCreatorInjectionInterface.getSlotHandleAtlas();
     }
 
     private Object[] parseConstructorParameterValues(Array<String> constructorParameterValues,
@@ -371,11 +371,17 @@ public class LevelObjectCreator {
 
         private Object createMapObjectFromProperties(MapProperties rectangleMapObjectProperties, Class<?> clazz) {
             Object createdObject;
-            Array<String> constructorParameters = getParameters(rectangleMapObjectProperties, PARAMETER);
+            Array<String> constructorParameters =
+                    getParameters(rectangleMapObjectProperties, PARAMETER);
             Class<?>[] classParameters = getParamTypes(constructorParameters);
             Constructor<?> constructor = getConstructor(clazz, classParameters);
-            Array<String> constructorParameterValues = getParameters(rectangleMapObjectProperties, PARAMETER_VALUE);
-            createdObject = getCreatedObjectObject(rectangleMapObjectProperties, classParameters, constructor, constructorParameterValues);
+            Array<String> constructorParameterValues =
+                    getParameters(rectangleMapObjectProperties, PARAMETER_VALUE);
+            createdObject = getCreatedObjectObject(
+                    rectangleMapObjectProperties,
+                    classParameters,
+                    constructor,
+                    constructorParameterValues);
             return createdObject;
         }
 

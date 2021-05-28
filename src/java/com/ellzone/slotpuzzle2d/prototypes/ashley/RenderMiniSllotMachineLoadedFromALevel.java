@@ -388,7 +388,7 @@ public class RenderMiniSllotMachineLoadedFromALevel
     }
 
     @Override
-    public TextureAtlas getSlothandleAtlas() {
+    public TextureAtlas getSlotHandleAtlas() {
         return slotHandleAtlas;
     }
 

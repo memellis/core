@@ -12,5 +12,5 @@ public interface LevelCreatorInjectionInterface {
     public ReelSprites getReelSprites();
     public Texture getSlotReelScrollTexture();
     public TweenManager getTweenManager();
-    public TextureAtlas getSlothandleAtlas();
+    public TextureAtlas getSlotHandleAtlas();
 }

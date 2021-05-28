@@ -62,7 +62,8 @@ public class LevelObjectCreatorEntityHolder extends LevelObjectCreator {
     private ReelHelper reelHelper;
     private LevelAnimatedReelTileMapCallback levelAnimatedReelTileMapCallback;
 
-    public LevelObjectCreatorEntityHolder(LevelCreatorInjectionInterface injection, World world, RayHandler rayHandler) {
+    public LevelObjectCreatorEntityHolder(
+            LevelCreatorInjectionInterface injection, World world, RayHandler rayHandler) {
         super(injection, world, rayHandler);
     }
 

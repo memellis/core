@@ -56,7 +56,7 @@ public class PlayScreenMiniSlotMachine extends PlayScreen {
 
     public static final int LEVEL_TIME_LENGTH = 120;
     private int[][] reelGrid = new int[3][3];
-    private Array<Array<Vector2>> rowMacthesToDraw;
+    private Array<Array<Vector2>> rowMatchesToDraw;
     private ShapeRenderer shapeRenderer;
     private Array<HoldLightButton> holdLightButtons;
     private Array<SlotHandleSprite> slotHandles;
@@ -68,7 +68,7 @@ public class PlayScreenMiniSlotMachine extends PlayScreen {
     }
 
     private void initialiseMiniSlotMachine() {
-        rowMacthesToDraw = new Array<>();
+        rowMatchesToDraw = new Array<>();
         shapeRenderer = new ShapeRenderer();
     }
 
@@ -80,7 +80,7 @@ public class PlayScreenMiniSlotMachine extends PlayScreen {
     }
 
     protected LevelLoader createLevelLoader() {
-        LevelLoader levelLoader = new LevelLoader(game.annotationAssetManager, levelDoor, super.mapTile, animatedReels);
+        LevelLoader levelLoader = new LevelLoader(game.annotationAssetManager, levelDoor, super.mapTileLevel, animatedReels);
         levelLoader.setStoppedSpinningCallback(new LevelCallback() {
             @Override
             public void onEvent(ReelTile source) {
@@ -138,7 +138,7 @@ public class PlayScreenMiniSlotMachine extends PlayScreen {
                             }
                         })
                         .setCallbackTriggers(TweenCallback.COMPLETE)
-                        .start(tweenManager);
+                        .start(game.getTweenManager());
             }
             source.clearReelFlashSegments();
         }
@@ -170,11 +170,11 @@ public class PlayScreenMiniSlotMachine extends PlayScreen {
 
     private void matchRowsToDraw(ReelTileGridValue[][] matchGrid, PuzzleGridTypeReelTile puzzleGridTypeReelTile) {
         Array<ReelTileGridValue> depthSearchResults = new Array<>();
-        rowMacthesToDraw = new Array<Array<Vector2>>();
+        rowMatchesToDraw = new Array<Array<Vector2>>();
         for (int row = 0; row < matchGrid.length; row++) {
             depthSearchResults = puzzleGridTypeReelTile.depthFirstSearchIncludeDiagonals(matchGrid[row][0]);
             if (puzzleGridTypeReelTile.isRow(depthSearchResults, matchGrid)) {
-                rowMacthesToDraw.add(drawMatches(depthSearchResults, 340, 300));
+                rowMatchesToDraw.add(drawMatches(depthSearchResults, 340, 300));
                 flashSlots.flashSlotsForMiniSlotMachine(depthSearchResults);
             }
         }
@@ -228,8 +228,8 @@ public class PlayScreenMiniSlotMachine extends PlayScreen {
     }
 
     private void clearRowMatchesToDraw() {
-        if (rowMacthesToDraw.size > 0)
-            rowMacthesToDraw.removeRange(0, rowMacthesToDraw.size - 1);
+        if (rowMatchesToDraw.size > 0)
+            rowMatchesToDraw.removeRange(0, rowMatchesToDraw.size - 1);
     }
 
     protected void handleInput() {
@@ -325,8 +325,8 @@ public class PlayScreenMiniSlotMachine extends PlayScreen {
     protected void weAreOutOfTime() {
         playState = PlayStates.BONUS_LEVEL_ENDED;
         gameOver = true;
-        mapTile.getLevel().setLevelCompleted();
-        mapTile.getLevel().setScore(hud.getScore());
+        mapTileLevel.getLevel().setLevelCompleted();
+        mapTileLevel.getLevel().setScore(hud.getScore());
         playScreenPopUps.setLevelBonusSpritePositions();
         playScreenPopUps.getLevelBonusCompletedPopUp().showLevelPopUp(null);
     }
@@ -364,7 +364,7 @@ public class PlayScreenMiniSlotMachine extends PlayScreen {
     protected void renderMatchedRows() {
         shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
         shapeRenderer.setColor(Color.RED);
-        for (Array<Vector2> matchedRow : rowMacthesToDraw)
+        for (Array<Vector2> matchedRow : rowMatchesToDraw)
             if (matchedRow.size >= 2)
                 for (int i = 0; i < matchedRow.size - 1; i++)
                     shapeRenderer.rectLine(matchedRow.get(i).x, matchedRow.get(i).y,

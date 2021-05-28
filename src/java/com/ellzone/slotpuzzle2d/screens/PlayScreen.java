@@ -22,7 +22,6 @@ import com.badlogic.gdx.ai.msg.MessageManager;
 import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
-import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.Sprite;
@@ -59,12 +58,10 @@ import com.ellzone.slotpuzzle2d.level.creator.LevelCallback;
 import com.ellzone.slotpuzzle2d.level.creator.LevelCreator;
 import com.ellzone.slotpuzzle2d.level.creator.LevelCreatorInjectionInterface;
 import com.ellzone.slotpuzzle2d.level.creator.LevelLoader;
-import com.ellzone.slotpuzzle2d.level.creator.LevelObjectCreatorEntityHolder;
+import com.ellzone.slotpuzzle2d.level.creator.PlayScreenLevel;
 import com.ellzone.slotpuzzle2d.level.hidden.HiddenPattern;
 import com.ellzone.slotpuzzle2d.level.hidden.HiddenPlayingCard;
-import com.ellzone.slotpuzzle2d.level.map.MapLevelNameComparator;
 import com.ellzone.slotpuzzle2d.level.popups.PlayScreenPopUps;
-import com.ellzone.slotpuzzle2d.level.reel.ReelType;
 import com.ellzone.slotpuzzle2d.level.sequence.PlayScreenIntroSequence;
 import com.ellzone.slotpuzzle2d.physics.DampenedSineParticle;
 import com.ellzone.slotpuzzle2d.puzzlegrid.GridSize;
@@ -86,7 +83,6 @@ import com.ellzone.slotpuzzle2d.tweenengine.TweenCallback;
 import com.ellzone.slotpuzzle2d.tweenengine.TweenManager;
 import com.ellzone.slotpuzzle2d.utils.AssetsAnnotation;
 import com.ellzone.slotpuzzle2d.utils.FrameRate;
-import com.ellzone.slotpuzzle2d.utils.PixmapProcessors;
 
 import net.dermetfan.gdx.assets.AnnotationAssetManager;
 
@@ -110,19 +106,16 @@ public class PlayScreen implements Screen, PlayInterface, LevelCreatorInjectionI
     public static final float PUZZLE_GRID_START_Y = 40.0f;
     public static final String SLOTPUZZLE_SCREEN = "PlayScreen";
     public static final int LEVEL_TIME_LENGTH_IN_SECONDS = 300;
-    public static final String WIDTH_KEY = "width";
-    public static final String HEIGHT_KEY = "height";
 
     protected SlotPuzzleGame game;
     protected Viewport viewport, lightViewport;
     protected OrthographicCamera camera = new OrthographicCamera();
     protected LevelDoor levelDoor;
-    protected TweenManager tweenManager = new TweenManager();
     protected Sprite[] sprites;
     protected Array<AnimatedReel> animatedReels;
     protected Array<ReelTile> reelTiles;
     protected int reelsSpinning;
-    protected MapTile mapTile;
+    protected MapTile mapTileLevel;
     protected Hud hud;
     protected Random random;
     protected PlayStates playState;
@@ -140,40 +133,33 @@ public class PlayScreen implements Screen, PlayInterface, LevelCreatorInjectionI
 
     private LevelLoader levelLoader;
     protected Stage stage;
-    private float sW, sH;
     private TextureAtlas tilesAtlas;
     protected boolean isLoaded = false;
-    protected TiledMap level;
+    protected TiledMap tiledMapLevel;
     protected OrthogonalTiledMapRenderer renderer;
     private boolean inRestartLevel = false;
     private boolean win = false;
-    private int touchX, touchY;
     private BitmapFont font;
     private HiddenPattern hiddenPattern;
-    private int mapWidth;
-    private int mapHeight;
     protected boolean show = false;
-    private PlayScreenIntroSequence playScreenIntroSequence;
-    protected World world;
+    protected World box2dWorld;
     private Box2DDebugRenderer debugRenderer;
     private RayHandler rayHandler;
     private Array<HoldLightButton> holdLightButtons;
     private Array<SlotHandleSprite> slotHandles;
-    private Texture slotReelScrollTexture;
     protected ReelSprites reelSprites;
-    private int[][] reelGrid = new int[3][3];
-    private Array<Array<Vector2>> rowMatchesToDraw;
+    private final int[][] reelGrid = new int[3][3];
     protected ShapeRenderer shapeRenderer;
     protected FrameRate framerate;
     protected AudioManager audioManager;
     protected MessageManager messageManager;
     private int currentReel = 0;
-    private String addReel;
+    private PlayScreenLevel playScreenLevel;
 
     public PlayScreen(SlotPuzzleGame game, LevelDoor levelDoor, MapTile mapTile) {
         this.game = game;
         this.levelDoor = levelDoor;
-        this.mapTile = mapTile;
+        this.mapTileLevel = mapTile;
         createPlayScreen();
         playStateMachine.getStateMachine().changeState(PlayState.INTRO_SPINNING_SEQUENCE);
     }
@@ -217,30 +203,28 @@ public class PlayScreen implements Screen, PlayInterface, LevelCreatorInjectionI
         initialiseHud();
     }
 
-    private Texture createSlotReelScrollTexture() {
-        Pixmap slotReelScrollPixmap = PixmapProcessors.createPixmapToAnimate(reelSprites.getSprites());
-        return new Texture(slotReelScrollPixmap);
-    }
-
     protected void initialiseWorld() {
-        world = new World(new Vector2(0, -9.8f), true);
+        box2dWorld = new World(new Vector2(0, -9.8f), true);
         debugRenderer = new Box2DDebugRenderer();
-        rayHandler = new RayHandler(world);
+        rayHandler = new RayHandler(box2dWorld);
         rayHandler.useDiffuseLight(true);
         rayHandler.setAmbientLight(0.25f, 0.25f, 0.25f, 0.25f);
     }
 
     private void initialisePlayScreen() {
         random = new Random();
-        renderer = new OrthogonalTiledMapRenderer(level);
+        renderer = new OrthogonalTiledMapRenderer(tiledMapLevel);
         displaySpinHelp = false;
         scores = new Array<>();
         font = new BitmapFont();
-        sW = SlotPuzzleConstants.VIRTUAL_WIDTH;
-        sH = SlotPuzzleConstants.VIRTUAL_HEIGHT;
-        playScreenPopUps = new PlayScreenPopUps(tilesAtlas, (int) sW, (int) sH, game.batch, tweenManager, levelDoor);
+        playScreenPopUps = new PlayScreenPopUps(
+                tilesAtlas,
+                (int) (float) SlotPuzzleConstants.VIRTUAL_WIDTH,
+                (int) (float) SlotPuzzleConstants.VIRTUAL_HEIGHT,
+                game.batch,
+                game.getTweenManager(),
+                levelDoor);
         playScreenPopUps.initialise();
-        rowMatchesToDraw = new Array<Array<Vector2>>();
         shapeRenderer = new ShapeRenderer();
     }
 
@@ -251,51 +235,20 @@ public class PlayScreen implements Screen, PlayInterface, LevelCreatorInjectionI
     }
 
     private void loadLevel() {
-        getMapProperties(level);
-        if (addReel.equals(ReelType.Bomb.name))
-            addBombSprite();
-        slotReelScrollTexture = createSlotReelScrollTexture();
-        LevelObjectCreatorEntityHolder levelObjectCreator =
-                new LevelObjectCreatorEntityHolder(this, world, rayHandler);
-        Array<RectangleMapObject> extractedLevelRectangleMapObjects = extractLevelAssets(level);
-        levelObjectCreator.createLevel(extractedLevelRectangleMapObjects);
-        getLevelEntities(levelObjectCreator);
-        levelLoader = createLevelLoader();
-        levelLoader.createAnimatedReelsInLevel(
-                new GridSize(
-                        SlotPuzzleConstants.GAME_LEVEL_WIDTH,
-                        SlotPuzzleConstants.GAME_LEVEL_HEIGHT)
-        );
-        reelsSpinning = reelTiles.size;
-        hiddenPattern = levelLoader.getHiddenPattern();
-        flashSlots = new FlashSlots(
-                tweenManager,
-                new GridSize(
-                        SlotPuzzleConstants.GAME_LEVEL_WIDTH,
-                        SlotPuzzleConstants.GAME_LEVEL_HEIGHT
-                ),
-                reelTiles);
+       playScreenLevel =  new PlayScreenLevel(
+                this, game, levelDoor);
+       playScreenLevel.loadLevel(
+                mapTileLevel, stoppedSpinningCallback, stoppedFlashingCallback);
+        getLevelEntities();
     }
 
-    private void addBombSprite() {
-        TextureAtlas reelAtlas = game.annotationAssetManager.get(AssetsAnnotation.REELS_EXTENDED);
-        Sprite sprite = reelAtlas.createSprite(AssetsAnnotation.BOMB40x40);
-        reelSprites.addSprite(reelAtlas.createSprite(AssetsAnnotation.BOMB40x40));
-    }
-
-
-    protected void getLevelEntities(LevelObjectCreatorEntityHolder levelObjectCreator) {
-        animatedReels = levelObjectCreator.getAnimatedReels();
-        reelTiles = levelObjectCreator.getReelTiles();
-        holdLightButtons = levelObjectCreator.getHoldLightButtons();
-        slotHandles = levelObjectCreator.getHandles();
-    }
-
-    private Array<RectangleMapObject> extractLevelAssets(TiledMap level) {
-        Array<RectangleMapObject> levelRectangleMapObjects = getRectangleMapObjectsFromLevel(level);
-        MapLevelNameComparator mapLevelNameComparator = new MapLevelNameComparator();
-        levelRectangleMapObjects.sort(mapLevelNameComparator);
-        return levelRectangleMapObjects;
+    private void getLevelEntities() {
+        animatedReels = playScreenLevel.getAnimatedReels();
+        reelTiles = playScreenLevel.getReelTiles();
+        holdLightButtons = playScreenLevel.getHoldLightButtons();
+        slotHandles = playScreenLevel.getSlotHandles();
+        hiddenPattern = playScreenLevel.getHiddenPattern();
+        levelLoader = playScreenLevel.getLevelLoader();
     }
 
     private Array<RectangleMapObject> getRectangleMapObjectsFromLevel(TiledMap level) {
@@ -303,15 +256,7 @@ public class PlayScreen implements Screen, PlayInterface, LevelCreatorInjectionI
                     getObjects().getByType(RectangleMapObject.class);
     }
 
-    protected LevelLoader createLevelLoader() {
-        LevelLoader levelLoader =
-                new LevelLoader(game.annotationAssetManager, levelDoor, mapTile, animatedReels);
-        levelLoader.setStoppedSpinningCallback(stoppedSpinningCallback);
-        levelLoader.setStoppedFlashingCallback(stoppedFlashingCallback);
-        return levelLoader;
-    }
-
-    private LevelCallback stoppedSpinningCallback = new LevelCallback() {
+    private final LevelCallback stoppedSpinningCallback = new LevelCallback() {
         @Override
         public void onEvent (ReelTile source) {
             playSound(AssetsAnnotation.SOUND_REEL_STOPPED);
@@ -329,7 +274,7 @@ public class PlayScreen implements Screen, PlayInterface, LevelCreatorInjectionI
         }
     };
 
-    protected LevelCallback stoppedFlashingCallback = new LevelCallback() {
+    private final LevelCallback stoppedFlashingCallback = new LevelCallback() {
         @Override
         public void onEvent(ReelTile source) {
             if ((levelDoor.getLevelType().equals(LevelCreator.HIDDEN_PATTERN_LEVEL_TYPE)) ||
@@ -382,7 +327,8 @@ public class PlayScreen implements Screen, PlayInterface, LevelCreatorInjectionI
     }
 
     private void getLevelAssets(AnnotationAssetManager annotationAssetManager) {
-        level = annotationAssetManager.get("levels/level " + (this.levelDoor.getId() + 1) + " - 40x40.tmx");
+        tiledMapLevel = annotationAssetManager.get(
+                "levels/level " + (this.levelDoor.getId() + 1) + " - 40x40.tmx");
     }
 
     private void getSoundAssets(AnnotationAssetManager annotationAssetManager) {
@@ -401,17 +347,10 @@ public class PlayScreen implements Screen, PlayInterface, LevelCreatorInjectionI
         sprites = reelSprites.getSprites();
     }
 
-    private void getMapProperties(TiledMap level) {
-        MapProperties mapProperties = level.getProperties();
-        mapWidth = mapProperties.get(WIDTH_KEY, Integer.class);
-        mapHeight = mapProperties.get(HEIGHT_KEY, Integer.class);
-        addReel = mapProperties.get("AddReel", String.class) == null ? "" :  mapProperties.get("AddReel", String.class) ;
-    }
-
     private void createReelIntroSequence() {
         createStartReelTimer();
         playState = PlayStates.INTRO_SEQUENCE;
-        playScreenIntroSequence = new PlayScreenIntroSequence(reelTiles, tweenManager);
+        PlayScreenIntroSequence playScreenIntroSequence = new PlayScreenIntroSequence(reelTiles, game.getTweenManager());
         playScreenIntroSequence.createReelIntroSequence(introSequenceCallback);
     }
 
@@ -453,13 +392,23 @@ public class PlayScreen implements Screen, PlayInterface, LevelCreatorInjectionI
     }
 
     private boolean isHiddenPatternRevealed(Array<ReelTile> reelTiles) {
-        TupleValueIndex[][] matchGrid = flashSlots.flashSlots(reelTiles);
-        return hiddenPattern.isHiddenPatternRevealed(matchGrid, reelTiles, SlotPuzzleConstants.GAME_LEVEL_WIDTH, SlotPuzzleConstants.GAME_LEVEL_HEIGHT);
+        TupleValueIndex[][] matchGrid = playScreenLevel.getFlashSlots().flashSlots(reelTiles);
+        return
+            hiddenPattern.isHiddenPatternRevealed(
+                    matchGrid,
+                    reelTiles,
+                    SlotPuzzleConstants.GAME_LEVEL_WIDTH,
+                    SlotPuzzleConstants.GAME_LEVEL_HEIGHT);
     }
 
     private boolean isHiddenPlayingCardsRevealed(Array<ReelTile> reelTiles) {
-        TupleValueIndex[][] matchGrid = flashSlots.flashSlots(reelTiles);
-        return hiddenPattern.isHiddenPatternRevealed(matchGrid, reelTiles, SlotPuzzleConstants.GAME_LEVEL_WIDTH, SlotPuzzleConstants.GAME_LEVEL_HEIGHT);
+        TupleValueIndex[][] matchGrid = playScreenLevel.getFlashSlots().flashSlots(reelTiles);
+        return
+            hiddenPattern.isHiddenPatternRevealed(
+                    matchGrid,
+                    reelTiles,
+                    SlotPuzzleConstants.GAME_LEVEL_WIDTH,
+                    SlotPuzzleConstants.GAME_LEVEL_HEIGHT);
     }
 
     private boolean testForAnyLonelyReels(Array<ReelTile> levelReel) {
@@ -489,7 +438,7 @@ public class PlayScreen implements Screen, PlayInterface, LevelCreatorInjectionI
             .setUserData(source)
             .setCallback(deleteReelCallback)
             .setCallbackTriggers(TweenCallback.COMPLETE)
-            .start(tweenManager);
+            .start(game.getTweenManager());
     }
 
     private TweenCallback deleteReelCallback = new TweenCallback() {
@@ -497,39 +446,51 @@ public class PlayScreen implements Screen, PlayInterface, LevelCreatorInjectionI
         public void onEvent(int type, BaseTween<?> source) {
             switch (type) {
                 case TweenCallback.COMPLETE:
-                    proceesDeleteReel(source);
+                    processDeleteReel(source);
             }
         }
     };
 
-    private void proceesDeleteReel(BaseTween<?> source) {
+    private void processDeleteReel(BaseTween<?> source) {
         ReelTile reel = (ReelTile) source.getUserData();
         hud.addScore((reel.getEndReel() + 1) * reel.getScore());
         playSound(AssetsAnnotation.SOUND_REEL_STOPPED);
         playSound(AssetsAnnotation.SOUND_CHA_CHING);
         reel.deleteReelTile();
-        flashSlots.deleteAReel();
+        playScreenLevel.getFlashSlots().deleteAReel();
         if (playStateMachine.getStateMachine().getCurrentState() == PlayState.PLAY) {
             if (levelDoor.getLevelType().equals(LevelCreator.PLAYING_CARD_LEVEL_TYPE))
                 testPlayingCardLevelWon();
             if (levelDoor.getLevelType().equals(LevelCreator.HIDDEN_PATTERN_LEVEL_TYPE))
-                testForHiddenPlatternLevelWon();
+                testForHiddenPatternLevelWon();
         }
     }
 
     protected void reelScoreAnimation(ReelTile source) {
-        Score score = new Score(source.getX(), source.getY(), (source.getEndReel() + 1) * source.getScore());
+        Score score = new Score(
+                source.getX(),
+                source.getY(),
+                (source.getEndReel() + 1) * source.getScore());
         scores.add(score);
         Timeline.createSequence()
                 .beginParallel()
                 .delay(random.nextFloat()*2.0f)
-                .push(SlotPuzzleTween.to(score, ScoreAccessor.POS_XY, 2.5f).targetRelative(random.nextInt(20), random.nextInt(160)).ease(Quad.IN))
-                .push(SlotPuzzleTween.to(score, ScoreAccessor.SCALE_XY, 2.5f).target(2.0f, 2.0f).ease(Quad.IN))
+                .push(SlotPuzzleTween.to(
+                        score,
+                        ScoreAccessor.POS_XY,
+                        2.5f)
+                        .targetRelative(
+                                random.nextInt(20), random.nextInt(160)).ease(Quad.IN))
+                .push(SlotPuzzleTween.to(
+                        score,
+                        ScoreAccessor.SCALE_XY,
+                        2.5f)
+                        .target(2.0f, 2.0f).ease(Quad.IN))
                 .end()
                 .setUserData(score)
                 .setCallback(deleteScoreCallback)
                 .setCallbackTriggers(TweenCallback.COMPLETE)
-                .start(tweenManager);
+                .start(game.getTweenManager());
     }
 
     private TweenCallback deleteScoreCallback = new TweenCallback() {
@@ -551,7 +512,10 @@ public class PlayScreen implements Screen, PlayInterface, LevelCreatorInjectionI
     private void processIsTileClicked(float touchX, float touchY) {
         int c = PuzzleGridTypeReelTile.getColumnFromLevel(touchX);
         int r = PuzzleGridTypeReelTile.getRowFromLevel(touchY, SlotPuzzleConstants.GAME_LEVEL_HEIGHT);
-        if ((r >= 0) & (r <= SlotPuzzleConstants.GAME_LEVEL_HEIGHT) & (c >= 0) & (c <= SlotPuzzleConstants.GAME_LEVEL_WIDTH)) {
+        if ((r >= 0) &
+            (r <= SlotPuzzleConstants.GAME_LEVEL_HEIGHT) &
+            (c >= 0) &
+            (c <= SlotPuzzleConstants.GAME_LEVEL_WIDTH)) {
             TupleValueIndex[][] grid = levelLoader.populateMatchGrid(reelTiles,
                     new GridSize(
                             SlotPuzzleConstants.GAME_LEVEL_WIDTH,
@@ -583,7 +547,7 @@ public class PlayScreen implements Screen, PlayInterface, LevelCreatorInjectionI
             iWonTheLevel();
     }
 
-    private void testForHiddenPlatternLevelWon() {
+    private void testForHiddenPatternLevelWon() {
         PuzzleGridType puzzleGrid = new PuzzleGridType();
         TupleValueIndex[][] matchGrid =
                 levelLoader.populateMatchGrid(
@@ -603,8 +567,8 @@ public class PlayScreen implements Screen, PlayInterface, LevelCreatorInjectionI
         gameOver = true;
         win = true;
         playState = PlayStates.WON_LEVEL;
-        mapTile.getLevel().setLevelCompleted();
-        mapTile.getLevel().setScore(hud.getScore());
+        mapTileLevel.getLevel().setLevelCompleted();
+        mapTileLevel.getLevel().setScore(hud.getScore());
         playScreenPopUps.setLevelWonSpritePositions();
         playScreenPopUps.getLevelWonPopUp().showLevelPopUp(null);
     }
@@ -629,7 +593,7 @@ public class PlayScreen implements Screen, PlayInterface, LevelCreatorInjectionI
         @Override
         public void onEvent(int type, BaseTween<?> source) {
             dispose();
-            ((WorldScreen)game.getWorldScreen()).worldScreenCallBack(mapTile);
+            ((WorldScreen)game.getWorldScreen()).worldScreenCallBack(mapTileLevel);
             game.setScreen(game.getWorldScreen());
         }
     };
@@ -664,12 +628,12 @@ public class PlayScreen implements Screen, PlayInterface, LevelCreatorInjectionI
     };
 
     private void delegateLevelOverCallback() {
-        tweenManager.killAll();
+        game.getTweenManager().killAll();
         hud.resetScore();
         hud.loseLife();
         hud.resetWorldTime(LEVEL_TIME_LENGTH_IN_SECONDS);
         hud.stopWorldTimer();
-        renderer = new OrthogonalTiledMapRenderer(level);
+        renderer = new OrthogonalTiledMapRenderer(tiledMapLevel);
         displaySpinHelp = false;
         inRestartLevel = false;
         currentReel = 0;
@@ -695,12 +659,14 @@ public class PlayScreen implements Screen, PlayInterface, LevelCreatorInjectionI
 
     @Override
     public int getNumberOfReelsFlashing() {
-        return flashSlots.getNumberOfReelsFlashing();
+        return
+            playScreenLevel.getFlashSlots().getNumberOfReelsFlashing();
     }
 
     @Override
     public int getNumberOfReelsToDelete() {
-        return flashSlots.getNumberOfReelsToDelete();
+        return
+            playScreenLevel.getFlashSlots().getNumberOfReelsToDelete();
     }
 
     @Override
@@ -715,28 +681,32 @@ public class PlayScreen implements Screen, PlayInterface, LevelCreatorInjectionI
 
     @Override
     public boolean areReelsFlashing() {
-        return flashSlots.areReelsFlashing();
+        return
+            playScreenLevel.getFlashSlots().areReelsFlashing();
     }
 
     @Override
     public boolean areReelsStartedFlashing() {
-        return flashSlots.areReelsStartedFlashing();
+        return
+            playScreenLevel.getFlashSlots().areReelsStartedFlashing();
     }
 
     @Override
     public boolean isFinishedMatchingSlots() {
-        return flashSlots.isFinishedMatchingSlots();
+        return
+            playScreenLevel.getFlashSlots().isFinishedMatchingSlots();
     }
 
     @Override
     public boolean areReelsDeleted() {
-        return levelDoor.getLevelType().equals(LevelCreator.MINI_SLOT_MACHINE_LEVEL_TYPE) ?
-                false : flashSlots.areReelsDeleted();
+        return
+                levelDoor.getLevelType().equals(LevelCreator.MINI_SLOT_MACHINE_LEVEL_TYPE) ?
+                false : playScreenLevel.getFlashSlots().areReelsDeleted();
     }
 
     @Override
     public void setReelsAreFlashing(boolean reelsAreFlashing) {
-//        flashSlots.setReelsAreFlashing(reelsAreFlashing);
+//        playScreenLevel.getFlashSlots.setReelsAreFlashing(reelsAreFlashing);
     }
 
     public void updateState(float delta) {
@@ -744,7 +714,7 @@ public class PlayScreen implements Screen, PlayInterface, LevelCreatorInjectionI
 
     protected void update(float delta) {
         playStateMachine.update();
-        tweenManager.update(delta);
+        game.getTweenManager().update(delta);
         renderer.setView(camera);
         updateAnimatedReels(delta);
         hud.update(delta);
@@ -814,8 +784,8 @@ public class PlayScreen implements Screen, PlayInterface, LevelCreatorInjectionI
 
     protected void handleInput() {
         if (Gdx.input.justTouched()) {
-            touchX = Gdx.input.getX();
-            touchY = Gdx.input.getY();
+            int touchX = Gdx.input.getX();
+            int touchY = Gdx.input.getY();
             Vector3 unprojTouch = new Vector3(touchX, touchY, 0);
             viewport.unproject(unprojTouch);
             switch (playState) {
@@ -879,7 +849,7 @@ public class PlayScreen implements Screen, PlayInterface, LevelCreatorInjectionI
     }
 
     protected void renderWorld() {
-        debugRenderer.render(world, lightViewport.getCamera().combined);
+        debugRenderer.render(box2dWorld, lightViewport.getCamera().combined);
     }
 
     protected void renderRayHandler() {
@@ -986,16 +956,16 @@ public class PlayScreen implements Screen, PlayInterface, LevelCreatorInjectionI
 
     @Override
     public Texture getSlotReelScrollTexture() {
-        return slotReelScrollTexture;
+        return playScreenLevel.getSlotReelScrollTexture();
     }
 
     @Override
     public TweenManager getTweenManager() {
-        return tweenManager;
+        return game.getTweenManager();
     }
 
     @Override
-    public TextureAtlas getSlothandleAtlas() {
+    public TextureAtlas getSlotHandleAtlas() {
         return game.annotationAssetManager.get(AssetsAnnotation.SLOT_HANDLE);
     }
 

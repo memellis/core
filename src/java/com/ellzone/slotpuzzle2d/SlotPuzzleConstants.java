@@ -23,8 +23,11 @@ public final class SlotPuzzleConstants {
     public final static float EARTH_GRAVITY = -9.8f;
     public final static int TILE_WIDTH = 40;
     public final static int TILE_HEIGHT = 40;
-    public static final int GAME_LEVEL_WIDTH = 12;
-    public static final int GAME_LEVEL_HEIGHT = 9;
+    public final static int GAME_LEVEL_WIDTH = 12;
+    public final static int GAME_LEVEL_HEIGHT = 9;
+
+    public final static String WIDTH_KEY = "width";
+    public final static String HEIGHT_KEY = "height";
 
     public final static String SLOT_PUZZLE = "Slot Puzzle";
     public final static String DEBUG = "DEBUG";
@@ -33,12 +36,13 @@ public final class SlotPuzzleConstants {
     public final static String LIBGDX_LOGLEVEL_PROPERTY = "libgdx.logLevel";
     public final static String LIBGDX_LOGLEVEL = "LIBGDX_LOGLEVEL";
 
-    public static final String BOMBS_LEVEL_TYPE = "BombsLevel";
-    public static final String HIDDEN_PATTERN_LEVEL_TYPE = "HiddenPattern";
-    public static final String HIDDEN_PATTERN_LAYER_NAME = "Hidden Pattern Object";
-    public static final String PLAYING_CARD_LEVEL_TYPE = "PlayingCard";
-    public static final String BONUS_LEVEL_TYPE = "BonusLevelType";
-    public static final String FALLING_REELS_LEVEL_TYPE = "FallingReels";
+    public final static String BOMBS_LEVEL_TYPE = "BombsLevel";
+    public final static String HIDDEN_PATTERN_LEVEL_TYPE = "HiddenPattern";
+    public final static String HIDDEN_PATTERN_LAYER_NAME = "Hidden Pattern Object";
+    public final static String PLAYING_CARD_LEVEL_TYPE = "PlayingCard";
+    public final static String BONUS_LEVEL_TYPE = "BonusLevelType";
+    public final static String FALLING_REELS_LEVEL_TYPE = "FallingReels";
+    public final static String REEL_OBJECT_LAYER = "Reels";
 
     private SlotPuzzleConstants() {
     }

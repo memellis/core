@@ -695,7 +695,7 @@ public class HiddenPatternFallingReelsAnimatedReelsManager extends SPPrototypeTe
     }
 
     @Override
-    public TextureAtlas getSlothandleAtlas() {
+    public TextureAtlas getSlotHandleAtlas() {
         return slotHandleAtlas;
     }
 

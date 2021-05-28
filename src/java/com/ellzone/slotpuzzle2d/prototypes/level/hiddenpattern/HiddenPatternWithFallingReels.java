@@ -752,7 +752,7 @@ public class HiddenPatternWithFallingReels extends SPPrototypeTemplate
     }
 
     @Override
-    public TextureAtlas getSlothandleAtlas() {
+    public TextureAtlas getSlotHandleAtlas() {
         return slotHandleAtlas;
     }
 }

@@ -24,15 +24,17 @@ import com.badlogic.gdx.assets.loaders.resolvers.InternalFileHandleResolver;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.TmxMapLoader;
+import com.ellzone.slotpuzzle2d.tweenengine.TweenManager;
 import com.ellzone.slotpuzzle2d.utils.AssetsAnnotation;
 import net.dermetfan.gdx.assets.AnnotationAssetManager;
 
 import java.util.Properties;
 
 public class SlotPuzzleGame extends Game {
-	public SpriteBatch batch;
+	public  SpriteBatch batch;
 	public AnnotationAssetManager annotationAssetManager;
 	private Screen worldScreen;
+	private final TweenManager tweenManager = new TweenManager();
 
 	@Override
 	public void create() {
@@ -116,4 +118,6 @@ public class SlotPuzzleGame extends Game {
     }
 
 	public Screen getScreen() { return this.screen; }
+
+	public TweenManager getTweenManager() { return this.tweenManager; }
 }

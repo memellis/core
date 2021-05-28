@@ -95,21 +95,21 @@ public class PlayScreenFallingReels extends PlayScreen {
     }
 
     private void loadLevel() {
-        createLevelCreator(level);
+        createLevelCreator(tiledMapLevel);
         reelBoxes = levelCreator.getReelBoxes();
         setupAnimatedReelsManager();
     }
 
-    private void createLevelCreator(TiledMap level) {
+    private void createLevelCreator(TiledMap tiledMaplevel) {
         levelCreator = new LevelCreatorSimple(
-                world,
+                box2dWorld,
                 levelDoor,
                 animatedReels,
                 reelTiles,
-                level,
+                tiledMaplevel,
                 game.annotationAssetManager,
                 (TextureAtlas) game.annotationAssetManager.get(AssetsAnnotation.CARDDECK),
-                tweenManager,
+                game.getTweenManager(),
                 physics,
                 new GridSize(
                         SlotPuzzleConstants.GAME_LEVEL_WIDTH,
@@ -141,7 +141,8 @@ public class PlayScreenFallingReels extends PlayScreen {
     protected void createReelIntroSequence() {
         createStartReelTimer();
         PlayScreenIntroSequence playScreenIntroSequence =
-            new PlayScreenIntroSequence(getReelTilesFromAnimatedReels(animatedReels), tweenManager);
+            new PlayScreenIntroSequence(
+                    getReelTilesFromAnimatedReels(animatedReels), game.getTweenManager());
         playScreenIntroSequence.createReelIntroSequence(introSequenceCallback);
     }
 
@@ -199,9 +200,9 @@ public class PlayScreenFallingReels extends PlayScreen {
 
     private void initialisePhysics() {
         BoxHittingBoxContactListener contactListener = new BoxHittingBoxContactListener();
-        world.setContactListener(contactListener);
+        box2dWorld.setContactListener(contactListener);
         debugRenderer = new Box2DDebugRenderer();
-        physics = new PhysicsManagerCustomBodies(camera, world, debugRenderer);
+        physics = new PhysicsManagerCustomBodies(camera, box2dWorld, debugRenderer);
         createReelSink();
     }
 
@@ -331,7 +332,7 @@ public class PlayScreenFallingReels extends PlayScreen {
             slowMotion.isSlowMotionTimerEnded(delta))
             return;
         playStateMachine.update();
-        tweenManager.update(delta);
+        game.getTweenManager().update(delta);
         levelCreator.update(delta);
         renderer.setView(camera);
         updateAnimatedReels(delta);
@@ -345,8 +346,8 @@ public class PlayScreenFallingReels extends PlayScreen {
     protected void weAreOutOfTime() {
         playState = PlayStates.BONUS_LEVEL_ENDED;
         gameOver = true;
-        mapTile.getLevel().setLevelCompleted();
-        mapTile.getLevel().setScore(hud.getScore());
+        mapTileLevel.getLevel().setLevelCompleted();
+        mapTileLevel.getLevel().setScore(hud.getScore());
         playScreenPopUps.setLevelBonusSpritePositions();
         playScreenPopUps.getLevelBonusCompletedPopUp().showLevelPopUp(null);
     }

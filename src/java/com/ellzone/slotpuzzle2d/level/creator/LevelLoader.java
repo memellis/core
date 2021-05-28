@@ -130,8 +130,8 @@ public class LevelLoader {
     }
 
     private void initialiseHiddenPlayingCards() {
-        TextureAtlas carddeckAtlas = annotationAssetManager.get(AssetsAnnotation.CARDDECK);
-        hiddenPattern = new HiddenPlayingCard(tiledMapLevel, carddeckAtlas);
+        TextureAtlas cardDeckAtlas = annotationAssetManager.get(AssetsAnnotation.CARDDECK);
+        hiddenPattern = new HiddenPlayingCard(tiledMapLevel, cardDeckAtlas);
         HiddenPlayingCard hiddenPlayingCard = (HiddenPlayingCard) hiddenPattern;
         cards = hiddenPlayingCard.getCards();
         hiddenPlayingCards = hiddenPlayingCard.getHiddenPlayingCards();

@@ -190,7 +190,6 @@ public class LevelCreator {
                 this.level,
                 this.reelTiles,
                 this.levelGridSize);
-        printMatchGrid(reelTiles, levelGridSize);
         reelsSpinning = reelBoxes.size - 1;
         hitSinkBottom = false;
         scores = new Array<Score>();

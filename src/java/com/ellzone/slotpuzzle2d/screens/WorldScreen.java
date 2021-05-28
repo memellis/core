@@ -704,7 +704,7 @@ public class WorldScreen implements Screen, LevelCreatorInjectionInterface {
 	}
 
 	@Override
-	public TextureAtlas getSlothandleAtlas() {
+	public TextureAtlas getSlotHandleAtlas() {
 		return game.annotationAssetManager.get(AssetsAnnotation.SLOT_HANDLE);
 	}
 

@@ -462,7 +462,7 @@ public class SpinningSlotsWithMatchesWinFlashesLoadedLevel
     }
 
     @Override
-    public TextureAtlas getSlothandleAtlas() {
+    public TextureAtlas getSlotHandleAtlas() {
         return slotHandleAtlas;
     }
 }
