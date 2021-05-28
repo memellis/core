@@ -18,13 +18,12 @@ package com.ellzone.slotpuzzle2d.level.creator;
 
 import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.g2d.Sprite;
+
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.maps.MapProperties;
 import com.badlogic.gdx.maps.objects.RectangleMapObject;
 import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.utils.Array;
 import com.ellzone.slotpuzzle2d.SlotPuzzleConstants;
@@ -59,17 +58,13 @@ public class PlayScreenLevel {
     private World box2dWorld;
     private RayHandler rayHandler;
     private LevelLoader levelLoader;
-    private int reelsSpinning;
     protected Array<ReelTile> reelTiles;
     private HiddenPattern hiddenPattern;
     private FlashSlots flashSlots;
-    private Integer mapWidth;
-    private Integer mapHeight;
     private Array<AnimatedReel> animatedReels;
     private Array<HoldLightButton> holdLightButtons;
     private Array<SlotHandleSprite> slotHandles;
     private ReelSprites reelSprites;
-    private Box2DDebugRenderer debugRenderer;
 
     public PlayScreenLevel(
             LevelCreatorInjectionInterface injection,
@@ -98,9 +93,8 @@ public class PlayScreenLevel {
 
     private void initialiseWorld() {
         box2dWorld = new World(new Vector2(0, -9.8f), true);
-        debugRenderer = new Box2DDebugRenderer();
         rayHandler = new RayHandler(box2dWorld);
-        rayHandler.useDiffuseLight(true);
+        RayHandler.useDiffuseLight(true);
         rayHandler.setAmbientLight(0.25f, 0.25f, 0.25f, 0.25f);
     }
 
@@ -148,7 +142,6 @@ public class PlayScreenLevel {
     }
 
     private void setUpLevelDetails() {
-        reelsSpinning = reelTiles.size;
         hiddenPattern = levelLoader.getHiddenPattern();
         flashSlots = new FlashSlots(
                 game.getTweenManager(),
@@ -188,8 +181,6 @@ public class PlayScreenLevel {
 
     private void getMapProperties(TiledMap level) {
         MapProperties mapProperties = level.getProperties();
-        mapWidth = mapProperties.get(SlotPuzzleConstants.WIDTH_KEY, Integer.class);
-        mapHeight = mapProperties.get(SlotPuzzleConstants.HEIGHT_KEY, Integer.class);
         addReel = mapProperties.get(
                 "AddReel", String.class) == null ? "" :
                      mapProperties.get("AddReel", String.class) ;
@@ -203,7 +194,6 @@ public class PlayScreenLevel {
 
     private void addBombSprite() {
         TextureAtlas reelAtlas = game.annotationAssetManager.get(AssetsAnnotation.REELS_EXTENDED);
-        Sprite sprite = reelAtlas.createSprite(AssetsAnnotation.BOMB40x40);
         reelSprites.addSprite(reelAtlas.createSprite(AssetsAnnotation.BOMB40x40));
     }
 
