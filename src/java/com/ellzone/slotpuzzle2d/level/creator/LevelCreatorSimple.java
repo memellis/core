@@ -133,9 +133,6 @@ public class LevelCreatorSimple {
         this.animatedReels = playScreenLevel.getAnimatedReels();
         this.tiledMapLevel = playScreenLevel.getTiledMapLevel();
         this.annotationAssetManager = playScreenLevel.getAnnotationAssetManager();
-//        this.physics = simpleLevel.getPhysics();
-//        this.levelGridSize = simpleLevel.getLevelGridSize();
-//        this.playState = simpleLevel.getPlayState();
         initialise(
                 playScreenLevel,
                 levelDoor,
@@ -578,7 +575,10 @@ public class LevelCreatorSimple {
     public void setAnimatedReels(Array<AnimatedReel> animatedReels) { this.animatedReels = animatedReels; }
 
     private void reelScoreAnimation(ReelTile source) {
-        Score score = new Score(source.getX(), source.getY(), (source.getEndReel() + 1) * source.getScore());
+        Score score = new Score(
+                source.getX(),
+                source.getY(),
+                (source.getEndReel() + 1) * source.getScore());
         scores.add(score);
         Timeline.createSequence()
                 .beginParallel()
@@ -645,8 +645,7 @@ public class LevelCreatorSimple {
     }
 
     private void deleteAReel(ReelTile reel) {
-        if (hud != null)
-            hud.addScore((reel.getEndReel() + 1) * reel.getScore());
+        playScreenLevel.getHud().addScore((reel.getEndReel() + 1) * reel.getScore());
         int reelTileIndex = reelTiles.indexOf(reel, true);
         reel.deleteReelTile();
         reelBoxesToDelete.add(reelTileIndex);
@@ -674,8 +673,8 @@ public class LevelCreatorSimple {
 
     private void testForBonusLevelWon(GridSize levelGridSize) {
         PuzzleGridType puzzleGrid = new PuzzleGridType();
-        TupleValueIndex[][] matchGrid = puzzleGridTypeReelTile.populateMatchGrid(
-                reelTiles, levelGridSize);
+        TupleValueIndex[][] matchGrid =
+                puzzleGridTypeReelTile.populateMatchGrid(reelTiles, levelGridSize);
         puzzleGrid.matchGridSlots(matchGrid);
         if (hiddenPatternRevealed(matchGrid))
             iWonTheLevel();
