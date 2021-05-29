@@ -223,22 +223,12 @@ public class HiddenPatternFallingReelsAnimatedReelsManager extends SPPrototypeTe
         playStateMachine.getStateMachine().changeState(PlayState.INITIALISING);
     }
 
-    private void createLevelCreator(TiledMap level) {
+    private void createLevelCreator(TiledMap tiledMapLevel) {
         levelCreator = new LevelCreatorSimple(
-                world,
+                null,
                 levelDoor,
-                animatedReels,
-                reelTiles,
-                level,
-                annotationAssetManager,
-                (TextureAtlas) annotationAssetManager.get(AssetsAnnotation.CARDDECK),
-                tweenManager,
                 physics,
-                new GridSize(
-                        SlotPuzzleConstants.GAME_LEVEL_WIDTH,
-                        SlotPuzzleConstants.GAME_LEVEL_HEIGHT),
-                playStateMachine,
-                hud);
+                playStateMachine);
     }
 
     private TiledMap createLevel() {
@@ -251,7 +241,9 @@ public class HiddenPatternFallingReelsAnimatedReelsManager extends SPPrototypeTe
         return level;
     }
 
-    private void delegateCreateLevel(LevelObjectCreatorEntityHolder levelObjectCreator, Array<RectangleMapObject> extractedLevelRectangleMapObjects) {
+    private void delegateCreateLevel(
+            LevelObjectCreatorEntityHolder levelObjectCreator,
+            Array<RectangleMapObject> extractedLevelRectangleMapObjects) {
         try {
             levelObjectCreator.createLevel(extractedLevelRectangleMapObjects);
             animatedReels = levelObjectCreator.getAnimatedReels();

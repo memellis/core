@@ -34,13 +34,16 @@ import com.ellzone.slotpuzzle2d.level.hidden.HiddenPattern;
 import com.ellzone.slotpuzzle2d.level.map.MapLevelNameComparator;
 import com.ellzone.slotpuzzle2d.level.reel.ReelType;
 import com.ellzone.slotpuzzle2d.puzzlegrid.GridSize;
+import com.ellzone.slotpuzzle2d.scene.Hud;
 import com.ellzone.slotpuzzle2d.scene.MapTile;
 import com.ellzone.slotpuzzle2d.sprites.AnimatedReel;
 import com.ellzone.slotpuzzle2d.sprites.HoldLightButton;
 import com.ellzone.slotpuzzle2d.sprites.ReelSprites;
 import com.ellzone.slotpuzzle2d.sprites.ReelTile;
 import com.ellzone.slotpuzzle2d.sprites.SlotHandleSprite;
+import com.ellzone.slotpuzzle2d.tweenengine.TweenManager;
 import com.ellzone.slotpuzzle2d.utils.AssetsAnnotation;
+import com.ellzone.slotpuzzle2d.utils.FrameRate;
 import com.ellzone.slotpuzzle2d.utils.PixmapProcessors;
 
 import net.dermetfan.gdx.assets.AnnotationAssetManager;
@@ -49,11 +52,10 @@ import box2dLight.RayHandler;
 
 public class PlayScreenLevel {
 
-    private final LevelCreatorInjectionInterface injection;
+    private final LevelCreatorInjectionInterface levelCreatorInjection;
     private final SlotPuzzleGame game;
     private final LevelDoor levelDoor;
     private TiledMap tiledMapLevel;
-    private String addReel;
     private Texture slotReelScrollTexture;
     private World box2dWorld;
     private RayHandler rayHandler;
@@ -65,12 +67,15 @@ public class PlayScreenLevel {
     private Array<HoldLightButton> holdLightButtons;
     private Array<SlotHandleSprite> slotHandles;
     private ReelSprites reelSprites;
+    private GridSize levelGridSize;
+    private Hud hud;
+    private FrameRate frameRate;
 
     public PlayScreenLevel(
-            LevelCreatorInjectionInterface injection,
+            LevelCreatorInjectionInterface levelCreatorInjection,
             SlotPuzzleGame game,
             LevelDoor levelDoor) {
-        this.injection = injection;
+        this.levelCreatorInjection = levelCreatorInjection;
         this.game = game;
         this.levelDoor = levelDoor;
         initialise();
@@ -79,6 +84,7 @@ public class PlayScreenLevel {
     private void initialise() {
         createSprites(game.annotationAssetManager);
         getLevelAssets(game.annotationAssetManager);
+        initialiseHud();
         initialiseWorld();
     }
 
@@ -90,6 +96,13 @@ public class PlayScreenLevel {
         tiledMapLevel = annotationAssetManager.get(
                 "levels/level " + (this.levelDoor.getId() + 1) + " - 40x40.tmx");
     }
+
+    private void initialiseHud() {
+        hud = new Hud(game.batch);
+        hud.setLevelName(levelDoor.getLevelName());
+        frameRate = new FrameRate();
+    }
+
 
     private void initialiseWorld() {
         box2dWorld = new World(new Vector2(0, -9.8f), true);
@@ -112,6 +125,18 @@ public class PlayScreenLevel {
     public Texture getSlotReelScrollTexture() {
         return slotReelScrollTexture;
     }
+
+    public World getBox2dWorld() { return box2dWorld; }
+
+    public AnnotationAssetManager getAnnotationAssetManager() {
+        return game.annotationAssetManager;
+    }
+
+    public Hud getHud() { return hud; }
+
+    public FrameRate getFrameRate() { return frameRate; }
+
+    public GridSize getLevelGridSize() { return levelGridSize; }
 
     public Array<AnimatedReel> getAnimatedReels() {
         return animatedReels;
@@ -141,14 +166,19 @@ public class PlayScreenLevel {
         return levelLoader;
     }
 
+    public TweenManager getTweenManager() {
+        return levelCreatorInjection.getTweenManager();
+    }
+
+    public TiledMap getTiledMapLevel() {
+        return tiledMapLevel;
+    }
+
     private void setUpLevelDetails() {
         hiddenPattern = levelLoader.getHiddenPattern();
         flashSlots = new FlashSlots(
                 game.getTweenManager(),
-                new GridSize(
-                        SlotPuzzleConstants.GAME_LEVEL_WIDTH,
-                        SlotPuzzleConstants.GAME_LEVEL_HEIGHT
-                ),
+                levelGridSize,
                 reelTiles);
     }
 
@@ -157,33 +187,54 @@ public class PlayScreenLevel {
                                   LevelCallback stoppedFlashingCallback) {
         levelLoader = createLevelLoader(
                 mapTileLevel, stoppedSpinningCallback, stoppedFlashingCallback);
-        levelLoader.createAnimatedReelsInLevel(
-                new GridSize(
-                        SlotPuzzleConstants.GAME_LEVEL_WIDTH,
-                        SlotPuzzleConstants.GAME_LEVEL_HEIGHT)
-        );
+        levelLoader.createAnimatedReelsInLevel(levelGridSize);
     }
 
     private void setUpMapProperties() {
-        getMapProperties(tiledMapLevel);
+        MapProperties mapProperties = getMapProperties(tiledMapLevel);
+        getLevelGrid(mapProperties);
+        String addReel = getStringProperty(mapProperties, SlotPuzzleConstants.ADD_REEL_KEY);
+
         if (addReel.equals(ReelType.Bomb.name))
             addBombSprite();
     }
 
     private void createLevelObjects() {
         LevelObjectCreatorEntityHolder levelObjectCreator =
-                new LevelObjectCreatorEntityHolder(injection, box2dWorld, rayHandler);
+                new LevelObjectCreatorEntityHolder(levelCreatorInjection, box2dWorld, rayHandler);
         Array<RectangleMapObject> extractedLevelRectangleMapObjects =
                 extractLevelAssets(tiledMapLevel);
         levelObjectCreator.createLevel(extractedLevelRectangleMapObjects);
         getLevelEntities(levelObjectCreator);
     }
 
-    private void getMapProperties(TiledMap level) {
-        MapProperties mapProperties = level.getProperties();
-        addReel = mapProperties.get(
-                "AddReel", String.class) == null ? "" :
-                     mapProperties.get("AddReel", String.class) ;
+    private MapProperties getMapProperties(TiledMap tiledMapLevel) {
+        return tiledMapLevel.getProperties();
+     }
+
+    private void getLevelGrid(MapProperties mapProperties) {
+        int gridWidth = getIntProperty(mapProperties, SlotPuzzleConstants.GRID_WIDTH_KEY);
+        int gridHeight = getIntProperty(mapProperties, SlotPuzzleConstants.GRID_HEIGHT_KEY);
+        if (gridWidth == 0 | gridHeight == 0)
+            levelGridSize = new GridSize(
+                    SlotPuzzleConstants.GAME_LEVEL_WIDTH,
+                    SlotPuzzleConstants.GAME_LEVEL_HEIGHT);
+        else
+            levelGridSize = new GridSize(
+                    gridWidth,
+                    gridHeight
+            );
+    }
+
+    private String getStringProperty(MapProperties mapProperties, String key) {
+        return mapProperties.get(key, String.class) == null ?
+                "" : mapProperties.get(key, String.class);
+    }
+
+    private int getIntProperty(MapProperties mapProperties, String key) {
+        return mapProperties.get(key, String.class) == null ?
+                0 :
+                Integer.parseInt(mapProperties.get(key, String.class));
     }
 
     private Texture createSlotReelScrollTexture() {
@@ -206,7 +257,8 @@ public class PlayScreenLevel {
     }
 
     private Array<RectangleMapObject> extractLevelAssets(TiledMap level) {
-        Array<RectangleMapObject> levelRectangleMapObjects = getRectangleMapObjectsFromLevel(level);
+        Array<RectangleMapObject> levelRectangleMapObjects =
+                getRectangleMapObjectsFromLevel(level);
         MapLevelNameComparator mapLevelNameComparator = new MapLevelNameComparator();
         levelRectangleMapObjects.sort(mapLevelNameComparator);
         return levelRectangleMapObjects;
@@ -222,7 +274,11 @@ public class PlayScreenLevel {
         LevelCallback stoppedSpinningCallback,
         LevelCallback stoppedFlashingCallback) {
         LevelLoader levelLoader =
-                new LevelLoader(game.annotationAssetManager, levelDoor, mapTileLevel, animatedReels);
+                new LevelLoader(
+                        game.annotationAssetManager,
+                        levelDoor,
+                        mapTileLevel,
+                        animatedReels);
         levelLoader.setStoppedSpinningCallback(stoppedSpinningCallback);
         levelLoader.setStoppedFlashingCallback(stoppedFlashingCallback);
         return levelLoader;

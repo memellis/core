@@ -184,6 +184,7 @@ public class HiddenPatternWithFallingReels extends SPPrototypeTemplate
         initialiseReels();
 
         levelCreator = new LevelCreatorSimple(
+                null,
                 new GameLevel(
                         world,
                         physics,

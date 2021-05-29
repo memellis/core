@@ -28,6 +28,9 @@ public final class SlotPuzzleConstants {
 
     public final static String WIDTH_KEY = "width";
     public final static String HEIGHT_KEY = "height";
+    public final static String GRID_WIDTH_KEY = "GridWidth";
+    public final static String GRID_HEIGHT_KEY = "GridHeight";
+    public final static String ADD_REEL_KEY = "AddReel";
 
     public final static String SLOT_PUZZLE = "Slot Puzzle";
     public final static String DEBUG = "DEBUG";
@@ -41,6 +44,7 @@ public final class SlotPuzzleConstants {
     public final static String HIDDEN_PATTERN_LAYER_NAME = "Hidden Pattern Object";
     public final static String PLAYING_CARD_LEVEL_TYPE = "PlayingCard";
     public final static String BONUS_LEVEL_TYPE = "BonusLevelType";
+    public static final String MINI_SLOT_MACHINE_LEVEL_TYPE = "MiniSlotMachine";
     public final static String FALLING_REELS_LEVEL_TYPE = "FallingReels";
     public final static String REEL_OBJECT_LAYER = "Reels";
 

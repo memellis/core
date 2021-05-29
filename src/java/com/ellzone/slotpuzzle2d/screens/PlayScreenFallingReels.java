@@ -19,8 +19,6 @@ package com.ellzone.slotpuzzle2d.screens;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.ai.msg.MessageManager;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.graphics.g2d.TextureAtlas;
-import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
@@ -47,7 +45,6 @@ import com.ellzone.slotpuzzle2d.sprites.AnimatedReel;
 import com.ellzone.slotpuzzle2d.sprites.ReelTile;
 import com.ellzone.slotpuzzle2d.tweenengine.BaseTween;
 import com.ellzone.slotpuzzle2d.tweenengine.TweenCallback;
-import com.ellzone.slotpuzzle2d.utils.AssetsAnnotation;
 import com.ellzone.slotpuzzle2d.utils.Random;
 import com.ellzone.slotpuzzle2d.utils.SlowMotion;
 
@@ -66,7 +63,6 @@ public class PlayScreenFallingReels extends PlayScreen {
     private Box2DDebugRenderer debugRenderer;
     private int currentReel = 0;
     private LevelCreatorSimple levelCreator;
-    private boolean introSequenceFinished = false;
     private Array<Body> reelBoxes;
     private AnimatedReelsManager animatedReelsManager;
     private int numberOfReelsToFall = 0;
@@ -88,34 +84,24 @@ public class PlayScreenFallingReels extends PlayScreen {
         initialiseDependencies();
         setupPlayScreen();
         initialisePhysics();
-        loadLevel();
+        configureLevelCreator();
         messageManager = setUpMessageManager();
         activateReelBoxes();
         createReelIntroSequence();
     }
 
-    private void loadLevel() {
-        createLevelCreator(tiledMapLevel);
+    protected void configureLevelCreator() {
+        createLevelCreator();
         reelBoxes = levelCreator.getReelBoxes();
         setupAnimatedReelsManager();
     }
 
-    private void createLevelCreator(TiledMap tiledMaplevel) {
+    private void createLevelCreator() {
         levelCreator = new LevelCreatorSimple(
-                box2dWorld,
+                playScreenLevel,
                 levelDoor,
-                animatedReels,
-                reelTiles,
-                tiledMaplevel,
-                game.annotationAssetManager,
-                (TextureAtlas) game.annotationAssetManager.get(AssetsAnnotation.CARDDECK),
-                game.getTweenManager(),
                 physics,
-                new GridSize(
-                        SlotPuzzleConstants.GAME_LEVEL_WIDTH,
-                        SlotPuzzleConstants.GAME_LEVEL_HEIGHT),
-                playStateMachine,
-                hud);
+                playStateMachine);
     }
 
     private void setupAnimatedReelsManager() {
@@ -179,11 +165,10 @@ public class PlayScreenFallingReels extends PlayScreen {
                 playState = PlayStates.INTRO_POPUP;
                 playScreenPopUps.setPopUpSpritePositions();
                 playScreenPopUps.getLevelPopUp().showLevelPopUp(null);
-                hud.resetWorldTime(LEVEL_TIME_LENGTH);
-                hud.startWorldTimer();
+                playScreenLevel.getHud().resetWorldTime(LEVEL_TIME_LENGTH);
+                playScreenLevel.getHud().startWorldTimer();
                 levelCreator.createStartRandomReelBoxTimer();
                 levelCreator.allReelsHaveStoppedSpinning();
-                introSequenceFinished = true;
                 break;
         }
     }
@@ -253,8 +238,8 @@ public class PlayScreenFallingReels extends PlayScreen {
         switch (type) {
             case TweenCallback.END:
                 playStateMachine.getStateMachine().changeState(PlayState.PLAY);
-                hud.resetWorldTime(LEVEL_TIME_LENGTH);
-                hud.startWorldTimer();
+                playScreenLevel.getHud().resetWorldTime(LEVEL_TIME_LENGTH);
+                playScreenLevel.getHud().startWorldTimer();
                 if (levelDoor.getLevelType().equals(FALLING_REELS_LEVEL_TYPE))
                     System.out.println("Falling Reels Level");
         }
@@ -309,7 +294,7 @@ public class PlayScreenFallingReels extends PlayScreen {
         reel.setEndReel(reel.getCurrentReel());
         displaySpinHelp = true;
         displaySpinHelpSprite = reel.getCurrentReel();
-        hud.addScore(-1);
+        playScreenLevel.getHud().addScore(-1);
         pullLeverSound.play();
         reelSpinningSound.play();
     }
@@ -320,7 +305,7 @@ public class PlayScreenFallingReels extends PlayScreen {
         levelCreator.setNumberOfReelsSpinning(levelCreator.getNumberOfReelsSpinning() + 1);
         reel.setSy(0);
         animatedReel.reinitialise();
-        hud.addScore(-1);
+        playScreenLevel.getHud().addScore(-1);
         if (pullLeverSound != null)
             pullLeverSound.play();
     }
@@ -336,10 +321,10 @@ public class PlayScreenFallingReels extends PlayScreen {
         levelCreator.update(delta);
         renderer.setView(camera);
         updateAnimatedReels(delta);
-        hud.update(delta);
+        playScreenLevel.getHud().update(delta);
         if (isOutOfTime())
             weAreOutOfTime();
-        framerate.update();
+        playScreenLevel.getFrameRate().update();
         checkForGameOverCondition();
     }
 
@@ -347,7 +332,7 @@ public class PlayScreenFallingReels extends PlayScreen {
         playState = PlayStates.BONUS_LEVEL_ENDED;
         gameOver = true;
         mapTileLevel.getLevel().setLevelCompleted();
-        mapTileLevel.getLevel().setScore(hud.getScore());
+        mapTileLevel.getLevel().setScore(playScreenLevel.getHud().getScore());
         playScreenPopUps.setLevelBonusSpritePositions();
         playScreenPopUps.getLevelBonusCompletedPopUp().showLevelPopUp(null);
     }
@@ -360,7 +345,7 @@ public class PlayScreenFallingReels extends PlayScreen {
         drawCurrentPlayState(delta);
         renderHud();
         stage.draw();
-        framerate.render();
+        playScreenLevel.getFrameRate().render();
     }
 
     protected void renderMainGameElements() {
