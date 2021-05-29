@@ -62,11 +62,41 @@ public class AnimatedReel implements AnimatedReelInterface {
 	private float reelSlowingTargetTime;
 	private Vector accelerate;
 
-    public AnimatedReel(Texture texture, float x, float y, float tileWidth, float tileHeight, float reelDisplayWidth, float reelDisplayHeight, int endReel, TweenManager tweenManager) {
-        this(texture, x, y, tileWidth, tileHeight, reelDisplayWidth, reelDisplayHeight, endReel, null, null, tweenManager);
+    public AnimatedReel(
+    		Texture texture,
+			float x,
+			float y,
+			float tileWidth,
+			float tileHeight,
+			float reelDisplayWidth,
+			float reelDisplayHeight,
+			int endReel,
+			TweenManager tweenManager) {
+        this(
+        		texture,
+				x,
+				y,
+				tileWidth,
+				tileHeight,
+				reelDisplayWidth,
+				reelDisplayHeight,
+				endReel,
+				null, null,
+				tweenManager);
     }
 
-	public AnimatedReel(Texture texture, float x, float y, float tileWidth, float tileHeight, float reelDisplayWidth, float reelDisplayHeight, int endReel, Sound spinningSound, Sound stoppingSound, TweenManager tweenManager) {
+	public AnimatedReel(
+			Texture texture,
+			float x,
+			float y,
+			float tileWidth,
+			float tileHeight,
+			float reelDisplayWidth,
+			float reelDisplayHeight,
+			int endReel,
+			Sound spinningSound,
+			Sound stoppingSound,
+			TweenManager tweenManager) {
 		this.texture = texture;
 		this.x = x;
 		this.y = y;
@@ -103,7 +133,7 @@ public class AnimatedReel implements AnimatedReelInterface {
 		accelerateY = 2.0f;
 		acceleratorFriction = 0.97f;
 		velocityFriction = 0.97f;
-		reelSlowingTargetTime = 3.0f;
+		reelSlowingTargetTime = 1.0f;
 	}
 
 	@Override
@@ -134,16 +164,17 @@ public class AnimatedReel implements AnimatedReelInterface {
 	
 	private void delegateDSCallback(int type, SPPhysicsEvent source) {
 		if (type == SPPhysicsCallback.PARTICLE_UPDATE) {
-			reel.stopSpinningSound();
-			if (this.stoppingSound != null) {
-//				this.stoppingSound.play();
-			}
+//			reel.stopSpinningSound();
+//			if (this.stoppingSound != null) {
+////				this.stoppingSound.play();
+//			}
 			DampenedSineParticle ds = (DampenedSineParticle) source.getSource();
 			ReelTile reel = (ReelTile) ds.getUserData();
 			Timeline endReelSeq = Timeline.createSequence();
 			float endSy = (reel.getEndReel() * this.tileWidth) % this.reelScrollHeight;
 			reel.setSy(reel.getSy() % (this.reelScrollHeight));
-	        endReelSeq = endReelSeq.push(SlotPuzzleTween.to(reel, ReelAccessor.SCROLL_XY, reelSlowingTargetTime)
+	        endReelSeq = endReelSeq.push(
+	        		SlotPuzzleTween.to(reel, ReelAccessor.SCROLL_XY, reelSlowingTargetTime)
 	        		               .target(0f, endSy)
 	        		               .ease(Elastic.OUT)
 	        		               .setCallbackTriggers(TweenCallback.STEP + TweenCallback.END)

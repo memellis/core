@@ -409,11 +409,8 @@ public class WorldScreen implements Screen, LevelCreatorInjectionInterface {
 
     private void createPopUps() {
 		mapTiles = new Array<MapTile>();
-		mapTiles.add(new MapTile(
-				20,
-				20,
-				200,
-				200,
+		mapTiles.add(
+				new MapTile(20,	20,	200,	200,
 				SlotPuzzleConstants.VIRTUAL_WIDTH,
 				SlotPuzzleConstants.VIRTUAL_HEIGHT,
 				new MapLevel1(),
@@ -422,13 +419,76 @@ public class WorldScreen implements Screen, LevelCreatorInjectionInterface {
 				font,
 				tweenManager,
 				new Sprite(levelEntrances.get(0).getLevelEntrance())));
-		mapTiles.add(new MapTile(20, 20, 200, 200, SlotPuzzleConstants.VIRTUAL_WIDTH, SlotPuzzleConstants.VIRTUAL_HEIGHT, new MapLevel2(), tilesAtlas, this.camera, font, tweenManager, new Sprite(levelEntrances.get(1).getLevelEntrance())));
-		mapTiles.add(new MapTile(20, 20, 200, 200, SlotPuzzleConstants.VIRTUAL_WIDTH, SlotPuzzleConstants.VIRTUAL_HEIGHT, new MapLevel3(), tilesAtlas, this.camera, font, tweenManager, new Sprite(levelEntrances.get(2).getLevelEntrance())));
-		mapTiles.add(new MapTile(20, 20, 200, 200, SlotPuzzleConstants.VIRTUAL_WIDTH, SlotPuzzleConstants.VIRTUAL_HEIGHT, new MapLevel4(), tilesAtlas, this.camera, font, tweenManager, new Sprite(levelEntrances.get(3).getLevelEntrance())));
-		mapTiles.add(new MapTile(20, 20, 200, 200, SlotPuzzleConstants.VIRTUAL_WIDTH, SlotPuzzleConstants.VIRTUAL_HEIGHT, new MapLevel5(), tilesAtlas, this.camera, font, tweenManager, new Sprite(levelEntrances.get(4).getLevelEntrance())));
-		mapTiles.add(new MapTile(20, 20, 200, 200, SlotPuzzleConstants.VIRTUAL_WIDTH, SlotPuzzleConstants.VIRTUAL_HEIGHT, new MapLevel6(), tilesAtlas, this.camera, font, tweenManager, new Sprite(levelEntrances.get(5).getLevelEntrance())));
-		mapTiles.add(new MapTile(20, 20, 200, 200, SlotPuzzleConstants.VIRTUAL_WIDTH, SlotPuzzleConstants.VIRTUAL_HEIGHT, new MapLevel7(), tilesAtlas, this.camera, font, tweenManager, new Sprite(levelEntrances.get(6).getLevelEntrance())));
-		mapTiles.add(new MapTile(20, 20, 200, 200, SlotPuzzleConstants.VIRTUAL_WIDTH, SlotPuzzleConstants.VIRTUAL_HEIGHT, new MapLevel8(), tilesAtlas, this.camera, font, tweenManager, new Sprite(levelEntrances.get(7).getLevelEntrance())));
+		mapTiles.add(
+				new MapTile(20, 20, 200, 200,
+				SlotPuzzleConstants.VIRTUAL_WIDTH,
+				SlotPuzzleConstants.VIRTUAL_HEIGHT,
+				new MapLevel2(),
+				tilesAtlas,
+				camera,
+				font,
+				tweenManager,
+				new Sprite(levelEntrances.get(1).getLevelEntrance())));
+		mapTiles.add(
+				new MapTile(20, 20, 200, 200,
+				SlotPuzzleConstants.VIRTUAL_WIDTH,
+				SlotPuzzleConstants.VIRTUAL_HEIGHT,
+				new MapLevel3(),
+				tilesAtlas,
+				camera,
+				font,
+				tweenManager,
+				new Sprite(levelEntrances.get(2).getLevelEntrance())));
+		mapTiles.add(
+				new MapTile(20, 20, 200, 200,
+				SlotPuzzleConstants.VIRTUAL_WIDTH,
+				SlotPuzzleConstants.VIRTUAL_HEIGHT,
+				new MapLevel4(),
+				tilesAtlas,
+				camera,
+				font,
+				tweenManager,
+				new Sprite(levelEntrances.get(3).getLevelEntrance())));
+		mapTiles.add(
+				new MapTile(20, 20, 200, 200,
+				SlotPuzzleConstants.VIRTUAL_WIDTH,
+				SlotPuzzleConstants.VIRTUAL_HEIGHT,
+				new MapLevel5(),
+				tilesAtlas,
+				camera,
+				font,
+				tweenManager,
+				new Sprite(levelEntrances.get(4).getLevelEntrance())));
+		mapTiles.add(
+				new MapTile(20, 20, 200, 200,
+				SlotPuzzleConstants.VIRTUAL_WIDTH,
+				SlotPuzzleConstants.VIRTUAL_HEIGHT,
+				new MapLevel6(),
+				tilesAtlas,
+				camera,
+				font,
+				tweenManager,
+				new Sprite(levelEntrances.get(5).getLevelEntrance())));
+		mapTiles.add(
+				new MapTile(20, 20, 200, 200,
+				SlotPuzzleConstants.VIRTUAL_WIDTH,
+				SlotPuzzleConstants.VIRTUAL_HEIGHT,
+				new MapLevel7(),
+				tilesAtlas,
+				camera,
+				font,
+				tweenManager,
+				new Sprite(levelEntrances.get(6).getLevelEntrance())));
+		mapTiles.add(
+				new MapTile(20, 20, 200, 200,
+				SlotPuzzleConstants.VIRTUAL_WIDTH,
+				SlotPuzzleConstants.VIRTUAL_HEIGHT,
+				new MapLevel8(),
+				tilesAtlas,
+				camera,
+				font,
+				tweenManager,
+				new Sprite(levelEntrances.get(7).getLevelEntrance())));
 	}
 
 	private void createHud() {

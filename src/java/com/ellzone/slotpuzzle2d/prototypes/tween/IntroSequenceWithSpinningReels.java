@@ -16,8 +16,6 @@
 
 package com.ellzone.slotpuzzle2d.prototypes.tween;
 
-import com.badlogic.gdx.graphics.Pixmap;
-import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Array;
@@ -40,8 +38,6 @@ import aurelienribon.tweenengine.equations.Quad;
 import aurelienribon.tweenengine.equations.Quart;
 
 public class IntroSequenceWithSpinningReels extends SPPrototypeTemplate {
-    private Pixmap slotReelScrollPixmap;
-    private Texture slotReelScrollTexture;
     private Random random;
     AnimatedReelHelper animatedReelHelper;
     private Array<ReelTile> reels;

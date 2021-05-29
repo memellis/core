@@ -28,8 +28,6 @@ import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
-import com.badlogic.gdx.maps.MapProperties;
-import com.badlogic.gdx.maps.objects.RectangleMapObject;
 import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
 import com.badlogic.gdx.math.Vector2;
@@ -51,7 +49,6 @@ import com.ellzone.slotpuzzle2d.finitestatemachine.PlayInterface;
 import com.ellzone.slotpuzzle2d.finitestatemachine.PlayState;
 import com.ellzone.slotpuzzle2d.finitestatemachine.PlayStateMachine;
 import com.ellzone.slotpuzzle2d.finitestatemachine.PlayStates;
-import com.ellzone.slotpuzzle2d.level.FlashSlots;
 import com.ellzone.slotpuzzle2d.level.LevelDoor;
 import com.ellzone.slotpuzzle2d.level.card.Card;
 import com.ellzone.slotpuzzle2d.level.creator.LevelCallback;
@@ -70,10 +67,8 @@ import com.ellzone.slotpuzzle2d.puzzlegrid.PuzzleGridTypeReelTile;
 import com.ellzone.slotpuzzle2d.puzzlegrid.TupleValueIndex;
 import com.ellzone.slotpuzzle2d.scene.MapTile;
 import com.ellzone.slotpuzzle2d.sprites.AnimatedReel;
-import com.ellzone.slotpuzzle2d.sprites.HoldLightButton;
 import com.ellzone.slotpuzzle2d.sprites.ReelSprites;
 import com.ellzone.slotpuzzle2d.sprites.ReelTile;
-import com.ellzone.slotpuzzle2d.sprites.SlotHandleSprite;
 import com.ellzone.slotpuzzle2d.sprites.score.Score;
 import com.ellzone.slotpuzzle2d.tweenengine.BaseTween;
 import com.ellzone.slotpuzzle2d.tweenengine.SlotPuzzleTween;
@@ -119,7 +114,6 @@ public class PlayScreen implements Screen, PlayInterface, LevelCreatorInjectionI
     protected PlayStates playState;
     protected PlayStateMachine playStateMachine;
     protected PlayScreenPopUps playScreenPopUps;
-    protected FlashSlots flashSlots;
     protected boolean displaySpinHelp;
     protected int displaySpinHelpSprite;
     protected boolean gameOver = false;
@@ -143,8 +137,6 @@ public class PlayScreen implements Screen, PlayInterface, LevelCreatorInjectionI
     protected World box2dWorld;
     private Box2DDebugRenderer debugRenderer;
     private RayHandler rayHandler;
-    private Array<HoldLightButton> holdLightButtons;
-    private Array<SlotHandleSprite> slotHandles;
     protected ReelSprites reelSprites;
     private final int[][] reelGrid = new int[3][3];
     protected ShapeRenderer shapeRenderer;
@@ -186,7 +178,8 @@ public class PlayScreen implements Screen, PlayInterface, LevelCreatorInjectionI
 
     protected MessageManager setUpMessageManager() {
         MessageManager messageManager = MessageManager.getInstance();
-        messageManager.addListeners(audioManager,
+        messageManager.addListeners(
+                audioManager,
                 PlayAudio.index,
                 StopAudio.index,
                 PauseAudio.index);
@@ -234,8 +227,6 @@ public class PlayScreen implements Screen, PlayInterface, LevelCreatorInjectionI
     protected void getLevelEntities() {
         animatedReels = playScreenLevel.getAnimatedReels();
         reelTiles = playScreenLevel.getReelTiles();
-        holdLightButtons = playScreenLevel.getHoldLightButtons();
-        slotHandles = playScreenLevel.getSlotHandles();
         hiddenPattern = playScreenLevel.getHiddenPattern();
         levelLoader = playScreenLevel.getLevelLoader();
     }
