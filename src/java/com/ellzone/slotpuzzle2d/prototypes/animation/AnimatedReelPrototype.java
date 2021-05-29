@@ -107,7 +107,7 @@ public class AnimatedReelPrototype extends SPPrototypeTemplate  {
     }
 
     private void processReelHasStoppedSpinning(ReelTile reelTile) {
-        System.out.println("stopReel=" + currentReel + "@ " + TimeStamp.getTimeStamp());
+        System.out.println("stopReel=" + reelTile.getIndex() + "@ " + TimeStamp.getTimeStamp());
         playSound(AssetsAnnotation.SOUND_REEL_STOPPED);
         restartSpinning(reelTile);
     }
@@ -131,17 +131,14 @@ public class AnimatedReelPrototype extends SPPrototypeTemplate  {
 
     @Override
     protected void initialiseScreenOverride() {
-
     }
 
     @Override
     protected void loadAssetsOverride() {
-
     }
 
     @Override
     protected void disposeOverride() {
-
     }
 
     @Override
