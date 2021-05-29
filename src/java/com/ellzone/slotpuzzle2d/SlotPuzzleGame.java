@@ -30,8 +30,8 @@ import net.dermetfan.gdx.assets.AnnotationAssetManager;
 
 import java.util.Properties;
 
-public class SlotPuzzleGame extends Game {
-	public  SpriteBatch batch;
+public class SlotPuzzleGame extends Game implements SlotPuzzleGameInterface {
+	public SpriteBatch batch;
 	public AnnotationAssetManager annotationAssetManager;
 	private Screen worldScreen;
 	private final TweenManager tweenManager = new TweenManager();
@@ -108,16 +108,26 @@ public class SlotPuzzleGame extends Game {
 		this.worldScreen = worldScreen;
 	}
 	
+	@Override
 	public Screen getWorldScreen() {
-		return this.worldScreen;
+		return worldScreen;
 	}
 
+	@Override
 	public void setScreen(Screen screen) {
         this.screen = screen;
         super.setScreen(screen);
     }
 
-	public Screen getScreen() { return this.screen; }
+	@Override
+	public Screen getScreen() { return screen; }
 
-	public TweenManager getTweenManager() { return this.tweenManager; }
+	@Override
+	public SpriteBatch getBatch() { return batch; }
+
+	@Override
+	public AnnotationAssetManager getAnnotationAssetManager() { return annotationAssetManager; }
+
+	@Override
+	public TweenManager getTweenManager() { return tweenManager; }
 }

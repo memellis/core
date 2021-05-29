@@ -127,19 +127,19 @@ public class LevelCreatorSimple {
     private BombExplosion bombExplosion;
 
     public LevelCreatorSimple(PlayScreenLevel playScreenLevel,
-                              GameLevel simpleLevel) {
+                              LevelDoor levelDoor) {
         this.playScreenLevel = playScreenLevel;
-        this.levelDoor = simpleLevel.getLevelDoor();
+        this.levelDoor = levelDoor;
         this.animatedReels = playScreenLevel.getAnimatedReels();
         this.tiledMapLevel = playScreenLevel.getTiledMapLevel();
         this.annotationAssetManager = playScreenLevel.getAnnotationAssetManager();
-        this.physics = simpleLevel.getPhysics();
-        this.levelGridSize = simpleLevel.getLevelGridSize();
-        this.playState = simpleLevel.getPlayState();
+//        this.physics = simpleLevel.getPhysics();
+//        this.levelGridSize = simpleLevel.getLevelGridSize();
+//        this.playState = simpleLevel.getPlayState();
         initialise(
                 playScreenLevel,
-                simpleLevel.getLevelDoor(),
-                simpleLevel.getLevelTileMap());
+                levelDoor,
+                playScreenLevel.getTiledMapLevel());
     }
 
     public LevelCreatorSimple(

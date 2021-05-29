@@ -409,7 +409,19 @@ public class WorldScreen implements Screen, LevelCreatorInjectionInterface {
 
     private void createPopUps() {
 		mapTiles = new Array<MapTile>();
-		mapTiles.add(new MapTile(20, 20, 200, 200, SlotPuzzleConstants.VIRTUAL_WIDTH, SlotPuzzleConstants.VIRTUAL_HEIGHT, new MapLevel1(), tilesAtlas, this.camera, font, tweenManager, new Sprite(levelEntrances.get(0).getLevelEntrance())));
+		mapTiles.add(new MapTile(
+				20,
+				20,
+				200,
+				200,
+				SlotPuzzleConstants.VIRTUAL_WIDTH,
+				SlotPuzzleConstants.VIRTUAL_HEIGHT,
+				new MapLevel1(),
+				tilesAtlas,
+				camera,
+				font,
+				tweenManager,
+				new Sprite(levelEntrances.get(0).getLevelEntrance())));
 		mapTiles.add(new MapTile(20, 20, 200, 200, SlotPuzzleConstants.VIRTUAL_WIDTH, SlotPuzzleConstants.VIRTUAL_HEIGHT, new MapLevel2(), tilesAtlas, this.camera, font, tweenManager, new Sprite(levelEntrances.get(1).getLevelEntrance())));
 		mapTiles.add(new MapTile(20, 20, 200, 200, SlotPuzzleConstants.VIRTUAL_WIDTH, SlotPuzzleConstants.VIRTUAL_HEIGHT, new MapLevel3(), tilesAtlas, this.camera, font, tweenManager, new Sprite(levelEntrances.get(2).getLevelEntrance())));
 		mapTiles.add(new MapTile(20, 20, 200, 200, SlotPuzzleConstants.VIRTUAL_WIDTH, SlotPuzzleConstants.VIRTUAL_HEIGHT, new MapLevel4(), tilesAtlas, this.camera, font, tweenManager, new Sprite(levelEntrances.get(3).getLevelEntrance())));

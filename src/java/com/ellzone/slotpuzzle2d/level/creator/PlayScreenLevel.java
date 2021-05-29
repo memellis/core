@@ -27,7 +27,7 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.utils.Array;
 import com.ellzone.slotpuzzle2d.SlotPuzzleConstants;
-import com.ellzone.slotpuzzle2d.SlotPuzzleGame;
+import com.ellzone.slotpuzzle2d.SlotPuzzleGameInterface;
 import com.ellzone.slotpuzzle2d.level.FlashSlots;
 import com.ellzone.slotpuzzle2d.level.LevelDoor;
 import com.ellzone.slotpuzzle2d.level.hidden.HiddenPattern;
@@ -50,10 +50,10 @@ import net.dermetfan.gdx.assets.AnnotationAssetManager;
 
 import box2dLight.RayHandler;
 
-public class PlayScreenLevel {
+public class PlayScreenLevel implements PlayScreenLevelInterface {
 
     private final LevelCreatorInjectionInterface levelCreatorInjection;
-    private final SlotPuzzleGame game;
+    private final SlotPuzzleGameInterface game;
     private final LevelDoor levelDoor;
     private TiledMap tiledMapLevel;
     private Texture slotReelScrollTexture;
@@ -73,7 +73,7 @@ public class PlayScreenLevel {
 
     public PlayScreenLevel(
             LevelCreatorInjectionInterface levelCreatorInjection,
-            SlotPuzzleGame game,
+            SlotPuzzleGameInterface game,
             LevelDoor levelDoor) {
         this.levelCreatorInjection = levelCreatorInjection;
         this.game = game;
@@ -82,8 +82,8 @@ public class PlayScreenLevel {
     }
 
     private void initialise() {
-        createSprites(game.annotationAssetManager);
-        getLevelAssets(game.annotationAssetManager);
+        createSprites(game.getAnnotationAssetManager());
+        getLevelAssets(game.getAnnotationAssetManager());
         initialiseHud();
         initialiseWorld();
     }
@@ -98,7 +98,7 @@ public class PlayScreenLevel {
     }
 
     private void initialiseHud() {
-        hud = new Hud(game.batch);
+        hud = new Hud(game.getBatch());
         hud.setLevelName(levelDoor.getLevelName());
         frameRate = new FrameRate();
     }
@@ -111,6 +111,7 @@ public class PlayScreenLevel {
         rayHandler.setAmbientLight(0.25f, 0.25f, 0.25f, 0.25f);
     }
 
+    @Override
     public void loadLevel(
             MapTile mapTileLevel,
             LevelCallback stoppedSpinningCallback,
@@ -122,54 +123,69 @@ public class PlayScreenLevel {
         setUpLevelDetails();
     }
 
+    @Override
     public Texture getSlotReelScrollTexture() {
         return slotReelScrollTexture;
     }
 
+    @Override
     public World getBox2dWorld() { return box2dWorld; }
 
+    @Override
     public AnnotationAssetManager getAnnotationAssetManager() {
-        return game.annotationAssetManager;
+        return game.getAnnotationAssetManager();
     }
 
+    @Override
     public Hud getHud() { return hud; }
 
+    @Override
     public FrameRate getFrameRate() { return frameRate; }
 
+    @Override
     public GridSize getLevelGridSize() { return levelGridSize; }
 
+    @Override
     public Array<AnimatedReel> getAnimatedReels() {
         return animatedReels;
     }
 
+    @Override
     public Array<ReelTile> getReelTiles() {
         return reelTiles;
     }
 
+    @Override
     public Array<HoldLightButton> getHoldLightButtons() {
         return holdLightButtons;
     }
 
+    @Override
     public Array<SlotHandleSprite> getSlotHandles() {
         return slotHandles;
     }
 
+    @Override
     public FlashSlots getFlashSlots() {
         return flashSlots;
     }
 
+    @Override
     public HiddenPattern getHiddenPattern() {
         return hiddenPattern;
     }
 
+    @Override
     public LevelLoader getLevelLoader() {
         return levelLoader;
     }
 
+    @Override
     public TweenManager getTweenManager() {
         return levelCreatorInjection.getTweenManager();
     }
 
+    @Override
     public TiledMap getTiledMapLevel() {
         return tiledMapLevel;
     }
@@ -244,7 +260,8 @@ public class PlayScreenLevel {
     }
 
     private void addBombSprite() {
-        TextureAtlas reelAtlas = game.annotationAssetManager.get(AssetsAnnotation.REELS_EXTENDED);
+        TextureAtlas reelAtlas =
+                game.getAnnotationAssetManager().get(AssetsAnnotation.REELS_EXTENDED);
         reelSprites.addSprite(reelAtlas.createSprite(AssetsAnnotation.BOMB40x40));
     }
 
@@ -275,7 +292,7 @@ public class PlayScreenLevel {
         LevelCallback stoppedFlashingCallback) {
         LevelLoader levelLoader =
                 new LevelLoader(
-                        game.annotationAssetManager,
+                        game.getAnnotationAssetManager(),
                         levelDoor,
                         mapTileLevel,
                         animatedReels);

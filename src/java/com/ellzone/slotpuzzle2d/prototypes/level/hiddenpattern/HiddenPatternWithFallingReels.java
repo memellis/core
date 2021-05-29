@@ -17,6 +17,7 @@ package com.ellzone.slotpuzzle2d.prototypes.level.hiddenpattern;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
+import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Pixmap;
@@ -39,6 +40,7 @@ import com.badlogic.gdx.utils.GdxRuntimeException;
 import com.badlogic.gdx.utils.Timer;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.ellzone.slotpuzzle2d.SlotPuzzleConstants;
+import com.ellzone.slotpuzzle2d.SlotPuzzleGameInterface;
 import com.ellzone.slotpuzzle2d.effects.ReelAccessor;
 import com.ellzone.slotpuzzle2d.effects.ScoreAccessor;
 import com.ellzone.slotpuzzle2d.effects.SpriteAccessor;
@@ -47,7 +49,7 @@ import com.ellzone.slotpuzzle2d.level.LevelDoor;
 import com.ellzone.slotpuzzle2d.level.creator.LevelCreatorInjectionInterface;
 import com.ellzone.slotpuzzle2d.level.creator.LevelCreatorSimple;
 import com.ellzone.slotpuzzle2d.level.creator.LevelObjectCreatorEntityHolder;
-import com.ellzone.slotpuzzle2d.level.creator.GameLevel;
+import com.ellzone.slotpuzzle2d.level.creator.PlayScreenLevel;
 import com.ellzone.slotpuzzle2d.level.map.MapLevelNameComparator;
 import com.ellzone.slotpuzzle2d.level.sequence.PlayScreenIntroSequence;
 import com.ellzone.slotpuzzle2d.physics.contact.B2ContactListenerReelSink;
@@ -135,7 +137,7 @@ public class HiddenPatternWithFallingReels extends SPPrototypeTemplate
         createViewPorts();
         initialisePhysics();
         initialiseLevelDoor();
-        loadlevel();
+        loadLevel();
         hud = setUpHud(batch);
         levelCreator.setPlayState(PlayStates.INTRO_SPINNING);
         createIntroSequence();
@@ -169,7 +171,39 @@ public class HiddenPatternWithFallingReels extends SPPrototypeTemplate
         levelDoor.setLevelType(BONUS_LEVEL_TYPE);
     }
 
-    private void loadlevel() {
+    SlotPuzzleGameInterface gameInterface =  new SlotPuzzleGameInterface() {
+        @Override
+        public Screen getWorldScreen() {
+            return null;
+        }
+
+        @Override
+        public void setScreen(Screen screen) {
+
+        }
+
+        @Override
+        public Screen getScreen() {
+            return null;
+        }
+
+        @Override
+        public SpriteBatch getBatch() {
+            return batch;
+        }
+
+        @Override
+        public AnnotationAssetManager getAnnotationAssetManager() {
+            return annotationAssetManager;
+        }
+
+        @Override
+        public TweenManager getTweenManager() {
+            return tweenManager;
+        }
+    };
+
+    private void loadLevel() {
         LevelObjectCreatorEntityHolder levelObjectCreator = new LevelObjectCreatorEntityHolder(this, world, rayHandler);
         TiledMap level = getLevelAssets(annotationAssetManager);
         tileMapRenderer = new OrthogonalTiledMapRenderer(level);
@@ -183,22 +217,11 @@ public class HiddenPatternWithFallingReels extends SPPrototypeTemplate
         }
         initialiseReels();
 
-        levelCreator = new LevelCreatorSimple(
-                null,
-                new GameLevel(
-                        world,
-                        physics,
-                        levelDoor,
-                        reels,
-                        reelTiles,
-                        level,
-                        annotationAssetManager,
-                        (TextureAtlas) annotationAssetManager.get(AssetsAnnotation.CARDDECK),
-                        tweenManager,
-                        new GridSize(
-                                SlotPuzzleConstants.GAME_LEVEL_WIDTH,
-                                SlotPuzzleConstants.GAME_LEVEL_HEIGHT),
-                        PlayStates.INITIALISING));
+        PlayScreenLevel playScreenLevel = new PlayScreenLevel(
+                this, gameInterface, levelDoor);
+        playScreenLevel.loadLevel(null, null, null);
+
+        levelCreator = new LevelCreatorSimple(playScreenLevel, levelDoor);
         reelBoxes = levelCreator.getReelBoxes();
     }
 

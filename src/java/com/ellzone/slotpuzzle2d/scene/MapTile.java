@@ -40,13 +40,25 @@ public class MapTile {
 	private MutableFloat textOpacity = new MutableFloat(1);
 	private boolean drawEnabled = false;
 
-	public MapTile(float x, float y, float w, float h, float maximiseWidth, float maximisHeight, Level level, TextureAtlas atlas, OrthographicCamera camera, BitmapFont font, TweenManager tweenManager, Sprite mapTileSprite) {
+	public MapTile(
+			float x,
+			float y,
+			float w,
+			float h,
+			float maximiseWidth,
+			float maximiseHeight,
+			Level level,
+			TextureAtlas atlas,
+			OrthographicCamera camera,
+			BitmapFont font,
+			TweenManager tweenManager,
+			Sprite mapTileSprite) {
 		this.x = x;
 		this.y = y;
         this.w = w;
         this.h = h;
 		this.maximiseWidth = maximiseWidth;
-		this.maximiseHeight = maximisHeight;
+		this.maximiseHeight = maximiseHeight;
 		this.level = level;
 		this.font = font;
 		this.tweenManager = tweenManager;
@@ -165,8 +177,4 @@ public class MapTile {
     public void disableDraw() {
         this.drawEnabled = false;
     }
-
-    public boolean getDrawStatus() {
-		return this.drawEnabled;
-	}
 }
