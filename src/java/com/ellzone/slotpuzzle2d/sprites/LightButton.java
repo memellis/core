@@ -26,8 +26,6 @@ import com.badlogic.gdx.graphics.Texture;
 import com.ellzone.slotpuzzle2d.utils.PixmapProcessors;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 
-import java.text.MessageFormat;
-
 import static com.ellzone.slotpuzzle2d.SlotPuzzleConstants.PIXELS_PER_METER;
 
 public class LightButton {
@@ -88,7 +86,7 @@ public class LightButton {
 
     private void initialiseButtonTextPosition() {
         buttonTextX = (buttonWidth - PixmapProcessors.getFonTTextWidth(buttonFont, buttonTextUsingFrameBuffer)) / 2;
-        int fontLineHeight = (int) PixmapProcessors.getFontTextLineheight(buttonFont);
+        int fontLineHeight = (int) PixmapProcessors.getFontTextLineHeight(buttonFont);
         buttonTextY = ((buttonHeight - fontLineHeight) / 2) + fontLineHeight - 2;
     }
 

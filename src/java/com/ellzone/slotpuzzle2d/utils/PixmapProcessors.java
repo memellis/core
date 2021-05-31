@@ -275,7 +275,7 @@ public class PixmapProcessors {
 	    return fontTextWidth;
     }
 
-    public static float getFontTextLineheight(BitmapFont font) {
+    public static float getFontTextLineHeight(BitmapFont font) {
         BitmapFont.BitmapFontData fontData = font.getData();
         return fontData.lineHeight;
     }

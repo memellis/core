@@ -57,18 +57,37 @@ public class ReelTile extends ReelSprite implements ReelTileInterface {
 	private float spinngPitch;
 	private Pixmap flashOnReelPixmap;
 	
-    public ReelTile(Texture scrollTexture, float x, float y, float tileWidth, float tileHeight, int endReel, Sound spinningSound) {
+    public ReelTile(
+            Texture scrollTexture,
+            float x,
+            float y,
+            float tileWidth,
+            float tileHeight,
+            int endReel,
+            Sound spinningSound) {
         this.scrollTexture = scrollTexture;
         super.setX(x);
         super.setY(y);
         this.tileWidth = tileWidth;
         this.tileHeight = tileHeight;
+        this.reelDisplayWidth = tileWidth;
+        this.reelDisplayHeight = tileHeight;
         super.setEndReel(endReel);
         this.spinningSound = spinningSound;
         defineReelSlotTileScroll();
     }
 
-    public ReelTile(Texture texture, int numberOfReelsInTexture, float x, float y, float tileWidth, float tileHeight, float reelDisplayWidth, float reelDisplayHeight, int endReel, Sound spinningSound) {
+    public ReelTile(
+            Texture texture,
+            int numberOfReelsInTexture,
+            float x,
+            float y,
+            float tileWidth,
+            float tileHeight,
+            float reelDisplayWidth,
+            float reelDisplayHeight,
+            int endReel,
+            Sound spinningSound) {
         this.scrollTexture = texture;
         this.numberOfReelsInTexture = numberOfReelsInTexture;
         super.setX(x);

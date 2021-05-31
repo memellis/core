@@ -22,6 +22,7 @@ import com.ellzone.slotpuzzle2d.effects.ReelAccessor;
 import com.ellzone.slotpuzzle2d.gdx.MyGDXApplication;
 import com.ellzone.slotpuzzle2d.prototypes.box2d.collisions.AnimatedReelsMatrixCreator;
 import com.ellzone.slotpuzzle2d.prototypes.box2d.collisions.SlotPuzzleMatrices;
+import com.ellzone.slotpuzzle2d.puzzlegrid.GridSize;
 import com.ellzone.slotpuzzle2d.puzzlegrid.ReelTileGridValue;
 import com.ellzone.slotpuzzle2d.sprites.AnimatedReel;
 import com.ellzone.slotpuzzle2d.sprites.ReelTile;
@@ -45,8 +46,7 @@ public class TestFlashSlots {
         Array<ReelTile> reelTiles = new Array<>();
         FlashSlots flashSlots = new FlashSlots(
                 null,
-                MAP_WIDTH,
-                MAP_HEIGHT,
+                new GridSize(MAP_WIDTH,  MAP_HEIGHT),
                 reelTiles);
         assertThat(flashSlots.getNumberOfReelsFlashing(),is(equalTo(0)));
     }
@@ -56,10 +56,8 @@ public class TestFlashSlots {
         Array<ReelTile> reelTiles = new Array<>();
         FlashSlots flashSlots = new FlashSlots(
                 null,
-                MAP_WIDTH,
-                MAP_HEIGHT,
+                new GridSize(MAP_WIDTH, MAP_HEIGHT),
                 reelTiles);
-        Array<ReelTileGridValue> matchedSlots = new Array<>();
         flashSlots.flashSlots(reelTiles);
         assertFlashSlotsHasFinished(flashSlots);
     }
@@ -68,18 +66,16 @@ public class TestFlashSlots {
     @Test
     public void testFlashSlotsWithOneReel() {
         Gdx.app = new MyGDXApplication();
-        Array<AnimatedReel> animatedReels = new Array<>();
+        Array<AnimatedReel> animatedReels;
         AnimatedReelsMatrixCreator animatedReelsMatrixCreator = new AnimatedReelsMatrixCreator();
         animatedReels = animatedReelsMatrixCreator.createAnimatedReelsFromSlotPuzzleMatrix(
                   SlotPuzzleMatrices.createMatrixWithOneBox());
         Array<ReelTile> reelTiles = getReelTilesFromAnimatedReels(animatedReels);
         FlashSlots flashSlots = new FlashSlots(
                  null,
-                  MAP_WIDTH,
-                  MAP_HEIGHT,
+                  new GridSize(MAP_WIDTH, MAP_HEIGHT),
                   reelTiles);
-         Array<ReelTileGridValue> matchedSlots = new Array<>();
-         flashSlots.flashSlots(reelTiles);
+                  flashSlots.flashSlots(reelTiles);
          assertFlashSlotsHasFinished(flashSlots);
     }
 
@@ -108,8 +104,7 @@ public class TestFlashSlots {
 
         FlashSlots flashSlots = new FlashSlots(
                 tweenManager,
-                MAP_WIDTH,
-                MAP_HEIGHT,
+                new GridSize(MAP_WIDTH, MAP_HEIGHT),
                 reelTiles);
 
         flashSlots.flashSlots(reelTiles);

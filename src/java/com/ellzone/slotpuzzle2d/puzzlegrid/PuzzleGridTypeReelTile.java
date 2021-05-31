@@ -31,8 +31,6 @@ import java.util.Set;
 import java.util.Stack;
 
 import static com.ellzone.slotpuzzle2d.puzzlegrid.ReelTileGridValue.Compass;
-import static com.ellzone.slotpuzzle2d.SlotPuzzleConstants.GAME_LEVEL_HEIGHT;
-import static com.ellzone.slotpuzzle2d.SlotPuzzleConstants.GAME_LEVEL_WIDTH;
 
 public class PuzzleGridTypeReelTile {
     public static final float FLOAT_ROUNDING_DELTA_FOR_BOX2D = 1.0f;
@@ -52,8 +50,9 @@ public class PuzzleGridTypeReelTile {
         return reelLevel;
     }
 
-    public ReelTileGridValue[][] initialiseGrid(
-            ReelTileGridValue[][] workingGrid, ReelTileGridValue[][] puzzleGrid) {
+    public void initialiseGrid(
+            ReelTileGridValue[][] workingGrid,
+            ReelTileGridValue[][] puzzleGrid) {
         for (int r = 0; r < workingGrid.length; r++) {
             for (int c = 0; c < workingGrid[r].length; c++) {
                 if (puzzleGrid[r][c] == null) {
@@ -63,14 +62,13 @@ public class PuzzleGridTypeReelTile {
                 }
             }
         }
-        return workingGrid;
     }
 
     public Array<ReelTileGridValue> matchGridSlots(ReelTileGridValue[][] puzzleGrid) {
         ReelTileGridValue[][] matchedGridRows = matchRowSlots(puzzleGrid);
         ReelTileGridValue[][] matchedGridCols = matchColumnSlots(puzzleGrid);
-        Array<ReelTileGridValue> matchedSlots = new Array<ReelTileGridValue>();
 
+        Array<ReelTileGridValue> matchedSlots = new Array<>();
         matchedSlots = getMatchedRowSlots(matchedGridRows, matchedSlots);
         matchedSlots = getMatchedColSlots(matchedGridCols, matchedSlots);
 
@@ -91,7 +89,7 @@ public class PuzzleGridTypeReelTile {
                     if(puzzleGrid[r][c].value >= 0) {
                         int co = c + 1;
                         boolean match = true;
-                        while (match == true) {
+                        while (match) {
                             if (!(co < arraySizeC)) {
                                 match = false;
                             } else {
@@ -142,7 +140,7 @@ public class PuzzleGridTypeReelTile {
                     if(puzzleGrid[r][c].value >= 0) {
                         int ro = r + 1;
                         boolean match = true;
-                        while (match == true) {
+                        while (match) {
                             if (!(ro < arraySizeR)) {
                                 match = false;
                             } else {
@@ -168,7 +166,7 @@ public class PuzzleGridTypeReelTile {
                         }
                         for (int i = r; i < ro; i++)
                             workingGrid[i][c].value = ro - r;
-                        r = ro - 1;;
+                        r = ro - 1;
                     }
                 }
                 r++;
@@ -192,7 +190,8 @@ public class PuzzleGridTypeReelTile {
         return matchedSlots;
     }
 
-    private Array<ReelTileGridValue> getMatchedColSlots(ReelTileGridValue[][] puzzleGrid, Array<ReelTileGridValue> matchedSlots) {
+    private Array<ReelTileGridValue> getMatchedColSlots(
+            ReelTileGridValue[][] puzzleGrid, Array<ReelTileGridValue> matchedSlots) {
         int arraySizeR = puzzleGrid.length;
         int arraySizeC = puzzleGrid[0].length;
 
@@ -373,7 +372,9 @@ public class PuzzleGridTypeReelTile {
         return workingGrid;
     }
 
-    private ReelTileGridValue[][] crossOffMatchSlots(Array<ReelTileGridValue> matchedSlots, ReelTileGridValue[][] puzzleGrid) {
+    private ReelTileGridValue[][] crossOffMatchSlots(
+            Array<ReelTileGridValue> matchedSlots,
+            ReelTileGridValue[][] puzzleGrid) {
         ReelTileGridValue[][] workingGrid = copyGrid(puzzleGrid);
         for (TupleValueIndex matchSlot : matchedSlots)
             workingGrid[matchSlot.r][matchSlot.c].value = -1;
@@ -478,13 +479,16 @@ public class PuzzleGridTypeReelTile {
         return duplicateMatches;
     }
 
-    public static Array<ReelTileGridValue> removeDuplicateMatches(Array<ReelTileGridValue> duplicateSlots, Array<ReelTileGridValue> matchedSlots) {
+    public static Array<ReelTileGridValue> removeDuplicateMatches(
+            Array<ReelTileGridValue> duplicateSlots, Array<ReelTileGridValue> matchedSlots) {
         int i = 0;
         while (i < duplicateSlots.size) {
             ReelTileGridValue currentDuplicate = duplicateSlots.get(i);
             matchedSlots = removeValue(matchedSlots, currentDuplicate);
             i++;
-            while ((i < duplicateSlots.size) && ((currentDuplicate.r == duplicateSlots.get(i).r) & (currentDuplicate.c == duplicateSlots.get(i).c)))
+            while ((i < duplicateSlots.size) &&
+                   ((currentDuplicate.r == duplicateSlots.get(i).r) &
+                    (currentDuplicate.c == duplicateSlots.get(i).c)))
                 i++;
         }
         return matchedSlots;
@@ -502,19 +506,41 @@ public class PuzzleGridTypeReelTile {
         return matchedSlots;
     }
 
-    public static Array<ReelTileGridValue> adjustMatchSlotDuplicates(Array<ReelTileGridValue> matchedSlots, Array<ReelTileGridValue> duplicateMatchedSlots) {
+    public static Array<ReelTileGridValue> adjustMatchSlotDuplicates(
+            Array<ReelTileGridValue> matchedSlots,
+            Array<ReelTileGridValue> duplicateMatchedSlots) {
         int i = 0;
         while (i < duplicateMatchedSlots.size) {
-            linkDuplicatesForReelTiles(matchedSlots, duplicateMatchedSlots.get(i), duplicateMatchedSlots.get(i+1), Compass.NORTH);
-            linkDuplicatesForReelTiles(matchedSlots, duplicateMatchedSlots.get(i), duplicateMatchedSlots.get(i+1), Compass.EAST);
-            linkDuplicatesForReelTiles(matchedSlots, duplicateMatchedSlots.get(i), duplicateMatchedSlots.get(i+1), Compass.SOUTH);
-            linkDuplicatesForReelTiles(matchedSlots, duplicateMatchedSlots.get(i), duplicateMatchedSlots.get(i+1), Compass.WEST);
+            linkDuplicatesForReelTiles(
+                    matchedSlots,
+                    duplicateMatchedSlots.get(i),
+                    duplicateMatchedSlots.get(i+1),
+                    Compass.NORTH);
+            linkDuplicatesForReelTiles(
+                    matchedSlots,
+                    duplicateMatchedSlots.get(i),
+                    duplicateMatchedSlots.get(i+1),
+                    Compass.EAST);
+            linkDuplicatesForReelTiles(
+                    matchedSlots,
+                    duplicateMatchedSlots.get(i),
+                    duplicateMatchedSlots.get(i+1),
+                    Compass.SOUTH);
+            linkDuplicatesForReelTiles(
+                    matchedSlots,
+                    duplicateMatchedSlots.get(i),
+                    duplicateMatchedSlots.get(i+1),
+                    Compass.WEST);
             i = i + 2;
         }
         return matchedSlots;
     }
 
-    private static void linkDuplicatesForReelTiles(Array<ReelTileGridValue> matchSlots, ReelTileGridValue value1, ReelTileGridValue value2, Compass compass) {
+    private static void linkDuplicatesForReelTiles(
+            Array<ReelTileGridValue> matchSlots,
+            ReelTileGridValue value1,
+            ReelTileGridValue value2,
+            Compass compass) {
         switch (compass) {
             case NORTH:
                 if ((value1.getN() == null) && (value2.getN() != null)) {
@@ -559,7 +585,9 @@ public class PuzzleGridTypeReelTile {
         }
     }
 
-    public static ReelTileGridValue findReelTileGridValue(Array<ReelTileGridValue> matchSlots, ReelTile reelTile) {
+    public static ReelTileGridValue findReelTileGridValue(
+            Array<ReelTileGridValue> matchSlots,
+            ReelTile reelTile) {
         for (ReelTileGridValue reelTileGridValue : matchSlots) {
             if (reelTileGridValue.getReelTile() == reelTile) {
                 return reelTileGridValue;
@@ -572,8 +600,6 @@ public class PuzzleGridTypeReelTile {
                                                    GridSize levelGridSize) {
         int gridHeight = levelGridSize.getRows();
         int gridWidth = levelGridSize.getColumns();
-        if (gridWidth == 20)
-            System.out.println("This is wrong!");
         ReelTileGridValue[][] matchGrid =
                 new ReelTileGridValue[gridHeight][gridWidth];
         int r, c;
@@ -585,7 +611,12 @@ public class PuzzleGridTypeReelTile {
                     matchGrid[r][c] = new ReelTileGridValue(r, c, i, -1);
                 else {
                     if (reelLevel.get(i).isSpinning())
-                        matchGrid[r][c] = new ReelTileGridValue(r, c, i, -2);
+                        matchGrid[r][c] = new ReelTileGridValue(
+                                reelLevel.get(i),
+                                r,
+                                c,
+                                i,
+                                -2);
                     else
                         matchGrid[r][c] = new ReelTileGridValue(
                                 reelLevel.get(i),
@@ -867,7 +898,9 @@ public class PuzzleGridTypeReelTile {
         PuzzleGridTypeReelTile.printGrid(
                 PuzzleGridTypeReelTile.populateMatchGridStatic(
                         PuzzleGridTypeReelTile.getReelTilesFromAnimatedReels(animatedReels),
-                        new GridSize(GAME_LEVEL_HEIGHT, GAME_LEVEL_WIDTH))
+                        new GridSize(
+                                SlotPuzzleConstants.GAME_LEVEL_WIDTH,
+                                SlotPuzzleConstants.GAME_LEVEL_HEIGHT))
         );
         System.out.println();
     }

@@ -72,10 +72,14 @@ public class ReelTileGridValue extends TupleValueIndex {
         reelTileNeighbours[Compass.NORTHWEST.ordinal()] = nw;
     }
 
-    public ReelTileGridValue(ReelTile reelTile, int r, int c, int index, int value,
-                             ReelTile n, ReelTile e, ReelTile s, ReelTile w, ReelTile ne, ReelTile se, ReelTile sw, ReelTile nw,
-                             ReelTileGridValue nReelTileGridValue, ReelTileGridValue eReelTileGridValue, ReelTileGridValue sReelTileGridValue, ReelTileGridValue wReelTileGridValue,
-                             ReelTileGridValue neReelTileGridValue, ReelTileGridValue seReelTileGridValue, ReelTileGridValue swReelTileGridValue, ReelTileGridValue nwReelTileGridValue) {
+    public ReelTileGridValue(
+            ReelTile reelTile, int r, int c, int index, int value,
+            ReelTile n, ReelTile e, ReelTile s, ReelTile w,
+            ReelTile ne, ReelTile se, ReelTile sw, ReelTile nw,
+            ReelTileGridValue nReelTileGridValue, ReelTileGridValue eReelTileGridValue,
+            ReelTileGridValue sReelTileGridValue, ReelTileGridValue wReelTileGridValue,
+            ReelTileGridValue neReelTileGridValue, ReelTileGridValue seReelTileGridValue,
+            ReelTileGridValue swReelTileGridValue, ReelTileGridValue nwReelTileGridValue) {
         super(r, c, index, value);
         this.reelTile = reelTile;
         reelTileNeighbours[Compass.NORTH.ordinal()] = n;
@@ -89,6 +93,7 @@ public class ReelTileGridValue extends TupleValueIndex {
         gridValueNeighbours[Compass.NORTH.ordinal()] = nReelTileGridValue;
         gridValueNeighbours[Compass.EAST.ordinal()] = eReelTileGridValue;
         gridValueNeighbours[Compass.SOUTH.ordinal()] = sReelTileGridValue;
+        gridValueNeighbours[Compass.WEST.ordinal()] = wReelTileGridValue;
         gridValueNeighbours[Compass.NORTHEAST.ordinal()] = neReelTileGridValue;
         gridValueNeighbours[Compass.SOUTHEAST.ordinal()] = seReelTileGridValue;
         gridValueNeighbours[Compass.SOUTHWEST.ordinal()] = swReelTileGridValue;

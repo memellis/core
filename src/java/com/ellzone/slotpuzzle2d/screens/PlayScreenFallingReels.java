@@ -23,7 +23,6 @@ import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.physics.box2d.Body;
-import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.Timer;
 import com.ellzone.slotpuzzle2d.SlotPuzzleGame;
@@ -58,14 +57,11 @@ import static com.ellzone.slotpuzzle2d.messaging.MessageType.SwapReelsAboveMe;
 
 public class PlayScreenFallingReels extends PlayScreen {
     public static final int LEVEL_TIME_LENGTH = 120;
-    public static final String BOMBS_LEVEL_TYPE = "BombsLevel";
     private PhysicsManagerCustomBodies physics;
-    private Box2DDebugRenderer debugRenderer;
     private int currentReel = 0;
     private LevelCreatorSimple levelCreator;
     private Array<Body> reelBoxes;
     private AnimatedReelsManager animatedReelsManager;
-    private int numberOfReelsToFall = 0;
     private int numberOfReelBoxesAsleep = 0;
     private int numberOfReelBoxesCreated = 0;
     private boolean reelsStoppedMoving = false;
@@ -106,6 +102,7 @@ public class PlayScreenFallingReels extends PlayScreen {
 
     private void setupAnimatedReelsManager() {
         animatedReelsManager = new AnimatedReelsManager(animatedReels, reelBoxes);
+        int numberOfReelsToFall = 0;
         animatedReelsManager.setNumberOfReelsToFall(numberOfReelsToFall);
         levelCreator.setAnimatedReelsManager(animatedReelsManager);
     }
@@ -160,16 +157,14 @@ public class PlayScreenFallingReels extends PlayScreen {
     }
 
     protected void delegateIntroSequenceCallback(int type, ReelTile reelTile) {
-        switch (type) {
-            case TweenCallback.END:
-                playState = PlayStates.INTRO_POPUP;
-                playScreenPopUps.setPopUpSpritePositions();
-                playScreenPopUps.getLevelPopUp().showLevelPopUp(null);
-                playScreenLevel.getHud().resetWorldTime(LEVEL_TIME_LENGTH);
-                playScreenLevel.getHud().startWorldTimer();
-                levelCreator.createStartRandomReelBoxTimer();
-                levelCreator.allReelsHaveStoppedSpinning();
-                break;
+        if (type == TweenCallback.END) {
+            playState = PlayStates.INTRO_POPUP;
+            playScreenPopUps.setPopUpSpritePositions();
+            playScreenPopUps.getLevelPopUp().showLevelPopUp(null);
+            playScreenLevel.getHud().resetWorldTime(LEVEL_TIME_LENGTH);
+            playScreenLevel.getHud().startWorldTimer();
+            levelCreator.createStartRandomReelBoxTimer();
+            levelCreator.allReelsHaveStoppedSpinning();
         }
     }
 
@@ -186,8 +181,7 @@ public class PlayScreenFallingReels extends PlayScreen {
     private void initialisePhysics() {
         BoxHittingBoxContactListener contactListener = new BoxHittingBoxContactListener();
         box2dWorld.setContactListener(contactListener);
-        debugRenderer = new Box2DDebugRenderer();
-        physics = new PhysicsManagerCustomBodies(camera, box2dWorld, debugRenderer);
+        physics = new PhysicsManagerCustomBodies(camera, box2dWorld, null);
         createReelSink();
     }
 

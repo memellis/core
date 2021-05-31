@@ -5,6 +5,7 @@ import com.badlogic.gdx.utils.Array;
 import com.ellzone.slotpuzzle2d.gdx.MyGDXApplication;
 import com.ellzone.slotpuzzle2d.prototypes.box2d.collisions.AnimatedReelsMatrixCreator;
 import com.ellzone.slotpuzzle2d.prototypes.box2d.collisions.SlotPuzzleMatrices;
+import com.ellzone.slotpuzzle2d.puzzlegrid.GridSize;
 import com.ellzone.slotpuzzle2d.puzzlegrid.Point;
 import com.ellzone.slotpuzzle2d.puzzlegrid.PuzzleGridTypeReelTile;
 import com.ellzone.slotpuzzle2d.puzzlegrid.ReelTileGridValue;
@@ -29,7 +30,9 @@ public class TestNonMatchGridLinks {
         Array<ReelTile> reelTiles = animatedReelsMatrixCreator.
                 getReelTilesFromAnimatedReels(animatedReels);
         ReelTileGridValue[][] matchGrid =
-                puzzleGridTypeReelTile.populateMatchGrid(reelTiles, grid[0].length, grid.length);
+                puzzleGridTypeReelTile.populateMatchGrid(
+                        reelTiles,
+                        new GridSize(grid[0].length, grid.length));
         ReelTileGridValue[][] linkGrid = puzzleGridTypeReelTile.createGridLinksWithoutMatch(matchGrid);
 
         for (int r = 0; r < grid.length; r++)
@@ -41,7 +44,7 @@ public class TestNonMatchGridLinks {
     }
 
     private Array<AnimatedReel> getAnimatedReels(int[][] matrixFWithOneBomb) {
-        Array<AnimatedReel> animatedReels = new Array<>();
+        Array<AnimatedReel> animatedReels;
         AnimatedReelsMatrixCreator animatedReelsMatrixCreator = new AnimatedReelsMatrixCreator();
         animatedReels = animatedReelsMatrixCreator.createAnimatedReelsFromSlotPuzzleMatrix(
                 matrixFWithOneBomb, false);
@@ -113,10 +116,4 @@ public class TestNonMatchGridLinks {
         return points;
     }
 
-    private Array<Point> createPoints(Point... points) {
-        Array<Point> pointArray = new Array<>();
-        for (Point point : points)
-            pointArray.add(point);
-        return pointArray;
-    }
 }

@@ -20,6 +20,7 @@ import com.badlogic.gdx.Application;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.utils.Array;
 import com.ellzone.slotpuzzle2d.SlotPuzzleConstants;
+import com.ellzone.slotpuzzle2d.puzzlegrid.GridSize;
 import com.ellzone.slotpuzzle2d.puzzlegrid.PuzzleGridTypeReelTile;
 import com.ellzone.slotpuzzle2d.puzzlegrid.ReelTileGridValue;
 import com.ellzone.slotpuzzle2d.puzzlegrid.TupleValueIndex;
@@ -140,7 +141,12 @@ public class TestPuzzleGridTypeReelTile {
         int[][] expectedLonelyTiles = createExpectedLonelyTilesMatrix();
         int[][] expectedLonelyReels =  setLonleyReelsExpectations(expectedLonelyTiles);
         relayAll(expectedLonelyTiles);
-        Array<ReelTile> levelAdjustedForLonelyReels = puzzleGridTypeReelTile.adjustForAnyLonelyReels(reelTiles, SlotPuzzleConstants.GAME_LEVEL_WIDTH, SlotPuzzleConstants.GAME_LEVEL_HEIGHT);
+        Array<ReelTile> levelAdjustedForLonelyReels =
+                puzzleGridTypeReelTile.adjustForAnyLonelyReels(
+                        reelTiles,
+                        new GridSize(
+                                SlotPuzzleConstants.GAME_LEVEL_WIDTH,
+                                SlotPuzzleConstants.GAME_LEVEL_HEIGHT));
         for (int[] expectedLonelyReel : expectedLonelyReels)
             assertThat(Whitebox.getInternalState(levelAdjustedForLonelyReels.get(expectedLonelyReel[0]),
                       "endReel"),

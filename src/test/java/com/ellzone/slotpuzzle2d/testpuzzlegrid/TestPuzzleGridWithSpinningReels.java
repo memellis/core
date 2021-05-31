@@ -21,6 +21,7 @@ import com.badlogic.gdx.utils.Array;
 import com.ellzone.slotpuzzle2d.gdx.MyGDXApplication;
 import com.ellzone.slotpuzzle2d.prototypes.box2d.collisions.AnimatedReelsMatrixCreator;
 import com.ellzone.slotpuzzle2d.prototypes.box2d.collisions.SlotPuzzleMatrices;
+import com.ellzone.slotpuzzle2d.puzzlegrid.GridSize;
 import com.ellzone.slotpuzzle2d.puzzlegrid.PuzzleGridTypeReelTile;
 import com.ellzone.slotpuzzle2d.puzzlegrid.ReelTileGridValue;
 import com.ellzone.slotpuzzle2d.sprites.AnimatedReel;
@@ -33,28 +34,25 @@ import static org.junit.Assert.assertThat;
 
 public class TestPuzzleGridWithSpinningReels {
 
-    private AnimatedReelsMatrixCreator animatedReelsMatrixCreator;
-    private Array<AnimatedReel> animatedReels;
-    private Array<ReelTile> reelTiles;
-
     @Test
     public void testGridWithSpinningReel() {
         Gdx.app = new MyGDXApplication();
-        animatedReelsMatrixCreator = new AnimatedReelsMatrixCreator();
+        AnimatedReelsMatrixCreator animatedReelsMatrixCreator = new AnimatedReelsMatrixCreator();
         int [][] matrix = SlotPuzzleMatrices.createMatrixWithTwoBoxes();
-        animatedReels = animatedReelsMatrixCreator.createAnimatedReelsFromSlotPuzzleMatrix(
+        Array<AnimatedReel> animatedReels = animatedReelsMatrixCreator.createAnimatedReelsFromSlotPuzzleMatrix(
                 matrix
         );
-        reelTiles = animatedReelsMatrixCreator.getReelTilesFromAnimatedReels(animatedReels);
+        Array<ReelTile> reelTiles = animatedReelsMatrixCreator.getReelTilesFromAnimatedReels(animatedReels);
         prepareTestWithReelAction(reelSetSpinningAction, reelTiles, 84, 96);
         ReelTileGridValue[][] grid = PuzzleGridTypeReelTile.populateMatchGridStatic(
-            reelTiles,
-            matrix[0].length,
-            matrix.length
+                reelTiles,
+            new GridSize(matrix[0].length, matrix.length)
         );
         assertThat(grid[7][0].value, is(equalTo(-2)));
         assertThat(grid[8][0].value, is(equalTo(-2)));
-        PuzzleGridTypeReelTile.printMatchGrid(reelTiles, matrix[0].length, matrix.length);
+        PuzzleGridTypeReelTile.printMatchGrid(
+                reelTiles,
+                new GridSize(matrix[0].length, matrix.length));
     }
 
     private void prepareTestWithReelAction(
@@ -66,10 +64,10 @@ public class TestPuzzleGridWithSpinningReels {
     }
 
     public interface ReelAction {
-        public void action(Array<ReelTile> reel, int reelToAction);
+        void action(Array<ReelTile> reel, int reelToAction);
     }
 
-    private ReelAction reelSetSpinningAction = new ReelAction() {
+    private final ReelAction reelSetSpinningAction = new ReelAction() {
         @Override
         public void action(Array<ReelTile> reels, int reelToAction) {
             reels.get(reelToAction).setSpinning(true);

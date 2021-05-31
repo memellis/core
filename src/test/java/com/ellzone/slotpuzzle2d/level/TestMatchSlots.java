@@ -6,6 +6,7 @@ import com.ellzone.slotpuzzle2d.gdx.MyGDXApplication;
 import com.ellzone.slotpuzzle2d.level.fixtures.ReelPrepare;
 import com.ellzone.slotpuzzle2d.prototypes.box2d.collisions.AnimatedReelsMatrixCreator;
 import com.ellzone.slotpuzzle2d.prototypes.box2d.collisions.SlotPuzzleMatrices;
+import com.ellzone.slotpuzzle2d.puzzlegrid.GridSize;
 import com.ellzone.slotpuzzle2d.puzzlegrid.PuzzleGridTypeReelTile;
 import com.ellzone.slotpuzzle2d.puzzlegrid.ReelTileGridValue;
 import com.ellzone.slotpuzzle2d.sprites.AnimatedReel;
@@ -19,19 +20,18 @@ import static org.junit.Assert.assertThat;
 
 public class TestMatchSlots {
 
-    private AnimatedReelsMatrixCreator animatedReelsMatrixCreator;
-    private Array<AnimatedReel> animatedReels;
     private Array<ReelTile> reelTiles;
 
     @Test
     public void testMatchSlotsWithZeroMatches() {
         Gdx.app = new MyGDXApplication();
         int[][] matrix = getMatrix(SlotPuzzleMatrices.createMatrixWithNoBoxes());
-        PuzzleGridTypeReelTile.printMatchGrid(reelTiles, matrix[0].length, matrix.length);
+        PuzzleGridTypeReelTile.printMatchGrid(
+                reelTiles,
+                new GridSize(matrix[0].length, matrix.length));
         MatchSlots matchSlots = new MatchSlots(
                 reelTiles,
-                matrix[0].length,
-                matrix.length
+                new GridSize(matrix[0].length, matrix.length)
         ).invoke();
         Array<ReelTileGridValue> matchedSlots = matchSlots.getMatchedSlots();
         assertThat(matchedSlots.size, is(equalTo(0)));
@@ -42,8 +42,7 @@ public class TestMatchSlots {
         int[][] matrix = prepareMatchSlotsTestWithTwoMatches();
         MatchSlots matchSlots = new MatchSlots(
                 reelTiles,
-                matrix[0].length,
-                matrix.length
+                new GridSize(matrix[0].length, matrix.length)
         ).invoke();
         Array<ReelTileGridValue> matchedSlots = matchSlots.getMatchedSlots();
         assertThat(matchedSlots.get(0).reelTile.getIndex(), is(equalTo(84)));
@@ -57,11 +56,12 @@ public class TestMatchSlots {
         int[][] matrix = getMatrix(SlotPuzzleMatrices.createMatrixWithTwoBoxes());
         reelPrepare.prepareTestWithReelAction(
                 reelPrepare.reelSetNotSpinningAction, reelTiles, 84);
-        PuzzleGridTypeReelTile.printMatchGrid(reelTiles, matrix[0].length, matrix.length);
+        PuzzleGridTypeReelTile.printMatchGrid(
+                reelTiles,
+                new GridSize(matrix[0].length, matrix.length));
         MatchSlots matchSlots = new MatchSlots(
                 reelTiles,
-                matrix[0].length,
-                matrix.length
+                new GridSize(matrix[0].length, matrix.length)
         ).invoke();
         Array<ReelTileGridValue> matchedSlots = matchSlots.getMatchedSlots();
         assertThat(matchedSlots.size, is(equalTo(0)));
@@ -74,11 +74,12 @@ public class TestMatchSlots {
         int[][] matrix = getMatrix(SlotPuzzleMatrices.createMatrixWithThreeBoxes());
         reelPrepare.prepareTestWithReelAction(
                 reelPrepare.reelSetNotSpinningAction, reelTiles, 84, 96);
-        PuzzleGridTypeReelTile.printMatchGrid(reelTiles, matrix[0].length, matrix.length);
+        PuzzleGridTypeReelTile.printMatchGrid(
+                reelTiles,
+                new GridSize(matrix[0].length, matrix.length));
         MatchSlots matchSlots = new MatchSlots(
                 reelTiles,
-                matrix[0].length,
-                matrix.length
+                new GridSize(matrix[0].length, matrix.length)
         ).invoke();
         Array<ReelTileGridValue> matchedSlots = matchSlots.getMatchedSlots();
         assertThat(matchedSlots.get(0).reelTile.getIndex(), is(equalTo(84)));
@@ -91,17 +92,18 @@ public class TestMatchSlots {
         int[][] matrix = getMatrix(SlotPuzzleMatrices.createMatrixWithTwoBoxes());
         reelPrepare.prepareTestWithReelAction(
                 reelPrepare.reelSetNotSpinningAction, reelTiles, 84, 96);
-        PuzzleGridTypeReelTile.printMatchGrid(reelTiles, matrix[0].length, matrix.length);
+        PuzzleGridTypeReelTile.printMatchGrid(
+                reelTiles,
+                new GridSize(matrix[0].length, matrix.length));
         return matrix;
     }
 
     private int[][] getMatrix(int[][] matrixWithTwoBoxes) {
-        animatedReelsMatrixCreator = new AnimatedReelsMatrixCreator();
-        int[][] matrix = matrixWithTwoBoxes;
-        animatedReels = animatedReelsMatrixCreator.createAnimatedReelsFromSlotPuzzleMatrix(
-                matrix
-        );
+        AnimatedReelsMatrixCreator animatedReelsMatrixCreator = new AnimatedReelsMatrixCreator();
+        Array<AnimatedReel> animatedReels =
+                animatedReelsMatrixCreator.
+                        createAnimatedReelsFromSlotPuzzleMatrix(matrixWithTwoBoxes);
         reelTiles = animatedReelsMatrixCreator.getReelTilesFromAnimatedReels(animatedReels);
-        return matrix;
+        return matrixWithTwoBoxes;
     }
 }

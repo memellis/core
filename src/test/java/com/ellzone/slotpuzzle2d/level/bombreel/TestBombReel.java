@@ -2,10 +2,12 @@ package com.ellzone.slotpuzzle2d.level.bombreel;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.utils.Array;
+import com.ellzone.slotpuzzle2d.SlotPuzzleConstants;
 import com.ellzone.slotpuzzle2d.gdx.MyGDXApplication;
 import com.ellzone.slotpuzzle2d.level.MatchSlots;
 import com.ellzone.slotpuzzle2d.prototypes.box2d.collisions.AnimatedReelsMatrixCreator;
 import com.ellzone.slotpuzzle2d.prototypes.box2d.collisions.SlotPuzzleMatrices;
+import com.ellzone.slotpuzzle2d.puzzlegrid.GridSize;
 import com.ellzone.slotpuzzle2d.puzzlegrid.PuzzleGridTypeReelTile;
 import com.ellzone.slotpuzzle2d.puzzlegrid.ReelTileGridValue;
 import com.ellzone.slotpuzzle2d.puzzlegrid.TupleValueIndex;
@@ -13,15 +15,11 @@ import com.ellzone.slotpuzzle2d.sprites.AnimatedReel;
 
 import org.junit.Test;
 
-import static com.ellzone.slotpuzzle2d.SlotPuzzleConstants.GAME_LEVEL_HEIGHT;
-import static com.ellzone.slotpuzzle2d.SlotPuzzleConstants.GAME_LEVEL_WIDTH;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 
 public class TestBombReel {
-
-    private AnimatedReelsMatrixCreator animatedReelsMatrixCreator;
 
     @Test
     public void testWithOneBombReel() throws Exception {
@@ -35,7 +33,8 @@ public class TestBombReel {
     @Test
     public void testWithTwoBombReels() {
         Gdx.app = new MyGDXApplication();
-        Array<AnimatedReel> animatedReels = getAnimatedReels(SlotPuzzleMatrices.createMatrixFWithTwoBombs());
+        Array<AnimatedReel> animatedReels =
+                getAnimatedReels(SlotPuzzleMatrices.createMatrixFWithTwoBombs());
 
         Array<ReelTileGridValue> matchedSlots = getMatchedSlots(animatedReels);
         Array<TupleValueIndex> createdMatrixEntries = getMatrixEntriesNotDeleted(
@@ -54,19 +53,18 @@ public class TestBombReel {
     private Array<ReelTileGridValue> getMatchedSlots(Array<AnimatedReel> animatedReels) {
         MatchSlots matchSlots = new MatchSlots(
                 PuzzleGridTypeReelTile.getReelTilesFromAnimatedReels(animatedReels),
-                GAME_LEVEL_WIDTH,
-                GAME_LEVEL_HEIGHT)
+                new GridSize(
+                        SlotPuzzleConstants.GAME_LEVEL_WIDTH,
+                        SlotPuzzleConstants.GAME_LEVEL_HEIGHT))
                 .invoke();
-        PuzzleGridTypeReelTile puzzleGridTypeReelTile = matchSlots.getPuzzleGridTypeReelTile();
-        ReelTileGridValue[][] puzzleGrid = matchSlots.getPuzzleGrid();
         return matchSlots.getMatchedSlots();
     }
 
-    private Array<AnimatedReel> getAnimatedReels(int[][] matrixFWithOneBomb) {
-        Array<AnimatedReel> animatedReels = new Array<>();
+    private Array<AnimatedReel> getAnimatedReels(int[][] matrixWithOneBomb) {
+        Array<AnimatedReel> animatedReels;
         AnimatedReelsMatrixCreator animatedReelsMatrixCreator = new AnimatedReelsMatrixCreator();
         animatedReels = animatedReelsMatrixCreator.createAnimatedReelsFromSlotPuzzleMatrix(
-                matrixFWithOneBomb, false);
+                matrixWithOneBomb, false);
         PuzzleGridTypeReelTile.printSlotMatrix(animatedReels);
         return animatedReels;
     }

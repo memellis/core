@@ -2,10 +2,12 @@ package com.ellzone.slotpuzzle2d.testpuzzlegrid;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.utils.Array;
+import com.ellzone.slotpuzzle2d.SlotPuzzleConstants;
 import com.ellzone.slotpuzzle2d.gdx.MyGDXApplication;
 import com.ellzone.slotpuzzle2d.level.MatchSlots;
 import com.ellzone.slotpuzzle2d.prototypes.box2d.collisions.AnimatedReelsMatrixCreator;
 import com.ellzone.slotpuzzle2d.prototypes.box2d.collisions.SlotPuzzleMatrices;
+import com.ellzone.slotpuzzle2d.puzzlegrid.GridSize;
 import com.ellzone.slotpuzzle2d.puzzlegrid.PuzzleGridTypeReelTile;
 import com.ellzone.slotpuzzle2d.puzzlegrid.ReelTileGridValue;
 import com.ellzone.slotpuzzle2d.sprites.AnimatedReel;
@@ -13,8 +15,6 @@ import com.ellzone.slotpuzzle2d.sprites.ReelTile;
 
 import org.junit.Test;
 
-import static com.ellzone.slotpuzzle2d.SlotPuzzleConstants.GAME_LEVEL_HEIGHT;
-import static com.ellzone.slotpuzzle2d.SlotPuzzleConstants.GAME_LEVEL_WIDTH;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.is;
@@ -62,7 +62,9 @@ public class TestGetSurroundingReelTiles {
         Array<ReelTileGridValue> matchedSlots = matchSlots.getMatchedSlots();
 
         ReelTileGridValue[][] matchGrid =
-                puzzleGridTypeReelTile.populateMatchGrid(reelTiles, grid[0].length, grid.length);
+                puzzleGridTypeReelTile.populateMatchGrid(
+                        reelTiles,
+                        new GridSize(grid[0].length, grid.length));
         ReelTileGridValue[][] linkGrid = puzzleGridTypeReelTile.createGridLinksWithoutMatch(matchGrid);
 
 
@@ -77,7 +79,7 @@ public class TestGetSurroundingReelTiles {
     }
 
     private Array<AnimatedReel> getAnimatedReels(int[][] matrixFWithOneBomb) {
-        Array<AnimatedReel> animatedReels = new Array<>();
+        Array<AnimatedReel> animatedReels;
         AnimatedReelsMatrixCreator animatedReelsMatrixCreator = new AnimatedReelsMatrixCreator();
         animatedReels = animatedReelsMatrixCreator.createAnimatedReelsFromSlotPuzzleMatrix(
                 matrixFWithOneBomb, false);
@@ -88,8 +90,9 @@ public class TestGetSurroundingReelTiles {
     private MatchSlots getMatchedSlots(Array<AnimatedReel> animatedReels) {
         return new MatchSlots(
                 PuzzleGridTypeReelTile.getReelTilesFromAnimatedReels(animatedReels),
-                GAME_LEVEL_WIDTH,
-                GAME_LEVEL_HEIGHT)
+                new GridSize(
+                        SlotPuzzleConstants.GAME_LEVEL_WIDTH,
+                        SlotPuzzleConstants.GAME_LEVEL_HEIGHT))
                 .invoke();
     }
 
