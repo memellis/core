@@ -32,15 +32,12 @@ import com.ellzone.slotpuzzle2d.utils.AssetsAnnotation;
 import net.dermetfan.gdx.assets.AnnotationAssetManager;
 
 public class LoadingScreen implements Screen{
-    private SlotPuzzleGame game;
-	private Viewport viewport;
+    private final SlotPuzzleGame game;
 	private Stage stage;
-	private OrthographicCamera camera;
 	private Texture progressBarImg, progressBarBaseImg;
 	private Vector2 pbPos;
-	private boolean show = false;
 
-    public LoadingScreen(SlotPuzzleGame game) {
+	public LoadingScreen(SlotPuzzleGame game) {
     	this.game = game;
     	defineLoadingScreen();
     }
@@ -52,9 +49,14 @@ public class LoadingScreen implements Screen{
     }
     
     private void initialiseLoadingScreen() {
-    	camera = new OrthographicCamera();
-		viewport = new FitViewport(SlotPuzzleConstants.VIRTUAL_WIDTH, SlotPuzzleConstants.VIRTUAL_HEIGHT, camera);
-        stage = new Stage(viewport, game.batch);
+		OrthographicCamera camera;
+		camera = new OrthographicCamera();
+		Viewport viewport;
+		viewport = new FitViewport(
+						SlotPuzzleConstants.VIRTUAL_WIDTH,
+						SlotPuzzleConstants.VIRTUAL_HEIGHT,
+						camera);
+		stage = new Stage(viewport, game.batch);
     }
 
     private void getAssets(AnnotationAssetManager annotationAssetManager) {
@@ -69,7 +71,6 @@ public class LoadingScreen implements Screen{
 
 	@Override
 	public void show() {
-		this.show = false;
 		Gdx.app.log(SlotPuzzleConstants.SLOT_PUZZLE + this.getClass().getName(), "show() called.");
 	}
 
@@ -95,8 +96,7 @@ public class LoadingScreen implements Screen{
 
 	@Override
 	public void pause() {
-		this.show = false;
-        Gdx.app.log(SlotPuzzleConstants.SLOT_PUZZLE + this.getClass().getName(), "pause() called.");
+		Gdx.app.log(SlotPuzzleConstants.SLOT_PUZZLE + this.getClass().getName(), "pause() called.");
     }
 
 	@Override
@@ -106,8 +106,7 @@ public class LoadingScreen implements Screen{
 
 	@Override
 	public void hide() {
-        this.show = false;
-        Gdx.app.log(SlotPuzzleConstants.SLOT_PUZZLE + this.getClass().getName(), "hide() called.");
+		Gdx.app.log(SlotPuzzleConstants.SLOT_PUZZLE + this.getClass().getName(), "hide() called.");
 	}
 
 	@Override

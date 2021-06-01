@@ -28,8 +28,6 @@ import com.ellzone.slotpuzzle2d.tweenengine.TweenManager;
 import com.ellzone.slotpuzzle2d.utils.AssetsAnnotation;
 import net.dermetfan.gdx.assets.AnnotationAssetManager;
 
-import java.util.Properties;
-
 public class SlotPuzzleGame extends Game implements SlotPuzzleGameInterface {
 	public SpriteBatch batch;
 	public AnnotationAssetManager annotationAssetManager;
@@ -40,7 +38,7 @@ public class SlotPuzzleGame extends Game implements SlotPuzzleGameInterface {
 	public void create() {
 		setLogLevel();
 		batch = LibGdxFactory.getInstance().newSpriteBatch();
-		annotationAssetManager = loadAssets(annotationAssetManager);
+		annotationAssetManager = loadAssets();
 		setScreen(LibGdxFactory.getInstance().newLoadScreen(this));
 	}
 	
@@ -50,22 +48,28 @@ public class SlotPuzzleGame extends Game implements SlotPuzzleGameInterface {
 			setApplicationLogLevel(logLevel);
 		else {
 			logLevel= System.getenv(SlotPuzzleConstants.LIBGDX_LOGLEVEL);
-			if ((logLevel != null) && (logLevel != ""))
+			if ((logLevel != null) && (!logLevel.equals("")))
 				setApplicationLogLevel(logLevel);
 		}
 	}
 
 	private void setApplicationLogLevel(String logLevel) {
-		if (logLevel.equals(SlotPuzzleConstants.DEBUG))
-			Gdx.app.setLogLevel(Application.LOG_DEBUG);
-		else if (logLevel.equals(SlotPuzzleConstants.INFO))
-			Gdx.app.setLogLevel(Application.LOG_INFO);
-		else if (logLevel.equals(SlotPuzzleConstants.ERROR))
-			Gdx.app.setLogLevel(Application.LOG_ERROR);
+		switch (logLevel) {
+			case SlotPuzzleConstants.DEBUG:
+				Gdx.app.setLogLevel(Application.LOG_DEBUG);
+				break;
+			case SlotPuzzleConstants.INFO:
+				Gdx.app.setLogLevel(Application.LOG_INFO);
+				break;
+			case SlotPuzzleConstants.ERROR:
+				Gdx.app.setLogLevel(Application.LOG_ERROR);
+				break;
+		}
 	}
 
-	private AnnotationAssetManager loadAssets(AnnotationAssetManager annotationAssetManager) {
-		annotationAssetManager = LibGdxFactory.getInstance().newAnnotationAssetManager();
+	private AnnotationAssetManager loadAssets() {
+		AnnotationAssetManager annotationAssetManager =
+				LibGdxFactory.getInstance().newAnnotationAssetManager();
 		annotationAssetManager.setLoader(
 				TiledMap.class, new TmxMapLoader(new InternalFileHandleResolver()));
 		annotationAssetManager.load(new AssetsAnnotation());

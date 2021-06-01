@@ -208,7 +208,7 @@ public class PlayScreenFallingReels extends PlayScreen {
                         playScreenPopUps.getLevelPopUp().hideLevelPopUp(new TweenCallback() {
                             @Override
                             public void onEvent(int type, BaseTween<?> source) {
-                                processHideLevelPopUp(type, source);
+                                processHideLevelPopUp(type);
                             }
                         });
                     break;
@@ -228,14 +228,13 @@ public class PlayScreenFallingReels extends PlayScreen {
         }
     }
 
-    private void processHideLevelPopUp(int type, BaseTween<?> source) {
-        switch (type) {
-            case TweenCallback.END:
-                playStateMachine.getStateMachine().changeState(PlayState.PLAY);
-                playScreenLevel.getHud().resetWorldTime(LEVEL_TIME_LENGTH);
-                playScreenLevel.getHud().startWorldTimer();
-                if (levelDoor.getLevelType().equals(FALLING_REELS_LEVEL_TYPE))
-                    System.out.println("Falling Reels Level");
+    private void processHideLevelPopUp(int type) {
+        if (type == TweenCallback.END) {
+            playStateMachine.getStateMachine().changeState(PlayState.PLAY);
+            playScreenLevel.getHud().resetWorldTime(LEVEL_TIME_LENGTH);
+            playScreenLevel.getHud().startWorldTimer();
+            if (levelDoor.getLevelType().equals(FALLING_REELS_LEVEL_TYPE))
+                System.out.println("Falling Reels Level");
         }
     }
 

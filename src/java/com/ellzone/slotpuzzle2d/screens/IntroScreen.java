@@ -22,7 +22,6 @@ import com.badlogic.gdx.InputAdapter;
 import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.ai.msg.MessageManager;
-import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
@@ -31,19 +30,12 @@ import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.Sprite;
-import com.badlogic.gdx.graphics.g2d.TextureAtlas;
-import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
-import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.scenes.scene2d.Stage;
-import com.badlogic.gdx.scenes.scene2d.ui.Skin;
-import com.badlogic.gdx.scenes.scene2d.ui.Slider;
-import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
-import com.badlogic.gdx.scenes.scene2d.ui.TextButton.TextButtonStyle;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
@@ -55,7 +47,6 @@ import com.ellzone.slotpuzzle2d.effects.ReelAccessor;
 import com.ellzone.slotpuzzle2d.effects.ReelLetterAccessor;
 import com.ellzone.slotpuzzle2d.effects.SpriteAccessor;
 import com.ellzone.slotpuzzle2d.messaging.MessageType;
-import com.ellzone.slotpuzzle2d.physics.DampenedSineParticle;
 import com.ellzone.slotpuzzle2d.sprites.AnimatedReel;
 import com.ellzone.slotpuzzle2d.sprites.LightButtonBuilder;
 import com.ellzone.slotpuzzle2d.sprites.ReelLetter;
@@ -68,7 +59,6 @@ import com.ellzone.slotpuzzle2d.sprites.ReelTileListener;
 import com.ellzone.slotpuzzle2d.sprites.starfield.StarField;
 import com.ellzone.slotpuzzle2d.tweenengine.SlotPuzzleTween;
 import com.ellzone.slotpuzzle2d.tweenengine.Timeline;
-import com.ellzone.slotpuzzle2d.tweenengine.TweenManager;
 import com.ellzone.slotpuzzle2d.utils.AssetsAnnotation;
 import com.ellzone.slotpuzzle2d.utils.FileUtils;
 import com.ellzone.slotpuzzle2d.utils.PixmapProcessors;
@@ -96,21 +86,16 @@ public class IntroScreen extends InputAdapter implements Screen {
     private static final String VERSION_INF_FILE = "version_info/SlotPuzzleVersionInfo";
     public static float SCALE = 0.5f;
     public static int NUM_STARS = 64;
-
     private static final int TEXT_SPACING_SIZE = 30;
     private static final int REEL_WIDTH = 40;
     private static final int REEL_HEIGHT = 40;
     private static final String COPYRIGHT = "\u00a9";
     private static final String SLOT_PUZZLE_REEL_TEXT = "Slot Puzzle";
     private static final String BY_TEXT = "by";
-    private static final String AUTHOR_TEXT = "Mark Ellis";
-    private static final String COPYRIGHT_YEAR_AUTHOR_TEXT = COPYRIGHT + "2020 " + AUTHOR_TEXT;
     private static final String LAUNCH_BUTTON_LABEL = "LAUNCH!";
     public static final float ONE_SECOND = 1.0f;
-    private SlotPuzzleGame game;
-    private Texture textTexture;
-    private Pixmap slotReelPixmap;
-    private Texture slotReelTexture;
+
+    private final SlotPuzzleGame game;
     private final OrthographicCamera camera = new OrthographicCamera();
     private Viewport viewport, lightViewport;
     private Stage stage;
@@ -118,43 +103,28 @@ public class IntroScreen extends InputAdapter implements Screen {
     private BitmapFont fontMedium;
     private BitmapFont fontLarge;
     private Array<AnimatedReel> reelLetterTiles;
-    private Array<DampenedSineParticle> dampenedSines;
     private int numReelLettersSpinning, numReelLetterSpinLoops;
     private boolean endOfIntroScreen;
-    private TextButton button;
-    private TextButtonStyle textButtonStyle;
-    private Skin skin;
-    private Slider slider;
-    private TextureAtlas buttonAtlas;
-    private TextureRegion playBackButtons;
-    private TweenManager tweenManager = new TweenManager();
     private ReelTile reelTile;
     private ReelSprites reelSprites;
-    private Timeline endReelSeq;
     private boolean isLoaded = false;
     private Random random;
     private World world;
     private Box2DDebugRenderer debugRenderer;
     private RayHandler rayHandler;
     private LightButtonBuilder launchButton;
-    private Vector3 point = new Vector3();
-    private Array<PointLight> signLights;
+    private final Vector3 point = new Vector3();
     private float timerCount = 0;
     private int nextScreenTimer = 3;
     private ShapeRenderer shapeRenderer;
     private StarField starField;
-    private float sceneWidth = SlotPuzzleConstants.VIRTUAL_WIDTH / SlotPuzzleConstants.PIXELS_PER_METER;
-    private float sceneHeight = SlotPuzzleConstants.VIRTUAL_HEIGHT / SlotPuzzleConstants.PIXELS_PER_METER;
+    private final float sceneWidth =
+            SlotPuzzleConstants.VIRTUAL_WIDTH / SlotPuzzleConstants.PIXELS_PER_METER;
+    private final float sceneHeight =
+            SlotPuzzleConstants.VIRTUAL_HEIGHT / SlotPuzzleConstants.PIXELS_PER_METER;
     private boolean show = false;
     private MusicManager musicManager;
     private MessageManager messageManager;
-    private boolean sliderUpdating;
-    private Rectangle playButton, stopButton, pauseButton;
-    private Music currentTrack = null;
-    private float songDuration = 183.0f;
-    private float currentPosition = 0.0f;
-    private float slidertimerCount = 0.0f;
-    private InputMultiplexer inputMultiplexer;
     private MusicPlayer musicPlayer;
     private VersionInfo versionInfo;
 
@@ -173,10 +143,10 @@ public class IntroScreen extends InputAdapter implements Screen {
         initialiseBox2D();
         initialiseLaunchButton();
         initialiseIntroSequence();
-        initialiseStarfield();
-        initisaliseAudio();
+        initialiseStarField();
+        initialiseAudio();
         messageManager = setUpMessages();
-        initialseInput();
+        initialiseInput();
         messageManager.dispatchMessage(MessageType.PlayMusic.index, AssetsAnnotation.MUSIC_INTRO_SCREEN);
         isLoaded = true;
     }
@@ -186,14 +156,14 @@ public class IntroScreen extends InputAdapter implements Screen {
         versionInfo = versionInfoFile.loadVersionInfoInternal(VERSION_INF_FILE);
     }
 
-    private void initialseInput() {
-        inputMultiplexer = new InputMultiplexer();
+    private void initialiseInput() {
+        InputMultiplexer inputMultiplexer = new InputMultiplexer();
         inputMultiplexer.addProcessor(this);
         inputMultiplexer.addProcessor(stage);
         Gdx.input.setInputProcessor(inputMultiplexer);
     }
 
-    private void initisaliseAudio() {
+    private void initialiseAudio() {
         musicManager = new MusicManager(game.annotationAssetManager);
         musicPlayer = new MusicPlayer(game.annotationAssetManager, game.batch, stage, viewport, 0, 0);
         musicPlayer.setVisible(false);
@@ -260,11 +230,10 @@ public class IntroScreen extends InputAdapter implements Screen {
 	private Texture initialiseFontTexture(String reelText) {
 		Pixmap textPixmap = new Pixmap(REEL_WIDTH, reelText.length() * REEL_HEIGHT, Pixmap.Format.RGBA8888);
 		textPixmap = PixmapProcessors.createDynamicVerticalFontText(fontSmall, reelText, textPixmap);
-		Texture textTexture = new Texture(textPixmap);
-		return textTexture;
+        return new Texture(textPixmap);
 	}
 
-    private ReelTileListener reelTileListener = new ReelTileListener() {
+    private final ReelTileListener reelTileListener = new ReelTileListener() {
         @Override
         public void actionPerformed(ReelTileEvent event, ReelTile source) {
             if (event instanceof ReelStoppedSpinningEvent) {
@@ -283,7 +252,7 @@ public class IntroScreen extends InputAdapter implements Screen {
     };
 
     private void initialiseIntroScreenText() {
-        reelLetterTiles = new Array<AnimatedReel>();
+        reelLetterTiles = new Array<>();
         initialiseFontReel(SLOT_PUZZLE_REEL_TEXT, viewport.getWorldWidth() / 3.2f, viewport.getWorldHeight() / 2.0f + TEXT_SPACING_SIZE + 10);
     	initialiseFontReel(BY_TEXT, viewport.getWorldWidth() / 3.2f, viewport.getWorldHeight() / 2.0f + TEXT_SPACING_SIZE + 10);
     	initialiseFontReel(versionInfo.getAuthor(), viewport.getWorldWidth() / 3.2f, viewport.getWorldHeight() / 2.0f + TEXT_SPACING_SIZE + 10);
@@ -300,7 +269,17 @@ public class IntroScreen extends InputAdapter implements Screen {
     private void initialiseFontReel(String reelText, float x, float y) {
         Texture textTexture = initialiseFontTexture(reelText);
         for (int i = 0; i < reelText.length(); i++) {
-            AnimatedReel reelLetterTile = new AnimatedReel(textTexture, (float)(x + i * REEL_WIDTH), y, (float)REEL_WIDTH, (float)REEL_HEIGHT, (float)REEL_WIDTH, (float)REEL_HEIGHT, i, tweenManager);
+            AnimatedReel reelLetterTile =
+                    new AnimatedReel(
+                            textTexture,
+                            (float)(x + i * REEL_WIDTH),
+                            y,
+                            (float)REEL_WIDTH,
+                            (float)REEL_HEIGHT,
+                            (float)REEL_WIDTH,
+                            (float)REEL_HEIGHT,
+                            i,
+                            game.getTweenManager());
             reelLetterTile.setupSpinning();
             reelLetterTile.setSy(random.nextInt(reelText.length() - 1) * REEL_HEIGHT);
             reelLetterTile.getReel().addListener(reelTileListener);
@@ -314,10 +293,10 @@ public class IntroScreen extends InputAdapter implements Screen {
         debugRenderer = new Box2DDebugRenderer();
 
         rayHandler = new RayHandler(world);
-        rayHandler.useDiffuseLight(true);
+        RayHandler.useDiffuseLight(true);
         rayHandler.setAmbientLight(0.5f, 0.5f, 0.5f, 0.1f);
 
-        signLights = new Array<PointLight>();
+        Array<PointLight> signLights = new Array<>();
         signLights.add(getPointLight(sceneWidth / 2, sceneWidth / 2));
         signLights.add(getPointLight(sceneWidth / 4, sceneHeight / 2));
         signLights.add(getPointLight(sceneWidth / 2 + sceneWidth / 4, sceneHeight / 2));
@@ -372,35 +351,39 @@ public class IntroScreen extends InputAdapter implements Screen {
     private void initialiseIntroSequence() {
         Timeline introSeq = Timeline.createSequence();
         for (int i = 0; i < reelLetterTiles.size; i++)
-            introSeq = introSeq.push(SlotPuzzleTween.set(reelLetterTiles.get(i).getReel(), ReelLetterAccessor.POS_XY).target(-40f, -20f + i * 20f));
+            introSeq.push(
+                    SlotPuzzleTween.set(
+                            reelLetterTiles.get(i).getReel(),
+                            ReelLetterAccessor.POS_XY).
+                            target(-40f, -20f + i * 20f));
 
-        introSeq = introSeq.pushPause(1.0f);
-        introSeq = getTimeline(introSeq, 0, SLOT_PUZZLE_REEL_TEXT.length(), 0.4f, 250.0f, 30.0f, 360.0f);
+        introSeq.pushPause(1.0f);
+        getTimeline(introSeq, 0, SLOT_PUZZLE_REEL_TEXT.length(), 250.0f, 360.0f);
 
         int startOfText = SLOT_PUZZLE_REEL_TEXT.length();
         int endOfText = SLOT_PUZZLE_REEL_TEXT.length() + BY_TEXT.length();
-        introSeq = getTimeline(introSeq, startOfText, endOfText, 0.4f, 60.0f, 30.0f, 320.0f);
+        getTimeline(introSeq, startOfText, endOfText, 60.0f, 320.0f);
 
         startOfText = endOfText;
         endOfText = startOfText + versionInfo.getAuthor().length();
-        introSeq = getTimeline(introSeq, startOfText, endOfText, 0.4f, -120.0f, 30.0f, 280.0f);
+        getTimeline(introSeq, startOfText, endOfText, -120.0f, 280.0f);
 
         startOfText = endOfText;
         endOfText = startOfText + getCopyrightYearAuthorText().length();
-        introSeq = getTimeline(introSeq, startOfText, endOfText, 0.4f, -520.0f, 30.0f, 150.0f);
+        getTimeline(introSeq, startOfText, endOfText, -520.0f, 150.0f);
 
         startOfText = endOfText;
         endOfText = startOfText + 1 + versionInfo.getVersion().length();
-        introSeq = getTimeline(introSeq, startOfText, endOfText, 0.4f, -850.0f, 30.0f, 110.0f);
+        getTimeline(introSeq, startOfText, endOfText, -850.0f, 110.0f);
 
-        introSeq.start(tweenManager);
+        introSeq.start(game.getTweenManager());
 
-        slotReelPixmap = new Pixmap(REEL_WIDTH, REEL_HEIGHT, Pixmap.Format.RGBA8888);
+        Pixmap slotReelPixmap;
         slotReelPixmap = PixmapProcessors.createPixmapToAnimate(reelSprites.getSprites());
-        slotReelTexture = new Texture(slotReelPixmap);
+        Texture slotReelTexture = new Texture(slotReelPixmap);
 
         reelTile = new ReelTile(
-                 slotReelTexture,
+                slotReelTexture,
                 slotReelTexture.getHeight() / REEL_HEIGHT,
                  slotReelTexture.getWidth(),
                 viewport.getScreenHeight() / 2,
@@ -411,24 +394,33 @@ public class IntroScreen extends InputAdapter implements Screen {
                 null);
 
         Timeline reelSeq = Timeline.createSequence();
-        reelSeq = reelSeq.push(SlotPuzzleTween.set(reelTile, ReelAccessor.SCROLL_XY).target(0f, 0f).ease(Bounce.IN));
-        reelSeq = reelSeq.push(SlotPuzzleTween.to(reelTile, ReelAccessor.SCROLL_XY, 5.0f).target(0f, 40.0f * 8 * 3 + random.nextInt(slotReelTexture.getHeight() / 40) * 40).ease(Elastic.OUT));
+        reelSeq.push(SlotPuzzleTween.set(reelTile, ReelAccessor.SCROLL_XY).target(0f, 0f).ease(Bounce.IN));
+        reelSeq.push(SlotPuzzleTween.to(reelTile, ReelAccessor.SCROLL_XY, 5.0f).target(0f, 40.0f * 8 * 3 + random.nextInt(slotReelTexture.getHeight() / 40) * 40).ease(Elastic.OUT));
 
         reelSeq.
             repeat(100, 0.0f).
             push(SlotPuzzleTween.to(reelTile, ReelAccessor.SCROLL_XY, 5.0f).
             target(0f, 40.0f * 8 * 3 + random.nextInt(slotReelTexture.getHeight() / 40) * 40).
             ease(Elastic.OUT)).
-            start(tweenManager);
+            start(game.getTweenManager());
     }
 
-    private Timeline getTimeline(Timeline introSeq, int startOfText, int endOfText, float duration, float targetX, float targetXFactor, float targetY) {
+    private void getTimeline(
+            Timeline introSeq,
+            int startOfText,
+            int endOfText,
+            float targetX,
+            float targetY) {
         for (int i = startOfText; i < endOfText; i++)
-            introSeq = introSeq.push(SlotPuzzleTween.to(reelLetterTiles.get(i).getReel(), ReelLetterAccessor.POS_XY, duration).target(targetX + i * targetXFactor, targetY));
-        return introSeq;
+            introSeq.push(
+                    SlotPuzzleTween.to(
+                            reelLetterTiles.get(i).getReel(),
+                            ReelLetterAccessor.POS_XY, (float) 0.4)
+                            .target(targetX + i * (float) 30.0,
+                                    targetY));
     }
 
-    private void initialiseStarfield() {
+    private void initialiseStarField() {
         shapeRenderer = new ShapeRenderer();
         starField = new StarField(shapeRenderer,
                 NUM_STARS,
@@ -440,7 +432,7 @@ public class IntroScreen extends InputAdapter implements Screen {
     }
 
 	private void restartReelLettersSpinning() {
-		int nextSy = 0;
+		int nextSy;
 		int endReel = 0;
 		for (AnimatedReel reel : reelLetterTiles) {
 			reel.setEndReel(endReel++);
@@ -486,7 +478,7 @@ public class IntroScreen extends InputAdapter implements Screen {
 
     public void update(float delta) {
         musicPlayer.update(delta);
-        tweenManager.update(delta);
+        game.getTweenManager().update(delta);
         updateTimer(delta);
 		for (AnimatedReel reel : reelLetterTiles)
          	reel.update(delta);
@@ -559,9 +551,6 @@ public class IntroScreen extends InputAdapter implements Screen {
 
     @Override
     public void dispose() {
-        if (tweenManager != null)
-        	tweenManager.killAll();
-
         if (fontSmall != null)
         	fontSmall.dispose();
 

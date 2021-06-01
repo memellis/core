@@ -94,7 +94,6 @@ import static com.ellzone.slotpuzzle2d.messaging.MessageType.PlayAudio;
 import static com.ellzone.slotpuzzle2d.messaging.MessageType.StopAudio;
 
 public class PlayScreen implements Screen, PlayInterface, LevelCreatorInjectionInterface {
-    public static final int SLOT_REEL_OBJECT_LAYER = 2;
     public static final float PUZZLE_GRID_START_X = 160.0f;
     public static final float PUZZLE_GRID_START_Y = 40.0f;
     public static final String SLOTPUZZLE_SCREEN = "PlayScreen";
@@ -138,7 +137,6 @@ public class PlayScreen implements Screen, PlayInterface, LevelCreatorInjectionI
     private Box2DDebugRenderer debugRenderer;
     private RayHandler rayHandler;
     protected ReelSprites reelSprites;
-    private final int[][] reelGrid = new int[3][3];
     protected ShapeRenderer shapeRenderer;
     protected AudioManager audioManager;
     protected MessageManager messageManager;
@@ -195,7 +193,7 @@ public class PlayScreen implements Screen, PlayInterface, LevelCreatorInjectionI
         box2dWorld = new World(new Vector2(0, -9.8f), true);
         debugRenderer = new Box2DDebugRenderer();
         rayHandler = new RayHandler(box2dWorld);
-        rayHandler.useDiffuseLight(true);
+        RayHandler.useDiffuseLight(true);
         rayHandler.setAmbientLight(0.25f, 0.25f, 0.25f, 0.25f);
     }
 
@@ -357,12 +355,10 @@ public class PlayScreen implements Screen, PlayInterface, LevelCreatorInjectionI
     };
 
     protected void delegateIntroSequenceCallback(int type, ReelTile reelTile) {
-        switch (type) {
-             case TweenCallback.END:
-                playState = PlayStates.INTRO_POPUP;
-                playScreenPopUps.setPopUpSpritePositions();
-                playScreenPopUps.getLevelPopUp().showLevelPopUp(null);
-                break;
+        if (type == TweenCallback.END) {
+            playState = PlayStates.INTRO_POPUP;
+            playScreenPopUps.setPopUpSpritePositions();
+            playScreenPopUps.getLevelPopUp().showLevelPopUp(null);
         }
     }
 
@@ -416,12 +412,11 @@ public class PlayScreen implements Screen, PlayInterface, LevelCreatorInjectionI
             .start(game.getTweenManager());
     }
 
-    private TweenCallback deleteReelCallback = new TweenCallback() {
+    private final TweenCallback deleteReelCallback = new TweenCallback() {
         @Override
         public void onEvent(int type, BaseTween<?> source) {
-            switch (type) {
-                case TweenCallback.COMPLETE:
-                    processDeleteReel(source);
+            if (type == TweenCallback.COMPLETE) {
+                processDeleteReel(source);
             }
         }
     };
@@ -468,13 +463,12 @@ public class PlayScreen implements Screen, PlayInterface, LevelCreatorInjectionI
                 .start(game.getTweenManager());
     }
 
-    private TweenCallback deleteScoreCallback = new TweenCallback() {
+    private final TweenCallback deleteScoreCallback = new TweenCallback() {
         @Override
         public void onEvent(int type, BaseTween<?> source) {
-            switch (type) {
-                case TweenCallback.COMPLETE:
-                    Score score = (Score) source.getUserData();
-                    scores.removeValue(score, false);
+            if (type == TweenCallback.COMPLETE) {
+                Score score = (Score) source.getUserData();
+                scores.removeValue(score, false);
             }
         }
     };
@@ -551,25 +545,24 @@ public class PlayScreen implements Screen, PlayInterface, LevelCreatorInjectionI
     protected TweenCallback hideLevelPopUpCallback = new TweenCallback() {
         @Override
         public void onEvent(int type, BaseTween<?> source) {
-            switch (type) {
-                case TweenCallback.END:
-                    playState = PlayStates.PLAYING;
-                    playScreenLevel.getHud().resetWorldTime(LEVEL_TIME_LENGTH_IN_SECONDS);
-                    playScreenLevel.getHud().startWorldTimer();
-                    if (levelDoor.getLevelType().equals(LevelCreator.HIDDEN_PATTERN_LEVEL_TYPE))
-                        isHiddenPatternRevealed(reelTiles);
-                    if (levelDoor.getLevelType().equals(PLAYING_CARD_LEVEL_TYPE))
-                        isHiddenPatternRevealed(reelTiles);
-            }
+        if (type == TweenCallback.END) {
+            playState = PlayStates.PLAYING;
+            playScreenLevel.getHud().resetWorldTime(LEVEL_TIME_LENGTH_IN_SECONDS);
+            playScreenLevel.getHud().startWorldTimer();
+            if (levelDoor.getLevelType().equals(HIDDEN_PATTERN_LEVEL_TYPE))
+                isHiddenPatternRevealed(reelTiles);
+            if (levelDoor.getLevelType().equals(PLAYING_CARD_LEVEL_TYPE))
+                isHiddenPatternRevealed(reelTiles);
+        }
         }
     };
 
     protected TweenCallback levelWonCallback = new TweenCallback() {
         @Override
         public void onEvent(int type, BaseTween<?> source) {
-            dispose();
-            ((WorldScreen)game.getWorldScreen()).worldScreenCallBack(mapTileLevel);
-            game.setScreen(game.getWorldScreen());
+        dispose();
+        ((WorldScreen)game.getWorldScreen()).worldScreenCallBack(mapTileLevel);
+        game.setScreen(game.getWorldScreen());
         }
     };
 
@@ -595,10 +588,9 @@ public class PlayScreen implements Screen, PlayInterface, LevelCreatorInjectionI
     protected TweenCallback levelOverCallback = new TweenCallback() {
         @Override
         public void onEvent(int type, BaseTween<?> source) {
-            switch (type) {
-                case TweenCallback.END:
-                    delegateLevelOverCallback();
-            }
+        if (type == TweenCallback.END) {
+            delegateLevelOverCallback();
+        }
         }
     };
 
@@ -676,7 +668,7 @@ public class PlayScreen implements Screen, PlayInterface, LevelCreatorInjectionI
     public boolean areReelsDeleted() {
         return
                 levelDoor.getLevelType().equals(LevelCreator.MINI_SLOT_MACHINE_LEVEL_TYPE) ?
-                false : playScreenLevel.getFlashSlots().areReelsDeleted();
+                        false : playScreenLevel.getFlashSlots().areReelsDeleted();
     }
 
     @Override

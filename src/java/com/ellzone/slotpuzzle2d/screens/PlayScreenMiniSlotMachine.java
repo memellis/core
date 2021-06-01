@@ -46,8 +46,6 @@ import com.ellzone.slotpuzzle2d.tweenengine.SlotPuzzleTween;
 import com.ellzone.slotpuzzle2d.tweenengine.Timeline;
 import com.ellzone.slotpuzzle2d.tweenengine.TweenCallback;
 
-import net.dermetfan.gdx.scenes.scene2d.ui.ScrollPaneSnapAction;
-
 import java.util.Comparator;
 
 import aurelienribon.tweenengine.equations.Quad;
@@ -55,12 +53,11 @@ import aurelienribon.tweenengine.equations.Quad;
 public class PlayScreenMiniSlotMachine extends PlayScreen {
 
     public static final int LEVEL_TIME_LENGTH = 120;
-    private int[][] reelGrid = new int[3][3];
+    private final int[][] reelGrid = new int[3][3];
     private Array<Array<Vector2>> rowMatchesToDraw;
     private ShapeRenderer shapeRenderer;
     private Array<HoldLightButton> holdLightButtons;
     private Array<SlotHandleSprite> slotHandles;
-    private Array<ReelTile> reelsToFlash;
 
     public PlayScreenMiniSlotMachine(SlotPuzzleGame game, LevelDoor levelDoor, MapTile mapTile) {
         super(game, levelDoor, mapTile);
@@ -88,7 +85,7 @@ public class PlayScreenMiniSlotMachine extends PlayScreen {
                     @Override
                     public void onEvent(ReelTile source) {
                         if (levelDoor.getLevelType().equals(LevelCreator.MINI_SLOT_MACHINE_LEVEL_TYPE))
-                            processReelStopped(source);
+                            processReelStopped();
                     }
 
                 },
@@ -101,7 +98,7 @@ public class PlayScreenMiniSlotMachine extends PlayScreen {
         getLevelEntities();
     }
 
-    private void processReelStopped(ReelTile source) {
+    private void processReelStopped() {
         reelsSpinning--;
         if (reelsSpinning < 1)
             if (playStateMachine.getStateMachine().getCurrentState() == PlayState.PLAY ||
@@ -118,15 +115,16 @@ public class PlayScreenMiniSlotMachine extends PlayScreen {
         sortedReelFlashSegments.sort(new Comparator<Vector2>() {
             @Override
             public int compare(Vector2 v1, Vector2 v2) {
-                if (v1.y == v2.y) return 0;
-                if (v1.y < v2.y) return -1;
-                return 1;
+                return Float.compare(v1.y, v2.y);
             }
         });
         if (sortedReelFlashSegments.size > 0) {
             float baseFlashSegmentY = sortedReelFlashSegments.get(0).y;
-            for (Vector2 reelFlashSegment : sortedReelFlashSegments) {
-                Score score = new Score(reelFlashSegment.x, reelFlashSegment.y, (int) (source.getEndReel() + (reelFlashSegment.y - baseFlashSegmentY) / source.getWidth() + 1));
+            for (Vector2 reelFlashSegment : new Array.ArrayIterator<>(sortedReelFlashSegments)) {
+                Score score =
+                        new Score(reelFlashSegment.x,
+                                reelFlashSegment.y,
+                                (int) (source.getEndReel() + (reelFlashSegment.y - baseFlashSegmentY) / source.getWidth() + 1));
                 scores.add(score);
                 Timeline.createSequence()
                         .beginParallel()
@@ -148,10 +146,9 @@ public class PlayScreenMiniSlotMachine extends PlayScreen {
     }
 
     private void processDeleteScore(int type, BaseTween<?> source) {
-        switch (type) {
-            case TweenCallback.COMPLETE:
-                Score score = (Score) source.getUserData();
-                scores.removeValue(score, false);
+        if (type == TweenCallback.COMPLETE) {
+            Score score = (Score) source.getUserData();
+            scores.removeValue(score, false);
         }
     }
 
@@ -172,22 +169,22 @@ public class PlayScreenMiniSlotMachine extends PlayScreen {
     }
 
     private void matchRowsToDraw(ReelTileGridValue[][] matchGrid, PuzzleGridTypeReelTile puzzleGridTypeReelTile) {
-        Array<ReelTileGridValue> depthSearchResults = new Array<>();
-        rowMatchesToDraw = new Array<Array<Vector2>>();
-        for (int row = 0; row < matchGrid.length; row++) {
-            depthSearchResults = puzzleGridTypeReelTile.depthFirstSearchIncludeDiagonals(matchGrid[row][0]);
+        Array<ReelTileGridValue> depthSearchResults;
+        rowMatchesToDraw = new Array<>();
+        for (ReelTileGridValue[] reelTileGridValues : matchGrid) {
+            depthSearchResults = puzzleGridTypeReelTile.depthFirstSearchIncludeDiagonals(reelTileGridValues[0]);
             if (puzzleGridTypeReelTile.isRow(depthSearchResults, matchGrid)) {
-                rowMatchesToDraw.add(drawMatches(depthSearchResults, 340, 300));
+                rowMatchesToDraw.add(drawMatches(depthSearchResults));
                 playScreenLevel.getFlashSlots().flashSlotsForMiniSlotMachine(depthSearchResults);
             }
         }
     }
 
-    private Array<Vector2> drawMatches(Array<ReelTileGridValue> depthSearchResults, int startX, int startY) {
-        Array<Vector2> points = new Array<Vector2>();
-        for (ReelTileGridValue cell : depthSearchResults) {
+    private Array<Vector2> drawMatches(Array<ReelTileGridValue> depthSearchResults) {
+        Array<Vector2> points = new Array<>();
+        for (ReelTileGridValue cell : new Array.ArrayIterator<>(depthSearchResults)) {
             playScreenLevel.getHud().addScore((reelGrid[cell.r][cell.c] + 1));
-            points.add(new Vector2(startX + cell.c * 40, startY - cell.r * 40));
+            points.add(new Vector2(340 + cell.c * 40, 300 - cell.r * 40));
         }
         return points;
     }
@@ -208,7 +205,7 @@ public class PlayScreenMiniSlotMachine extends PlayScreen {
     }
 
     private void handleReelsTouchedSlotMachine(float touchX, float touchY) {
-        for (AnimatedReel animatedReel : animatedReels) {
+        for (AnimatedReel animatedReel : new Array.ArrayIterator<>(animatedReels)) {
             if (animatedReel.getReel().getBoundingRectangle().contains(touchX, touchY)) {
                 clearRowMatchesToDraw();
                 if (animatedReel.getReel().isSpinning()) {
@@ -247,7 +244,7 @@ public class PlayScreenMiniSlotMachine extends PlayScreen {
                         playScreenPopUps.getLevelPopUp().hideLevelPopUp(new TweenCallback() {
                             @Override
                             public void onEvent(int type, BaseTween<?> source) {
-                                processHideLevelPopUp(type, source);
+                                processHideLevelPopUp(type);
                             }
                         });
                     break;
@@ -273,29 +270,25 @@ public class PlayScreenMiniSlotMachine extends PlayScreen {
         }
     }
 
-    private void processHideLevelPopUp(int type, BaseTween<?> source) {
-        switch (type) {
-            case TweenCallback.END:
-                playState = PlayStates.PLAYING;
-                playScreenLevel.getHud().resetWorldTime(LEVEL_TIME_LENGTH);
-                playScreenLevel.getHud().startWorldTimer();
-                if (levelDoor.getLevelType().equals(
-                        SlotPuzzleConstants.MINI_SLOT_MACHINE_LEVEL_TYPE))
-                    matchReels();
+    private void processHideLevelPopUp(int type) {
+        if (type == TweenCallback.END) {
+            playState = PlayStates.PLAYING;
+            playScreenLevel.getHud().resetWorldTime(LEVEL_TIME_LENGTH);
+            playScreenLevel.getHud().startWorldTimer();
+            if (levelDoor.getLevelType().equals(
+                    SlotPuzzleConstants.MINI_SLOT_MACHINE_LEVEL_TYPE))
+                matchReels();
         }
     }
 
     protected void handleLightButtonTouched(float touchX, float touchY) {
-        for (LightButton lightButton : holdLightButtons)
+        for (LightButton lightButton : new Array.ArrayIterator<>(holdLightButtons))
             if (lightButton.getSprite().getBoundingRectangle().contains(touchX, touchY))
-                if (lightButton.getLight().isActive())
-                    lightButton.getLight().setActive(false);
-                else
-                    lightButton.getLight().setActive(true);
+                lightButton.getLight().setActive(!lightButton.getLight().isActive());
     }
 
     private void handleSlotHandleIsTouch(float touchX, float touchY) {
-        for (SlotHandleSprite slotHandle : slotHandles)
+        for (SlotHandleSprite slotHandle : new Array.ArrayIterator<>(slotHandles))
             if (slotHandle.getBoundingRectangle().contains(touchX, touchY))
                 if (isReelsNotSpinning())
                     slotHandlePulled(slotHandle);
@@ -305,9 +298,11 @@ public class PlayScreenMiniSlotMachine extends PlayScreen {
 
     private boolean isReelsNotSpinning() {
         boolean reelsNotSpinning = true;
-        for (AnimatedReel animatedReel : animatedReels)
-            if (animatedReel.getReel().isSpinning())
+        for (AnimatedReel animatedReel : new Array.ArrayIterator<>(animatedReels))
+            if (animatedReel.getReel().isSpinning()) {
                 reelsNotSpinning = false;
+                break;
+            }
         return reelsNotSpinning;
     }
 
@@ -316,7 +311,7 @@ public class PlayScreenMiniSlotMachine extends PlayScreen {
         pullLeverSound.play();
         clearRowMatchesToDraw();
         int i = 0;
-        for (AnimatedReel animatedReel : animatedReels) {
+        for (AnimatedReel animatedReel : new Array.ArrayIterator<>(animatedReels)) {
             if (!holdLightButtons.get(i).getLight().isActive()) {
                 animatedReel.setEndReel(random.nextInt(sprites.length - 1));
                 animatedReel.reinitialise();
@@ -354,13 +349,13 @@ public class PlayScreenMiniSlotMachine extends PlayScreen {
     }
 
     protected void renderAnimatedReels() {
-        for (AnimatedReel animatedReel : animatedReels)
+        for (AnimatedReel animatedReel : new Array.ArrayIterator<>(animatedReels))
             if (!animatedReel.getReel().isReelTileDeleted())
                 animatedReel.draw(game.batch);
     }
 
     protected void renderAnimatedReelsFlash() {
-        for (AnimatedReel animatedReel : animatedReels)
+        for (AnimatedReel animatedReel : new Array.ArrayIterator<>(animatedReels))
             if (!animatedReel.getReel().isReelTileDeleted())
                 if (animatedReel.getReel().getFlashState() == ReelTile.FlashState.FLASH_ON)
                     animatedReel.draw(shapeRenderer);
@@ -369,7 +364,7 @@ public class PlayScreenMiniSlotMachine extends PlayScreen {
     protected void renderMatchedRows() {
         shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
         shapeRenderer.setColor(Color.RED);
-        for (Array<Vector2> matchedRow : rowMatchesToDraw)
+        for (Array<Vector2> matchedRow : new Array.ArrayIterator<>(rowMatchesToDraw))
             if (matchedRow.size >= 2)
                 for (int i = 0; i < matchedRow.size - 1; i++)
                     shapeRenderer.rectLine(matchedRow.get(i).x, matchedRow.get(i).y,
@@ -379,14 +374,14 @@ public class PlayScreenMiniSlotMachine extends PlayScreen {
     }
 
     protected void renderSlotHandle() {
-        for (SlotHandleSprite slotHandle : slotHandles)
+        for (SlotHandleSprite slotHandle : new Array.ArrayIterator<>(slotHandles))
             slotHandle.draw(game.batch);
     }
 
     protected void renderLightButtons() {
         game.batch.setProjectionMatrix(lightViewport.getCamera().combined);
         game.batch.begin();
-        for (HoldLightButton lightButton : holdLightButtons)
+        for (HoldLightButton lightButton : new Array.ArrayIterator<>(holdLightButtons))
             lightButton.getSprite().draw(game.batch);
         game.batch.end();
     }

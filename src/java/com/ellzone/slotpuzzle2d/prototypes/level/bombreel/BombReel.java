@@ -79,29 +79,22 @@ import static com.ellzone.slotpuzzle2d.messaging.MessageType.SwapReelsAboveMe;
 
 public class BombReel extends SPPrototype implements InputProcessor {
     public static final int SCREEN_OFFSET = 400;
-    public static final int BOMB_REEL = 8;
-    private final int MAX_NBR = 30;
+
     private OrthographicCamera camera;
     private ShapeRenderer renderer;
     private Box2DDebugRenderer debugRenderer;
     private SpriteBatch batch;
     private BitmapFont font;
     private AnnotationAssetManager annotationAssetManager;
-    private Random random;
     private World world;
     private Array<Body> reelBoxBodies = new Array<Body>();
-    private Body groundBody, miniSlotMachineBody;
-    private Body hitBody = null;
-    private TweenManager tweenManager = new TweenManager();
+    private final TweenManager tweenManager = new TweenManager();
     private Array<AnimatedReel> animatedReels;
     private int numberOfReelsToFall;
     private ReelSprites reelSprites;
     private Pixmap slotReelScrollPixmap;
     private Texture slotReelScrollTexture;
     private int spriteWidth, spriteHeight;
-    private int displayWindowWidth, displayWindowHeight;
-    private TextureAtlas slotHandleAtlas;
-    private Sound pullLeverSound, reelSpinningSound, reelStoppingSound;
     private FitViewport viewport;
     private Stage stage;
     private PhysicsManagerCustomBodies physicsEngine;
@@ -113,20 +106,8 @@ public class BombReel extends SPPrototype implements InputProcessor {
     private int numberOfReelBoxesCreated = 0;
     int[] matrixIdentifier = new int[SlotPuzzleConstants.GAME_LEVEL_WIDTH];
     private boolean cycleDynamic = true;
-    private boolean testBombReel = true;
-    private int reelToDelete = 84;
-    private Array<Integer> reelsToDelete;
     private AnimatedReelsMatrixCreator animatedReelsMatrixCreator;
     private boolean reelsHaveFallen = false;
-    private boolean debugSet = false;
-    private Array<ParticleEffect> explosionEffects;
-    private boolean exploding = false;
-    private ParticleEffectPool bombExplosionPool;
-    private TextureAtlas bombAtlas;
-    private Array<Animation<TextureRegion>> bombAnimations;
-    private Array<ReelTileGridValue> bombFuses;
-    private boolean bombFusesReached;
-    private float stateTime;
     private BombExplosion bombExplosion;
 
     @Override
@@ -192,16 +173,10 @@ public class BombReel extends SPPrototype implements InputProcessor {
     }
 
     private void setGdxEngine() {
-        setDisplaySize();
         renderer = new ShapeRenderer();
         debugRenderer = new Box2DDebugRenderer();
         batch = new SpriteBatch();
         Gdx.input.setInputProcessor(this);
-    }
-
-    private void setDisplaySize() {
-        displayWindowWidth = SlotPuzzleConstants.VIRTUAL_WIDTH;
-        displayWindowHeight = SlotPuzzleConstants.VIRTUAL_HEIGHT;
     }
 
     private void initialiseDisplay() {
@@ -212,16 +187,7 @@ public class BombReel extends SPPrototype implements InputProcessor {
 
     private void loadAssets() {
         setUpAssetManager();
-        getAssets();
-    }
-
-    private void getAssets() {
-        bombAtlas = annotationAssetManager.get(AssetsAnnotation.BOMB_ANIMATION);
-        slotHandleAtlas = annotationAssetManager.get(AssetsAnnotation.SLOT_HANDLE);
-        pullLeverSound = annotationAssetManager.get(AssetsAnnotation.SOUND_PULL_LEVER);
-        reelSpinningSound = annotationAssetManager.get(AssetsAnnotation.SOUND_REEL_SPINNING);
-        reelStoppingSound = annotationAssetManager.get(AssetsAnnotation.SOUND_REEL_STOPPED);
-     }
+   }
 
     private void setUpAssetManager() {
         annotationAssetManager = new AnnotationAssetManager();
@@ -248,6 +214,7 @@ public class BombReel extends SPPrototype implements InputProcessor {
     }
 
     private void initialiseReelSlots() {
+        boolean testBombReel = true;
         if (testBombReel)
             testBombReelSetUp();
         else
@@ -352,7 +319,6 @@ public class BombReel extends SPPrototype implements InputProcessor {
         long start = TimeUtils.nanoTime();
         float dt = Gdx.graphics.getDeltaTime();
         float updateTime = (TimeUtils.nanoTime() - start) / 1000000000.0f;
-        stateTime += dt;
 
         update(dt);
 
@@ -403,9 +369,7 @@ public class BombReel extends SPPrototype implements InputProcessor {
                         SlotPuzzleConstants.GAME_LEVEL_WIDTH,
                         SlotPuzzleConstants.GAME_LEVEL_HEIGHT))
                 .invoke();
-        PuzzleGridTypeReelTile puzzleGridTypeReelTile = matchSlots.getPuzzleGridTypeReelTile();
-        ReelTileGridValue[][] puzzleGrid = matchSlots.getPuzzleGrid();
-        return matchSlots.getMatchedSlots();
+       return matchSlots.getMatchedSlots();
     }
 
     private LevelCallback deleteReelCallback = new LevelCallback() {
@@ -493,7 +457,7 @@ public class BombReel extends SPPrototype implements InputProcessor {
         }
         if (keycode == Input.Keys.D) {
             System.out.println("Debug");
-            debugSet = true;
+            boolean debugSet = true;
             animatedReelsManager.printSlotMatrix();
             return true;
         }

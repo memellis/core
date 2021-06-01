@@ -21,9 +21,6 @@ import com.ellzone.slotpuzzle2d.level.LevelDoor;
 import com.ellzone.slotpuzzle2d.scene.MapTile;
 
 public class PlayScreenHiddenPattern extends PlayScreen {
-
-    public static final int LEVEL_TIME_LENGTH = 120;
-
     public PlayScreenHiddenPattern(SlotPuzzleGame game, LevelDoor levelDoor, MapTile mapTile) {
         super(game, levelDoor, mapTile);
     }

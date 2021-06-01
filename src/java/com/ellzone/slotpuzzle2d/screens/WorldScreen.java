@@ -122,11 +122,9 @@ public class WorldScreen implements Screen, LevelCreatorInjectionInterface {
 	private static final String SLOT_MACHINE_LAYER = "Slot Machine Components";
 	public static final String BOMBS_LEVEL_TYPE = "BombsLevel";
 
-	private SlotPuzzleGame game;
-	private Viewport viewport;
+	private final SlotPuzzleGame game;
 	private OrthographicCamera camera;
 	private TiledMap worldMap;
-	private GestureDetector gestureDetector;
 	private MapGestureListener mapGestureListener;
 	private TiledMapTileLayer mapTextureLayer;
 	private Array<LevelDoor> levelDoors;
@@ -136,23 +134,18 @@ public class WorldScreen implements Screen, LevelCreatorInjectionInterface {
 	private OrthogonalTiledMapRenderer renderer;
 	private BitmapFont font;
 	private BitmapFont fontSmall;
-	private float resizeWidth, resizeHeight, cww, cwh, aspectRatio;
+	private float aspectRatio;
 	private float screenOverCWWRatio, screenOverCWHRatio;
-	private Texture levelDoorTexture;
-	private Sprite levelDoorSprite;
 	private TextureAtlas tilesAtlas;
 	private MapTile selectedTile;
 	private TweenManager tweenManager;
 	private int mapWidth, mapHeight, tilePixelWidth, tilePixelHeight;
-	private String message = "";
-    private InputMultiplexer inputMultiplexer;
+	private InputMultiplexer inputMultiplexer;
 	private boolean inPlayScreen = false;
     private boolean show = false;
 	private Hud hud	;
-	private int worldScreenScore = 0;
-    private World world;
-    private LevelObjectCreatorEntityHolder levelObjectCreator;
-    private Array<SpinWheelSlotPuzzleTileMap> spinWheels;
+	private World world;
+	private Array<SpinWheelSlotPuzzleTileMap> spinWheels;
     private CameraLerp cameraLerp;
 	private Array<SlotHandleTileMap> slotHandles;
 	private Array<AnimatedReelTileMap> animatedReelsTileMap;
@@ -166,8 +159,8 @@ public class WorldScreen implements Screen, LevelCreatorInjectionInterface {
 
 	private void createWorldScreen() {
 		random = new Random();
-		scrollSigns = new Array<ScrollSign>();
-		levelEntrances = new Array<LevelEntrance>();
+		scrollSigns = new Array<>();
+		levelEntrances = new Array<>();
         world = new World(new Vector2(0, -10), true);
         getAssets(game.annotationAssetManager);
 		initialiseUniversalTweenEngine();
@@ -188,13 +181,13 @@ public class WorldScreen implements Screen, LevelCreatorInjectionInterface {
 
 	private void initialiseCamera() {
 		camera = new OrthographicCamera();
-		viewport = new FitViewport(SlotPuzzleConstants.VIRTUAL_WIDTH, SlotPuzzleConstants.VIRTUAL_HEIGHT, this.camera);
+		Viewport viewport = new FitViewport(SlotPuzzleConstants.VIRTUAL_WIDTH, SlotPuzzleConstants.VIRTUAL_HEIGHT, this.camera);
 		aspectRatio = SlotPuzzleConstants.VIRTUAL_WIDTH / SlotPuzzleConstants.VIRTUAL_HEIGHT;
 		camera.setToOrtho(false, aspectRatio * ORTHO_VIEWPORT_WIDTH, ORTHO_VIEWPORT_HEIGHT);
 		camera.zoom = 2;
 		camera.update();
-		cww = camera.viewportWidth * camera.zoom * tilePixelWidth;
-		cwh = camera.viewportHeight * camera.zoom * tilePixelHeight;
+		float cww = camera.viewportWidth * camera.zoom * tilePixelWidth;
+		float cwh = camera.viewportHeight * camera.zoom * tilePixelHeight;
 		screenOverCWWRatio = SlotPuzzleConstants.VIRTUAL_WIDTH / cww;
 		screenOverCWHRatio = SlotPuzzleConstants.VIRTUAL_HEIGHT / cwh;
 		cameraLerp = new CameraLerp(camera);
@@ -203,7 +196,7 @@ public class WorldScreen implements Screen, LevelCreatorInjectionInterface {
 	private void initialiseLibGdx() {
 		font = new BitmapFont();
 		mapGestureListener = new MapGestureListener(this.camera);
-		gestureDetector = new GestureDetector(2, 0.5f, 2, 0.15f, mapGestureListener);
+		GestureDetector gestureDetector = new GestureDetector(2, 0.5f, 2, 0.15f, mapGestureListener);
 		inputMultiplexer = new InputMultiplexer();
 		inputMultiplexer.addProcessor(gestureDetector);
 		Gdx.input.setInputProcessor(inputMultiplexer);
@@ -238,7 +231,7 @@ public class WorldScreen implements Screen, LevelCreatorInjectionInterface {
 	}
 
     private Array<String> initialiseScrollSignMessages(String message) {
-        Array<String> scrollSignMessages = new Array<String>();
+        Array<String> scrollSignMessages = new Array<>();
         scrollSignMessages.add(message);
         scrollSignMessages.add(message + "level completed ");
         return scrollSignMessages;
@@ -345,7 +338,7 @@ public class WorldScreen implements Screen, LevelCreatorInjectionInterface {
 	}
 
     private void loadDoors() {
-		levelDoors = new Array();
+		levelDoors = new Array<>();
 		levelDoors.setSize(worldMap.getLayers().get(WORLD_MAP_LEVEL_DOORS).getObjects().getByType(RectangleMapObject.class).size);
 		for (MapObject mapObject : worldMap.getLayers().get(WORLD_MAP_LEVEL_DOORS).getObjects().getByType(RectangleMapObject.class)) {
 			LevelDoor levelDoor = new LevelDoor();
@@ -360,7 +353,7 @@ public class WorldScreen implements Screen, LevelCreatorInjectionInterface {
 	}
 
 	public void loadEntities() {
-        levelObjectCreator = new LevelObjectCreatorEntityHolder(this, world, null);
+		LevelObjectCreatorEntityHolder levelObjectCreator = new LevelObjectCreatorEntityHolder(this, world, null);
 		Array<RectangleMapObject> extractedLevelRectangleMapObjects = extractLevelAssets(worldMap);
 		levelObjectCreator.createLevel(extractedLevelRectangleMapObjects);
 		spinWheels = levelObjectCreator.getSpinWheels();
@@ -399,7 +392,7 @@ public class WorldScreen implements Screen, LevelCreatorInjectionInterface {
     }
 
     private void setUpSpinWheels() {
-        for (SpinWheelSlotPuzzleTileMap spinWheel : spinWheels)
+        for (SpinWheelSlotPuzzleTileMap spinWheel : new Array.ArrayIterator<>(spinWheels))
             setUpSpinWheel(spinWheel);
     }
 
@@ -408,7 +401,7 @@ public class WorldScreen implements Screen, LevelCreatorInjectionInterface {
 	}
 
     private void createPopUps() {
-		mapTiles = new Array<MapTile>();
+		mapTiles = new Array<>();
 		mapTiles.add(
 				new MapTile(20,	20,	200,	200,
 				SlotPuzzleConstants.VIRTUAL_WIDTH,
@@ -538,7 +531,7 @@ public class WorldScreen implements Screen, LevelCreatorInjectionInterface {
 				levelDoorHeight;
 		TiledMapTileLayer.Cell cell;
 
-		for (LevelDoor levelDoor : levelDoors) {
+		for (LevelDoor levelDoor : new Array.ArrayIterator<>(levelDoors)) {
 			levelDoorX = (int) levelDoor.getDoorPosition().getX() / 40;
 			levelDoorY = (int) levelDoor.getDoorPosition().getY() / 40;
 			levelDoorHeight = (int) levelDoor.getDoorPosition().getHeight() / 40;
@@ -549,13 +542,14 @@ public class WorldScreen implements Screen, LevelCreatorInjectionInterface {
 
 				if (mapTiles.get(levelNumber).getLevel().isLevelCompleted()) {
                     if (!mapTiles.get(levelNumber).getLevel().hasLevelScrollSignChanged()) {
-                        updateScrollSignToLevelCompleted(mapTiles.get(levelNumber), scrollSigns.get(levelNumber));
+                        updateScrollSignToLevelCompleted(
+                        		mapTiles.get(levelNumber), scrollSigns.get(levelNumber));
                     }
 				}
 			}
 			levelNumber++;
 		}
-		for (ScrollSign scrollSign : scrollSigns) {
+		for (ScrollSign scrollSign : new Array.ArrayIterator<>(scrollSigns)) {
 			scrollSign.update(dt);
 			scrollSign.setSx(scrollSign.getSx() + 1);
 		}
@@ -574,11 +568,11 @@ public class WorldScreen implements Screen, LevelCreatorInjectionInterface {
 
 	public void update(float delta) {
 		tweenManager.update(delta);
-		updateWorld(delta);
+		updateWorld();
 		updateDynamicDoors(delta);
 		updateEntities(delta);
 		if (Gdx.input.isKeyPressed(Input.Keys.S))
-			for (SpinWheelSlotPuzzleTileMap spinWheel : spinWheels)
+			for (SpinWheelSlotPuzzleTileMap spinWheel : new Array.ArrayIterator<>(spinWheels))
 				spinWheel.spin(MathUtils.random(5F, 30F));
 
 		if (Gdx.input.isKeyPressed(Input.Keys.L) &
@@ -587,7 +581,8 @@ public class WorldScreen implements Screen, LevelCreatorInjectionInterface {
 
 		if (Gdx.input.isKeyPressed(Input.Keys.P)) {
 			slotHandles.get(0).pullSlotHandle();
-			for (AnimatedReelTileMap animatedReel : animatedReelsTileMap) {
+			for (AnimatedReelTileMap animatedReel :
+					new Array.ArrayIterator<>(animatedReelsTileMap)) {
 				setAnimatedReelSpinning(animatedReel);
 			}
 		}
@@ -618,7 +613,7 @@ public class WorldScreen implements Screen, LevelCreatorInjectionInterface {
 		}
 	};
 
-	public void updateWorld(float delta) {
+	public void updateWorld() {
 		world.step(1 / 60f, 8, 2);
 	}
 
@@ -628,29 +623,29 @@ public class WorldScreen implements Screen, LevelCreatorInjectionInterface {
 	}
 
 	private void updateSpinWheels() {
-		for (SpinWheelSlotPuzzleTileMap spinWheel : spinWheels)
+		for (SpinWheelSlotPuzzleTileMap spinWheel : new Array.ArrayIterator<>(spinWheels))
 			updateSpinWheel(spinWheel);
 	}
 
 	private void updateSpinWheel(SpinWheelSlotPuzzleTileMap spinWheel) {
 		if (!spinWheel.spinningStopped()) {
-			updateCoordinates(spinWheel.getWheelBody(), spinWheel.getWheelImage(), 0, 0);
-			updateCoordinates(spinWheel.getNeedleBody(), spinWheel.getNeedleImage(), 0, -25F);
+			updateCoordinates(spinWheel.getWheelBody(), spinWheel.getWheelImage(), 0);
+			updateCoordinates(spinWheel.getNeedleBody(), spinWheel.getNeedleImage(), -25F);
 		} else {
 			System.out.println("lucky element is: " + spinWheel.getLuckyWinElement());
 		}
 	}
 
-	private void updateCoordinates(Body body, Image image, float incX, float incY) {
+	private void updateCoordinates(Body body, Image image, float incY) {
 		image.setPosition(
-				body.getPosition().x + (incX / SpinWheel.PPM),
+				body.getPosition().x + ((float) 0 / SpinWheel.PPM),
 				body.getPosition().y + (incY / SpinWheel.PPM),
 				Align.center);
 		image.setRotation(body.getAngle() * MathUtils.radiansToDegrees);
 	}
 
 	private void updateAnimatedReels(float delta) {
-		for (AnimatedReelTileMap animatedReel : animatedReelsTileMap)
+		for (AnimatedReelTileMap animatedReel : new Array.ArrayIterator<>(animatedReelsTileMap))
 			updateAnimatedReel(animatedReel, delta);
 	}
 
@@ -677,6 +672,7 @@ public class WorldScreen implements Screen, LevelCreatorInjectionInterface {
 		camera.update();
 		game.batch.begin();
 		renderMapTiles();
+		String message = "";
 		font.draw(game.batch, message, 80, 100);
 		game.batch.end();
 		renderer.getBatch().begin();
@@ -692,7 +688,7 @@ public class WorldScreen implements Screen, LevelCreatorInjectionInterface {
 	}
 
 	private void renderSpinWheels(SpriteBatch batch) {
-		for (SpinWheelSlotPuzzleTileMap spinWheel : spinWheels)
+		for (SpinWheelSlotPuzzleTileMap spinWheel : new Array.ArrayIterator<>(spinWheels))
 			renderSpinWheel(spinWheel, batch);
 	}
 
@@ -711,12 +707,13 @@ public class WorldScreen implements Screen, LevelCreatorInjectionInterface {
 	}
 
 	private void renderAnimatedReels(SpriteBatch batch) {
-		for (AnimatedReelTileMap animatedReelTileMap : animatedReelsTileMap)
+		for (AnimatedReelTileMap animatedReelTileMap :
+				new Array.ArrayIterator<>(animatedReelsTileMap))
 			animatedReelTileMap.draw(batch);
 	}
 
 	private void renderMapTiles() {
-		for (MapTile mapTile : mapTiles)
+		for (MapTile mapTile : new Array.ArrayIterator<>(mapTiles))
 			mapTile.draw(game.batch);
 	}
 
@@ -727,9 +724,7 @@ public class WorldScreen implements Screen, LevelCreatorInjectionInterface {
 
 	@Override
 	public void resize(int width, int height) {
-        this.resizeWidth = width;
-        this.resizeHeight = height;
-        Gdx.app.log(LOG_TAG, "resize(int width, int height) called: width=" + width + ", height="+height);
+		Gdx.app.log(LOG_TAG, "resize(int width, int height) called: width=" + width + ", height="+height);
     }
 
 	@Override
@@ -863,7 +858,7 @@ public class WorldScreen implements Screen, LevelCreatorInjectionInterface {
 			float wx = screenXToWorldX(x);
 			float wy = screenYToWorldY(y);
             int levelDoorIndex = 0;
-			for (LevelDoor levelDoor : levelDoors) {
+			for (LevelDoor levelDoor : new Array.ArrayIterator<>(levelDoors)) {
 				if (levelDoor.getDoorPosition().contains(wx, wy))
 					enterLevel(levelDoor, levelDoorIndex);
 				levelDoorIndex++;
@@ -876,8 +871,8 @@ public class WorldScreen implements Screen, LevelCreatorInjectionInterface {
 			int sw = (int) (levelDoor.getDoorPosition().width * screenOverCWWRatio);
 			int sh = (int) (levelDoor.getDoorPosition().height * screenOverCWHRatio);
 
-			levelDoorTexture = levelEntrances.get(levelDoorIndex).getLevelEntrance();
-			levelDoorSprite = new Sprite(levelDoorTexture);
+			Texture levelDoorTexture = levelEntrances.get(levelDoorIndex).getLevelEntrance();
+			Sprite levelDoorSprite = new Sprite(levelDoorTexture);
 			levelDoorSprite.setOrigin(0, 0);
 			levelDoorSprite.setBounds(sx, sy, sw, sh);
 			mapTiles.get(levelDoorIndex).setSprite(levelDoorSprite);
