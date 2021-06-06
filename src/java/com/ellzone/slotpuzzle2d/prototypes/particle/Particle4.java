@@ -37,7 +37,7 @@ import com.ellzone.slotpuzzle2d.physics.SPPhysicsCallback;
 import com.ellzone.slotpuzzle2d.physics.SPPhysicsEvent;
 import com.ellzone.slotpuzzle2d.prototypes.SPPrototype;
 import com.ellzone.slotpuzzle2d.sprites.ReelTile;
-import com.ellzone.slotpuzzle2d.utils.Assets;
+import com.ellzone.slotpuzzle2d.utils.assets.Assets;
 import com.ellzone.slotpuzzle2d.utils.PixmapProcessors;
 
 public class Particle4 extends SPPrototype {

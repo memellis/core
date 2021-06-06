@@ -29,11 +29,11 @@ import com.ellzone.slotpuzzle2d.utils.PixmapProcessors;
 import com.ellzone.slotpuzzle2d.utils.Random;
 
 public class ReelTile extends ReelSprite implements ReelTileInterface {
-    private Texture scrollTexture;
+    private final Texture scrollTexture;
     private int numberOfReelsInTexture = 0;
     private TextureRegion region, flashReel;
-    private float tileWidth;
-    private float tileHeight;
+    private final float tileWidth;
+    private final float tileHeight;
     private float reelDisplayWidth = 0, reelDisplayHeight = 0;
     private float screenDisplayWidth = 0, screenDisplayHeight = 0;
     private float destinationX;
@@ -50,12 +50,9 @@ public class ReelTile extends ReelSprite implements ReelTileInterface {
     public enum FlashState {FLASH_OFF, FLASH_ON};
 	private FlashState reelFlashState;
 	private Color flashColor;
-	private Array<Vector2> reelFlashSegments = new Array<>();
+	private final Array<Vector2> reelFlashSegments = new Array<>();
 	private int score;
-	private Sound spinningSound;
-	private long spinningSoundId;
-	private float spinngPitch;
-	private Pixmap flashOnReelPixmap;
+    private Pixmap flashOnReelPixmap;
 	
     public ReelTile(
             Texture scrollTexture,
@@ -73,7 +70,6 @@ public class ReelTile extends ReelSprite implements ReelTileInterface {
         this.reelDisplayWidth = tileWidth;
         this.reelDisplayHeight = tileHeight;
         super.setEndReel(endReel);
-        this.spinningSound = spinningSound;
         defineReelSlotTileScroll();
     }
 
@@ -97,7 +93,6 @@ public class ReelTile extends ReelSprite implements ReelTileInterface {
         this.reelDisplayWidth = reelDisplayWidth;
         this.reelDisplayHeight = reelDisplayHeight;
         super.setEndReel(endReel);
-        this.spinningSound = spinningSound;
         defineReelSlotTileScroll();
     }
 

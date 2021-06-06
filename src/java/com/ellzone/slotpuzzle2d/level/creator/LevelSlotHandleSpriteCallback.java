@@ -16,7 +16,7 @@
 
 package com.ellzone.slotpuzzle2d.level.creator;
 
-import com.ellzone.slotpuzzle2d.sprites.SlotHandleSprite;
+import com.ellzone.slotpuzzle2d.sprites.slothandle.SlotHandleSprite;
 
 public interface LevelSlotHandleSpriteCallback {
     public void onEvent(SlotHandleSprite source);

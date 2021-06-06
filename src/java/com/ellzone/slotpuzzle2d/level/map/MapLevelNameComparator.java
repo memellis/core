@@ -16,13 +16,13 @@
 
 package com.ellzone.slotpuzzle2d.level.map;
 
-import com.badlogic.gdx.maps.objects.RectangleMapObject;
+import com.badlogic.gdx.maps.MapObject;
 
 import java.util.Comparator;
 
-public class MapLevelNameComparator implements Comparator<RectangleMapObject> {
+public class MapLevelNameComparator implements Comparator<MapObject> {
     @Override
-    public int compare(RectangleMapObject first, RectangleMapObject second) {
+    public int compare(MapObject first, MapObject second) {
         return first.getName().compareTo(second.getName());
     }
 }

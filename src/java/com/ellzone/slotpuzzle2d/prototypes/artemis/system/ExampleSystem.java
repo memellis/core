@@ -9,8 +9,8 @@ import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.MathUtils;
-import com.ellzone.slotpuzzle2d.component.Translation;
-import com.ellzone.slotpuzzle2d.component.Example;
+import com.ellzone.slotpuzzle2d.component.artemis.Translation;
+import com.ellzone.slotpuzzle2d.component.artemis.Example;
 
 @All({Translation.class, Example.class})
 public class ExampleSystem extends FluidIteratingSystem {
@@ -63,8 +63,10 @@ public class ExampleSystem extends FluidIteratingSystem {
     @Override
     protected void process(E e) {
         final Example example = e.getExample();
-        batch.draw(texture,
-                e.translationX() + MathUtils.sin(example.age)* 50f, e.translationY() + MathUtils.cos(example.age) * 50f);
+        batch.draw(
+                texture,
+                e.translationX() + MathUtils.sin(example.age)* 50f,
+                e.translationY() + MathUtils.cos(example.age) * 50f);
         example.age += world.delta;
     }
 

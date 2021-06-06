@@ -4,7 +4,7 @@ import com.badlogic.gdx.ai.msg.MessageManager;
 
 import com.badlogic.gdx.audio.Music;
 import com.ellzone.slotpuzzle2d.messaging.MessageType;
-import com.ellzone.slotpuzzle2d.utils.AssetsAnnotation;
+import com.ellzone.slotpuzzle2d.utils.assets.AssetsAnnotation;
 
 import net.dermetfan.gdx.assets.AnnotationAssetManager;
 

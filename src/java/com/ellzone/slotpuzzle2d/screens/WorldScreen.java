@@ -83,7 +83,7 @@ import com.ellzone.slotpuzzle2d.tweenengine.BaseTween;
 import com.ellzone.slotpuzzle2d.tweenengine.SlotPuzzleTween;
 import com.ellzone.slotpuzzle2d.tweenengine.TweenCallback;
 import com.ellzone.slotpuzzle2d.tweenengine.TweenManager;
-import com.ellzone.slotpuzzle2d.utils.AssetsAnnotation;
+import com.ellzone.slotpuzzle2d.utils.assets.AssetsAnnotation;
 import com.ellzone.slotpuzzle2d.utils.FileUtils;
 import com.ellzone.slotpuzzle2d.utils.PixmapProcessors;
 
@@ -354,23 +354,23 @@ public class WorldScreen implements Screen, LevelCreatorInjectionInterface {
 
 	public void loadEntities() {
 		LevelObjectCreatorEntityHolder levelObjectCreator = new LevelObjectCreatorEntityHolder(this, world, null);
-		Array<RectangleMapObject> extractedLevelRectangleMapObjects = extractLevelAssets(worldMap);
-		levelObjectCreator.createLevel(extractedLevelRectangleMapObjects);
+		Array<MapObject> extractedLevelMapObjects = extractLevelAssets(worldMap);
+		levelObjectCreator.createLevel(extractedLevelMapObjects);
 		spinWheels = levelObjectCreator.getSpinWheels();
 		slotHandles = levelObjectCreator.getSlotHandles();
 		animatedReelsTileMap = levelObjectCreator.getAnimatedReelsTileMap();
 	}
 
-	private Array<RectangleMapObject> extractLevelAssets(TiledMap level) {
-		Array<RectangleMapObject> levelRectangleMapObjects = getRectangleMapObjectsFromLevel(level);
+	private Array<MapObject> extractLevelAssets(TiledMap level) {
+		Array<MapObject> levelMapObjects = getRectangleMapObjectsFromLevel(level);
 		MapLevelNameComparator mapLevelNameComparator = new MapLevelNameComparator();
-		levelRectangleMapObjects.sort(mapLevelNameComparator);
-		return levelRectangleMapObjects;
+		levelMapObjects.sort(mapLevelNameComparator);
+		return levelMapObjects;
 	}
 
-	private Array<RectangleMapObject> getRectangleMapObjectsFromLevel(TiledMap level) {
+	private Array<MapObject> getRectangleMapObjectsFromLevel(TiledMap level) {
 		return level.getLayers().get(SLOT_MACHINE_LAYER).
-				getObjects().getByType(RectangleMapObject.class);
+				getObjects().getByType(MapObject.class);
 	}
 
 

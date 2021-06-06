@@ -18,11 +18,9 @@ package com.ellzone.slotpuzzle2d.sprites;
 
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
-import com.ellzone.slotpuzzle2d.utils.AssetsAnnotation;
+import com.ellzone.slotpuzzle2d.utils.assets.AssetsAnnotation;
 
 import net.dermetfan.gdx.assets.AnnotationAssetManager;
-
-import java.util.Arrays;
 
 public class ReelSprites {
     public final static String REEL_PACK_ATLAS = "reel/reels.pack.atlas";

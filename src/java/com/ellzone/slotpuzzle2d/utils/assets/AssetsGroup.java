@@ -14,7 +14,7 @@
  limitations under the License.
  */
 
-package com.ellzone.slotpuzzle2d.utils;
+package com.ellzone.slotpuzzle2d.utils.assets;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.assets.AssetDescriptor;
@@ -31,6 +31,7 @@ import com.badlogic.gdx.utils.JsonReader;
 import com.badlogic.gdx.utils.JsonValue;
 import com.badlogic.gdx.utils.JsonValue.JsonIterator;
 import com.badlogic.gdx.utils.ObjectMap;
+import com.ellzone.slotpuzzle2d.utils.JsonAsset;
 
 public class AssetsGroup implements Disposable, AssetErrorListener {
 
@@ -121,7 +122,6 @@ public class AssetsGroup implements Disposable, AssetErrorListener {
 
     private void loadGroups(String assetFile) {
         groups = new ObjectMap<String, Array<JsonAsset>>();
-
 
         Gdx.app.log(TAG, "loading file " + assetFile);
 

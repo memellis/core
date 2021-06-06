@@ -17,7 +17,7 @@
 package com.ellzone.slotpuzzle2d.components;
 
 import com.badlogic.ashley.core.Component;
-import com.ellzone.slotpuzzle2d.sprites.SlotHandleSprite;
+import com.ellzone.slotpuzzle2d.sprites.slothandle.SlotHandleSprite;
 
 public class SlothandleSpriteComponent implements Component {
     public SlotHandleSprite slotHandleSprite;

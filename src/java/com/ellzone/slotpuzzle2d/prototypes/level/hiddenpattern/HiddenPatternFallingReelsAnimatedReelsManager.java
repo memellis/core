@@ -27,6 +27,7 @@ import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
+import com.badlogic.gdx.maps.MapObject;
 import com.badlogic.gdx.maps.objects.RectangleMapObject;
 import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
@@ -71,7 +72,7 @@ import com.ellzone.slotpuzzle2d.tweenengine.BaseTween;
 import com.ellzone.slotpuzzle2d.tweenengine.SlotPuzzleTween;
 import com.ellzone.slotpuzzle2d.tweenengine.TweenCallback;
 import com.ellzone.slotpuzzle2d.tweenengine.TweenManager;
-import com.ellzone.slotpuzzle2d.utils.AssetsAnnotation;
+import com.ellzone.slotpuzzle2d.utils.assets.AssetsAnnotation;
 import com.ellzone.slotpuzzle2d.utils.PixmapProcessors;
 import com.ellzone.slotpuzzle2d.utils.Random;
 import com.ellzone.slotpuzzle2d.utils.SlowMotion;
@@ -236,16 +237,16 @@ public class HiddenPatternFallingReelsAnimatedReelsManager extends SPPrototypeTe
                 new LevelObjectCreatorEntityHolder(this, world, rayHandler);
         TiledMap level = getLevelAssets(annotationAssetManager);
         tileMapRenderer = new OrthogonalTiledMapRenderer(level);
-        Array<RectangleMapObject> extractedLevelRectangleMapObjects = extractLevelAssets(level);
-        delegateCreateLevel(levelObjectCreator, extractedLevelRectangleMapObjects);
+        Array<MapObject> extractedLevelMapObjects = extractLevelAssets(level);
+        delegateCreateLevel(levelObjectCreator, extractedLevelMapObjects);
         return level;
     }
 
     private void delegateCreateLevel(
             LevelObjectCreatorEntityHolder levelObjectCreator,
-            Array<RectangleMapObject> extractedLevelRectangleMapObjects) {
+            Array<MapObject> extractedLevelMapObjects) {
         try {
-            levelObjectCreator.createLevel(extractedLevelRectangleMapObjects);
+            levelObjectCreator.createLevel(extractedLevelMapObjects);
             animatedReels = levelObjectCreator.getAnimatedReels();
             reelTiles = levelObjectCreator.getReelTiles();
         } catch (GdxRuntimeException gdxRuntimeException) {
@@ -262,8 +263,11 @@ public class HiddenPatternFallingReelsAnimatedReelsManager extends SPPrototypeTe
     }
 
     private void createViewPorts() {
-        lightViewport = new FitViewport((float) VIRTUAL_WIDTH / PIXELS_PER_METER, (float) VIRTUAL_HEIGHT / PIXELS_PER_METER);
-        lightViewport.getCamera().position.set( (float) VIRTUAL_WIDTH / PIXELS_PER_METER * 0.5f,
+        lightViewport = new FitViewport(
+                (float) VIRTUAL_WIDTH / PIXELS_PER_METER,
+                (float) VIRTUAL_HEIGHT / PIXELS_PER_METER);
+        lightViewport.getCamera().position.set(
+                (float) VIRTUAL_WIDTH / PIXELS_PER_METER * 0.5f,
                 (float) VIRTUAL_HEIGHT / PIXELS_PER_METER * 0.5f,
                 0);
         lightViewport.getCamera().update();
@@ -277,19 +281,19 @@ public class HiddenPatternFallingReelsAnimatedReelsManager extends SPPrototypeTe
         return hud;
     }
 
-    private Array<RectangleMapObject> extractLevelAssets(TiledMap level) {
-        Array<RectangleMapObject> levelRectangleMapObjects = getRectangleMapObjectsFromLevel(level);
+    private Array<MapObject> extractLevelAssets(TiledMap level) {
+        Array<MapObject> levelMapObjects = getMapObjectsFromLevel(level);
         MapLevelNameComparator mapLevelNameComparator = new MapLevelNameComparator();
-        levelRectangleMapObjects.sort(mapLevelNameComparator);
-        return levelRectangleMapObjects;
+        levelMapObjects.sort(mapLevelNameComparator);
+        return levelMapObjects;
     }
 
     private TiledMap getLevelAssets(AnnotationAssetManager annotationAssetManager) {
         return annotationAssetManager.get(LEVELS_LEVEL_7);
     }
 
-    private Array<RectangleMapObject> getRectangleMapObjectsFromLevel(TiledMap level) {
-        return level.getLayers().get(REELS_LAYER_NAME).getObjects().getByType(RectangleMapObject.class);
+    private Array<MapObject> getMapObjectsFromLevel(TiledMap level) {
+        return level.getLayers().get(REELS_LAYER_NAME).getObjects().getByType(MapObject.class);
     }
 
     private Texture createSlotReelScrollTexture() {

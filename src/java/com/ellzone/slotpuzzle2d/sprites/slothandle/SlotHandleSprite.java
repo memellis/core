@@ -14,12 +14,15 @@
  limitations under the License.
  */
 
-package com.ellzone.slotpuzzle2d.sprites;
+package com.ellzone.slotpuzzle2d.sprites.slothandle;
 
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.Pixmap;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.utils.Array;
+import com.ellzone.slotpuzzle2d.sprites.SpriteRenderInterface;
 import com.ellzone.slotpuzzle2d.sprites.slothandle.SlotHandle;
 import com.ellzone.slotpuzzle2d.utils.PixmapProcessors;
 import com.badlogic.gdx.graphics.Texture;
@@ -32,14 +35,16 @@ import aurelienribon.tweenengine.equations.Sine;
 import com.ellzone.slotpuzzle2d.effects.SpriteAccessor;
 import com.badlogic.gdx.math.*;
 
-public class SlotHandleSprite implements SlotHandle {
+public class SlotHandleSprite implements SlotHandle, SpriteRenderInterface {
 	public static final String SLOT_HANDLE = "slot_handle";
 	public static final String SLOT_HANDLE_BASE = "slot_handle_base";
-	private TextureAtlas slotHandleAtlas;
+	private final TextureAtlas slotHandleAtlas;
 	private Sprite slotHandle, slotHandleBase;
-	private TweenManager tweenManager;
+	private final TweenManager tweenManager;
 	private Timeline slotHandleSequence;
-	
+	private Array<TextureRegion> textureRegions = new Array<>();
+	private Array<Integer> entityIds;
+
 	public SlotHandleSprite(TextureAtlas slotHandleAtlas, TweenManager tweenManager) {
 		this.slotHandleAtlas = slotHandleAtlas;
         this.tweenManager = tweenManager;
@@ -53,7 +58,9 @@ public class SlotHandleSprite implements SlotHandle {
 	    this(slotHandleAtlas, tweenManager);
 	    slotHandle.setPosition(xPosition, yPosition);
 	    slotHandleBase.setPosition(xPosition, yPosition - 20);
-    }
+		textureRegions.add(getSlotHandleSprite());
+		textureRegions.add(getSlotHandleBaseSprite());
+	}
 
     @Override
 	public Sprite getSlotHandleSprite() {
@@ -120,7 +127,7 @@ public class SlotHandleSprite implements SlotHandle {
 								.setCallbackTriggers(TweenCallback.END));	 
 	}
 
-	private TweenCallback slotHandleCallback = new TweenCallback() {
+	private final TweenCallback slotHandleCallback = new TweenCallback() {
         @Override
         public void onEvent(int type, BaseTween<?> source) {
             delegateSlotHandleCallback(type, source);
@@ -129,5 +136,20 @@ public class SlotHandleSprite implements SlotHandle {
 
     private void delegateSlotHandleCallback(int type, BaseTween<?> source) {
         createSlotHandleTween();
+	}
+
+	@Override
+	public Array<TextureRegion> getTextureRegions() {
+		return textureRegions;
+	}
+
+	@Override
+	public Array<Integer> getEntityIds() {
+		return entityIds;
+	}
+
+	@Override
+	public void setEntityIds(Array<Integer> entityIds) {
+		this.entityIds = entityIds;
 	}
 }

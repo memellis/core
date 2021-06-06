@@ -7,7 +7,7 @@ import com.ellzone.slotpuzzle2d.components.PositionComponent;
 import com.ellzone.slotpuzzle2d.components.SlothandleSpriteComponent;
 import com.ellzone.slotpuzzle2d.components.TransformComponent;
 import com.ellzone.slotpuzzle2d.components.VisualComponent;
-import com.ellzone.slotpuzzle2d.sprites.SlotHandleSprite;
+import com.ellzone.slotpuzzle2d.sprites.slothandle.SlotHandleSprite;
 
 public class LevelSlotHandleSpriteAction implements LevelSlotHandleSpriteCallback {
     private PooledEngine engine;

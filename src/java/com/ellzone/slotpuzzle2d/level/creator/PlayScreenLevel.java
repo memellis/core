@@ -20,8 +20,8 @@ import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture;
 
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
+import com.badlogic.gdx.maps.MapObject;
 import com.badlogic.gdx.maps.MapProperties;
-import com.badlogic.gdx.maps.objects.RectangleMapObject;
 import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.World;
@@ -40,9 +40,9 @@ import com.ellzone.slotpuzzle2d.sprites.AnimatedReel;
 import com.ellzone.slotpuzzle2d.sprites.HoldLightButton;
 import com.ellzone.slotpuzzle2d.sprites.ReelSprites;
 import com.ellzone.slotpuzzle2d.sprites.ReelTile;
-import com.ellzone.slotpuzzle2d.sprites.SlotHandleSprite;
+import com.ellzone.slotpuzzle2d.sprites.slothandle.SlotHandleSprite;
 import com.ellzone.slotpuzzle2d.tweenengine.TweenManager;
-import com.ellzone.slotpuzzle2d.utils.AssetsAnnotation;
+import com.ellzone.slotpuzzle2d.utils.assets.AssetsAnnotation;
 import com.ellzone.slotpuzzle2d.utils.FrameRate;
 import com.ellzone.slotpuzzle2d.utils.PixmapProcessors;
 
@@ -209,7 +209,7 @@ public class PlayScreenLevel implements PlayScreenLevelInterface {
     private void setUpMapProperties() {
         MapProperties mapProperties = getMapProperties(tiledMapLevel);
         getLevelGrid(mapProperties);
-        String addReel = getStringProperty(mapProperties, SlotPuzzleConstants.ADD_REEL_KEY);
+        String addReel = getStringProperty(mapProperties);
 
         if (addReel.equals(ReelType.Bomb.name))
             addBombSprite();
@@ -218,9 +218,8 @@ public class PlayScreenLevel implements PlayScreenLevelInterface {
     private void createLevelObjects() {
         LevelObjectCreatorEntityHolder levelObjectCreator =
                 new LevelObjectCreatorEntityHolder(levelCreatorInjection, box2dWorld, rayHandler);
-        Array<RectangleMapObject> extractedLevelRectangleMapObjects =
-                extractLevelAssets(tiledMapLevel);
-        levelObjectCreator.createLevel(extractedLevelRectangleMapObjects);
+        Array<MapObject> extractedLevelMapObjects = extractLevelAssets(tiledMapLevel);
+        levelObjectCreator.createLevel(extractedLevelMapObjects);
         getLevelEntities(levelObjectCreator);
     }
 
@@ -242,9 +241,9 @@ public class PlayScreenLevel implements PlayScreenLevelInterface {
             );
     }
 
-    private String getStringProperty(MapProperties mapProperties, String key) {
-        return mapProperties.get(key, String.class) == null ?
-                "" : mapProperties.get(key, String.class);
+    private String getStringProperty(MapProperties mapProperties) {
+        return mapProperties.get(SlotPuzzleConstants.ADD_REEL_KEY, String.class) == null ?
+                "" : mapProperties.get(SlotPuzzleConstants.ADD_REEL_KEY, String.class);
     }
 
     private int getIntProperty(MapProperties mapProperties, String key) {
@@ -273,17 +272,17 @@ public class PlayScreenLevel implements PlayScreenLevelInterface {
         slotHandles = levelObjectCreator.getHandles();
     }
 
-    private Array<RectangleMapObject> extractLevelAssets(TiledMap level) {
-        Array<RectangleMapObject> levelRectangleMapObjects =
-                getRectangleMapObjectsFromLevel(level);
+    private Array<MapObject> extractLevelAssets(TiledMap level) {
+        Array<MapObject> levelMapObjects =
+                getMapObjectsFromLevel(level);
         MapLevelNameComparator mapLevelNameComparator = new MapLevelNameComparator();
-        levelRectangleMapObjects.sort(mapLevelNameComparator);
-        return levelRectangleMapObjects;
+        levelMapObjects.sort(mapLevelNameComparator);
+        return levelMapObjects;
     }
 
-    private Array<RectangleMapObject> getRectangleMapObjectsFromLevel(TiledMap level) {
+    private Array<MapObject> getMapObjectsFromLevel(TiledMap level) {
         return level.getLayers().get(SlotPuzzleConstants.REEL_OBJECT_LAYER).
-                getObjects().getByType(RectangleMapObject.class);
+                getObjects().getByType(MapObject.class);
     }
 
     private LevelLoader createLevelLoader(

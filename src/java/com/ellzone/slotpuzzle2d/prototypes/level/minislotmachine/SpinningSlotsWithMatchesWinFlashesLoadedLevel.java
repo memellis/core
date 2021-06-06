@@ -25,7 +25,7 @@ import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
-import com.badlogic.gdx.maps.objects.RectangleMapObject;
+import com.badlogic.gdx.maps.MapObject;
 import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer;
@@ -53,12 +53,12 @@ import com.ellzone.slotpuzzle2d.sprites.ReelStoppedSpinningEvent;
 import com.ellzone.slotpuzzle2d.sprites.ReelTile;
 import com.ellzone.slotpuzzle2d.sprites.ReelTileEvent;
 import com.ellzone.slotpuzzle2d.sprites.ReelTileListener;
-import com.ellzone.slotpuzzle2d.sprites.SlotHandleSprite;
+import com.ellzone.slotpuzzle2d.sprites.slothandle.SlotHandleSprite;
 import com.ellzone.slotpuzzle2d.tweenengine.BaseTween;
 import com.ellzone.slotpuzzle2d.tweenengine.SlotPuzzleTween;
 import com.ellzone.slotpuzzle2d.tweenengine.TweenCallback;
 import com.ellzone.slotpuzzle2d.tweenengine.TweenManager;
-import com.ellzone.slotpuzzle2d.utils.AssetsAnnotation;
+import com.ellzone.slotpuzzle2d.utils.assets.AssetsAnnotation;
 import com.ellzone.slotpuzzle2d.utils.PixmapProcessors;
 import net.dermetfan.gdx.assets.AnnotationAssetManager;
 import java.util.Random;
@@ -133,9 +133,9 @@ public class SpinningSlotsWithMatchesWinFlashesLoadedLevel
     private void loadlevel() {
         LevelObjectCreatorEntityHolder levelObjectCreator = new LevelObjectCreatorEntityHolder(this, world, rayHandler);
         TiledMap level = getLevelAssets(annotationAssetManager);
-        Array<RectangleMapObject> extractedLevelRectangleMapObjects = extractLevelAssets(level);
+        Array<MapObject> extractedLevelMapObjects = extractLevelAssets(level);
         try {
-            levelObjectCreator.createLevel(extractedLevelRectangleMapObjects);
+            levelObjectCreator.createLevel(extractedLevelMapObjects);
             lightButtons = levelObjectCreator.getHoldLightButtons();
             reels = levelObjectCreator.getAnimatedReels();
             slotHandles = levelObjectCreator.getHandles();
@@ -167,19 +167,20 @@ public class SpinningSlotsWithMatchesWinFlashesLoadedLevel
         reelStoppingSound = annotationAssetManager.get(AssetsAnnotation.SOUND_REEL_STOPPED);
     }
 
-    private Array<RectangleMapObject> extractLevelAssets(TiledMap level) {
-        Array<RectangleMapObject> levelRectangleMapObjects = getRectangleMapObjectsFromLevel(level);
+    private Array<MapObject> extractLevelAssets(TiledMap level) {
+        Array<MapObject> levelMapObjects = getMapObjectsFromLevel(level);
         MapLevelNameComparator mapLevelNameComparator = new MapLevelNameComparator();
-        levelRectangleMapObjects.sort(mapLevelNameComparator);
-        return levelRectangleMapObjects;
+        levelMapObjects.sort(mapLevelNameComparator);
+        return levelMapObjects;
     }
 
     private TiledMap getLevelAssets(AnnotationAssetManager annotationAssetManager) {
         return annotationAssetManager.get(LEVELS_LEVEL_6);
     }
 
-    private Array<RectangleMapObject> getRectangleMapObjectsFromLevel(TiledMap level) {
-        return level.getLayers().get(SLOT_REEL_OBJECT_LAYER).getObjects().getByType(RectangleMapObject.class);
+    private Array<MapObject> getMapObjectsFromLevel(TiledMap level) {
+        return
+            level.getLayers().get(SLOT_REEL_OBJECT_LAYER).getObjects().getByType(MapObject.class);
     }
 
     @Override

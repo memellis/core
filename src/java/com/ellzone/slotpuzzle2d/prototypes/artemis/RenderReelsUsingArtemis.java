@@ -22,14 +22,12 @@ import com.artemis.WorldConfigurationBuilder;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.math.MathUtils;
 import com.ellzone.slotpuzzle2d.prototypes.SPPrototype;
-import com.ellzone.slotpuzzle2d.prototypes.artemis.system.ExampleSystem;
 import com.ellzone.slotpuzzle2d.prototypes.artemis.system.SlotPuzzleSystem;
 
 import net.mostlyoriginal.plugin.ProfilerPlugin;
 
 public class RenderReelsUsingArtemis extends SPPrototype {
-
-    public static final String BACKGROUND_COLOR_HEX = "969291";
+    
     public static final String WORLD_NOT_INITIALISED = "World not initialised";
     public static final float MIN_DELTA = 1 / 15f;
 

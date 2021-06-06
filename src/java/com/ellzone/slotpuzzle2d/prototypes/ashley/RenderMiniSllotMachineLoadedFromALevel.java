@@ -15,6 +15,7 @@ import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
+import com.badlogic.gdx.maps.MapObject;
 import com.badlogic.gdx.maps.objects.RectangleMapObject;
 import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.TmxMapLoader;
@@ -62,7 +63,7 @@ import com.ellzone.slotpuzzle2d.tweenengine.BaseTween;
 import com.ellzone.slotpuzzle2d.tweenengine.SlotPuzzleTween;
 import com.ellzone.slotpuzzle2d.tweenengine.TweenCallback;
 import com.ellzone.slotpuzzle2d.tweenengine.TweenManager;
-import com.ellzone.slotpuzzle2d.utils.AssetsAnnotation;
+import com.ellzone.slotpuzzle2d.utils.assets.AssetsAnnotation;
 import com.ellzone.slotpuzzle2d.utils.PixmapProcessors;
 
 import net.dermetfan.gdx.assets.AnnotationAssetManager;
@@ -201,9 +202,9 @@ public class RenderMiniSllotMachineLoadedFromALevel
         addLevelCallbacks(levelObjectCreator);
         TiledMap level = getLevelAssets(annotationAssetManager);
         slotHandleAtlas = getSlotHanldeAtlas(annotationAssetManager);
-        Array<RectangleMapObject> extractedLevelRectangleMapObjects = extractLevelAssets(level);
+        Array<MapObject> extractedLevelMapObjects = extractLevelAssets(level);
         try {
-            levelObjectCreator.createLevel(extractedLevelRectangleMapObjects);
+            levelObjectCreator.createLevel(extractedLevelMapObjects);
         } catch (GdxRuntimeException gdxRuntimeException) {
             throw new GdxRuntimeException(gdxRuntimeException);
         }
@@ -222,22 +223,26 @@ public class RenderMiniSllotMachineLoadedFromALevel
         levelObjectCreator.addReelHelperCallback(levelReelHelperCallback);
     }
 
-    private Array<RectangleMapObject> extractLevelAssets(TiledMap level) {
-        Array<RectangleMapObject> levelRectangleMapObjects = getRectangleMapObjectsFromLevel(level);
+    private Array<MapObject> extractLevelAssets(TiledMap level) {
+        Array<MapObject> levelMapObjects = getMapObjectsFromLevel(level);
         MapLevelNameComparator mapLevelNameComparator = new MapLevelNameComparator();
-        levelRectangleMapObjects.sort(mapLevelNameComparator);
-        return levelRectangleMapObjects;
+        levelMapObjects.sort(mapLevelNameComparator);
+        return levelMapObjects;
     }
 
-    public class MapLevelNameComparator implements Comparator<RectangleMapObject> {
+    public class MapLevelNameComparator implements Comparator<MapObject> {
         @Override
-        public int compare(RectangleMapObject first, RectangleMapObject second) {
+        public int compare(MapObject first, MapObject second) {
             return first.getName().compareTo(second.getName());
         }
     }
 
-    private Array<RectangleMapObject> getRectangleMapObjectsFromLevel(TiledMap level) {
-        return level.getLayers().get(SLOT_REEL_OBJECT_LAYER).getObjects().getByType(RectangleMapObject.class);
+    private Array<MapObject> getMapObjectsFromLevel(TiledMap level) {
+        return level.
+                getLayers().
+                get(SLOT_REEL_OBJECT_LAYER).
+                getObjects().
+                getByType(MapObject.class);
     }
 
     private void setUpIntroSequence(Array<ReelTile> reelTiles) {

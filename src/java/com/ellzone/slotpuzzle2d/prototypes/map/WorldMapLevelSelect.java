@@ -47,7 +47,7 @@ import com.ellzone.slotpuzzle2d.tweenengine.BaseTween;
 import com.ellzone.slotpuzzle2d.tweenengine.SlotPuzzleTween;
 import com.ellzone.slotpuzzle2d.tweenengine.TweenCallback;
 import com.ellzone.slotpuzzle2d.tweenengine.TweenManager;
-import com.ellzone.slotpuzzle2d.utils.Assets;
+import com.ellzone.slotpuzzle2d.utils.assets.Assets;
 import com.ellzone.slotpuzzle2d.utils.ScreenshotFactory;
 
 public class WorldMapLevelSelect extends SPPrototype {

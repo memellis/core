@@ -21,6 +21,7 @@ import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
+import com.badlogic.gdx.maps.MapObject;
 import com.badlogic.gdx.maps.MapProperties;
 import com.badlogic.gdx.maps.objects.RectangleMapObject;
 import com.badlogic.gdx.physics.box2d.World;
@@ -28,7 +29,7 @@ import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.GdxRuntimeException;
 import com.ellzone.slotpuzzle2d.sprites.ReelSprites;
 import com.ellzone.slotpuzzle2d.tweenengine.TweenManager;
-import com.ellzone.slotpuzzle2d.utils.AssetsAnnotation;
+import com.ellzone.slotpuzzle2d.utils.assets.AssetsAnnotation;
 
 import net.dermetfan.gdx.assets.AnnotationAssetManager;
 
@@ -53,7 +54,6 @@ public class LevelObjectCreator {
     public static final String PARAMETER_VALUE = "ParameterValue";
     public static final String COMPONENT = "Component";
     public static final String PROPERTY_NAME = "Property";
-    public static final String PROPERTY_VALUE = "PropertyValue";
     public static final String DOT_REGULAR_EXPRESSION = "\\.";
     public static final String COLON = ":";
     public static final int LENGTH_TWO = 2;
@@ -81,24 +81,30 @@ public class LevelObjectCreator {
     protected RayHandler rayHandler;
     protected Color reelPointLightColor = new Color(0.2f, 0.2f, 0.2f, 0.2f);
 
-    public LevelObjectCreator(LevelCreatorInjectionInterface injection, World world, RayHandler rayHandler) {
-        this.levelCreatorInjectionInterface = injection;
-        this.world = world;
+    public LevelObjectCreator(
+            LevelCreatorInjectionInterface injectionInterface,
+            World box2dWorld,
+            RayHandler rayHandler) {
+        this.levelCreatorInjectionInterface = injectionInterface;
+        this.world = box2dWorld;
         this.rayHandler = rayHandler;
-    };
-
-    public LevelObjectCreator() {
     }
 
-    public void createLevel(Array<RectangleMapObject> levelRectangleMapObjects) throws GdxRuntimeException {
+    public void createLevel(Array<MapObject> levelMapObjects) throws GdxRuntimeException {
         boolean huntingForComponents = true;
         int componentCount = 1;
         Array<String> components = new Array<>();
-        if (levelRectangleMapObjects == null)
+        if (levelMapObjects == null)
             throw new GdxRuntimeException(new IllegalArgumentException());
 
-        for (RectangleMapObject rectangleMapObject : levelRectangleMapObjects) {
-            ProcessCustomMapProperties processCustomMapProperties = new ProcessCustomMapProperties(huntingForComponents, componentCount, components, rectangleMapObject).invoke();
+        for (MapObject mapObject :
+                new Array.ArrayIterator<>(levelMapObjects)) {
+            ProcessCustomMapProperties processCustomMapProperties =
+                    new ProcessCustomMapProperties(
+                            huntingForComponents,
+                            componentCount,
+                            components,
+                            mapObject).invoke();
             huntingForComponents = processCustomMapProperties.isHuntingForComponents();
             componentCount = processCustomMapProperties.getComponentCount();
         }
@@ -143,8 +149,9 @@ public class LevelObjectCreator {
                    InvocationTargetException {
         Object[] parameterValues = new Object[constructorParameterValues.size];
         int index = 0;
-        for (String parameter : constructorParameterValues) {
-            parameterValues[index] = parseParameterValue(parameter, classParameters[index], rectangleMapProperties);
+        for (String parameter : new Array.ArrayIterator<>(constructorParameterValues)) {
+            parameterValues[index] =
+                    parseParameterValue(parameter, classParameters[index], rectangleMapProperties);
             index++;
         }
         return parameterValues;
@@ -158,7 +165,7 @@ public class LevelObjectCreator {
                    NoSuchMethodException,
                    InvocationTargetException {
         if (parameter.toLowerCase().startsWith(FIELD))
-            return parseField(parameter, classParam);
+            return parseField(parameter);
         if (parameter.toLowerCase().startsWith(METHOD))
             return parseMethod(parameter);
         if (parameter.toLowerCase().startsWith(PROPERTY))
@@ -172,6 +179,8 @@ public class LevelObjectCreator {
     private Object parseValue(String parameter, Class<?> classParam) {
         String[] parts = parameter.split(COLON);
         String valuePart = parts.length == LENGTH_TWO ? parts[SECOND_PART] : null;
+        if (valuePart == null)
+            throw new GdxCouldNotParseParameterValueException(parameter);
         if (isInt(classParam))
             return Integer.valueOf(valuePart);
         if (isFloat(classParam))
@@ -183,9 +192,12 @@ public class LevelObjectCreator {
         throw new GdxCouldNotParseParameterValueException(parameter);
     }
 
-    private Object parseField(String parameter, Class<?> classParam) throws NoSuchFieldException, IllegalAccessException {
+    private Object parseField(String parameter)
+            throws NoSuchFieldException, IllegalAccessException {
         String[] parts = parameter.split(DOT_REGULAR_EXPRESSION);
         String fieldPart = parts.length == LENGTH_TWO ? parts[SECOND_PART] : null;
+        if (fieldPart == null)
+            throw new GdxCouldNotParseParameterValueException(parameter);
         Field field = this.getClass().getDeclaredField(fieldPart);
         return field.get(this);
     }
@@ -195,6 +207,8 @@ public class LevelObjectCreator {
             NoSuchMethodException, InvocationTargetException, IllegalAccessException {
         String[] parts = parameter.split(DOT_REGULAR_EXPRESSION);
         String methodPart = parts.length == LENGTH_TWO ? parts[SECOND_PART] : null;
+        if (methodPart == null)
+            throw new GdxCouldNotParseParameterValueException(parameter);
         Method method = this.getClass().getDeclaredMethod(methodPart);
         return method.invoke(this);
     }
@@ -243,12 +257,12 @@ public class LevelObjectCreator {
 
     private Object getObject(Class<?> classParam, MapProperties rectangleMapProperties, String[] parts) {
         verifyThereAreTwoParts(parts);
-        Object parsedObject = (Object) rectangleMapProperties.get(parts[1].toLowerCase(), classParam);
+        Object parsedObject = rectangleMapProperties.get(parts[1].toLowerCase(), classParam);
         if (parsedObject != null)
             return parsedObject;
         else throw new GdxCouldNotParsePropertyException(
                 MessageFormat.format(COULD_NOT_EXTRACT_OBJECT_FROM_MESSAGE,
-                                         parts[1]));
+                        parts[1]));
     }
 
     private void verifyThereAreTwoParts(String[] parts) {
@@ -256,29 +270,29 @@ public class LevelObjectCreator {
             throw new GdxCouldNotParsePropertyException(
                     MessageFormat.format(
                             EXPECTED_NUMBER_OF_PROPERTY_PARTS_TO_BE_MESSAGE,
-                                LENGTH_TWO,
-                                parts.length));
+                            LENGTH_TWO,
+                            parts.length));
     }
 
-    private boolean isInt(Class clazz) {
+    private boolean isInt(Class<?> clazz) {
         return clazz.equals(int.class);
     }
 
-    private boolean isFloat(Class clazz) {
+    private boolean isFloat(Class<?> clazz) {
         return clazz.equals(float.class);
     }
 
-    private boolean isBoolean(Class clazz) {
+    private boolean isBoolean(Class<?> clazz) {
         return clazz.equals(boolean.class);
     }
 
-    private boolean isString(Class clazz) { return clazz.equals(String.class); }
+    private boolean isString(Class<?> clazz) { return clazz.equals(String.class); }
 
     private Integer convertToIntegerFromFloat(Float floatParam){
-        return floatParam == null ? null : new Integer(floatParam.intValue());
+        return floatParam == null ? null : floatParam.intValue();
     }
 
-    Map<String,Class> builtInMap = new HashMap<String,Class>(); {
+    Map<String, Class<?>> builtInMap = new HashMap<>(); {
         builtInMap.put(INT, Integer.TYPE );
         builtInMap.put(LONG, Long.TYPE );
         builtInMap.put(DOUBLE, Double.TYPE );
@@ -294,7 +308,7 @@ public class LevelObjectCreator {
         Class<?>[] classParameters = new Class<?>[parameters.size];
         int index = 0;
 
-        for( String type : parameters) {
+        for( String type : new Array.ArrayIterator<>(parameters)) {
             try {
                 if (builtInMap.containsKey(type))
                     classParameters[index++] = builtInMap.get(type);
@@ -307,7 +321,7 @@ public class LevelObjectCreator {
         return classParameters;
     }
 
-    private void invokeObjectmethod(Object createdObject, String methodName) {
+    private void invokeObjectMethod(Object createdObject, String methodName) {
         try {
             Method method = this.getClass().getDeclaredMethod(methodName, createdObject.getClass());
             method.invoke(this, createdObject);
@@ -320,15 +334,19 @@ public class LevelObjectCreator {
         }
     }
 
-    private void invokeComponentObjectMethod(Object createdObject, Object createdComponent, String methodName)
+    private void invokeComponentObjectMethod(
+            Object createdObject,
+            Object createdComponent)
         throws
             NoSuchMethodException,
             IllegalAccessException,
             InvocationTargetException {
-        Class[] methodParameters = new Class[2];
+        Class<?>[] methodParameters = new Class[2];
         methodParameters[0] = createdObject.getClass();
         methodParameters[1] = Component.class;
-            Method method = this.getClass().getDeclaredMethod(methodName, methodParameters);
+            Method method = this.getClass().getDeclaredMethod(
+                    LevelObjectCreator.ADD_COMPONENT_TO_ENTITY,
+                    methodParameters);
             method.invoke(this, createdObject, createdComponent);
     }
 
@@ -336,14 +354,18 @@ public class LevelObjectCreator {
         public static final String NO_SUCH_CONSTRUCTOR_MESSAGE = "No such constructor: {0}";
         private boolean huntingForComponents;
         private int componentCount;
-        private Array<String> components;
-        private RectangleMapObject rectangleMapObject;
+        private final Array<String> components;
+        private final MapObject mapObject;
 
-        public ProcessCustomMapProperties(boolean huntingForComponents, int componentCount, Array<String> components, RectangleMapObject rectangleMapObject) {
+        public ProcessCustomMapProperties(
+                boolean huntingForComponents,
+                int componentCount,
+                Array<String> components,
+                MapObject mapObject) {
             this.huntingForComponents = huntingForComponents;
             this.componentCount = componentCount;
             this.components = components;
-            this.rectangleMapObject = rectangleMapObject;
+            this.mapObject = mapObject;
         }
 
         public boolean isHuntingForComponents() {
@@ -355,43 +377,52 @@ public class LevelObjectCreator {
         }
 
         public ProcessCustomMapProperties invoke() {
-            MapProperties rectangleMapObjectProperties = rectangleMapObject.getProperties();
-            Class<?> clazz = getClassFromProperties(rectangleMapObjectProperties);
+            MapProperties mapObjectProperties = mapObject.getProperties();
+            Class<?> clazz = getClassFromProperties(mapObjectProperties);
             if (clazz != null)
-                processMapProperties(rectangleMapObjectProperties, clazz);
+                processMapProperties(mapObjectProperties, clazz);
 
             return this;
         }
 
-        private void processMapProperties(MapProperties rectangleMapObjectProperties, Class<?> clazz) {
-            Object createdObject;
-            createdObject = createMapObjectFromProperties(rectangleMapObjectProperties, clazz);
-            processComponents(rectangleMapObjectProperties, createdObject);
+        private void processMapProperties(MapProperties mapObjectProperties, Class<?> clazz) {
+            Object createdObject = createMapObjectFromProperties(mapObjectProperties, clazz);
+            processComponents(mapObjectProperties, createdObject);
         }
 
-        private Object createMapObjectFromProperties(MapProperties rectangleMapObjectProperties, Class<?> clazz) {
+        private Object createMapObjectFromProperties(
+                MapProperties mapObjectProperties,
+                Class<?> clazz) {
             Object createdObject;
             Array<String> constructorParameters =
-                    getParameters(rectangleMapObjectProperties, PARAMETER);
+                    getParameters(mapObjectProperties, PARAMETER);
             Class<?>[] classParameters = getParamTypes(constructorParameters);
             Constructor<?> constructor = getConstructor(clazz, classParameters);
             Array<String> constructorParameterValues =
-                    getParameters(rectangleMapObjectProperties, PARAMETER_VALUE);
+                    getParameters(mapObjectProperties, PARAMETER_VALUE);
             createdObject = getCreatedObjectObject(
-                    rectangleMapObjectProperties,
+                    mapObjectProperties,
                     classParameters,
                     constructor,
                     constructorParameterValues);
             return createdObject;
         }
 
-        private Object getCreatedObjectObject(MapProperties rectangleMapObjectProperties, Class<?>[] classParameters, Constructor<?> constructor, Array<String> constructorParameterValues) {
+        private Object getCreatedObjectObject(
+                MapProperties mapObjectProperties,
+                Class<?>[] classParameters,
+                Constructor<?> constructor,
+                Array<String> constructorParameterValues) {
             Object createdObject;
             try {
-                createdObject = getCreatedObject(rectangleMapObjectProperties, classParameters, constructor, constructorParameterValues);
+                createdObject = getCreatedObject(
+                        mapObjectProperties,
+                        classParameters,
+                        constructor,
+                        constructorParameterValues);
                 if (createdObject != null) {
-                    invokeObjectmethod(createdObject, ADD_TO);
-                    invokeObjectmethod(createdObject, DELEGATE_TO_CALLBACK);
+                    invokeObjectMethod(createdObject, ADD_TO);
+                    invokeObjectMethod(createdObject, DELEGATE_TO_CALLBACK);
                     componentCount = 1;
                     huntingForComponents = true;
                 }
@@ -401,46 +432,68 @@ public class LevelObjectCreator {
             return createdObject;
         }
 
-        private void processComponents(MapProperties rectangleMapObjectProperties, Object createdObject) {
+        private void processComponents(
+                MapProperties mapObjectProperties,
+                Object createdObject) {
             while (huntingForComponents) {
-                String component = parseComponent(COMPONENT + componentCount, rectangleMapObjectProperties);
+                String component = parseComponent(
+                        COMPONENT + componentCount,
+                        mapObjectProperties);
                 if (component != null) {
                     System.out.println(MessageFormat.format("{0}", component));
                     components.add(component);
-                    Array<String> componentParameters = getParameters(rectangleMapObjectProperties, COMPONENT + componentCount + PROPERTY_NAME);
+                    Array<String> componentParameters =
+                            getParameters(
+                                    mapObjectProperties,
+                                    COMPONENT + componentCount + PROPERTY_NAME);
                     if (componentParameters.size > 0) {
-                        invokeCreatedComponentObjectMethod(rectangleMapObjectProperties, createdObject, component, componentParameters);
+                        invokeCreatedComponentObjectMethod(
+                                mapObjectProperties,
+                                createdObject,
+                                component,
+                                componentParameters);
                     } else
-                        throw new GdxComponentHasNoParamtersException(component);
+                        throw new GdxComponentHasNoParametersException(component);
                 } else
                     huntingForComponents = false;
             }
         }
 
-        private void invokeCreatedComponentObjectMethod(MapProperties rectangleMapObjectProperties, Object createdObject, String component, Array<String> componentParameters) {
+        private void invokeCreatedComponentObjectMethod(
+                MapProperties mapObjectProperties,
+                Object createdObject,
+                String component,
+                Array<String> componentParameters) {
             Object createdComponent;
             Class<?>[] componentParameterTypes = getParamTypes(componentParameters);
-            Array<String> componentParameterValues = getParameters(rectangleMapObjectProperties, COMPONENT + componentCount + "Value");
+            Array<String> componentParameterValues =
+                    getParameters(
+                            mapObjectProperties,
+                            COMPONENT + componentCount + "Value");
             Class<?> componentClass = getClass(component);
-            Constructor<?> componentConstructor = getConstructor(componentClass, componentParameterTypes);
+            Constructor<?> componentConstructor =
+                    getConstructor(componentClass, componentParameterTypes);
             try {
-                createdComponent = getCreatedObject(rectangleMapObjectProperties, componentParameterTypes, componentConstructor, componentParameterValues);
+                createdComponent = getCreatedObject(
+                        mapObjectProperties,
+                        componentParameterTypes,
+                        componentConstructor,
+                        componentParameterValues);
                 if (createdObject != null)
-                    invokeComponentObjectMethod(createdObject, createdComponent, ADD_COMPONENT_TO_ENTITY);
+                    invokeComponentObjectMethod(createdObject, createdComponent);
             } catch (Exception e) {
                 throw new GdxRuntimeException(e);
             }
             componentCount++;
         }
 
-        private Class<?> getClassFromProperties(MapProperties rectangleMapObjectProperties) {
-            String className = (String) rectangleMapObjectProperties.get(CLASS);
-            System.out.println(String.format("creating className: %s", className));
+        private Class<?> getClassFromProperties(MapProperties mapObjectProperties) {
+            String className = (String) mapObjectProperties.get(CLASS);
             return className == null ? null : getClass(className);
         }
 
         private Class<?> getClass(String className) {
-            Class<?> clazz = null;
+            Class<?> clazz;
             try {
                 clazz = Class.forName(className);
             } catch (ClassNotFoundException cnfe) {
@@ -449,22 +502,24 @@ public class LevelObjectCreator {
             return clazz;
         }
 
-        private Array<String> getParameters(MapProperties rectangleMapObjectProperties, String key) {
+        private Array<String> getParameters(
+                MapProperties mapObjectProperties,
+                String key) {
             int parameterCount = 1;
             Array<String> parameters = new Array<>();
-            String parameterKey = key + String.valueOf(parameterCount);
-            String parameterValue =  (String) rectangleMapObjectProperties.get(parameterKey);
+            String parameterKey = key + parameterCount;
+            String parameterValue =  (String) mapObjectProperties.get(parameterKey);
             while (parameterValue != null) {
                 parameters.add(parameterValue);
-                parameterKey = key + String.valueOf(++parameterCount);
-                parameterValue =  (String) rectangleMapObjectProperties.get(parameterKey);
+                parameterKey = key + ++parameterCount;
+                parameterValue =  (String) mapObjectProperties.get(parameterKey);
             }
             return parameters;
         }
 
         private Constructor<?> getConstructor(Class<?> clazz, Class<?>[] classParameters)
             throws GdxRuntimeException {
-            Constructor<?> constructor = null;
+            Constructor<?> constructor;
             try {
                 constructor = clazz.getConstructor(classParameters);
             } catch (NoSuchMethodException nsme) {
@@ -474,7 +529,7 @@ public class LevelObjectCreator {
             return constructor;
         }
 
-        private Object getCreatedObject(MapProperties rectangleMapproperties,
+        private Object getCreatedObject(MapProperties mapObjectProperties,
                                             Class<?>[] classParameters,
                                             Constructor<?> constructor,
                                             Array<String> constructorParameterValues)
@@ -485,28 +540,28 @@ public class LevelObjectCreator {
                 InstantiationException,
                 NoSuchMethodException {
             Object[] constructorParametersValues = parseConstructorParameterValues(
-                    constructorParameterValues, classParameters, rectangleMapproperties);
+                    constructorParameterValues, classParameters, mapObjectProperties);
             return  constructor == null ? null : constructor.newInstance(constructorParametersValues);
         }
 
-        private String parseComponent(String component, MapProperties rectangleMapObjectProperties) {
-            return (String) rectangleMapObjectProperties.get(component);
+        private String parseComponent(String component, MapProperties mapObjectProperties) {
+            return (String) mapObjectProperties.get(component);
         }
     }
 
-    public class GdxCouldNotParsePropertyException extends GdxRuntimeException {
+    public static class GdxCouldNotParsePropertyException extends GdxRuntimeException {
         public GdxCouldNotParsePropertyException(String message) {
             super(message);
         }
     }
 
-    public class GdxCouldNotParseParameterValueException extends GdxRuntimeException {
+    public static class GdxCouldNotParseParameterValueException extends GdxRuntimeException {
         public GdxCouldNotParseParameterValueException(String message) {
             super(message);
         }
     }
 
-    public class GdxComponentHasNoParamtersException extends GdxRuntimeException {
-        public GdxComponentHasNoParamtersException(String message) {super(message); }
+    public static class GdxComponentHasNoParametersException extends GdxRuntimeException {
+        public GdxComponentHasNoParametersException(String message) {super(message); }
     }
 }

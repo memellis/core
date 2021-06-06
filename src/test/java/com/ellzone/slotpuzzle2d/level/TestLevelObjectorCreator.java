@@ -459,7 +459,7 @@ public class TestLevelObjectorCreator {
 
     @Test
     public void testCreateLevelWhenThereIsOneRectangleMapObjectWithClassAndAComponentWithNoParameters() {
-        thrown.expect(LevelObjectCreator.GdxComponentHasNoParamtersException.class);
+        thrown.expect(LevelObjectCreator.GdxComponentHasNoParametersException.class);
         thrown.expectMessage(TEST_COMPONENT);
         createLevelObjectCreatorForTest(
                 createLevelWhenThereIsOneRectangleMapObjectWithClassAndAComponentWithNoParameters(

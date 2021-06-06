@@ -40,18 +40,18 @@ public class SpinWheelSlotPuzzleTileMap implements SpinWheelSlotPuzzle {
         spinWheel = new
                 SpinWheelForSlotPuzzle(
                     diameter,
-                    convertTileMapXToWorldPostionX(x),
-                    convertTileMapYToWorldPostionY(y),
+                    convertTileMapXToWorldPositionX(x),
+                    convertTileMapYToWorldPositionY(y),
                     nPegs,
                     world);
     }
 
-    private float convertTileMapXToWorldPostionX(float x) {
+    private float convertTileMapXToWorldPositionX(float x) {
         worldPositionX = WorldScreenConvert.convertTileMapXToWorldPostionX(x);
         return worldPositionX;
     }
 
-    private float convertTileMapYToWorldPostionY(float y) {
+    private float convertTileMapYToWorldPositionY(float y) {
         worldPositionY = WorldScreenConvert.convertTileMapYToWorldPostionY(y);
         return worldPositionY;
     }

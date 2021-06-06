@@ -39,7 +39,7 @@ import com.ellzone.slotpuzzle2d.prototypes.screens.PlayScreenPrototype;
 import com.ellzone.slotpuzzle2d.scene.MapTile;
 import com.ellzone.slotpuzzle2d.screens.EndOfGameScreen;
 import com.ellzone.slotpuzzle2d.tweenengine.TweenManager;
-import com.ellzone.slotpuzzle2d.utils.Assets;
+import com.ellzone.slotpuzzle2d.utils.assets.Assets;
 import com.ellzone.slotpuzzle2d.utils.UiUtils;
 import com.ellzone.slotpuzzle2d.prototypes.screens.IntroScreenPrototype;
 import com.ellzone.slotpuzzle2d.prototypes.typewriter.TypewriterScreen;

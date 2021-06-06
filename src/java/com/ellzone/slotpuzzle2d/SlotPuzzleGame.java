@@ -25,7 +25,9 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.TmxMapLoader;
 import com.ellzone.slotpuzzle2d.tweenengine.TweenManager;
-import com.ellzone.slotpuzzle2d.utils.AssetsAnnotation;
+import com.ellzone.slotpuzzle2d.utils.assets.AssetsAnnotation;
+import com.ellzone.slotpuzzle2d.utils.assets.AssetsLoader;
+
 import net.dermetfan.gdx.assets.AnnotationAssetManager;
 
 public class SlotPuzzleGame extends Game implements SlotPuzzleGameInterface {
@@ -68,13 +70,8 @@ public class SlotPuzzleGame extends Game implements SlotPuzzleGameInterface {
 	}
 
 	private AnnotationAssetManager loadAssets() {
-		AnnotationAssetManager annotationAssetManager =
-				LibGdxFactory.getInstance().newAnnotationAssetManager();
-		annotationAssetManager.setLoader(
-				TiledMap.class, new TmxMapLoader(new InternalFileHandleResolver()));
-		annotationAssetManager.load(new AssetsAnnotation());
-		annotationAssetManager.finishLoading();
-		return annotationAssetManager;
+		AssetsLoader assetsLoader = new AssetsLoader();
+		return assetsLoader.getAnnotationAssetManager();
 	}
 
 	@Override

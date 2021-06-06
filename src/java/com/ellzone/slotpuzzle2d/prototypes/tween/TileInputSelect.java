@@ -32,7 +32,7 @@ import com.ellzone.slotpuzzle2d.scene.Tile;
 import com.ellzone.slotpuzzle2d.tweenengine.SlotPuzzleTween;
 import com.ellzone.slotpuzzle2d.tweenengine.BaseTween;
 import com.ellzone.slotpuzzle2d.tweenengine.TweenCallback;
-import com.ellzone.slotpuzzle2d.utils.Assets;
+import com.ellzone.slotpuzzle2d.utils.assets.Assets;
 import com.ellzone.slotpuzzle2d.prototypes.SPPrototypeTemplate;
 import com.badlogic.gdx.math.Vector2;
 

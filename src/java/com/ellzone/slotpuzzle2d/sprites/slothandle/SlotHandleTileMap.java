@@ -19,15 +19,19 @@ package com.ellzone.slotpuzzle2d.sprites.slothandle;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Rectangle;
-import com.ellzone.slotpuzzle2d.sprites.SlotHandleSprite;
+import com.badlogic.gdx.utils.Array;
+import com.ellzone.slotpuzzle2d.sprites.SpriteRenderInterface;
 import com.ellzone.slotpuzzle2d.tweenengine.TweenManager;
 import com.ellzone.slotpuzzle2d.utils.WorldScreenConvert;
 
-public class SlotHandleTileMap implements SlotHandle {
-    private SlotHandleSprite slotHandle;
+public class SlotHandleTileMap implements SlotHandle, SpriteRenderInterface {
+    private final SlotHandleSprite slotHandle;
     private float worldPositionX;
     private float worldPositionY;
+    private Array<TextureRegion> textureRegions;
+    private Array<Integer> entityIds;
 
     public SlotHandleTileMap(TextureAtlas slotHandleAtlas,
                              TweenManager tweenManager,
@@ -36,34 +40,35 @@ public class SlotHandleTileMap implements SlotHandle {
         slotHandle = new SlotHandleSprite(
                 slotHandleAtlas,
                 tweenManager,
-                convertTileMapXToWorldPostionX(xPosition) / 100,
-                convertTileMapYToWorldPostionY(yPosition) / 100);
-        changeSpriteSize(slotHandle.getSlotHandleSprite(), 50);
-        changeSpriteSize(slotHandle.getSlotHandleBaseSprite(), 50);
-        setSlotHandleOriginSize(22.0f, 10.0f, 50);
+                convertTileMapXToWorldPositionX(xPosition) / 100,
+                convertTileMapYToWorldPositionY(yPosition) / 100);
+        changeSpriteSize(slotHandle.getSlotHandleSprite());
+        changeSpriteSize(slotHandle.getSlotHandleBaseSprite());
+        setSlotHandleOriginSize();
+        textureRegions.add((TextureRegion) slotHandle.getSlotHandleSprite());
+        textureRegions.add((TextureRegion) slotHandle.getSlotHandleBaseSprite());
     }
 
-    private void setSlotHandleOriginSize(float originX, float originY, float divisor) {
+    private void setSlotHandleOriginSize() {
         slotHandle.getSlotHandleSprite().setOrigin(
-                originX / divisor,
-                originY / divisor);
+                (float) 22.0 / (float) 50,
+                (float) 10.0 / (float) 50);
     }
 
-    private Sprite changeSpriteSize(Sprite sprite, float divisor) {
+    private void changeSpriteSize(Sprite sprite) {
         sprite.setBounds(
                 sprite.getX(),
                 sprite.getY(),
-                sprite.getWidth() / divisor,
-                sprite.getHeight() / divisor);
-        return sprite;
+                sprite.getWidth() / (float) 50,
+                sprite.getHeight() / (float) 50);
     }
 
-    private float convertTileMapXToWorldPostionX(float x) {
+    private float convertTileMapXToWorldPositionX(float x) {
         worldPositionX = WorldScreenConvert.convertTileMapXToWorldPostionX(x);
         return worldPositionX;
     }
 
-    private float convertTileMapYToWorldPostionY(float y) {
+    private float convertTileMapYToWorldPositionY(float y) {
         worldPositionY = WorldScreenConvert.convertTileMapYToWorldPostionY(y);
         return worldPositionY;
     }
@@ -109,5 +114,20 @@ public class SlotHandleTileMap implements SlotHandle {
     @Override
     public void draw(SpriteBatch spriteBatch) {
         slotHandle.draw(spriteBatch);
+    }
+
+    @Override
+    public Array<TextureRegion> getTextureRegions() {
+        return textureRegions;
+    }
+
+    @Override
+    public Array<Integer> getEntityIds() {
+        return entityIds;
+    }
+
+    @Override
+    public void setEntityIds(Array<Integer> entityIds) {
+        this.entityIds = entityIds;
     }
 }
