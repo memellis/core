@@ -29,7 +29,7 @@ import com.ellzone.slotpuzzle2d.level.creator.LevelCreator;
 import com.ellzone.slotpuzzle2d.level.card.Suit;
 import com.ellzone.slotpuzzle2d.puzzlegrid.PuzzleGridTypeReelTile;
 import com.ellzone.slotpuzzle2d.puzzlegrid.TupleValueIndex;
-import com.ellzone.slotpuzzle2d.sprites.ReelTile;
+import com.ellzone.slotpuzzle2d.sprites.reel.ReelTile;
 import com.ellzone.slotpuzzle2d.utils.Random;
 
 public class HiddenPlayingCard extends HiddenPattern {

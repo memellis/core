@@ -42,13 +42,13 @@ import com.ellzone.slotpuzzle2d.puzzlegrid.ReelTileGridValue;
 import com.ellzone.slotpuzzle2d.puzzlegrid.TupleValueIndex;
 import com.ellzone.slotpuzzle2d.scene.Hud;
 import com.ellzone.slotpuzzle2d.screens.PlayScreen;
-import com.ellzone.slotpuzzle2d.sprites.AnimatedReel;
-import com.ellzone.slotpuzzle2d.sprites.AnimatedReelHelper;
-import com.ellzone.slotpuzzle2d.sprites.ReelStoppedFlashingEvent;
-import com.ellzone.slotpuzzle2d.sprites.ReelStoppedSpinningEvent;
-import com.ellzone.slotpuzzle2d.sprites.ReelTile;
-import com.ellzone.slotpuzzle2d.sprites.ReelTileEvent;
-import com.ellzone.slotpuzzle2d.sprites.ReelTileListener;
+import com.ellzone.slotpuzzle2d.sprites.reel.AnimatedReel;
+import com.ellzone.slotpuzzle2d.sprites.reel.AnimatedReelHelper;
+import com.ellzone.slotpuzzle2d.sprites.reel.ReelStoppedFlashingEvent;
+import com.ellzone.slotpuzzle2d.sprites.reel.ReelStoppedSpinningEvent;
+import com.ellzone.slotpuzzle2d.sprites.reel.ReelTile;
+import com.ellzone.slotpuzzle2d.sprites.reel.ReelTileEvent;
+import com.ellzone.slotpuzzle2d.sprites.reel.ReelTileListener;
 import com.ellzone.slotpuzzle2d.sprites.score.Score;
 import com.ellzone.slotpuzzle2d.tweenengine.BaseTween;
 import com.ellzone.slotpuzzle2d.tweenengine.SlotPuzzleTween;
@@ -133,34 +133,29 @@ public class LevelCreator {
     public static final String MINI_SLOT_MACHINE_LEVEL_TYPE = "MiniSlotMachine";
     public static final String HIDDEN_PATTERN_LAYER_NAME = "Hidden Pattern Object";
     public static final String REELS_LAYER_NAME = "Reels";
-    public static final String REELS_OBJECT_NAME = "Reel";
-    public static final String LIGHT_BUTTON_OBJECT_NME = "Button";
-    public static final String SLOT_HANDLER_OBJECT_NAME = "Handle";
 
-    private LevelDoor levelDoor;
-    private TiledMap level;
-    private HiddenPlayingCard hiddenPlayingCard;
+    private final LevelDoor levelDoor;
+    private final TiledMap level;
     private Array<Integer> hiddenPlayingCards;
-    private TweenManager tweenManager;
-    private Timeline reelFlashSeq;
-    private AnimatedReelHelper animatedReelHelper;
+    private final TweenManager tweenManager;
+    private final AnimatedReelHelper animatedReelHelper;
     private Array<ReelTile> reelTiles;
-    private AnnotationAssetManager annotationAssetManager;
-    private TextureAtlas carddeckAtlas;
-    private PhysicsManagerCustomBodies physics;
+    private final TextureAtlas cardDeckAtlas;
+    private final PhysicsManagerCustomBodies physics;
     private int reelsSpinning;
-    private GridSize levelGridSize;
+    private final GridSize levelGridSize;
     private PlayStates playState;
-    private Hud hud;
-    private boolean win = false, gameOver = false;
-    private Array<Score> scores;
-    private boolean hitSinkBottom = false, dropReplacementReelBoxes = false;
-    private Array<Body> reelBoxes;
+    private final Hud hud;
+    private final Array<Score> scores;
+    private boolean hitSinkBottom, dropReplacementReelBoxes;
+    private final Array<Body> reelBoxes;
     public Array<Integer> replacementReelBoxes;
-    private PuzzleGridTypeReelTile puzzleGridTypeReelTile;
-    private int numberOfReelBoxesToReplace, numberOfReelBoxesToDelete;
+    private final PuzzleGridTypeReelTile puzzleGridTypeReelTile;
+    private int numberOfReelBoxesToDelete;
     boolean matchedReels = false;
     boolean reelsAboveHaveFallen = false;
+    private boolean win;
+    private boolean gameOver;
 
     public LevelCreator(LevelDoor levelDoor,
                         TiledMap level,
@@ -174,16 +169,15 @@ public class LevelCreator {
         this.levelDoor = levelDoor;
         this.level = level;
         this.tweenManager = tweenManager;
-        this.annotationAssetManager = annotationAssetManager;
-        this.carddeckAtlas = cardDeckAtlas;
+        this.cardDeckAtlas = cardDeckAtlas;
         this.physics = physics;
         this.levelGridSize = levelGridSize;
         this.playState = playState;
         this.hud = hud;
         puzzleGridTypeReelTile = new PuzzleGridTypeReelTile();
-        reelBoxes = new Array<Body>();
-        replacementReelBoxes = new Array<Integer>();
-        animatedReelHelper = new AnimatedReelHelper(this.annotationAssetManager, this.tweenManager, level.getLayers().get(REELS_LAYER_NAME).getObjects().getByType(RectangleMapObject.class).size);
+        reelBoxes = new Array<>();
+        replacementReelBoxes = new Array<>();
+        animatedReelHelper = new AnimatedReelHelper(annotationAssetManager, this.tweenManager, level.getLayers().get(REELS_LAYER_NAME).getObjects().getByType(RectangleMapObject.class).size);
         reelTiles = animatedReelHelper.getReelTiles();
         reelTiles = createLevel(
                 this.levelDoor,
@@ -192,15 +186,16 @@ public class LevelCreator {
                 this.levelGridSize);
         reelsSpinning = reelBoxes.size - 1;
         hitSinkBottom = false;
-        scores = new Array<Score>();
+        scores = new Array<>();
     }
 
     private Array<ReelTile> createLevel(LevelDoor levelDoor,
                                         TiledMap level,
                                         Array<ReelTile> reelTiles,
                                         GridSize levelGridSize) {
+        HiddenPlayingCard hiddenPlayingCard;
         if (levelDoor.getLevelType().equals(PLAYING_CARD_LEVEL_TYPE))
-            this.hiddenPlayingCard = new HiddenPlayingCard(level, carddeckAtlas);
+            hiddenPlayingCard = new HiddenPlayingCard(level, cardDeckAtlas);
 
         reelTiles = populateLevel(level, reelTiles, levelGridSize);
         reelTiles = checkLevel(reelTiles, levelGridSize);
@@ -230,7 +225,7 @@ public class LevelCreator {
         TupleValueIndex[][] grid =
                 puzzleGridTypeReelTile.populateMatchGrid(levelReel, levelGridSize);
         Array<TupleValueIndex> lonelyTiles = puzzleGrid.getLonelyTiles(grid);
-        for (TupleValueIndex lonelyTile : lonelyTiles) {
+        for (TupleValueIndex lonelyTile : new Array.ArrayIterator<>(lonelyTiles)) {
             if (lonelyTile.r == 0) {
                 levelReel.get(grid[lonelyTile.r][lonelyTile.c].index)
                         .setEndReel(levelReel.get(grid[lonelyTile.r+1][lonelyTile.c].index).getEndReel());
@@ -243,21 +238,19 @@ public class LevelCreator {
             } else if (lonelyTile.c == levelGridSize.getWidth()) {
                 levelReel.get(grid[lonelyTile.r][lonelyTile.c].index)
                         .setEndReel(levelReel.get(grid[lonelyTile.r][lonelyTile.c-1].index).getEndReel());
-            } else {
-                if ((grid[lonelyTile.r + 1][lonelyTile.c] != null) && (grid[lonelyTile.r + 1][lonelyTile.c].value != -1)) {
-                    levelReel.get(grid[lonelyTile.r][lonelyTile.c].index)
-                            .setEndReel(levelReel.get(grid[lonelyTile.r + 1][lonelyTile.c].index).getEndReel());
-                } else if ((grid[lonelyTile.r - 1][lonelyTile.c] != null) && (grid[lonelyTile.r - 1][lonelyTile.c].value != -1)) {
-                    levelReel.get(grid[lonelyTile.r][lonelyTile.c].index)
-                            .setEndReel(levelReel.get(grid[lonelyTile.r - 1][lonelyTile.c].index).getEndReel());
-                } else if ((grid[lonelyTile.r][lonelyTile.c + 1] != null) && (grid[lonelyTile.r][lonelyTile.c + 1].value != -1)) {
-                    levelReel.get(grid[lonelyTile.r][lonelyTile.c].index)
-                            .setEndReel(levelReel.get(grid[lonelyTile.r][lonelyTile.c + 1].index).getEndReel());
-                } else if ((grid[lonelyTile.r][lonelyTile.c - 1] != null) && (grid[lonelyTile.r][lonelyTile.c - 1].value != -1)) {
-                    levelReel.get(grid[lonelyTile.r][lonelyTile.c].index)
-                            .setEndReel(levelReel.get(grid[lonelyTile.r][lonelyTile.c - 1].index).getEndReel());
-                }
-           }
+            } else if ((grid[lonelyTile.r + 1][lonelyTile.c] != null) && (grid[lonelyTile.r + 1][lonelyTile.c].value != -1)) {
+                levelReel.get(grid[lonelyTile.r][lonelyTile.c].index)
+                        .setEndReel(levelReel.get(grid[lonelyTile.r + 1][lonelyTile.c].index).getEndReel());
+            } else if ((grid[lonelyTile.r - 1][lonelyTile.c] != null) && (grid[lonelyTile.r - 1][lonelyTile.c].value != -1)) {
+                levelReel.get(grid[lonelyTile.r][lonelyTile.c].index)
+                        .setEndReel(levelReel.get(grid[lonelyTile.r - 1][lonelyTile.c].index).getEndReel());
+            } else if ((grid[lonelyTile.r][lonelyTile.c + 1] != null) && (grid[lonelyTile.r][lonelyTile.c + 1].value != -1)) {
+                levelReel.get(grid[lonelyTile.r][lonelyTile.c].index)
+                        .setEndReel(levelReel.get(grid[lonelyTile.r][lonelyTile.c + 1].index).getEndReel());
+            } else if ((grid[lonelyTile.r][lonelyTile.c - 1] != null) && (grid[lonelyTile.r][lonelyTile.c - 1].value != -1)) {
+                levelReel.get(grid[lonelyTile.r][lonelyTile.c].index)
+                        .setEndReel(levelReel.get(grid[lonelyTile.r][lonelyTile.c - 1].index).getEndReel());
+            }
         }
         return levelReel;
     }
@@ -266,15 +259,20 @@ public class LevelCreator {
                                           Array<ReelTile> reelTiles,
                                           GridSize levelGridSize) {
         int index = 0;
-        for (MapObject mapObject : level.getLayers().get(REELS_LAYER_NAME).getObjects().getByType(RectangleMapObject.class)) {
+        Array<MapObject> mapObjects = level
+                .getLayers()
+                .get(REELS_LAYER_NAME)
+                .getObjects()
+                .getByType(MapObject.class);
+        for (MapObject mapObject : new Array.ArrayIterator<MapObject>(mapObjects)) {
             Rectangle mapRectangle = ((RectangleMapObject) mapObject).getRectangle();
             int c = getColumnFromLevel(mapRectangle.getX());
             int r = getRowFromLevel(mapRectangle.getY(), levelGridSize.getHeight());
 
             if ((r >= 0) &
-                    (r <= levelGridSize.getHeight()) &
-                    (c >= 0) &
-                    (c <= levelGridSize.getWidth())) {
+                (r <= levelGridSize.getHeight()) &
+                (c >= 0) &
+                (c <= levelGridSize.getWidth())) {
                 addReel(mapRectangle, reelTiles, index);
                 index++;
             } else {
@@ -318,10 +316,10 @@ public class LevelCreator {
             @Override
             public void actionPerformed(ReelTileEvent event, ReelTile source) {
                 if (event instanceof ReelStoppedSpinningEvent) {
-                    actionReelStoppedSpinning(event, source);
+                    actionReelStoppedSpinning(source);
                 }
                 if ((event instanceof ReelStoppedFlashingEvent)) {
-                    actionReelStoppedFlashing(event, source);
+                    actionReelStoppedFlashing(source);
                 }
             }
         });
@@ -343,7 +341,7 @@ public class LevelCreator {
         return playState;
     }
 
-    private void actionReelStoppedSpinning(ReelTileEvent event, ReelTile source) {
+    private void actionReelStoppedSpinning(ReelTile source) {
         source.stopSpinningSound();
 
         this.reelsSpinning--;
@@ -372,7 +370,7 @@ public class LevelCreator {
         }
     }
 
-    private void actionReelStoppedFlashing(ReelTileEvent event, ReelTile reelTile) {
+    private void actionReelStoppedFlashing(ReelTile reelTile) {
         if (playState != PlayStates.INTRO_SPINNING) {
             if (testForAnyLonelyReels(reelTiles, levelGridSize)) {
                 win = false;
@@ -401,7 +399,7 @@ public class LevelCreator {
 
         if (matchedSlots.size > 0) {
             matchedSlots.reverse();
-            numberOfReelBoxesToReplace = matchedSlots.size - 1 - duplicateMatchedSlots.size / 2;
+            int numberOfReelBoxesToReplace = matchedSlots.size - 1 - duplicateMatchedSlots.size / 2;
             numberOfReelBoxesToDelete = matchedSlots.size - 1 - duplicateMatchedSlots.size / 2;
 
             for (TupleValueIndex matchedSlot : matchedSlots) {
@@ -653,7 +651,7 @@ public class LevelCreator {
     private void initialiseReelFlash(ReelTile reel, float pushPause) {
         Array<Object> userData = new Array<Object>();
         reel.setFlashTween(true);
-        reelFlashSeq = Timeline.createSequence();
+        Timeline reelFlashSeq = Timeline.createSequence();
         reelFlashSeq = reelFlashSeq.pushPause(pushPause);
 
         Color fromColor = new Color(Color.WHITE);

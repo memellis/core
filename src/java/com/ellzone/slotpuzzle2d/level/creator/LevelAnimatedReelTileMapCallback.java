@@ -19,5 +19,5 @@ package com.ellzone.slotpuzzle2d.level.creator;
 import com.ellzone.slotpuzzle2d.sprites.reel.AnimatedReelTileMap;
 
 public interface LevelAnimatedReelTileMapCallback {
-    public void onEvent(AnimatedReelTileMap source);
+    void onEvent(AnimatedReelTileMap source);
 }

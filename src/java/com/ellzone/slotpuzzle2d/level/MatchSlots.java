@@ -20,7 +20,7 @@ import com.badlogic.gdx.utils.Array;
 import com.ellzone.slotpuzzle2d.puzzlegrid.GridSize;
 import com.ellzone.slotpuzzle2d.puzzlegrid.PuzzleGridTypeReelTile;
 import com.ellzone.slotpuzzle2d.puzzlegrid.ReelTileGridValue;
-import com.ellzone.slotpuzzle2d.sprites.ReelTile;
+import com.ellzone.slotpuzzle2d.sprites.reel.ReelTile;
 
 public class MatchSlots {
     private  GridSize levelGridSize;

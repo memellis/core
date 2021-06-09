@@ -27,8 +27,8 @@ import com.ellzone.slotpuzzle2d.puzzlegrid.Point;
 import com.ellzone.slotpuzzle2d.puzzlegrid.PuzzleGridType;
 import com.ellzone.slotpuzzle2d.puzzlegrid.PuzzleGridTypeReelTile;
 import com.ellzone.slotpuzzle2d.puzzlegrid.TupleValueIndex;
-import com.ellzone.slotpuzzle2d.sprites.AnimatedReel;
-import com.ellzone.slotpuzzle2d.sprites.ReelTile;
+import com.ellzone.slotpuzzle2d.sprites.reel.AnimatedReel;
+import com.ellzone.slotpuzzle2d.sprites.reel.ReelTile;
 
 import java.util.HashSet;
 

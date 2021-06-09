@@ -17,7 +17,7 @@
 package com.ellzone.slotpuzzle2d.components;
 
 import com.badlogic.ashley.core.Component;
-import com.ellzone.slotpuzzle2d.sprites.ReelHelper;
+import com.ellzone.slotpuzzle2d.sprites.reel.ReelHelper;
 
 public class ReelHelperComponent implements Component {
     public ReelHelper reelHelper;

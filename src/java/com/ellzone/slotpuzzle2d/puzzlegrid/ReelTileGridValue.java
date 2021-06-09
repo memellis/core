@@ -16,7 +16,7 @@
 
 package com.ellzone.slotpuzzle2d.puzzlegrid;
 
-import com.ellzone.slotpuzzle2d.sprites.ReelTile;
+import com.ellzone.slotpuzzle2d.sprites.reel.ReelTile;
 
 import java.util.Arrays;
 import java.util.Objects;

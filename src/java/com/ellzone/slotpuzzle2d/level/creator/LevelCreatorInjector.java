@@ -19,7 +19,7 @@ package com.ellzone.slotpuzzle2d.level.creator;
 import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
-import com.ellzone.slotpuzzle2d.sprites.ReelSprites;
+import com.ellzone.slotpuzzle2d.sprites.reel.ReelSprites;
 import com.ellzone.slotpuzzle2d.tweenengine.TweenManager;
 import com.ellzone.slotpuzzle2d.utils.PixmapProcessors;
 import com.ellzone.slotpuzzle2d.utils.assets.AssetsAnnotation;

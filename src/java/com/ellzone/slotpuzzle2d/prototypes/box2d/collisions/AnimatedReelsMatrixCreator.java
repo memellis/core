@@ -17,18 +17,14 @@
 package com.ellzone.slotpuzzle2d.prototypes.box2d.collisions;
 
 import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.BodyDef;
 import com.badlogic.gdx.utils.Array;
 import com.ellzone.slotpuzzle2d.physics.PhysicsManagerCustomBodies;
 import com.ellzone.slotpuzzle2d.screens.PlayScreen;
-import com.ellzone.slotpuzzle2d.sprites.AnimatedReel;
-import com.ellzone.slotpuzzle2d.sprites.ReelTile;
+import com.ellzone.slotpuzzle2d.sprites.reel.AnimatedReel;
+import com.ellzone.slotpuzzle2d.sprites.reel.ReelTile;
 import com.ellzone.slotpuzzle2d.tweenengine.TweenManager;
-import com.ellzone.slotpuzzle2d.utils.PixmapProcessors;
-
-import java.io.File;
 
 import static com.ellzone.slotpuzzle2d.prototypes.box2d.collisions.Box2DBoxesFallingFromSlotPuzzleMatrices.SCREEN_OFFSET;
 import static com.ellzone.slotpuzzle2d.puzzlegrid.PuzzleGridTypeReelTile.getColumnFromLevel;
@@ -201,8 +197,6 @@ public class AnimatedReelsMatrixCreator {
                 spriteWidth,
                 spriteHeight,
                 0,
-                null,
-                null,
                 tweenManager);
         animatedReel.setSx(0);
         animatedReel.setEndReel(endReel);

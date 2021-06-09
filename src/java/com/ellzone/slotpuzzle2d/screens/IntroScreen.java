@@ -47,15 +47,15 @@ import com.ellzone.slotpuzzle2d.effects.ReelAccessor;
 import com.ellzone.slotpuzzle2d.effects.ReelLetterAccessor;
 import com.ellzone.slotpuzzle2d.effects.SpriteAccessor;
 import com.ellzone.slotpuzzle2d.messaging.MessageType;
-import com.ellzone.slotpuzzle2d.sprites.AnimatedReel;
+import com.ellzone.slotpuzzle2d.sprites.reel.AnimatedReel;
 import com.ellzone.slotpuzzle2d.sprites.LightButtonBuilder;
-import com.ellzone.slotpuzzle2d.sprites.ReelLetter;
-import com.ellzone.slotpuzzle2d.sprites.ReelLetterTile;
-import com.ellzone.slotpuzzle2d.sprites.ReelSprites;
-import com.ellzone.slotpuzzle2d.sprites.ReelStoppedSpinningEvent;
-import com.ellzone.slotpuzzle2d.sprites.ReelTile;
-import com.ellzone.slotpuzzle2d.sprites.ReelTileEvent;
-import com.ellzone.slotpuzzle2d.sprites.ReelTileListener;
+import com.ellzone.slotpuzzle2d.sprites.reel.ReelLetter;
+import com.ellzone.slotpuzzle2d.sprites.reel.ReelLetterTile;
+import com.ellzone.slotpuzzle2d.sprites.reel.ReelSprites;
+import com.ellzone.slotpuzzle2d.sprites.reel.ReelStoppedSpinningEvent;
+import com.ellzone.slotpuzzle2d.sprites.reel.ReelTile;
+import com.ellzone.slotpuzzle2d.sprites.reel.ReelTileEvent;
+import com.ellzone.slotpuzzle2d.sprites.reel.ReelTileListener;
 import com.ellzone.slotpuzzle2d.sprites.starfield.StarField;
 import com.ellzone.slotpuzzle2d.tweenengine.SlotPuzzleTween;
 import com.ellzone.slotpuzzle2d.tweenengine.Timeline;
@@ -390,8 +390,8 @@ public class IntroScreen extends InputAdapter implements Screen {
                  slotReelTexture.getWidth(),
                 viewport.getWorldHeight() / 2,
                  REEL_WIDTH, REEL_HEIGHT,
-                0,
-                null);
+                0
+        );
 
         Timeline reelSeq = Timeline.createSequence();
         reelSeq.push(SlotPuzzleTween.set(reelTile, ReelAccessor.SCROLL_XY).target(0f, 0f).ease(Bounce.IN));

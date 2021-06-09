@@ -20,6 +20,6 @@ import com.badlogic.ashley.core.Component;
 import box2dLight.ConeLight;
 
 public interface LevelConeLightCallback {
-    public void onEvent(ConeLight source);
-    public void addComponent(Component component);
+    void onEvent(ConeLight source);
+    void addComponent(Component component);
 }

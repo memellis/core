@@ -74,7 +74,7 @@ import com.ellzone.slotpuzzle2d.scene.Hud;
 import com.ellzone.slotpuzzle2d.scene.MapTile;
 import com.ellzone.slotpuzzle2d.spin.SpinWheel;
 import com.ellzone.slotpuzzle2d.spin.SpinWheelSlotPuzzleTileMap;
-import com.ellzone.slotpuzzle2d.sprites.ReelSprites;
+import com.ellzone.slotpuzzle2d.sprites.reel.ReelSprites;
 import com.ellzone.slotpuzzle2d.sprites.level.LevelEntrance;
 import com.ellzone.slotpuzzle2d.sprites.reel.AnimatedReelTileMap;
 import com.ellzone.slotpuzzle2d.sprites.sign.ScrollSign;

@@ -16,6 +16,7 @@
 
 package com.ellzone.slotpuzzle2d.level;
 
+import com.badlogic.gdx.maps.MapObject;
 import com.badlogic.gdx.maps.MapProperties;
 import com.badlogic.gdx.maps.objects.RectangleMapObject;
 import com.badlogic.gdx.physics.box2d.World;
@@ -117,7 +118,7 @@ public class TestLevelObjectorCreator {
     private World worldMock;
     private RayHandler rayHandlerMock;
     private LevelCreatorInjectionInterface levelCreatorInjectionInterfaceMock;
-    private Array<RectangleMapObject> rectangleMapObjects;
+    private Array<MapObject> mapObjects;
 
     @Rule
     public ExpectedException thrown = ExpectedException.none();
@@ -142,72 +143,74 @@ public class TestLevelObjectorCreator {
 
     @Test
     public void testCreateLevelMapWhenThereAreNoLevelObjects() {
-        rectangleMapObjects = new Array<>();
+        mapObjects = new Array<>();
         LevelObjectCreator levelObjectCreator = new LevelObjectCreator(levelCreatorInjectionInterfaceMock, worldMock, rayHandlerMock);
         assertThat(levelObjectCreator, is(notNullValue()));
-        levelObjectCreator.createLevel(rectangleMapObjects);
-        assertThat(rectangleMapObjects.size, is(equalTo(0)));
+        levelObjectCreator.createLevel(mapObjects);
+        assertThat(mapObjects.size, is(equalTo(0)));
     }
 
     @Test(expected = GdxRuntimeException.class)
     public void testCreateLevelWhenRectangleMapObjectsIsNull() {
-        rectangleMapObjects = null;
+        mapObjects = null;
         LevelObjectCreator levelObjectCreator = new LevelObjectCreator(levelCreatorInjectionInterfaceMock, worldMock, rayHandlerMock);
         assertThat(levelObjectCreator, is(notNullValue()));
-        levelObjectCreator.createLevel(rectangleMapObjects);
-        assertThat(rectangleMapObjects, CoreMatchers.<Array<RectangleMapObject>>is((Array<RectangleMapObject>) equalTo(nullValue())));
+        levelObjectCreator.createLevel(mapObjects);
+        assertThat(
+                mapObjects,
+                CoreMatchers.<Array<MapObject>>is((Array<MapObject>) equalTo(nullValue())));
     }
 
     @Test
     public void testCreateLevelWhenThereIsOneRectangleMapObjectWithNoClassProperties() {
-        rectangleMapObjects = new Array<>();
-        rectangleMapObjects.add(createARectangleMockObject(new MapProperties()));
-        for (RectangleMapObject rectangleMapObjectMocked : rectangleMapObjects)
-            replay(rectangleMapObjectMocked);
+        mapObjects = new Array<>();
+       mapObjects.add(createARectangleMockObject(new MapProperties()));
+        for (MapObject mapObjectMocked : mapObjects)
+            replay(mapObjectMocked);
         LevelObjectCreator levelObjectCreator =
                 new LevelObjectCreator(levelCreatorInjectionInterfaceMock, worldMock, rayHandlerMock);
         assertThat(levelObjectCreator, is(notNullValue()));
-        levelObjectCreator.createLevel(rectangleMapObjects);
-        assertThat(rectangleMapObjects.size, is(equalTo(1)));
-        for (RectangleMapObject rectangleMapObjectMocked : rectangleMapObjects)
-            verify(rectangleMapObjectMocked);
+        levelObjectCreator.createLevel(mapObjects);
+        assertThat(mapObjects.size, is(equalTo(1)));
+        for (MapObject mapObjectMocked : mapObjects)
+            verify(mapObjectMocked);
     }
 
     @Test(expected = GdxRuntimeException.class)
     public void testCreateLevelWhenThereisOneRectangleMapObjectWithClassPropertiesWithNoAddToMethod() {
-        rectangleMapObjects = new Array<>();
-        rectangleMapObjects.add(createARectangleMockObjectWithAClassProperty(REFLECTION_MAP_CREATION_CLASS_FOR_TESTING));
-        for (RectangleMapObject rectangleMapObjectMocked : rectangleMapObjects)
-            replay(rectangleMapObjectMocked);
+        mapObjects = new Array<>();
+        mapObjects.add(createARectangleMockObjectWithAClassProperty(REFLECTION_MAP_CREATION_CLASS_FOR_TESTING));
+        for (MapObject mapObjectMocked : mapObjects)
+            replay(mapObjectMocked);
         LevelObjectCreatorForTestWithNoMethods levelObjectCreator =
                 new LevelObjectCreatorForTestWithNoMethods(
                         levelCreatorInjectionInterfaceMock, worldMock, rayHandlerMock);
         assertThat(levelObjectCreator, is(notNullValue()));
-        levelObjectCreator.createLevel(rectangleMapObjects);
+        levelObjectCreator.createLevel(mapObjects);
     }
 
     @Test(expected = GdxRuntimeException.class)
     public void testCreateLevelWhenThereisOneRectangleMapObjectWithClassPropertiesWithNoDelegateToMethod() {
-        rectangleMapObjects = new Array<>();
-        rectangleMapObjects.add(createARectangleMockObjectWithAClassProperty(REFLECTION_MAP_CREATION_CLASS_FOR_TESTING));
-        for (RectangleMapObject rectangleMapObjectMocked : rectangleMapObjects)
-            replay(rectangleMapObjectMocked);
+        mapObjects = new Array<>();
+        mapObjects.add(createARectangleMockObjectWithAClassProperty(REFLECTION_MAP_CREATION_CLASS_FOR_TESTING));
+        for (MapObject mapObjectMocked : mapObjects)
+            replay(mapObjectMocked);
         LevelObjectCreatorForTestWithNoDelegateToMethod levelObjectCreator =
                 new LevelObjectCreatorForTestWithNoDelegateToMethod(
                         levelCreatorInjectionInterfaceMock, worldMock, rayHandlerMock);
         assertThat(levelObjectCreator, is(notNullValue()));
-        levelObjectCreator.createLevel(rectangleMapObjects);
+        levelObjectCreator.createLevel(mapObjects);
     }
 
     @Test
     public void testCreateLevelWhenThereisOneRectangleMapObjectWithClassProperties() {
         LevelObjectCreatorForTest levelObjectCreator = createLevelObjectCreatorForTest(
                 createARectangleMockObjectWithAClassProperty(REFLECTION_MAP_CREATION_CLASS_FOR_TESTING));
-        assertThat(rectangleMapObjects.size, is(equalTo(1)));
+        assertThat(mapObjects.size, is(equalTo(1)));
         assertTrue(levelObjectCreator.getReflectionMapCreationClassForTesting() instanceof
                       ReflectionMapCreationClassForTesting);
         assertTrue(levelObjectCreator.getDelegatedToCallback());
-        for (RectangleMapObject rectangleMapObjectMocked : rectangleMapObjects)
+        for (MapObject rectangleMapObjectMocked : mapObjects)
             verify(rectangleMapObjectMocked);
     }
 
@@ -257,7 +260,7 @@ public class TestLevelObjectorCreator {
                 createLevelWhenThereIsOneRectangleMapObjectWithClassWithFieldProperty(
                         REFLECTION_MAP_CREATION_CLASS_FOR_TESTING_WITH_DIFFERENT_CONSTRUCTORS));
         levelObjectCreator.testPublicFloatField = THREE_AS_FLOAT;
-        levelObjectCreator.createLevel(rectangleMapObjects);
+        levelObjectCreator.createLevel(mapObjects);
         assertThat(levelObjectCreator.
                      getReflectionMapCreationClassForTestingWithDifferentContstuctors().
                      getTestFloatField(),
@@ -270,7 +273,7 @@ public class TestLevelObjectorCreator {
                 createLevelWhenThereIsOneRectangleMapObjectWithClassWithMethodProperty(
                         REFLECTION_MAP_CREATION_CLASS_FOR_TESTING_WITH_DIFFERENT_CONSTRUCTORS));
         levelObjectCreator.testPublicFloatField = THREE_AS_FLOAT;
-        levelObjectCreator.createLevel(rectangleMapObjects);
+        levelObjectCreator.createLevel(mapObjects);
         assertThat(levelObjectCreator.
                      getReflectionMapCreationClassForTestingWithDifferentContstuctors().
                      getTestFloatField(),
@@ -599,7 +602,7 @@ public class TestLevelObjectorCreator {
     private LevelObjectCreatorForTest createLevelObjectCreatorForTest(RectangleMapObject rectangleMapObject) {
         createRectangleMapObjects(rectangleMapObject);
         LevelObjectCreatorForTest levelObjectCreator = newLevelObjectCreatorForTest(rectangleMapObject);
-        levelObjectCreator.createLevel(rectangleMapObjects);
+        levelObjectCreator.createLevel(mapObjects);
         return levelObjectCreator;
     }
 
@@ -608,7 +611,7 @@ public class TestLevelObjectorCreator {
         createRectangleMapObjects(rectangleMapObject);
         LevelObjectCreatorForTestWithNoAddToComponentMethod levelObjectCreator =
                 newLevelObjectCreatorForTestWithNoAddToComponentMethod(rectangleMapObject);
-        levelObjectCreator.createLevel(rectangleMapObjects);
+        levelObjectCreator.createLevel(mapObjects);
         return levelObjectCreator;
     }
 
@@ -623,9 +626,9 @@ public class TestLevelObjectorCreator {
     }
 
     private void createRectangleMapObjects(RectangleMapObject rectangleMapObject) {
-        rectangleMapObjects = new Array<>();
-        rectangleMapObjects.add(rectangleMapObject);
-        for (RectangleMapObject rectangleMapObjectMocked : rectangleMapObjects)
+        mapObjects = new Array<>();
+        mapObjects.add(rectangleMapObject);
+        for (MapObject rectangleMapObjectMocked : mapObjects)
             replay(rectangleMapObjectMocked);
     }
 

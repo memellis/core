@@ -21,7 +21,7 @@ import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.utils.Array;
 import com.ellzone.slotpuzzle2d.effects.ReelAccessor;
-import com.ellzone.slotpuzzle2d.sprites.ReelTile;
+import com.ellzone.slotpuzzle2d.sprites.reel.ReelTile;
 import com.ellzone.slotpuzzle2d.tweenengine.SlotPuzzleTween;
 import com.ellzone.slotpuzzle2d.utils.PixmapProcessors;
 import aurelienribon.tweenengine.equations.Back;
@@ -81,7 +81,7 @@ public class WayPoints1 extends SPPrototypeTemplate {
         slotReelScrollPixmap = new Pixmap(spriteWidth, spriteHeight, Pixmap.Format.RGBA8888);
         slotReelScrollPixmap = PixmapProcessors.createPixmapToAnimate(sprites);
         slotReelScrollTexture = new Texture(slotReelScrollPixmap);
-        reelTile = new ReelTile(slotReelScrollTexture, slotReelScrollTexture.getHeight(), 0, 32, spriteWidth, spriteHeight, spriteWidth, spriteHeight, 0, null);
+        reelTile = new ReelTile(slotReelScrollTexture, slotReelScrollTexture.getHeight(), 0, 32, spriteWidth, spriteHeight, spriteWidth, spriteHeight, 0);
         reelTile.setX(0);
         reelTile.setY(0);
         reelTile.setEndReel(random.nextInt(sprites.length));

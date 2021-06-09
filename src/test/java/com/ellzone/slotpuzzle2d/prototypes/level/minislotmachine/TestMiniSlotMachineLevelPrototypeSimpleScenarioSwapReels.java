@@ -2,7 +2,7 @@ package com.ellzone.slotpuzzle2d.prototypes.level.minislotmachine;
 
 import com.badlogic.gdx.utils.Array;
 import com.ellzone.slotpuzzle2d.level.creator.LevelCreatorSimpleScenario;
-import com.ellzone.slotpuzzle2d.sprites.ReelTile;
+import com.ellzone.slotpuzzle2d.sprites.reel.ReelTile;
 
 import org.easymock.Capture;
 import org.easymock.EasyMock;

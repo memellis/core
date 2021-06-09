@@ -1,6 +1,6 @@
 package com.ellzone.slotpuzzle2d.utils.reels;
 
-import com.ellzone.slotpuzzle2d.sprites.AnimatedReel;
+import com.ellzone.slotpuzzle2d.sprites.reel.AnimatedReel;
 
 public class ReelUtils {
     public static AnimatedReel createAnimatedReel(int x, int y) {

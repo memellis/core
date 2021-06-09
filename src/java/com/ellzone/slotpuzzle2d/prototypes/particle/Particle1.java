@@ -33,7 +33,7 @@ import com.ellzone.slotpuzzle2d.SlotPuzzleConstants;
 import com.ellzone.slotpuzzle2d.physics.Particle;
 import com.ellzone.slotpuzzle2d.physics.Vector;
 import com.ellzone.slotpuzzle2d.prototypes.SPPrototype;
-import com.ellzone.slotpuzzle2d.sprites.ReelTile;
+import com.ellzone.slotpuzzle2d.sprites.reel.ReelTile;
 import com.ellzone.slotpuzzle2d.utils.assets.Assets;
 import com.ellzone.slotpuzzle2d.utils.PixmapProcessors;
 
@@ -105,7 +105,7 @@ public class Particle1 extends SPPrototype {
         slotReelScrollPixmap = new Pixmap(spriteWidth, spriteHeight, Pixmap.Format.RGBA8888);
         slotReelScrollPixmap = PixmapProcessors.createPixmapToAnimate(sprites);
         slotReelScrollTexture = new Texture(slotReelScrollPixmap);
-        reelSlot = new ReelTile(slotReelScrollTexture, slotReelScrollTexture.getHeight() /spriteHeight, 0, 32, spriteHeight, spriteHeight, spriteWidth, spriteHeight, 0, null);
+        reelSlot = new ReelTile(slotReelScrollTexture, slotReelScrollTexture.getHeight() /spriteHeight, 0, 32, spriteHeight, spriteHeight, spriteWidth, spriteHeight, 0);
         reelSlot.setX(0);
         reelSlot.setY(0);
         reelSlot.setSx(0);

@@ -39,12 +39,12 @@ import com.ellzone.slotpuzzle2d.physics.DampenedSineParticle;
 import com.ellzone.slotpuzzle2d.prototypes.SPPrototypeTemplate;
 import com.ellzone.slotpuzzle2d.puzzlegrid.PuzzleGridTypeReelTile;
 import com.ellzone.slotpuzzle2d.puzzlegrid.ReelTileGridValue;
-import com.ellzone.slotpuzzle2d.sprites.AnimatedReel;
+import com.ellzone.slotpuzzle2d.sprites.reel.AnimatedReel;
 import com.ellzone.slotpuzzle2d.sprites.LightButton;
-import com.ellzone.slotpuzzle2d.sprites.ReelStoppedSpinningEvent;
-import com.ellzone.slotpuzzle2d.sprites.ReelTile;
-import com.ellzone.slotpuzzle2d.sprites.ReelTileEvent;
-import com.ellzone.slotpuzzle2d.sprites.ReelTileListener;
+import com.ellzone.slotpuzzle2d.sprites.reel.ReelStoppedSpinningEvent;
+import com.ellzone.slotpuzzle2d.sprites.reel.ReelTile;
+import com.ellzone.slotpuzzle2d.sprites.reel.ReelTileEvent;
+import com.ellzone.slotpuzzle2d.sprites.reel.ReelTileListener;
 import com.ellzone.slotpuzzle2d.sprites.slothandle.SlotHandleSprite;
 import com.ellzone.slotpuzzle2d.tweenengine.SlotPuzzleTween;
 import com.ellzone.slotpuzzle2d.tweenengine.Timeline;
@@ -257,7 +257,7 @@ public class SpinningSlotsWithMatchesWin extends SPPrototypeTemplate {
     }
 
     private void addReel(Texture slotReelScrollTexture, int i) {
-        AnimatedReel animatedReel = new AnimatedReel(slotReelScrollTexture, 0, 0, spriteWidth, spriteHeight, spriteWidth, spriteHeight * 3, 0, reelSpinningSound, reelStoppingSound, tweenManager);
+        AnimatedReel animatedReel = new AnimatedReel(slotReelScrollTexture, 0, 0, spriteWidth, spriteHeight, spriteWidth, spriteHeight * 3, 0, tweenManager);
         animatedReel.setX(i * spriteWidth + displayWindowWidth / 2);
         animatedReel.setY((displayWindowHeight + 3 * spriteHeight) / 2);
         animatedReel.setSx(0);

@@ -21,8 +21,8 @@ import com.ellzone.slotpuzzle2d.components.VisualComponent;
 import com.ellzone.slotpuzzle2d.effects.ReelAccessor;
 import com.ellzone.slotpuzzle2d.level.sequence.PlayScreenIntroSequence;
 import com.ellzone.slotpuzzle2d.prototypes.SPPrototype;
-import com.ellzone.slotpuzzle2d.sprites.ReelTile;
-import com.ellzone.slotpuzzle2d.sprites.ReelSprites;
+import com.ellzone.slotpuzzle2d.sprites.reel.ReelTile;
+import com.ellzone.slotpuzzle2d.sprites.reel.ReelSprites;
 import com.ellzone.slotpuzzle2d.systems.ReelTileMovementSystem;
 import com.ellzone.slotpuzzle2d.systems.RenderSystem;
 import com.ellzone.slotpuzzle2d.tweenengine.BaseTween;
@@ -92,7 +92,7 @@ public class RenderReels extends SPPrototype {
     }
 
     private void addReelTile(Texture slotReelScrollTexture, int i) {
-        ReelTile reelTile = new ReelTile(slotReelScrollTexture, slotReelScrollTexture.getHeight(), 0, 0, spriteWidth, spriteHeight, spriteWidth, spriteHeight, 0, null);
+        ReelTile reelTile = new ReelTile(slotReelScrollTexture, slotReelScrollTexture.getHeight(), 0, 0, spriteWidth, spriteHeight, spriteWidth, spriteHeight, 0);
         reelTile.setX(i * spriteHeight);
         reelTile.setY(i * spriteWidth);
         reelTile.setSx(0);

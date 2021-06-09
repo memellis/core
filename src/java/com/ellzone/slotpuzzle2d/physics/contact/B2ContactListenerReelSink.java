@@ -22,7 +22,7 @@ import com.badlogic.gdx.physics.box2d.ContactImpulse;
 import com.badlogic.gdx.physics.box2d.ContactListener;
 import com.badlogic.gdx.physics.box2d.Manifold;
 import com.ellzone.slotpuzzle2d.physics.ReelSinkInterface;
-import com.ellzone.slotpuzzle2d.sprites.ReelTile;
+import com.ellzone.slotpuzzle2d.sprites.reel.ReelTile;
 
 public class B2ContactListenerReelSink implements ContactListener {
     ReelSinkInterface reelSink;

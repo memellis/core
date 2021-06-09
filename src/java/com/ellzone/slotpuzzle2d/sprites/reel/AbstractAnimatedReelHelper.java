@@ -14,7 +14,7 @@
  limitations under the License.
  */
 
-package com.ellzone.slotpuzzle2d.sprites;
+package com.ellzone.slotpuzzle2d.sprites.reel;
 
 import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.audio.Sound;

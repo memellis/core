@@ -48,8 +48,8 @@ import com.badlogic.gdx.utils.ObjectSet;
 import com.badlogic.gdx.utils.Pool;
 import com.ellzone.slotpuzzle2d.effects.ReelAccessor;
 import com.ellzone.slotpuzzle2d.graphs.DrawTweenGraphs;
-import com.ellzone.slotpuzzle2d.sprites.ReelSlotTileScroll3D;
-import com.ellzone.slotpuzzle2d.sprites.ReelTile;
+import com.ellzone.slotpuzzle2d.sprites.reel.ReelSlotTileScroll3D;
+import com.ellzone.slotpuzzle2d.sprites.reel.ReelTile;
 import com.ellzone.slotpuzzle2d.tweenengine.BaseTween;
 import com.ellzone.slotpuzzle2d.tweenengine.SlotPuzzleTween;
 import com.ellzone.slotpuzzle2d.tweenengine.TweenCallback;
@@ -177,7 +177,7 @@ public class TweenGraphsScreen implements Screen {
         Pixmap slotReelScrollPixmap;
         slotReelScrollPixmap = PixmapProcessors.createPixmapToAnimate(sprites);
         slotReelScrollTexture = new Texture(slotReelScrollPixmap);
-        reelTile = new ReelTile(slotReelScrollTexture, (int) spriteWidth, (int) spriteHeight, 0, 32, 0, null);
+        reelTile = new ReelTile(slotReelScrollTexture, (int) spriteWidth, (int) spriteHeight, 0, 32, 0);
         reelTile.setX(0);
         reelTile.setY(32);
         reelTile.setEndReel(random.nextInt(sprites.length));
@@ -193,7 +193,7 @@ public class TweenGraphsScreen implements Screen {
                 .start();
         tweens.add(tween);
 
-        reelTile = new ReelTile(slotReelScrollTexture, (int) spriteWidth, (int) spriteHeight, 32, 32, 0, null);
+        reelTile = new ReelTile(slotReelScrollTexture, (int) spriteWidth, (int) spriteHeight, 32, 32, 0);
         reelTile.setX(32);
         reelTile.setY(32);
         reelTile.setEndReel(random.nextInt(sprites.length));
@@ -210,7 +210,7 @@ public class TweenGraphsScreen implements Screen {
                 .start(tweenManager);
         tweens.add(tween);
 
-        reelTile = new ReelTile(slotReelScrollTexture, (int) spriteWidth, (int) spriteHeight, 64, 32, 0, null);
+        reelTile = new ReelTile(slotReelScrollTexture, (int) spriteWidth, (int) spriteHeight, 64, 32, 0);
         reelTile.setX(64);
         reelTile.setY(32);
         reelTile.setEndReel(random.nextInt(sprites.length));

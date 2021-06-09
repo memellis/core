@@ -17,7 +17,7 @@
 package com.ellzone.slotpuzzle2d.effects;
 
 import com.badlogic.gdx.graphics.Color;
-import com.ellzone.slotpuzzle2d.sprites.ReelLetterTile;
+import com.ellzone.slotpuzzle2d.sprites.reel.ReelLetterTile;
 import aurelienribon.tweenengine.TweenAccessor;
 
 public class ReelLetterAccessor implements TweenAccessor<ReelLetterTile> {

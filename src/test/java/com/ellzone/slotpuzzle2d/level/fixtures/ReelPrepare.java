@@ -17,7 +17,7 @@
 package com.ellzone.slotpuzzle2d.level.fixtures;
 
 import com.badlogic.gdx.utils.Array;
-import com.ellzone.slotpuzzle2d.sprites.ReelTile;
+import com.ellzone.slotpuzzle2d.sprites.reel.ReelTile;
 
 public class ReelPrepare {
     public ReelPrepare() {}

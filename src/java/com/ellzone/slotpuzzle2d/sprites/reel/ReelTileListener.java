@@ -14,7 +14,11 @@
  limitations under the License.
  */
 
-package com.ellzone.slotpuzzle2d.sprites;
+package com.ellzone.slotpuzzle2d.sprites.reel;
 
-public class ReelStoppedFlashingEvent extends ReelTileEvent {
+import com.ellzone.slotpuzzle2d.sprites.reel.ReelTile;
+import com.ellzone.slotpuzzle2d.sprites.reel.ReelTileEvent;
+
+public interface ReelTileListener {
+	public void actionPerformed(ReelTileEvent event, ReelTile source);
 }

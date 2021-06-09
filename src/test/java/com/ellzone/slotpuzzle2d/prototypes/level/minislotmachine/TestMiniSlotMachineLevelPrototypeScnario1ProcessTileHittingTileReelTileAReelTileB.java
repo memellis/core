@@ -1,6 +1,6 @@
 package com.ellzone.slotpuzzle2d.prototypes.level.minislotmachine;
 
-import com.ellzone.slotpuzzle2d.sprites.ReelTile;
+import com.ellzone.slotpuzzle2d.sprites.reel.ReelTile;
 
 import org.easymock.Capture;
 import org.easymock.EasyMock;

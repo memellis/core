@@ -18,7 +18,7 @@ package com.ellzone.slotpuzzle2d.prototypes.box2d.collisions;
 
 import com.badlogic.gdx.utils.Array;
 import com.ellzone.slotpuzzle2d.physics.contact.AnimatedReelsManager;
-import com.ellzone.slotpuzzle2d.sprites.AnimatedReel;
+import com.ellzone.slotpuzzle2d.sprites.reel.AnimatedReel;
 
 import org.junit.Test;
 

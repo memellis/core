@@ -14,7 +14,7 @@
  limitations under the License.
  */
 
-package com.ellzone.slotpuzzle2d.sprites;
+package com.ellzone.slotpuzzle2d.sprites.reel;
 
 import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.Pixmap;
@@ -37,7 +37,7 @@ public class AnimatedReelHelper {
     private TweenManager tweenManager;
     private int numberOfAnimatedReels;
     private Sound pullLeverSound, reelSpinningSound, reelStoppingSound;
-    private Array<AnimatedReel> animatedReels;
+    private Array<com.ellzone.slotpuzzle2d.sprites.reel.AnimatedReel> animatedReels;
     private Array<ReelTile> reelTiles;
     private Pixmap slotReelScrollPixmap;
     private Texture slotReelScrollTexture;
@@ -116,13 +116,13 @@ public class AnimatedReelHelper {
     }
 
     private void initialiseReelSlots() {
-        animatedReels = new Array<AnimatedReel>();
+        animatedReels = new Array<com.ellzone.slotpuzzle2d.sprites.reel.AnimatedReel>();
         slotReelScrollPixmap = new Pixmap(spriteWidth, spriteHeight, Pixmap.Format.RGBA8888);
         slotReelScrollPixmap = PixmapProcessors.createPixmapToAnimate(reelSprites.getSprites());
         slotReelScrollTexture = new Texture(slotReelScrollPixmap);
         for (int i = 0; i < numberOfAnimatedReels; i++) {
-            AnimatedReel animatedReel =
-                    new AnimatedReel(
+            com.ellzone.slotpuzzle2d.sprites.reel.AnimatedReel animatedReel =
+                    new com.ellzone.slotpuzzle2d.sprites.reel.AnimatedReel(
                             slotReelScrollTexture,
                             0,
                             0,
@@ -131,8 +131,6 @@ public class AnimatedReelHelper {
                             spriteWidth,
                             reelDisplayHeight,
                             0,
-                            null,
-                            reelStoppingSound,
                             tweenManager);
             animatedReel.setSx(0);
             animatedReel.setEndReel(Random.getInstance().nextInt(reelSprites.getSprites().length - 1));
@@ -140,13 +138,13 @@ public class AnimatedReelHelper {
         }
     }
 
-    public Array<AnimatedReel> getAnimatedReels() {
+    public Array<com.ellzone.slotpuzzle2d.sprites.reel.AnimatedReel> getAnimatedReels() {
         return this.animatedReels;
     }
 
     public Array<ReelTile> getReelTiles() {
         this.reelTiles = new Array<ReelTile>();
-        for (AnimatedReel animatedReel : this.animatedReels) {
+        for (com.ellzone.slotpuzzle2d.sprites.reel.AnimatedReel animatedReel : this.animatedReels) {
             reelTiles.add(animatedReel.getReel());
         }
         return reelTiles;

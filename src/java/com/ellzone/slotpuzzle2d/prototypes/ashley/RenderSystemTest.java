@@ -16,7 +16,7 @@ import com.ellzone.slotpuzzle2d.components.PositionComponent;
 import com.ellzone.slotpuzzle2d.components.SpriteComponent;
 import com.ellzone.slotpuzzle2d.components.VisualComponent;
 import com.ellzone.slotpuzzle2d.prototypes.SPPrototype;
-import com.ellzone.slotpuzzle2d.sprites.ReelSprites;
+import com.ellzone.slotpuzzle2d.sprites.reel.ReelSprites;
 import com.ellzone.slotpuzzle2d.systems.MovementSystem;
 import com.ellzone.slotpuzzle2d.systems.RenderSystem;
 import com.ellzone.slotpuzzle2d.utils.assets.AssetsAnnotation;

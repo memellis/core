@@ -14,9 +14,8 @@
  limitations under the License.
  */
 
-package com.ellzone.slotpuzzle2d.sprites;
+package com.ellzone.slotpuzzle2d.sprites.reel;
 
-import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture;
@@ -25,6 +24,8 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Array;
+import com.ellzone.slotpuzzle2d.sprites.reel.ReelTileInterface;
+import com.ellzone.slotpuzzle2d.sprites.reel.ReelSprite;
 import com.ellzone.slotpuzzle2d.utils.PixmapProcessors;
 import com.ellzone.slotpuzzle2d.utils.Random;
 
@@ -60,8 +61,7 @@ public class ReelTile extends ReelSprite implements ReelTileInterface {
             float y,
             float tileWidth,
             float tileHeight,
-            int endReel,
-            Sound spinningSound) {
+            int endReel) {
         this.scrollTexture = scrollTexture;
         super.setX(x);
         super.setY(y);
@@ -82,8 +82,7 @@ public class ReelTile extends ReelSprite implements ReelTileInterface {
             float tileHeight,
             float reelDisplayWidth,
             float reelDisplayHeight,
-            int endReel,
-            Sound spinningSound) {
+            int endReel) {
         this.scrollTexture = texture;
         this.numberOfReelsInTexture = numberOfReelsInTexture;
         super.setX(x);

@@ -17,7 +17,7 @@
 package com.ellzone.slotpuzzle2d.components;
 
 import com.badlogic.ashley.core.Component;
-import com.ellzone.slotpuzzle2d.sprites.ReelTile;
+import com.ellzone.slotpuzzle2d.sprites.reel.ReelTile;
 
 public class ReelTileComponent implements Component {
     public ReelTile reelTile;

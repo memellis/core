@@ -22,7 +22,7 @@ import com.badlogic.gdx.physics.box2d.ContactImpulse;
 import com.badlogic.gdx.physics.box2d.ContactListener;
 import com.badlogic.gdx.physics.box2d.Manifold;
 import com.ellzone.slotpuzzle2d.prototypes.level.minislotmachine.MiniSlotMachineLevelPrototypeWithLevelCreator;
-import com.ellzone.slotpuzzle2d.sprites.ReelTile;
+import com.ellzone.slotpuzzle2d.sprites.reel.ReelTile;
 
 public class B2dContactListener implements ContactListener {
     private MiniSlotMachineLevelPrototypeWithLevelCreator prototype;
@@ -40,15 +40,15 @@ public class B2dContactListener implements ContactListener {
         if (bodyB.getUserData() != null) {
             classB = bodyB.getUserData().getClass().getName();
         }
-        if(classA.equalsIgnoreCase("com.ellzone.slotpuzzle2d.prototypes.level.minislotmachine.MiniSlotMachineLevelPrototypeWithLevelCreator") && classB.equalsIgnoreCase("com.ellzone.slotpuzzle2d.sprites.ReelTile")) {
+        if(classA.equalsIgnoreCase("com.ellzone.slotpuzzle2d.prototypes.level.minislotmachine.MiniSlotMachineLevelPrototypeWithLevelCreator") && classB.equalsIgnoreCase("com.ellzone.slotpuzzle2d.sprites.reel.ReelTile")) {
             System.out.println("dealWithReelsHittingSinkBottom beginContact classA = " + classA + " classB=" + classB);
             dealWithReelsHittingSinkBottom((MiniSlotMachineLevelPrototypeWithLevelCreator) bodyA.getUserData(), (ReelTile) bodyB.getUserData());
         }
-        if(classA.equalsIgnoreCase("com.ellzone.slotpuzzle2d.sprites.ReelTile") && classB.equalsIgnoreCase("com.ellzone.slotpuzzle2d.prototypes.level.minislotmachine.MiniSlotMachineLevelPrototypeWithLevelCreator")) {
+        if(classA.equalsIgnoreCase("com.ellzone.slotpuzzle2d.sprites.reel.ReelTile") && classB.equalsIgnoreCase("com.ellzone.slotpuzzle2d.prototypes.level.minislotmachine.MiniSlotMachineLevelPrototypeWithLevelCreator")) {
             System.out.println("dealWithReelsHittingSinkBottom beginContact classA = " + classA + " classB=" + classB);
             dealWithReelsHittingSinkBottom((MiniSlotMachineLevelPrototypeWithLevelCreator) bodyB.getUserData(), (ReelTile) bodyA.getUserData());
         }
-        if((classA.equalsIgnoreCase("com.ellzone.slotpuzzle2d.sprites.ReelTile") && (classB.equalsIgnoreCase("com.ellzone.slotpuzzle2d.sprites.ReelTile")))) {
+        if((classA.equalsIgnoreCase("com.ellzone.slotpuzzle2d.sprites.reel.ReelTile") && (classB.equalsIgnoreCase("com.ellzone.slotpuzzle2d.sprites.reel.ReelTile")))) {
             dealWithReelTileHittingReelTile((ReelTile) bodyA.getUserData(), (ReelTile) bodyB.getUserData());
         }
     }

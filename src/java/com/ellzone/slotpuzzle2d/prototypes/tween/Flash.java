@@ -27,7 +27,7 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.utils.Array;
 import com.ellzone.slotpuzzle2d.effects.ReelAccessor;
-import com.ellzone.slotpuzzle2d.sprites.ReelTile;
+import com.ellzone.slotpuzzle2d.sprites.reel.ReelTile;
 import com.ellzone.slotpuzzle2d.tweenengine.BaseTween;
 import com.ellzone.slotpuzzle2d.tweenengine.SlotPuzzleTween;
 import com.ellzone.slotpuzzle2d.tweenengine.Timeline;
@@ -94,7 +94,7 @@ public class Flash extends SPPrototypeTemplate {
         slotReelScrollPixmap = new Pixmap(spriteWidth, spriteHeight, Pixmap.Format.RGBA8888);
         slotReelScrollPixmap = PixmapProcessors.createPixmapToAnimate(sprites);
         slotReelScrollTexture = new Texture(slotReelScrollPixmap);
-        ReelTile reel = new ReelTile(slotReelScrollTexture,  slotReelScrollTexture.getHeight() / spriteHeight, 0, 32, spriteWidth, spriteHeight,  spriteWidth, spriteHeight, 0, null);
+        ReelTile reel = new ReelTile(slotReelScrollTexture,  slotReelScrollTexture.getHeight() / spriteHeight, 0, 32, spriteWidth, spriteHeight,  spriteWidth, spriteHeight, 0);
         reel.setX(0);
         reel.setY(0);
         reel.setSx(0);

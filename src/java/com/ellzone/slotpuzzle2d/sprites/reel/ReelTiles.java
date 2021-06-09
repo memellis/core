@@ -14,32 +14,34 @@
  limitations under the License.
  */
 
-package com.ellzone.slotpuzzle2d.sprites;
+package com.ellzone.slotpuzzle2d.sprites.reel;
 
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture;
+import com.ellzone.slotpuzzle2d.sprites.reel.ReelSprites;
+import com.ellzone.slotpuzzle2d.sprites.reel.ReelTile;
 import com.ellzone.slotpuzzle2d.utils.PixmapProcessors;
 import com.ellzone.slotpuzzle2d.utils.Random;
 
 public class ReelTiles {
-	private Array<ReelTile> reelTiles;
+	private Array<com.ellzone.slotpuzzle2d.sprites.reel.ReelTile> reelTiles;
 	private ReelSprites reelSprites;
 	private Pixmap slotReelScrollPixmap;
 	private Texture slotReelScrollTexture;
-	private ReelTile reelTile;
+	private com.ellzone.slotpuzzle2d.sprites.reel.ReelTile reelTile;
 	
-	public ReelTiles(ReelSprites reelSprites) {
+	public ReelTiles(com.ellzone.slotpuzzle2d.sprites.reel.ReelSprites reelSprites) {
 		this.reelSprites = reelSprites;
 		initialiseReelTiles();
 	}
 	
 	private void initialiseReelTiles() {
-	    reelTiles = new Array<ReelTile>();
+	    reelTiles = new Array<com.ellzone.slotpuzzle2d.sprites.reel.ReelTile>();
 	    slotReelScrollPixmap = new Pixmap(reelSprites.getReelHeight(), reelSprites.getReelHeight(), Pixmap.Format.RGBA8888);
 		slotReelScrollPixmap = PixmapProcessors.createPixmapToAnimate(reelSprites.getSprites());
 		slotReelScrollTexture = new Texture(slotReelScrollPixmap);
-	    reelTile = new ReelTile(slotReelScrollTexture, slotReelScrollTexture.getHeight() / reelSprites.getReelHeight(), 0, 32, reelSprites.getReelWidth(), reelSprites.getReelHeight(), reelSprites.getReelWidth(), reelSprites.getReelHeight(), 0, null);
+	    reelTile = new com.ellzone.slotpuzzle2d.sprites.reel.ReelTile(slotReelScrollTexture, slotReelScrollTexture.getHeight() / reelSprites.getReelHeight(), 0, 32, reelSprites.getReelWidth(), reelSprites.getReelHeight(), reelSprites.getReelWidth(), reelSprites.getReelHeight(), 0);
 	    reelTile.setX(0);
 	    reelTile.setY(0);
 	    reelTile.setSx(0);

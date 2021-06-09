@@ -16,8 +16,8 @@
 
 package com.ellzone.slotpuzzle2d.level.creator;
 
-import com.ellzone.slotpuzzle2d.sprites.ReelTile;
+import com.ellzone.slotpuzzle2d.sprites.reel.ReelTile;
 
 public interface LevelCallback {
-    public void onEvent(ReelTile source);
+    void onEvent(ReelTile source);
 }

@@ -54,9 +54,9 @@ import com.ellzone.slotpuzzle2d.physics.SPPhysicsCallback;
 import com.ellzone.slotpuzzle2d.physics.SPPhysicsEvent;
 import com.ellzone.slotpuzzle2d.physics.Vector;
 import com.ellzone.slotpuzzle2d.sprites.LightButtonBuilder;
-import com.ellzone.slotpuzzle2d.sprites.ReelLetter;
-import com.ellzone.slotpuzzle2d.sprites.ReelLetterTile;
-import com.ellzone.slotpuzzle2d.sprites.ReelTile;
+import com.ellzone.slotpuzzle2d.sprites.reel.ReelLetter;
+import com.ellzone.slotpuzzle2d.sprites.reel.ReelLetterTile;
+import com.ellzone.slotpuzzle2d.sprites.reel.ReelTile;
 import com.ellzone.slotpuzzle2d.tweenengine.BaseTween;
 import com.ellzone.slotpuzzle2d.tweenengine.SlotPuzzleTween;
 import com.ellzone.slotpuzzle2d.tweenengine.Timeline;
@@ -357,7 +357,7 @@ public class IntroScreenPrototype extends InputAdapter implements Screen {
         slotReelPixmap = PixmapProcessors.createPixmapToAnimate(sprites);
         slotReelTexture = new Texture(slotReelPixmap);
 
-        reelTile = new ReelTile(slotReelTexture, slotReelTexture.getHeight() / REEL_HEIGHT, slotReelTexture.getWidth(), slotReelTexture.getHeight(), slotReelTexture.getWidth(), slotReelTexture.getHeight(), 32, 32, 0, null);
+        reelTile = new ReelTile(slotReelTexture, slotReelTexture.getHeight() / REEL_HEIGHT, slotReelTexture.getWidth(), slotReelTexture.getHeight(), slotReelTexture.getWidth(), slotReelTexture.getHeight(), 32, 32, 0);
 
         Timeline reelSeq = Timeline.createSequence();
         reelSeq = reelSeq.push(SlotPuzzleTween.set(reelTile, ReelAccessor.SCROLL_XY).target(0f, 0f).ease(Bounce.IN));

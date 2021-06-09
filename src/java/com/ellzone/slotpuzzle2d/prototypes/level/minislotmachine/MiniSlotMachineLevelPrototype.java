@@ -55,12 +55,12 @@ import com.ellzone.slotpuzzle2d.puzzlegrid.TupleValueIndex;
 import com.ellzone.slotpuzzle2d.scene.Hud;
 import com.ellzone.slotpuzzle2d.scene.MapTile;
 import com.ellzone.slotpuzzle2d.screens.PlayScreen;
-import com.ellzone.slotpuzzle2d.sprites.ReelSprites;
-import com.ellzone.slotpuzzle2d.sprites.ReelStoppedFlashingEvent;
-import com.ellzone.slotpuzzle2d.sprites.ReelStoppedSpinningEvent;
-import com.ellzone.slotpuzzle2d.sprites.ReelTile;
-import com.ellzone.slotpuzzle2d.sprites.ReelTileEvent;
-import com.ellzone.slotpuzzle2d.sprites.ReelTileListener;
+import com.ellzone.slotpuzzle2d.sprites.reel.ReelSprites;
+import com.ellzone.slotpuzzle2d.sprites.reel.ReelStoppedFlashingEvent;
+import com.ellzone.slotpuzzle2d.sprites.reel.ReelStoppedSpinningEvent;
+import com.ellzone.slotpuzzle2d.sprites.reel.ReelTile;
+import com.ellzone.slotpuzzle2d.sprites.reel.ReelTileEvent;
+import com.ellzone.slotpuzzle2d.sprites.reel.ReelTileListener;
 import com.ellzone.slotpuzzle2d.sprites.score.Score;
 import com.ellzone.slotpuzzle2d.tweenengine.BaseTween;
 import com.ellzone.slotpuzzle2d.tweenengine.SlotPuzzleTween;
@@ -350,7 +350,7 @@ public class MiniSlotMachineLevelPrototype extends SPPrototypeTemplate {
 
     private void addReel(Rectangle mapRectangle, Array<ReelTile> reelTiles) {
         int endReel = Random.getInstance().nextInt(this.reelSprites.getSprites().length);
-        ReelTile reel = new ReelTile(slotReelTexture, this.reelSprites.getSprites().length, 0, 0, reelSprites.getReelWidth(), reelSprites.getReelHeight(), reelSprites.getReelWidth(), reelSprites.getReelHeight(), endReel, this.reelSpinningSound);
+        ReelTile reel = new ReelTile(slotReelTexture, this.reelSprites.getSprites().length, 0, 0, reelSprites.getReelWidth(), reelSprites.getReelHeight(), reelSprites.getReelWidth(), reelSprites.getReelHeight(), endReel);
         reel.setX(mapRectangle.getX());
         reel.setY(mapRectangle.getY());
         reel.setSx(0);

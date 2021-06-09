@@ -19,7 +19,6 @@ package com.ellzone.slotpuzzle2d.sprites.reel;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.ellzone.slotpuzzle2d.physics.DampenedSineParticle;
-import com.ellzone.slotpuzzle2d.sprites.ReelTile;
 
 public interface AnimatedReelInterface {
     void setupSpinning();

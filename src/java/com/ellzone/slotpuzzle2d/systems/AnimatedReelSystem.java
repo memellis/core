@@ -21,7 +21,7 @@ import com.badlogic.ashley.core.Family;
 import com.badlogic.ashley.systems.IteratingSystem;
 import com.ellzone.slotpuzzle2d.components.AnimatedReelComponent;
 import com.ellzone.slotpuzzle2d.components.PositionComponent;
-import com.ellzone.slotpuzzle2d.sprites.AnimatedReel;
+import com.ellzone.slotpuzzle2d.sprites.reel.AnimatedReel;
 
 public class AnimatedReelSystem extends IteratingSystem {
     public AnimatedReelSystem() {

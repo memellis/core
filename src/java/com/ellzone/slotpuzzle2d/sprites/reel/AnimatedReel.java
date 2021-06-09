@@ -14,9 +14,8 @@
  limitations under the License.
  */
 
-package com.ellzone.slotpuzzle2d.sprites;
+package com.ellzone.slotpuzzle2d.sprites.reel;
 
-import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
@@ -25,7 +24,6 @@ import com.ellzone.slotpuzzle2d.physics.DampenedSineParticle;
 import com.ellzone.slotpuzzle2d.physics.SPPhysicsCallback;
 import com.ellzone.slotpuzzle2d.physics.SPPhysicsEvent;
 import com.ellzone.slotpuzzle2d.physics.Vector;
-import com.ellzone.slotpuzzle2d.sprites.reel.AnimatedReelInterface;
 import com.ellzone.slotpuzzle2d.tweenengine.BaseTween;
 import com.ellzone.slotpuzzle2d.tweenengine.SlotPuzzleTween;
 import com.ellzone.slotpuzzle2d.tweenengine.Timeline;
@@ -36,54 +34,26 @@ import com.ellzone.slotpuzzle2d.utils.Random;
 import aurelienribon.tweenengine.equations.Elastic;
 
 public class AnimatedReel implements AnimatedReelInterface {
-	private static float VELOCITY_MIN = 1;
-	private static float VELOCITY_MAX = 3;
 	private ReelTile reel;
 	private DampenedSineParticle dampenedSine;
 	private float velocityY;
-	private float velocityYMin;
 	private Vector velocityMin;
 	private float acceleratorY;
 	private Vector accelerator;
 	private float accelerateY;
 	private float acceleratorFriction;
 	private float velocityFriction;
-	private Texture texture;
-	private float x;
-	private float y;
-	private float tileWidth;
-	private float tileHeight;
-    private float reelDisplayWidth;
-    private float reelDisplayHeight;
-	private int endReel;
-	private Sound spinningSound, stoppingSound;
+	private final Texture texture;
+	private final float x;
+	private final float y;
+	private final float tileWidth;
+	private final float tileHeight;
+    private final float reelDisplayWidth;
+    private final float reelDisplayHeight;
+	private final int endReel;
 	private int reelScrollHeight;
-	private TweenManager tweenManager;
+	private final TweenManager tweenManager;
 	private float reelSlowingTargetTime;
-	private Vector accelerate;
-
-    public AnimatedReel(
-    		Texture texture,
-			float x,
-			float y,
-			float tileWidth,
-			float tileHeight,
-			float reelDisplayWidth,
-			float reelDisplayHeight,
-			int endReel,
-			TweenManager tweenManager) {
-        this(
-        		texture,
-				x,
-				y,
-				tileWidth,
-				tileHeight,
-				reelDisplayWidth,
-				reelDisplayHeight,
-				endReel,
-				null, null,
-				tweenManager);
-    }
 
 	public AnimatedReel(
 			Texture texture,
@@ -94,8 +64,6 @@ public class AnimatedReel implements AnimatedReelInterface {
 			float reelDisplayWidth,
 			float reelDisplayHeight,
 			int endReel,
-			Sound spinningSound,
-			Sound stoppingSound,
 			TweenManager tweenManager) {
 		this.texture = texture;
 		this.x = x;
@@ -105,8 +73,6 @@ public class AnimatedReel implements AnimatedReelInterface {
         this.reelDisplayWidth = reelDisplayWidth;
         this.reelDisplayHeight = reelDisplayHeight;
  		this.endReel = endReel;
-		this.spinningSound = spinningSound;
-		this.stoppingSound = stoppingSound;
 		this.tweenManager = tweenManager;
 		initialiseAnimatedReel();
 	}
@@ -121,12 +87,12 @@ public class AnimatedReel implements AnimatedReelInterface {
                 tileHeight,
                 reelDisplayWidth,
                 reelDisplayHeight,
-                endReel,
-                spinningSound);
+                endReel
+        );
 		reelScrollHeight = texture == null ? 0 : texture.getHeight();
 		reel.setSpinning(false);
 		velocityY = 4.0f;
-		velocityYMin = getRandomVelocityMin();
+		float velocityYMin = getRandomVelocityMin();
 		velocityMin = new Vector(0, velocityYMin);
 		acceleratorY = 3.0f;
 		accelerator = new Vector(0, acceleratorY);
@@ -155,7 +121,7 @@ public class AnimatedReel implements AnimatedReelInterface {
 		dampenedSine.setUserData(reel);
 	}
 	
-	private SPPhysicsCallback dsCallback = new SPPhysicsCallback() {
+	private final SPPhysicsCallback dsCallback = new SPPhysicsCallback() {
 		@Override
 		public void onEvent(int type, SPPhysicsEvent source) {
 			delegateDSCallback(type, source); 
@@ -164,16 +130,12 @@ public class AnimatedReel implements AnimatedReelInterface {
 	
 	private void delegateDSCallback(int type, SPPhysicsEvent source) {
 		if (type == SPPhysicsCallback.PARTICLE_UPDATE) {
-//			reel.stopSpinningSound();
-//			if (this.stoppingSound != null) {
-////				this.stoppingSound.play();
-//			}
 			DampenedSineParticle ds = (DampenedSineParticle) source.getSource();
 			ReelTile reel = (ReelTile) ds.getUserData();
 			Timeline endReelSeq = Timeline.createSequence();
 			float endSy = (reel.getEndReel() * this.tileWidth) % this.reelScrollHeight;
 			reel.setSy(reel.getSy() % (this.reelScrollHeight));
-	        endReelSeq = endReelSeq.push(
+	        endReelSeq.push(
 	        		SlotPuzzleTween.to(reel, ReelAccessor.SCROLL_XY, reelSlowingTargetTime)
 	        		               .target(0f, endSy)
 	        		               .ease(Elastic.OUT)
@@ -184,7 +146,7 @@ public class AnimatedReel implements AnimatedReelInterface {
 		}
 	}
 	
-	private TweenCallback slowingSpinningCallback = new TweenCallback() {
+	private final TweenCallback slowingSpinningCallback = new TweenCallback() {
 		@Override
 		public void onEvent(int type, BaseTween<?> source) {
 			delegateSlowingSpinning(type, source);
@@ -274,7 +236,7 @@ public class AnimatedReel implements AnimatedReelInterface {
         dampenedSine.velocity = new Vector(0, velocityY);
         accelerator = new Vector(0, acceleratorY);
         dampenedSine.accelerator = accelerator;
-        accelerate = new Vector(0, accelerateY);
+		Vector accelerate = new Vector(0, accelerateY);
         dampenedSine.accelerate(accelerate);
         dampenedSine.velocityMin.y = getRandomVelocityMin();
 	}
@@ -285,6 +247,8 @@ public class AnimatedReel implements AnimatedReelInterface {
 	}
 
     private float getRandomVelocityMin() {
-    	return Random.getInstance().nextFloat() * (VELOCITY_MAX - VELOCITY_MIN + 1.0f) + VELOCITY_MIN;
+		float VELOCITY_MIN = 1;
+		float VELOCITY_MAX = 3;
+		return Random.getInstance().nextFloat() * (VELOCITY_MAX - VELOCITY_MIN + 1.0f) + VELOCITY_MIN;
     }
 }

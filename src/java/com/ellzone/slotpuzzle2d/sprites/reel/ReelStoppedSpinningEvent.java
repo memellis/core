@@ -14,8 +14,7 @@
  limitations under the License.
  */
 
-package com.ellzone.slotpuzzle2d.sprites;
+package com.ellzone.slotpuzzle2d.sprites.reel;
 
-public interface ReelTileListener {
-	public void actionPerformed(ReelTileEvent event, ReelTile source);
+public class ReelStoppedSpinningEvent extends ReelTileEvent {
 }

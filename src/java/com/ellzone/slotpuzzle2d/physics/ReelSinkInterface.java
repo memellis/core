@@ -16,7 +16,7 @@
 
 package com.ellzone.slotpuzzle2d.physics;
 
-import com.ellzone.slotpuzzle2d.sprites.ReelTile;
+import com.ellzone.slotpuzzle2d.sprites.reel.ReelTile;
 
 public interface ReelSinkInterface {
     public void dealWithReelHittingReelSink(ReelTile reelTile);

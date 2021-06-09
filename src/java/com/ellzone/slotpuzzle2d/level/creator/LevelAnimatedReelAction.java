@@ -24,10 +24,10 @@ import com.ellzone.slotpuzzle2d.components.PositionComponent;
 import com.ellzone.slotpuzzle2d.components.ReelTileComponent;
 import com.ellzone.slotpuzzle2d.components.TransformComponent;
 import com.ellzone.slotpuzzle2d.components.VisualComponent;
-import com.ellzone.slotpuzzle2d.sprites.AnimatedReel;
+import com.ellzone.slotpuzzle2d.sprites.reel.AnimatedReel;
 
 public class LevelAnimatedReelAction implements LevelAnimatedReelCallback {
-    private PooledEngine engine;
+    private final PooledEngine engine;
     public LevelAnimatedReelAction(PooledEngine engine) {
         this.engine = engine;
     }

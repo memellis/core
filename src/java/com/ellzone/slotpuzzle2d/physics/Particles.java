@@ -17,9 +17,9 @@
 package com.ellzone.slotpuzzle2d.physics;
 
 import com.badlogic.gdx.utils.Array;
-import com.ellzone.slotpuzzle2d.sprites.ReelSprites;
-import com.ellzone.slotpuzzle2d.sprites.ReelTile;
-import com.ellzone.slotpuzzle2d.sprites.ReelTiles;
+import com.ellzone.slotpuzzle2d.sprites.reel.ReelSprites;
+import com.ellzone.slotpuzzle2d.sprites.reel.ReelTile;
+import com.ellzone.slotpuzzle2d.sprites.reel.ReelTiles;
 
 public class Particles {
 	private Vector accelerator;

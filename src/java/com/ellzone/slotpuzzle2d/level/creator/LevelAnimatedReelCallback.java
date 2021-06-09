@@ -16,8 +16,8 @@
 
 package com.ellzone.slotpuzzle2d.level.creator;
 
-import com.ellzone.slotpuzzle2d.sprites.AnimatedReel;
+import com.ellzone.slotpuzzle2d.sprites.reel.AnimatedReel;
 
 public interface LevelAnimatedReelCallback {
-    public void onEvent(AnimatedReel source);
+    void onEvent(AnimatedReel source);
 }

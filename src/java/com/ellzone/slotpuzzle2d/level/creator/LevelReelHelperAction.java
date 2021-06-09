@@ -6,7 +6,7 @@ import com.badlogic.ashley.core.PooledEngine;
 import com.ellzone.slotpuzzle2d.components.PlayerComponent;
 import com.ellzone.slotpuzzle2d.components.ReelHelperComponent;
 import com.ellzone.slotpuzzle2d.components.VisualComponent;
-import com.ellzone.slotpuzzle2d.sprites.ReelHelper;
+import com.ellzone.slotpuzzle2d.sprites.reel.ReelHelper;
 
 public class LevelReelHelperAction implements LevelReelHelperCallback {
     PooledEngine engine;
