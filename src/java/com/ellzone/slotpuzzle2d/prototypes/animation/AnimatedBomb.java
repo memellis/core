@@ -37,8 +37,8 @@ public class AnimatedBomb extends SPPrototype {
 
     @Override
     public void create() {
-        bombAtlas = new TextureAtlas(Gdx.files.internal("bomb/bomb.pack.atlas"));
-        bombAnimation = new Animation<TextureRegion>(0.025f, bombAtlas.findRegions("bomb"));
+        bombAtlas = new TextureAtlas(Gdx.files.internal("bomb/bomb_animation.pack.atlas"));
+        bombAnimation = new Animation<TextureRegion>(0.08f, bombAtlas.findRegions("bomb"));
 
         spriteBatch = new SpriteBatch();
         stateTime = 0f;
@@ -46,12 +46,15 @@ public class AnimatedBomb extends SPPrototype {
 
     public void render() {
         clearScreen();
-        stateTime += Gdx.graphics.getDeltaTime();
-
-        currentFrame = bombAnimation.getKeyFrame(stateTime, true);
+        update();
         spriteBatch.begin();
         spriteBatch.draw(currentFrame, 50, 50); 
         spriteBatch.end();
+    }
+
+    private void update() {
+        stateTime += Gdx.graphics.getDeltaTime();
+        currentFrame = bombAnimation.getKeyFrame(stateTime, true);
     }
 
     private void clearScreen() {

@@ -20,6 +20,7 @@ import com.badlogic.gdx.utils.reflect.ClassReflection;
 import com.badlogic.gdx.utils.reflect.ReflectionException;
 import com.ellzone.slotpuzzle2d.prototypes.animation.AnimateBombViaSpriteSheet;
 import com.ellzone.slotpuzzle2d.prototypes.animation.AnimatedBomb;
+import com.ellzone.slotpuzzle2d.prototypes.animation.AnimatedCoin;
 import com.ellzone.slotpuzzle2d.prototypes.animation.AnimatedReelPrototype;
 import com.ellzone.slotpuzzle2d.prototypes.artemis.ArtemisOdbQuickStart;
 import com.ellzone.slotpuzzle2d.prototypes.artemis.RenderReelsUsingArtemis;
@@ -135,6 +136,7 @@ public class SPPrototypes {
     public static final List<Class<? extends SPPrototype>> tests =
 			new ArrayList<Class<? extends SPPrototype>>((Collection<? extends Class<? extends SPPrototype>>) Arrays.asList(
         AnimatedBomb.class,
+		AnimatedCoin.class,
 		AnimateBombViaSpriteSheet.class,
     	ArtemisOdbQuickStart.class,
 		AnimatedReelPrototype.class,
