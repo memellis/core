@@ -36,6 +36,7 @@ import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import com.ellzone.slotpuzzle2d.effects.ReelAccessor;
 import com.ellzone.slotpuzzle2d.effects.SpriteAccessor;
+import com.ellzone.slotpuzzle2d.level.creator.LevelCreatorInjectionExtendedInterface;
 import com.ellzone.slotpuzzle2d.level.creator.LevelCreatorInjectionInterface;
 import com.ellzone.slotpuzzle2d.level.creator.LevelObjectCreatorEntityHolder;
 import com.ellzone.slotpuzzle2d.level.map.MapLevelNameComparator;
@@ -60,6 +61,8 @@ import com.ellzone.slotpuzzle2d.tweenengine.TweenCallback;
 import com.ellzone.slotpuzzle2d.tweenengine.TweenManager;
 import com.ellzone.slotpuzzle2d.utils.assets.AssetsAnnotation;
 import com.ellzone.slotpuzzle2d.utils.PixmapProcessors;
+import com.ellzone.slotpuzzle2d.utils.convert.TileMapToWorldConvert;
+
 import net.dermetfan.gdx.assets.AnnotationAssetManager;
 import java.util.Random;
 
@@ -72,7 +75,7 @@ import static com.ellzone.slotpuzzle2d.SlotPuzzleConstants.PIXELS_PER_METER;
 
 public class SpinningSlotsWithMatchesWinFlashesLoadedLevel
        extends SPPrototypeTemplate
-       implements LevelCreatorInjectionInterface {
+       implements LevelCreatorInjectionExtendedInterface {
 
     public static final String LEVELS_LEVEL_6 = "levels/level 6 - 40x40.tmx";
     public static final String LEVEL_6_NAME = "1-6";
@@ -465,5 +468,10 @@ public class SpinningSlotsWithMatchesWinFlashesLoadedLevel
     @Override
     public TextureAtlas getSlotHandleAtlas() {
         return slotHandleAtlas;
+    }
+
+    @Override
+    public TileMapToWorldConvert getTileMapToWorldConvert() {
+        return null;
     }
 }

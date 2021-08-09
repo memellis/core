@@ -24,7 +24,7 @@ import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.utils.IntArray;
 import com.badlogic.gdx.utils.ObjectMap;
-import com.ellzone.slotpuzzle2d.utils.WorldScreenConvert;
+import com.ellzone.slotpuzzle2d.utils.convert.TileMapToWorldConvert;
 
 public class SpinWheelSlotPuzzleTileMap implements SpinWheelSlotPuzzle {
     public static final int MAP_WIDTH = 4000;
@@ -33,10 +33,17 @@ public class SpinWheelSlotPuzzleTileMap implements SpinWheelSlotPuzzle {
     public static final int WORLD_HEIGHT = 40000;
 
     private SpinWheelForSlotPuzzle spinWheel;
+    private TileMapToWorldConvert tileMapToWorldConvert;
     private float worldPositionX;
     private float worldPositionY;
 
-    public SpinWheelSlotPuzzleTileMap(float diameter, float x, float y, int nPegs, World world) {
+    public SpinWheelSlotPuzzleTileMap(
+            float diameter,
+            float x,
+            float y,
+            int nPegs,
+            World world) {
+        initialise();
         spinWheel = new
                 SpinWheelForSlotPuzzle(
                     diameter,
@@ -46,13 +53,39 @@ public class SpinWheelSlotPuzzleTileMap implements SpinWheelSlotPuzzle {
                     world);
     }
 
+    public SpinWheelSlotPuzzleTileMap(
+            float diameter,
+            float x,
+            float y,
+            int nPegs,
+            World world,
+            TileMapToWorldConvert tileMapToWorldConvert) {
+        this.tileMapToWorldConvert = tileMapToWorldConvert;
+        spinWheel = new
+                SpinWheelForSlotPuzzle(
+                diameter,
+                convertTileMapXToWorldPositionX(x),
+                convertTileMapYToWorldPositionY(y),
+                nPegs,
+                world);
+    }
+
+    private void initialise() {
+        tileMapToWorldConvert = new TileMapToWorldConvert(
+                MAP_WIDTH,
+                MAP_HEIGHT,
+                WORLD_WIDTH,
+                WORLD_HEIGHT
+        );
+    }
+
     private float convertTileMapXToWorldPositionX(float x) {
-        worldPositionX = WorldScreenConvert.convertTileMapXToWorldPostionX(x);
+        worldPositionX = tileMapToWorldConvert.convertToWorldX(x);
         return worldPositionX;
     }
 
     private float convertTileMapYToWorldPositionY(float y) {
-        worldPositionY = WorldScreenConvert.convertTileMapYToWorldPostionY(y);
+        worldPositionY = tileMapToWorldConvert.convertToWorldY(y);
         return worldPositionY;
     }
 

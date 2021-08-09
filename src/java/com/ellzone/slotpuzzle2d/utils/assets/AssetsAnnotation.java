@@ -54,7 +54,8 @@ public class AssetsAnnotation {
             SPLASH3 = "splash/splash3.pack.atlas",
             TILES = "tiles/tiles.pack.atlas",
             BOMB_ANIMATION = "bomb/bomb_animation.pack.atlas",
-            COIN_ANIMATION = "coin/coin40x40.pack.atlas";
+            COIN_ANIMATION = "coin/coin40x40.pack.atlas",
+            SPIN_WHEEL = "spin/spin_wheel_ui.atlas";
 
     @AnnotationAssetManager.Asset(Texture.class)
     public final static

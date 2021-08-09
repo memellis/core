@@ -14,7 +14,6 @@
  limitations under the License.
  */
 
-
 package com.ellzone.slotpuzzle2d.systems.artemisodb;
 
 import com.artemis.ComponentMapper;
@@ -22,13 +21,14 @@ import com.artemis.Entity;
 import com.artemis.annotations.All;
 import com.artemis.systems.EntityProcessingSystem;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.scenes.scene2d.ui.Image;
+import com.ellzone.slotpuzzle2d.component.artemis.ImageRender;
 import com.ellzone.slotpuzzle2d.component.artemis.Position;
 
-@All({Position.class})
-public class RenderLevelSystem extends EntityProcessingSystem {
-
-    protected ComponentMapper<Position> mPositionComponent;
+@All({Position.class, ImageRender.class})
+public class RenderImagesSystem extends EntityProcessingSystem {
+    protected ComponentMapper<Position> positionComponentMapper;
+    protected ComponentMapper<ImageRender> imageRenderComponentMapper;
     private SpriteBatch batch;
     private LevelCreatorSystem levelCreatorSystem;
 
@@ -41,7 +41,7 @@ public class RenderLevelSystem extends EntityProcessingSystem {
     @Override
     protected void begin() {
         batch.begin();
-   }
+    }
 
     @Override
     protected void end() {
@@ -50,13 +50,9 @@ public class RenderLevelSystem extends EntityProcessingSystem {
 
     @Override
     protected void process(Entity e) {
-        final Position position = mPositionComponent.get(e);
-
-            TextureRegion entityTextureRegion = levelCreatorSystem.spritesToRender.get(e.getId());
-            batch.draw(
-                    entityTextureRegion,
-                    position.x,
-                    position.y
-            );
+        Image entityImage =
+                (Image) levelCreatorSystem.getEntities().get(e.getId());
+        entityImage.draw(batch,
+                1.0f);
     }
 }

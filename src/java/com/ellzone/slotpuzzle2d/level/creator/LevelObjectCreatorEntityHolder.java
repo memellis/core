@@ -34,6 +34,7 @@ import com.ellzone.slotpuzzle2d.sprites.reel.AnimatedReelTileMap;
 import com.ellzone.slotpuzzle2d.sprites.slothandle.SlotHandleTileMap;
 import com.ellzone.slotpuzzle2d.tweenengine.TweenManager;
 import com.ellzone.slotpuzzle2d.utils.assets.AssetsAnnotation;
+import com.ellzone.slotpuzzle2d.utils.convert.TileMapToWorldConvert;
 
 import net.dermetfan.gdx.assets.AnnotationAssetManager;
 
@@ -63,7 +64,7 @@ public class LevelObjectCreatorEntityHolder extends LevelObjectCreator {
     private LevelAnimatedReelTileMapCallback levelAnimatedReelTileMapCallback;
 
     public LevelObjectCreatorEntityHolder(
-            LevelCreatorInjectionInterface injection, World world, RayHandler rayHandler) {
+            LevelCreatorInjectionExtendedInterface injection, World world, RayHandler rayHandler) {
         super(injection, world, rayHandler);
     }
 
@@ -87,29 +88,33 @@ public class LevelObjectCreatorEntityHolder extends LevelObjectCreator {
 
     @Override
     public AnnotationAssetManager getAnnotationAssetManager() {
-        return super.levelCreatorInjectionInterface.getAnnotationAssetManager();
+        return super.levelCreatorInjectionExtendedInterface.getAnnotationAssetManager();
     }
 
     @Override
     public Texture getSlotReelScrollTexture() {
-        return levelCreatorInjectionInterface.getSlotReelScrollTexture();
+        return levelCreatorInjectionExtendedInterface.getSlotReelScrollTexture();
     }
 
     @Override
     public Sound getReelSpinningSound() {
-        return levelCreatorInjectionInterface.getAnnotationAssetManager()
+        return levelCreatorInjectionExtendedInterface.getAnnotationAssetManager()
                 .get(AssetsAnnotation.SOUND_REEL_SPINNING);
     }
 
     @Override
     public Sound getReelStoppingSound() {
-        return levelCreatorInjectionInterface.getAnnotationAssetManager()
+        return levelCreatorInjectionExtendedInterface.getAnnotationAssetManager()
                 .get(AssetsAnnotation.SOUND_REEL_STOPPED);
     }
 
     @Override
     public ReelSprites getReelSprites() {
-        return levelCreatorInjectionInterface.getReelSprites();
+        return levelCreatorInjectionExtendedInterface.getReelSprites();
+    }
+
+    public TileMapToWorldConvert getTileMapToWorldConvert() {
+        return levelCreatorInjectionExtendedInterface.getTileMapToWorldConvert();
     }
 
     public Array<ReelTile> getReelTiles() { return reelTiles; }

@@ -28,6 +28,7 @@ import com.ellzone.slotpuzzle2d.effects.ReelAccessor;
 import com.ellzone.slotpuzzle2d.effects.SpriteAccessor;
 import com.ellzone.slotpuzzle2d.level.creator.LevelAnimatedReelAction;
 import com.ellzone.slotpuzzle2d.level.creator.LevelAnimatedReelCallback;
+import com.ellzone.slotpuzzle2d.level.creator.LevelCreatorInjectionExtendedInterface;
 import com.ellzone.slotpuzzle2d.level.creator.LevelCreatorInjectionInterface;
 import com.ellzone.slotpuzzle2d.level.creator.LevelHoldLightButtonCallback;
 import com.ellzone.slotpuzzle2d.level.creator.LevelHoldLightHoldButtonAction;
@@ -64,6 +65,7 @@ import com.ellzone.slotpuzzle2d.tweenengine.TweenCallback;
 import com.ellzone.slotpuzzle2d.tweenengine.TweenManager;
 import com.ellzone.slotpuzzle2d.utils.assets.AssetsAnnotation;
 import com.ellzone.slotpuzzle2d.utils.PixmapProcessors;
+import com.ellzone.slotpuzzle2d.utils.convert.TileMapToWorldConvert;
 
 import net.dermetfan.gdx.assets.AnnotationAssetManager;
 
@@ -77,7 +79,7 @@ import static com.ellzone.slotpuzzle2d.prototypes.screens.PlayScreenPrototype.SL
 
 public class RenderMiniSllotMachineLoadedFromALevel
        extends SPPrototype
-       implements LevelCreatorInjectionInterface {
+       implements LevelCreatorInjectionExtendedInterface {
 
     public static final String LEVEL_6_ASSETS = "levels/level 6 component based - 40x40.tmx";
     public static final String LEVEL_6_NAME = "1-6";
@@ -97,6 +99,12 @@ public class RenderMiniSllotMachineLoadedFromALevel
     private Array<Array<Vector2>> rowMacthesToDraw = new Array<Array<Vector2>>();
     private SpriteBatch batch;
     private ShapeRenderer shapeRenderer;
+
+    @Override
+    public TileMapToWorldConvert getTileMapToWorldConvert() {
+        return null;
+    }
+
     private enum IntroSequenceState {
         INTRO_SEQUENCE_NOT_STARTED,
         INTRO_SEQUENCE_STARTED,
@@ -197,7 +205,8 @@ public class RenderMiniSllotMachineLoadedFromALevel
     }
 
     private void loadlevel() {
-        LevelObjectCreatorEntityHolder levelObjectCreator = new LevelObjectCreatorEntityHolder(this, world, rayHandler);
+        LevelObjectCreatorEntityHolder levelObjectCreator =
+                new LevelObjectCreatorEntityHolder(this, world, rayHandler);
         addLevelCallbacks(levelObjectCreator);
         TiledMap level = getLevelAssets(annotationAssetManager);
         slotHandleAtlas = getSlotHanldeAtlas(annotationAssetManager);

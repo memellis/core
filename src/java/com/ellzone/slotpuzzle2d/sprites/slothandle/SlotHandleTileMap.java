@@ -24,7 +24,7 @@ import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.utils.Array;
 import com.ellzone.slotpuzzle2d.sprites.SpriteRenderInterface;
 import com.ellzone.slotpuzzle2d.tweenengine.TweenManager;
-import com.ellzone.slotpuzzle2d.utils.WorldScreenConvert;
+import com.ellzone.slotpuzzle2d.utils.convert.TileMapToWorldConvert;
 
 public class SlotHandleTileMap implements SlotHandle, SpriteRenderInterface {
     private final SlotHandleSprite slotHandle;
@@ -64,12 +64,12 @@ public class SlotHandleTileMap implements SlotHandle, SpriteRenderInterface {
     }
 
     private float convertTileMapXToWorldPositionX(float x) {
-        worldPositionX = WorldScreenConvert.convertTileMapXToWorldPostionX(x);
+        worldPositionX = TileMapToWorldConvert.convertTileMapXToWorldX(x);
         return worldPositionX;
     }
 
     private float convertTileMapYToWorldPositionY(float y) {
-        worldPositionY = WorldScreenConvert.convertTileMapYToWorldPostionY(y);
+        worldPositionY = TileMapToWorldConvert.convertTileMapYToWorldY(y);
         return worldPositionY;
     }
 

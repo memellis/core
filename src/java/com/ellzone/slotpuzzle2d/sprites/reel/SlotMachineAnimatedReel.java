@@ -1,21 +1,15 @@
 package com.ellzone.slotpuzzle2d.sprites.reel;
 
-import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Sprite;
-import com.ellzone.slotpuzzle2d.sprites.reel.AnimatedReel;
-import com.ellzone.slotpuzzle2d.sprites.reel.ReelSprites;
 import com.ellzone.slotpuzzle2d.tweenengine.TweenManager;
-import com.ellzone.slotpuzzle2d.utils.assets.AssetsAnnotation;
 import com.ellzone.slotpuzzle2d.utils.PixmapProcessors;
 
 import net.dermetfan.gdx.assets.AnnotationAssetManager;
 
 public class SlotMachineAnimatedReel {
     private com.ellzone.slotpuzzle2d.sprites.reel.AnimatedReel animatedReel;
-    private float x, y, tileWith, tileHeight, reelTileWidth, reelTileHeight;
-    private int endReel;
     private AnnotationAssetManager annotationAssetManager;
 
     public SlotMachineAnimatedReel(float x,
@@ -54,14 +48,6 @@ public class SlotMachineAnimatedReel {
                                         reelDisplayWidth, reelDisplayHeight,
                                         endReel,
                 tweenManager);
-    }
-
-    private Sound getStoppingSound() {
-        return (Sound) annotationAssetManager.get(AssetsAnnotation.SOUND_REEL_STOPPED);
-    }
-
-    private Sound getSpinningSound() {
-        return (Sound) annotationAssetManager.get(AssetsAnnotation.SOUND_REEL_SPINNING);
     }
 
     private Texture getReelTexture() {

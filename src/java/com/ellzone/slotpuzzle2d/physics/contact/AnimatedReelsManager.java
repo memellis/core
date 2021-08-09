@@ -137,7 +137,7 @@ public class AnimatedReelsManager implements Telegraph {
             ReelTile reelAbove,
             SwapReelAction swapReelAction) {
         moveDeletedReelsToTheTopOfTheColumn(reelBelow, reelAbove);
-        setFallenReelsToCurrentPostions(reelBelow, reelAbove, swapReelAction);
+        setFallenReelsToCurrentPositions(reelBelow, reelAbove, swapReelAction);
     }
 
     private void moveDeletedReelsToTheTopOfTheColumn(ReelTile reelBelow, ReelTile reelAbove) {
@@ -150,9 +150,9 @@ public class AnimatedReelsManager implements Telegraph {
         }
     }
 
-    private void setFallenReelsToCurrentPostions(ReelTile reelBelow,
-                                                 ReelTile reelAbove,
-                                                 SwapReelAction swapReelAction) {
+    private void setFallenReelsToCurrentPositions(ReelTile reelBelow,
+                                                  ReelTile reelAbove,
+                                                  SwapReelAction swapReelAction) {
         Array<Integer> reelsAboveInContact = getReelsInContactAbove(reelBelow.getIndex());
         for (Integer reelAboveInContact : reelsAboveInContact)
             setFallReelToCurrentPosition(reelAboveInContact, swapReelAction);

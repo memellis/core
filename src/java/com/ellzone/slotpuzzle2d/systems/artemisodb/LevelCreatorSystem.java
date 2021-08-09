@@ -18,39 +18,38 @@ package com.ellzone.slotpuzzle2d.systems.artemisodb;
 
 import com.artemis.BaseSystem;
 import com.artemis.E;
-import com.artemis.Entity;
 import com.artemis.annotations.All;
-import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.maps.MapLayer;
 import com.badlogic.gdx.maps.MapObject;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.utils.Array;
 import com.ellzone.slotpuzzle2d.component.artemis.Position;
+import com.ellzone.slotpuzzle2d.level.creator.LevelCreatorInjectionExtendedInterface;
 import com.ellzone.slotpuzzle2d.level.creator.LevelCreatorInjectionInterface;
 import com.ellzone.slotpuzzle2d.level.creator.LevelObjectCreatorEntityHolder;
-import com.ellzone.slotpuzzle2d.sprites.SpriteRenderInterface;
+import com.ellzone.slotpuzzle2d.spin.SpinWheelSlotPuzzleTileMap;
 import com.ellzone.slotpuzzle2d.sprites.slothandle.SlotHandleSprite;
-import com.ellzone.slotpuzzle2d.sprites.slothandle.SlotHandleTileMap;
 
 import box2dLight.RayHandler;
 
 @All({Position.class})
 public class LevelCreatorSystem extends BaseSystem {
 
+    public static final String COMPONENTS = "Components";
     private final World box2dWorld;
     private final RayHandler rayHandler;
     private TiledMapSystem tiledMapSystem;
     private LevelObjectCreatorEntityHolder levelObjectCreatorEntityHolder;
-    private final LevelCreatorInjectionInterface levelCreatorInjectionInterface;
-    public Array<TextureRegion> spritesToRender = new Array<>();
+    private final LevelCreatorInjectionExtendedInterface levelCreatorInjectionExtendedInterface;
+    private Array<Object> entities = new Array<>();
 
     private boolean isSetup;
 
     public LevelCreatorSystem(
-            LevelCreatorInjectionInterface levelCreatorInjectionInterface,
+            LevelCreatorInjectionExtendedInterface levelCreatorInjectionExtendedInterface,
             World box2dWorld,
             RayHandler rayHandler) {
-        this.levelCreatorInjectionInterface = levelCreatorInjectionInterface;
+        this.levelCreatorInjectionExtendedInterface = levelCreatorInjectionExtendedInterface;
         this.box2dWorld = box2dWorld;
         this.rayHandler = rayHandler;
     }
@@ -58,7 +57,7 @@ public class LevelCreatorSystem extends BaseSystem {
     @Override
     public void initialize() {
         levelObjectCreatorEntityHolder = new LevelObjectCreatorEntityHolder(
-              levelCreatorInjectionInterface,
+              levelCreatorInjectionExtendedInterface,
               box2dWorld,
               rayHandler
         );
@@ -70,7 +69,9 @@ public class LevelCreatorSystem extends BaseSystem {
             isSetup = true;
             setup();
         }
-     }
+    }
+
+    public Array<Object> getEntities() { return entities; }
 
     private void setup() {
         createLevelEntities();
@@ -78,9 +79,9 @@ public class LevelCreatorSystem extends BaseSystem {
     }
 
     private void createLevelEntities() {
-        for (MapLayer layer : tiledMapSystem.map.getLayers()) {
+        for (MapLayer layer : tiledMapSystem.getTiledMap().getLayers()) {
             if (layer.isVisible()) {
-                if (layer.getName().contains("Components")) {
+                if (layer.getName().contains(COMPONENTS)) {
                     levelObjectCreatorEntityHolder.createLevel(
                             layer.getObjects().getByType(MapObject.class));
                 }
@@ -91,22 +92,54 @@ public class LevelCreatorSystem extends BaseSystem {
     private void setEntityComponents() {
         for (SlotHandleSprite handle :
                 new Array.ArrayIterator<>(
-                        levelObjectCreatorEntityHolder.getHandles())) {
+                        levelObjectCreatorEntityHolder.getHandles()))
+            processSlotHandle(handle);
 
-            Array<Integer> entityIds = new Array<>();
-            E e = E.E()
-                    .positionX(handle.getSlotHandleBaseSprite().getX())
-                    .positionY(handle.getSlotHandleBaseSprite().getY());
-            entityIds.add(e.id());
-            spritesToRender.add(handle.getSlotHandleBaseSprite());
+        for (SpinWheelSlotPuzzleTileMap spinWheel :
+            new Array.ArrayIterator<>(
+                    levelObjectCreatorEntityHolder.getSpinWheels()))
+            processSpinWheel(spinWheel);
+    }
 
-            e = E.E()
-                    .positionX(handle.getSlotHandleSprite().getX())
-                    .positionY(handle.getSlotHandleSprite().getY());
-            entityIds.add(e.id());
-            handle.setEntityIds(entityIds);
-            spritesToRender.add(handle.getSlotHandleSprite());
+    private void processSlotHandle(SlotHandleSprite handle) {
+        Array<Integer> entityIds = new Array<>();
+        E e = E.E()
+                .positionX(handle.getSlotHandleBaseSprite().getX())
+                .positionY(handle.getSlotHandleBaseSprite().getY())
+                .textureRegionRender();
+        entityIds.add(e.id());
+        entities.add(handle.getSlotHandleBaseSprite());
 
-        }
+        e = E.E()
+                .positionX(handle.getSlotHandleSprite().getX())
+                .positionY(handle.getSlotHandleSprite().getY());
+        entityIds.add(e.id());
+        handle.setEntityIds(entityIds);
+        entities.add(handle.getSlotHandleSprite());
+    }
+
+    private void processSpinWheel(SpinWheelSlotPuzzleTileMap spinWheel) {
+        Array<Integer> entityIds = new Array<>();
+        spinWheel.setUpSpinWheel();
+        spinWheel.getNeedleImage().setWidth(spinWheel.getNeedleImage().getWidth() * 10);
+        spinWheel.getNeedleImage().setHeight(spinWheel.getNeedleImage().getHeight() * 10);
+        spinWheel.getWheelImage().setWidth(spinWheel.getWheelImage().getWidth() * 10);
+        spinWheel.getWheelImage().setHeight(spinWheel.getWheelImage().getHeight() * 10);
+
+        E.E()
+         .spinWheel();
+        entities.add(spinWheel);
+
+        E.E()
+         .positionX(spinWheel.getNeedleImage().getImageX())
+         .positionY(spinWheel.getNeedleImage().getImageY())
+         .imageRender();
+        entities.add(spinWheel.getNeedleImage());
+
+        E.E()
+         .positionX(spinWheel.getWheelImage().getImageX())
+         .positionY(spinWheel.getWheelImage().getImageY())
+         .imageRender();
+        entities.add(spinWheel.getWheelImage());
     }
 }

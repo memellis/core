@@ -29,6 +29,7 @@ import com.badlogic.gdx.utils.GdxRuntimeException;
 import com.ellzone.slotpuzzle2d.sprites.reel.ReelSprites;
 import com.ellzone.slotpuzzle2d.tweenengine.TweenManager;
 import com.ellzone.slotpuzzle2d.utils.assets.AssetsAnnotation;
+import com.ellzone.slotpuzzle2d.utils.convert.TileMapToWorldConvert;
 
 import net.dermetfan.gdx.assets.AnnotationAssetManager;
 
@@ -75,16 +76,16 @@ public class LevelObjectCreator {
     public static final String COULD_NOT_EXTRACT_OBJECT_FROM_MESSAGE = "Could not extract object from <{0}>";
     public static final String EXPECTED_NUMBER_OF_PROPERTY_PARTS_TO_BE_MESSAGE = "Expected number of property parts to be {0} actually found {1}";
 
-    protected LevelCreatorInjectionInterface levelCreatorInjectionInterface;
+    protected LevelCreatorInjectionExtendedInterface levelCreatorInjectionExtendedInterface;
     protected World world;
     protected RayHandler rayHandler;
     protected Color reelPointLightColor = new Color(0.2f, 0.2f, 0.2f, 0.2f);
 
     public LevelObjectCreator(
-            LevelCreatorInjectionInterface injectionInterface,
+            LevelCreatorInjectionExtendedInterface injectionInterface,
             World box2dWorld,
             RayHandler rayHandler) {
-        this.levelCreatorInjectionInterface = injectionInterface;
+        this.levelCreatorInjectionExtendedInterface = injectionInterface;
         this.world = box2dWorld;
         this.rayHandler = rayHandler;
     }
@@ -110,33 +111,37 @@ public class LevelObjectCreator {
     }
 
     public AnnotationAssetManager getAnnotationAssetManager() {
-        return levelCreatorInjectionInterface.getAnnotationAssetManager();
+        return levelCreatorInjectionExtendedInterface.getAnnotationAssetManager();
     }
 
     public ReelSprites getReelSprites() {
-        return levelCreatorInjectionInterface.getReelSprites();
+        return levelCreatorInjectionExtendedInterface.getReelSprites();
     }
 
     public Texture getSlotReelScrollTexture() {
-        return levelCreatorInjectionInterface.getSlotReelScrollTexture();
+        return levelCreatorInjectionExtendedInterface.getSlotReelScrollTexture();
     }
 
     public Sound getReelSpinningSound() {
-        return levelCreatorInjectionInterface.getAnnotationAssetManager()
+        return levelCreatorInjectionExtendedInterface.getAnnotationAssetManager()
                 .get(AssetsAnnotation.SOUND_REEL_SPINNING);
     }
 
     public Sound getReelStoppingSound() {
-        return levelCreatorInjectionInterface.getAnnotationAssetManager()
+        return levelCreatorInjectionExtendedInterface.getAnnotationAssetManager()
                                              .get(AssetsAnnotation.SOUND_REEL_STOPPED);
     }
 
     public TweenManager getTweenManager() {
-        return levelCreatorInjectionInterface.getTweenManager();
+        return levelCreatorInjectionExtendedInterface.getTweenManager();
     }
 
     public TextureAtlas getSlotHandleAtlas() {
-        return levelCreatorInjectionInterface.getSlotHandleAtlas();
+        return levelCreatorInjectionExtendedInterface.getSlotHandleAtlas();
+    }
+
+    public TileMapToWorldConvert getTileMapToWorldConvert() {
+        return levelCreatorInjectionExtendedInterface.getTileMapToWorldConvert();
     }
 
     private Object[] parseConstructorParameterValues(Array<String> constructorParameterValues,

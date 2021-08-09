@@ -53,6 +53,7 @@ import com.ellzone.slotpuzzle2d.level.LevelDoor;
 import com.ellzone.slotpuzzle2d.level.card.Card;
 import com.ellzone.slotpuzzle2d.level.creator.LevelCallback;
 import com.ellzone.slotpuzzle2d.level.creator.LevelCreator;
+import com.ellzone.slotpuzzle2d.level.creator.LevelCreatorInjectionExtendedInterface;
 import com.ellzone.slotpuzzle2d.level.creator.LevelCreatorInjectionInterface;
 import com.ellzone.slotpuzzle2d.level.creator.LevelLoader;
 import com.ellzone.slotpuzzle2d.level.creator.PlayScreenLevel;
@@ -76,6 +77,7 @@ import com.ellzone.slotpuzzle2d.tweenengine.Timeline;
 import com.ellzone.slotpuzzle2d.tweenengine.TweenCallback;
 import com.ellzone.slotpuzzle2d.tweenengine.TweenManager;
 import com.ellzone.slotpuzzle2d.utils.assets.AssetsAnnotation;
+import com.ellzone.slotpuzzle2d.utils.convert.TileMapToWorldConvert;
 
 import net.dermetfan.gdx.assets.AnnotationAssetManager;
 
@@ -93,7 +95,7 @@ import static com.ellzone.slotpuzzle2d.messaging.MessageType.PauseAudio;
 import static com.ellzone.slotpuzzle2d.messaging.MessageType.PlayAudio;
 import static com.ellzone.slotpuzzle2d.messaging.MessageType.StopAudio;
 
-public class PlayScreen implements Screen, PlayInterface, LevelCreatorInjectionInterface {
+public class PlayScreen implements Screen, PlayInterface, LevelCreatorInjectionExtendedInterface {
     public static final float PUZZLE_GRID_START_X = 160.0f;
     public static final float PUZZLE_GRID_START_Y = 40.0f;
     public static final String SLOTPUZZLE_SCREEN = "PlayScreen";
@@ -934,6 +936,11 @@ public class PlayScreen implements Screen, PlayInterface, LevelCreatorInjectionI
     @Override
     public TextureAtlas getSlotHandleAtlas() {
         return game.annotationAssetManager.get(AssetsAnnotation.SLOT_HANDLE);
+    }
+
+    @Override
+    public TileMapToWorldConvert getTileMapToWorldConvert() {
+        return null;
     }
 
     private void playSound(String sound) {

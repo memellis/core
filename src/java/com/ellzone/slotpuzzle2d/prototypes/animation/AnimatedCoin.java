@@ -8,10 +8,10 @@ import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.ellzone.slotpuzzle2d.prototypes.SPPrototype;
+import com.ellzone.slotpuzzle2d.utils.assets.AssetsAnnotation;
 
 public class AnimatedCoin extends SPPrototype {
 
-    public static final String COIN_PACK_ATLAS = "coin/coin40x40.pack.atlas";
     public static final String COIN_REGION = "coin";
     private Animation coinAnimation;
     private SpriteBatch spriteBatch;
@@ -20,7 +20,8 @@ public class AnimatedCoin extends SPPrototype {
 
     @Override
     public void create() {
-        TextureAtlas coinAtlas = new TextureAtlas(Gdx.files.internal(COIN_PACK_ATLAS));
+        TextureAtlas coinAtlas =
+                new TextureAtlas(Gdx.files.internal(AssetsAnnotation.COIN_ANIMATION));
         coinAnimation = new Animation<TextureRegion>(
                 0.08333f, coinAtlas.findRegions(COIN_REGION));
         spriteBatch = new SpriteBatch();

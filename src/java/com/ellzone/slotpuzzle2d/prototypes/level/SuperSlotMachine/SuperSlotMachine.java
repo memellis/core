@@ -19,49 +19,64 @@ import com.artemis.FluidEntityPlugin;
 import com.artemis.World;
 import com.artemis.WorldConfigurationBuilder;
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.math.MathUtils;
-import com.badlogic.gdx.utils.Array;
 import com.ellzone.slotpuzzle2d.level.builder.WorldBuilder;
 import com.ellzone.slotpuzzle2d.level.creator.LevelCreatorInjector;
+import com.ellzone.slotpuzzle2d.level.creator.LevelCreatorInjectorExtended;
 import com.ellzone.slotpuzzle2d.prototypes.SPPrototype;
 import com.ellzone.slotpuzzle2d.systems.artemisodb.DebugPointRenderSystem;
 import com.ellzone.slotpuzzle2d.systems.artemisodb.LevelCreatorSystem;
-import com.ellzone.slotpuzzle2d.systems.artemisodb.RenderLevelSystem;
+import com.ellzone.slotpuzzle2d.systems.artemisodb.RenderImagesSystem;
+import com.ellzone.slotpuzzle2d.systems.artemisodb.RenderTextureRegionSystem;
+import com.ellzone.slotpuzzle2d.systems.artemisodb.SpinWheelSystem;
 import com.ellzone.slotpuzzle2d.systems.artemisodb.TiledMapSystem;
-import com.ellzone.slotpuzzle2d.utils.assets.AssetsLoader;
+import com.ellzone.slotpuzzle2d.utils.convert.TileMapToWorldConvert;
+import com.ellzone.slotpuzzle2d.utils.tilemap.TileMapAttributes;
 
-import net.dermetfan.gdx.assets.AnnotationAssetManager;
 import net.mostlyoriginal.plugin.ProfilerPlugin;
 
 public class SuperSlotMachine extends SPPrototype {
 
     public static final String WORLD_NOT_INITIALISED = "World not initialised";
     public static final float MIN_DELTA = 1 / 15f;
+    public static final String LEVELS_SUPER_SLOT_MACHINE_LEVEL_TMX = "levels/super slot machine level.tmx";
 
     private World world;
-    private LevelCreatorInjector levelCreatorInjector;
+    private LevelCreatorInjectorExtended levelCreatorInjectorExtended;
+    private LevelCreatorSystem levelCreatorSystem;
+    private TileMapAttributes tileMapAttributes;
 
     public void create() {
-        levelCreatorInjector = new LevelCreatorInjector();
+        tileMapAttributes =
+                new TileMapAttributes(LEVELS_SUPER_SLOT_MACHINE_LEVEL_TMX);
+        TileMapToWorldConvert tileMapToWorldConvert =
+                new TileMapToWorldConvert(
+                        tileMapAttributes.getWidth() * tileMapAttributes.getTileWidth(),
+                        tileMapAttributes.getHeight() * tileMapAttributes.getTileWidth(),
+                        Gdx.graphics.getWidth(),
+                        Gdx.graphics.getHeight());
+        levelCreatorInjectorExtended = new LevelCreatorInjectorExtended(tileMapToWorldConvert);
+
         world = createWorld();
     }
 
     private World createWorld() {
-         WorldBuilder worldBuilder = new WorldBuilder();
-         worldBuilder.build();
-         return new World(new WorldConfigurationBuilder()
+        WorldBuilder worldBuilder = new WorldBuilder();
+        worldBuilder.build();
+        return new World(new WorldConfigurationBuilder()
                 .alwaysDelayComponentRemoval(true)
                 .dependsOn(
                         ProfilerPlugin.class,
                         FluidEntityPlugin.class)
                 .with(
-                        new TiledMapSystem("levels/super slot machine level.tmx"),
+                        new TiledMapSystem(tileMapAttributes),
                         new LevelCreatorSystem(
-                                levelCreatorInjector,
+                                levelCreatorInjectorExtended,
                                 worldBuilder.getBox2dWorld(),
                                 worldBuilder.getRayHandler()),
-                        new RenderLevelSystem(),
+                        new SpinWheelSystem(),
+                        new RenderTextureRegionSystem(),
+                        new RenderImagesSystem(),
                         new DebugPointRenderSystem()
                 )
                 .build());

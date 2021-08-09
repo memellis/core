@@ -19,6 +19,7 @@ package com.ellzone.slotpuzzle2d.utils.artemisodb;
 import com.badlogic.gdx.maps.MapLayer;
 import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
 import com.badlogic.gdx.utils.Array;
+import com.ellzone.slotpuzzle2d.utils.tilemap.TileMapAttributes;
 
 public class MapMask {
     public final boolean[][] v;
@@ -30,7 +31,17 @@ public class MapMask {
     private final String propertyKey;
 
     public MapMask(int height, int width, int tileWidth, int tileHeight) {
-        this(height,width,tileWidth,tileHeight,null,null);
+        this(height, width, tileWidth, tileHeight,null,null);
+    }
+
+    public MapMask(TileMapAttributes tileMapAttributes, String propertyKey) {
+        this(
+                tileMapAttributes.getHeight(),
+                tileMapAttributes.getWidth(),
+                tileMapAttributes.getTileWidth(),
+                tileMapAttributes.getTileHeight(),
+                tileMapAttributes.getLayers(),
+                propertyKey);
     }
 
     public MapMask(int height,

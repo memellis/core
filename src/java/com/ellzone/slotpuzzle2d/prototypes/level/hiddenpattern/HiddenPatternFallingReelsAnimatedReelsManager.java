@@ -47,6 +47,7 @@ import com.ellzone.slotpuzzle2d.finitestatemachine.PlayInterface;
 import com.ellzone.slotpuzzle2d.finitestatemachine.PlayState;
 import com.ellzone.slotpuzzle2d.finitestatemachine.PlayStateMachine;
 import com.ellzone.slotpuzzle2d.level.LevelDoor;
+import com.ellzone.slotpuzzle2d.level.creator.LevelCreatorInjectionExtendedInterface;
 import com.ellzone.slotpuzzle2d.level.creator.LevelCreatorInjectionInterface;
 import com.ellzone.slotpuzzle2d.level.creator.LevelCreatorSimple;
 import com.ellzone.slotpuzzle2d.level.creator.LevelObjectCreatorEntityHolder;
@@ -75,6 +76,7 @@ import com.ellzone.slotpuzzle2d.utils.assets.AssetsAnnotation;
 import com.ellzone.slotpuzzle2d.utils.PixmapProcessors;
 import com.ellzone.slotpuzzle2d.utils.Random;
 import com.ellzone.slotpuzzle2d.utils.SlowMotion;
+import com.ellzone.slotpuzzle2d.utils.convert.TileMapToWorldConvert;
 
 import net.dermetfan.gdx.assets.AnnotationAssetManager;
 
@@ -92,7 +94,7 @@ import static com.ellzone.slotpuzzle2d.prototypes.level.minislotmachine.MiniSlot
 import static com.ellzone.slotpuzzle2d.screens.PlayScreen.LEVEL_TIME_LENGTH_IN_SECONDS;
 
 public class HiddenPatternFallingReelsAnimatedReelsManager extends SPPrototypeTemplate
-        implements LevelCreatorInjectionInterface, PlayInterface {
+        implements LevelCreatorInjectionExtendedInterface, PlayInterface {
 
     public static final String LEVELS_LEVEL_7 = "levels/level 7 - 40x40.tmx";
     public static final String LEVEL_7_NAME = "1-7";
@@ -692,6 +694,11 @@ public class HiddenPatternFallingReelsAnimatedReelsManager extends SPPrototypeTe
     @Override
     public TextureAtlas getSlotHandleAtlas() {
         return slotHandleAtlas;
+    }
+
+    @Override
+    public TileMapToWorldConvert getTileMapToWorldConvert() {
+        return null;
     }
 
     @Override

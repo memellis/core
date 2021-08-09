@@ -52,7 +52,7 @@ import box2dLight.RayHandler;
 
 public class PlayScreenLevel implements PlayScreenLevelInterface {
 
-    private final LevelCreatorInjectionInterface levelCreatorInjection;
+    private final LevelCreatorInjectionExtendedInterface levelCreatorInjection;
     private final SlotPuzzleGameInterface game;
     private final LevelDoor levelDoor;
     private TiledMap tiledMapLevel;
@@ -72,7 +72,7 @@ public class PlayScreenLevel implements PlayScreenLevelInterface {
     private FrameRate frameRate;
 
     public PlayScreenLevel(
-            LevelCreatorInjectionInterface levelCreatorInjection,
+            LevelCreatorInjectionExtendedInterface levelCreatorInjection,
             SlotPuzzleGameInterface game,
             LevelDoor levelDoor) {
         this.levelCreatorInjection = levelCreatorInjection;

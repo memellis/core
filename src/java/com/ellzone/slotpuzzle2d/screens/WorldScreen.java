@@ -58,6 +58,7 @@ import com.ellzone.slotpuzzle2d.camera.CameraLerp;
 import com.ellzone.slotpuzzle2d.effects.CameraAccessor;
 import com.ellzone.slotpuzzle2d.effects.SpriteAccessor;
 import com.ellzone.slotpuzzle2d.level.LevelDoor;
+import com.ellzone.slotpuzzle2d.level.creator.LevelCreatorInjectionExtendedInterface;
 import com.ellzone.slotpuzzle2d.level.creator.LevelCreatorInjectionInterface;
 import com.ellzone.slotpuzzle2d.level.creator.LevelObjectCreatorEntityHolder;
 import com.ellzone.slotpuzzle2d.level.map.MapLevel1;
@@ -86,6 +87,7 @@ import com.ellzone.slotpuzzle2d.tweenengine.TweenManager;
 import com.ellzone.slotpuzzle2d.utils.assets.AssetsAnnotation;
 import com.ellzone.slotpuzzle2d.utils.FileUtils;
 import com.ellzone.slotpuzzle2d.utils.PixmapProcessors;
+import com.ellzone.slotpuzzle2d.utils.convert.TileMapToWorldConvert;
 
 import net.dermetfan.gdx.assets.AnnotationAssetManager;
 
@@ -99,7 +101,7 @@ import static com.ellzone.slotpuzzle2d.level.creator.LevelCreator.HIDDEN_PATTERN
 import static com.ellzone.slotpuzzle2d.level.creator.LevelCreator.MINI_SLOT_MACHINE_LEVEL_TYPE;
 import static com.ellzone.slotpuzzle2d.level.creator.LevelCreator.PLAYING_CARD_LEVEL_TYPE;
 
-public class WorldScreen implements Screen, LevelCreatorInjectionInterface {
+public class WorldScreen implements Screen, LevelCreatorInjectionExtendedInterface {
 
     public static final String LOG_TAG = "SlotPuzzle_WorldScreen";
     public static final String LIBERATION_MONO_REGULAR_FONT_NAME = "LiberationMono-Regular.ttf";
@@ -773,6 +775,11 @@ public class WorldScreen implements Screen, LevelCreatorInjectionInterface {
 	@Override
 	public TextureAtlas getSlotHandleAtlas() {
 		return game.annotationAssetManager.get(AssetsAnnotation.SLOT_HANDLE);
+	}
+
+	@Override
+	public TileMapToWorldConvert getTileMapToWorldConvert() {
+		return null;
 	}
 
 	public class MapGestureListener implements GestureListener {

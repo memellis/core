@@ -17,7 +17,6 @@
 
 package com.ellzone.slotpuzzle2d.spin;
 
-import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
@@ -69,7 +68,6 @@ public class SpinWheelForSlotPuzzle implements SpinWheelSlotPuzzle {
     private final float x, y;             // position
     private final int nPegs;              // number of pegs
     private float farNeedle;              // distance of needle from the wheel
-    private boolean spinned = false;      // to ensure a spinning is one time only.
     private Image needleImage;
     private Image wheelImage;
 
@@ -93,27 +91,23 @@ public class SpinWheelForSlotPuzzle implements SpinWheelSlotPuzzle {
 
     @Override
     public void setUpSpinWheel() {
-        final TextureAtlas atlas = new TextureAtlas("spin/spin_wheel_ui.atlas");
+        final TextureAtlas spinWheelAtlas =
+                new TextureAtlas("spin/spin_wheel_ui.atlas");
 
-        setUpSpinWheelBody(atlas);
-
-        setUpSpinWheelSpinButton(atlas);
-
-        setUpSpinWheelNeedleBody(atlas);
-
+        setUpSpinWheelBody(spinWheelAtlas);
+        setUpSpinWheelSpinButton(spinWheelAtlas);
+        setUpSpinWheelNeedleBody(spinWheelAtlas);
         setElementData();
     }
 
     @Override
     public void setUpSpinWheel(Stage stage) {
-        final TextureAtlas atlas = new TextureAtlas("spin/spin_wheel_ui.atlas");
+        final TextureAtlas spinWheelAtlas =
+                new TextureAtlas("spin/spin_wheel_ui.atlas");
 
-        setUpSpinWheelBody(atlas, stage);
-
-        setUpSpinWheelSpinButton(atlas, stage);
-
-        setUpSpinWheelNeedleBody(atlas, stage);
-
+        setUpSpinWheelBody(spinWheelAtlas, stage);
+        setUpSpinWheelSpinButton(spinWheelAtlas, stage);
+        setUpSpinWheelNeedleBody(spinWheelAtlas, stage);
         setElementData();
     }
 
@@ -143,7 +137,6 @@ public class SpinWheelForSlotPuzzle implements SpinWheelSlotPuzzle {
     @Override
     public void spin(float omega) {
         wheelCore.setAngularVelocity(MathUtils.clamp(omega, 0, 30));
-        spinned = true;
     }
 
     @Override
@@ -384,7 +377,7 @@ public class SpinWheelForSlotPuzzle implements SpinWheelSlotPuzzle {
         fixtureDef.filter.maskBits = BIT_NEEDLE;
 
         for (int i = 0; i < nPegs; i++) {
-            double theta = Math.toRadians((360 / nPegs) * i);
+            double theta = Math.toRadians((360.0f / nPegs) * i);
             float x = (float) Math.cos(theta);
             float y = (float) Math.sin(theta);
 
@@ -561,7 +554,7 @@ public class SpinWheelForSlotPuzzle implements SpinWheelSlotPuzzle {
     // contains two pegs (as a number which saved in UserData) with the object between them.
     private final IntArray pegsSelectors = new IntArray(2);
     // to connect between data (two pegs numbers) and object which this lucky element.
-    private ObjectMap<IntArray, Object> elements = new ObjectMap<IntArray, Object>();
+    private ObjectMap<IntArray, Object> elements = new ObjectMap<>();
 
     private final class SpinWheelWorldContact implements ContactListener {
         @Override

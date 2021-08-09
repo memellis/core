@@ -14,19 +14,10 @@
  * limitations under the License.
  ******************************************************************************/
 
-package com.ellzone.slotpuzzle2d.utils;
+package com.ellzone.slotpuzzle2d.utils.convert;
 
-public class WorldScreenConvert {
-    public static final int MAP_WIDTH = 4000;
-    public static final int MAP_HEIGHT = 16000;
-    public static final int WORLD_WIDTH = 10000;
-    public static final int WORLD_HEIGHT = 40000;
+import com.ellzone.slotpuzzle2d.physics.Point;
 
-    public static float convertTileMapXToWorldPostionX(float x) {
-        return x / MAP_WIDTH * WORLD_WIDTH;
-    }
-
-    public static float convertTileMapYToWorldPostionY(float y) {
-        return y / MAP_HEIGHT * WORLD_HEIGHT;
-    }
+public interface ConvertInterface {
+    public Point convertToWorldPosition(Point point);
 }

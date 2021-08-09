@@ -20,7 +20,7 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.ellzone.slotpuzzle2d.physics.DampenedSineParticle;
 import com.ellzone.slotpuzzle2d.tweenengine.TweenManager;
-import com.ellzone.slotpuzzle2d.utils.WorldScreenConvert;
+import com.ellzone.slotpuzzle2d.utils.convert.TileMapToWorldConvert;
 
 import net.dermetfan.gdx.assets.AnnotationAssetManager;
 
@@ -132,12 +132,12 @@ public class AnimatedReelTileMap implements AnimatedReelInterface {
     }
 
     private float convertTileMapXToWorldPostionX(float x) {
-        worldPositionX = WorldScreenConvert.convertTileMapXToWorldPostionX(x);
+        worldPositionX = TileMapToWorldConvert.convertTileMapXToWorldX(x);
         return worldPositionX;
     }
 
     private float convertTileMapYToWorldPostionY(float y) {
-        worldPositionY = WorldScreenConvert.convertTileMapYToWorldPostionY(y);
+        worldPositionY = TileMapToWorldConvert.convertTileMapYToWorldY(y);
         return worldPositionY;
     }
 }

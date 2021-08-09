@@ -21,49 +21,48 @@ import com.badlogic.gdx.maps.MapLayer;
 import com.badlogic.gdx.maps.MapProperties;
 import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
-import com.badlogic.gdx.maps.tiled.TmxMapLoader;
 import com.badlogic.gdx.utils.Array;
+import com.ellzone.slotpuzzle2d.scene.Tile;
 import com.ellzone.slotpuzzle2d.utils.artemisodb.MapMask;
+import com.ellzone.slotpuzzle2d.utils.convert.TileMapToWorldConvert;
+import com.ellzone.slotpuzzle2d.utils.tilemap.TileMapAttributes;
 
 public class TiledMapSystem extends BaseSystem {
 
-    private final String mapFilename;
-
-    public TiledMap map;
-
-    private int width;
-    private int height;
-    private int tileWidth;
-    private int tileHeight;
-
+    private String mapFilename;
+    private TileMapAttributes tileMapAttributes;
     private boolean isSetup;
-
-    public Array<MapLayer> layers;
 
     public TiledMapSystem(String mapFilename) {
         this.mapFilename = mapFilename;
     }
 
+    public TiledMapSystem(TileMapAttributes tileMapAttributes) {
+        this.tileMapAttributes = tileMapAttributes;
+    }
+
     @Override
     protected void initialize() {
-        map = new TmxMapLoader().load(mapFilename);
-        layers = map.getLayers().getByType(MapLayer.class);
-        width = map.getProperties().get("width", Integer.class);
-        height = map.getProperties().get("height", Integer.class);
-        tileWidth = map.getProperties().get("tilewidth", Integer.class);
-        tileHeight = map.getProperties().get("tileheight", Integer.class);
+        if (mapFilename != null)
+            tileMapAttributes = new TileMapAttributes(mapFilename);
     }
 
     public MapMask getMask(String property) {
-        return new MapMask(height, width, tileWidth, tileHeight, layers, property);
+        return new MapMask(tileMapAttributes, property);
     }
 
+    public TiledMap getTiledMap() { return tileMapAttributes.getTiledMap(); }
+    public int getMapWidth() { return tileMapAttributes.getWidth(); }
+    public int getMapHeight() { return tileMapAttributes.getHeight(); }
+    public int getTileWidth() { return tileMapAttributes.getTileWidth(); }
+    public int getTileHeight() { return tileMapAttributes.getTileHeight(); }
+
     protected void setup() {
-        for (MapLayer layer : new Array.ArrayIterator<>(layers)) {
+        for (MapLayer layer : new Array.ArrayIterator<>(tileMapAttributes.getLayers())) {
             if (layer instanceof TiledMapTileLayer) {
                 final TiledMapTileLayer mapTileLayer = (TiledMapTileLayer) layer;
-                for (int ty = 0; ty < height; ty++) {
-                    for (int tx = 0; tx < width; tx++) {
+                for (int ty = 0; ty < tileMapAttributes.getHeight(); ty++) {
+                    for (int tx = 0; tx < tileMapAttributes.getWidth(); tx++) {
 
                         final TiledMapTileLayer.Cell cell = mapTileLayer.getCell(tx, ty);
                         if (cell != null) {
