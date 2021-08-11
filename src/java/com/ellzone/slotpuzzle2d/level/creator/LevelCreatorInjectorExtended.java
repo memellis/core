@@ -25,7 +25,7 @@ import com.ellzone.slotpuzzle2d.utils.convert.TileMapToWorldConvert;
 
 import net.dermetfan.gdx.assets.AnnotationAssetManager;
 
-public class LevelCreatorInjectorExtended implements LevelCreatorInjectionExtendedInterface {
+public class LevelCreatorInjectorExtended implements LevelCreatorInjectionInterface {
     private final TileMapToWorldConvert tileMapToWorldConvert;
     private LevelCreatorInjector levelCreatorInjector;
 

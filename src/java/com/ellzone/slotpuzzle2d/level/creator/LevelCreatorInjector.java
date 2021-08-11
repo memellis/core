@@ -24,6 +24,7 @@ import com.ellzone.slotpuzzle2d.tweenengine.TweenManager;
 import com.ellzone.slotpuzzle2d.utils.PixmapProcessors;
 import com.ellzone.slotpuzzle2d.utils.assets.AssetsAnnotation;
 import com.ellzone.slotpuzzle2d.utils.assets.AssetsLoader;
+import com.ellzone.slotpuzzle2d.utils.convert.TileMapToWorldConvert;
 
 import net.dermetfan.gdx.assets.AnnotationAssetManager;
 
@@ -81,5 +82,10 @@ public class LevelCreatorInjector implements LevelCreatorInjectionInterface {
     @Override
     public TextureAtlas getSlotHandleAtlas() {
         return annotationAssetManager.get(AssetsAnnotation.SLOT_HANDLE);
+    }
+
+    @Override
+    public TileMapToWorldConvert getTileMapToWorldConvert() {
+        return null;
     }
 }

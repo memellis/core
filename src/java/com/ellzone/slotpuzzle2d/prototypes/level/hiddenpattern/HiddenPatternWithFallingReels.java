@@ -46,7 +46,6 @@ import com.ellzone.slotpuzzle2d.effects.ScoreAccessor;
 import com.ellzone.slotpuzzle2d.effects.SpriteAccessor;
 import com.ellzone.slotpuzzle2d.finitestatemachine.PlayStates;
 import com.ellzone.slotpuzzle2d.level.LevelDoor;
-import com.ellzone.slotpuzzle2d.level.creator.LevelCreatorInjectionExtendedInterface;
 import com.ellzone.slotpuzzle2d.level.creator.LevelCreatorInjectionInterface;
 import com.ellzone.slotpuzzle2d.level.creator.LevelCreatorSimple;
 import com.ellzone.slotpuzzle2d.level.creator.LevelObjectCreatorEntityHolder;
@@ -92,7 +91,7 @@ import static com.ellzone.slotpuzzle2d.prototypes.level.minislotmachine.MiniSlot
 import static com.ellzone.slotpuzzle2d.prototypes.level.minislotmachine.MiniSlotMachineLevelPrototypeWithLevelCreator.numberOfReelsToHitSinkBottom;
 
 public class HiddenPatternWithFallingReels extends SPPrototypeTemplate
-        implements LevelCreatorInjectionExtendedInterface, ReelSinkInterface {
+        implements LevelCreatorInjectionInterface, ReelSinkInterface {
 
     public static final String LEVELS_LEVEL_7 = "levels/level 7 - 40x40.tmx";
     public static final String LEVEL_7_NAME = "1-7";

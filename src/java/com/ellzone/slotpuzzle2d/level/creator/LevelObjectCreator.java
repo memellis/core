@@ -76,16 +76,16 @@ public class LevelObjectCreator {
     public static final String COULD_NOT_EXTRACT_OBJECT_FROM_MESSAGE = "Could not extract object from <{0}>";
     public static final String EXPECTED_NUMBER_OF_PROPERTY_PARTS_TO_BE_MESSAGE = "Expected number of property parts to be {0} actually found {1}";
 
-    protected LevelCreatorInjectionExtendedInterface levelCreatorInjectionExtendedInterface;
+    protected LevelCreatorInjectionInterface levelCreatorInjectionInterface;
     protected World world;
     protected RayHandler rayHandler;
     protected Color reelPointLightColor = new Color(0.2f, 0.2f, 0.2f, 0.2f);
 
     public LevelObjectCreator(
-            LevelCreatorInjectionExtendedInterface injectionInterface,
+            LevelCreatorInjectionInterface injectionInterface,
             World box2dWorld,
             RayHandler rayHandler) {
-        this.levelCreatorInjectionExtendedInterface = injectionInterface;
+        this.levelCreatorInjectionInterface = injectionInterface;
         this.world = box2dWorld;
         this.rayHandler = rayHandler;
     }
@@ -111,37 +111,37 @@ public class LevelObjectCreator {
     }
 
     public AnnotationAssetManager getAnnotationAssetManager() {
-        return levelCreatorInjectionExtendedInterface.getAnnotationAssetManager();
+        return levelCreatorInjectionInterface.getAnnotationAssetManager();
     }
 
     public ReelSprites getReelSprites() {
-        return levelCreatorInjectionExtendedInterface.getReelSprites();
+        return levelCreatorInjectionInterface.getReelSprites();
     }
 
     public Texture getSlotReelScrollTexture() {
-        return levelCreatorInjectionExtendedInterface.getSlotReelScrollTexture();
+        return levelCreatorInjectionInterface.getSlotReelScrollTexture();
     }
 
     public Sound getReelSpinningSound() {
-        return levelCreatorInjectionExtendedInterface.getAnnotationAssetManager()
+        return levelCreatorInjectionInterface.getAnnotationAssetManager()
                 .get(AssetsAnnotation.SOUND_REEL_SPINNING);
     }
 
     public Sound getReelStoppingSound() {
-        return levelCreatorInjectionExtendedInterface.getAnnotationAssetManager()
+        return levelCreatorInjectionInterface.getAnnotationAssetManager()
                                              .get(AssetsAnnotation.SOUND_REEL_STOPPED);
     }
 
     public TweenManager getTweenManager() {
-        return levelCreatorInjectionExtendedInterface.getTweenManager();
+        return levelCreatorInjectionInterface.getTweenManager();
     }
 
     public TextureAtlas getSlotHandleAtlas() {
-        return levelCreatorInjectionExtendedInterface.getSlotHandleAtlas();
+        return levelCreatorInjectionInterface.getSlotHandleAtlas();
     }
 
     public TileMapToWorldConvert getTileMapToWorldConvert() {
-        return levelCreatorInjectionExtendedInterface.getTileMapToWorldConvert();
+        return levelCreatorInjectionInterface.getTileMapToWorldConvert();
     }
 
     private Object[] parseConstructorParameterValues(Array<String> constructorParameterValues,

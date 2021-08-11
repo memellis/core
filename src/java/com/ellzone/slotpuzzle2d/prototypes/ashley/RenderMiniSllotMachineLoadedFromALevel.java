@@ -28,7 +28,6 @@ import com.ellzone.slotpuzzle2d.effects.ReelAccessor;
 import com.ellzone.slotpuzzle2d.effects.SpriteAccessor;
 import com.ellzone.slotpuzzle2d.level.creator.LevelAnimatedReelAction;
 import com.ellzone.slotpuzzle2d.level.creator.LevelAnimatedReelCallback;
-import com.ellzone.slotpuzzle2d.level.creator.LevelCreatorInjectionExtendedInterface;
 import com.ellzone.slotpuzzle2d.level.creator.LevelCreatorInjectionInterface;
 import com.ellzone.slotpuzzle2d.level.creator.LevelHoldLightButtonCallback;
 import com.ellzone.slotpuzzle2d.level.creator.LevelHoldLightHoldButtonAction;
@@ -79,7 +78,7 @@ import static com.ellzone.slotpuzzle2d.prototypes.screens.PlayScreenPrototype.SL
 
 public class RenderMiniSllotMachineLoadedFromALevel
        extends SPPrototype
-       implements LevelCreatorInjectionExtendedInterface {
+       implements LevelCreatorInjectionInterface {
 
     public static final String LEVEL_6_ASSETS = "levels/level 6 component based - 40x40.tmx";
     public static final String LEVEL_6_NAME = "1-6";
@@ -96,7 +95,7 @@ public class RenderMiniSllotMachineLoadedFromALevel
     private RenderSystem renderSystem;
     private FitViewport viewport;
     private int[][] reelGrid = new int[3][3];
-    private Array<Array<Vector2>> rowMacthesToDraw = new Array<Array<Vector2>>();
+    private Array<Array<Vector2>> rowMatchesToDraw = new Array<Array<Vector2>>();
     private SpriteBatch batch;
     private ShapeRenderer shapeRenderer;
 
@@ -329,11 +328,11 @@ public class RenderMiniSllotMachineLoadedFromALevel
     }
 
     private void matchRowsToDraw(ReelTileGridValue[][] matchGrid, PuzzleGridTypeReelTile puzzleGridTypeReelTile) {
-        rowMacthesToDraw = new Array<Array<Vector2>>();
+        rowMatchesToDraw = new Array<Array<Vector2>>();
         for (int row = 0; row < matchGrid.length; row++) {
             Array<ReelTileGridValue> depthSearchResults = puzzleGridTypeReelTile.depthFirstSearchIncludeDiagonals(matchGrid[row][0]);
             if (puzzleGridTypeReelTile.isRow(depthSearchResults, matchGrid)) {
-                rowMacthesToDraw.add(drawMatches(depthSearchResults, 545, 450));
+                rowMatchesToDraw.add(drawMatches(depthSearchResults, 545, 450));
             };
         }
     }
@@ -375,8 +374,8 @@ public class RenderMiniSllotMachineLoadedFromALevel
     private void delegateSlotHandlePulledAction(SystemEvent systemEvent, Object source) {
         if (systemEvent instanceof SlotHandlePulledPlayerSystemEvent) {
             pulledSlotHandle = true;
-            if (rowMacthesToDraw.size > 0)
-                rowMacthesToDraw.removeRange(0, rowMacthesToDraw.size - 1);
+            if (rowMatchesToDraw.size > 0)
+                rowMatchesToDraw.removeRange(0, rowMatchesToDraw.size - 1);
         }
     }
 
@@ -432,7 +431,7 @@ public class RenderMiniSllotMachineLoadedFromALevel
         batch.begin();
         shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
         shapeRenderer.setColor(Color.RED);
-        for (Array<Vector2> matchedRow : rowMacthesToDraw) {
+        for (Array<Vector2> matchedRow : rowMatchesToDraw) {
             if (matchedRow.size >= 2)
                 for (int i = 0; i < matchedRow.size - 1; i++) {
                     shapeRenderer.rectLine(matchedRow.get(i).x, matchedRow.get(i).y, matchedRow.get(i + 1).x, matchedRow.get(i + 1).y, 2);

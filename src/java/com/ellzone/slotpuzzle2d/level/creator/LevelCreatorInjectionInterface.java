@@ -20,13 +20,15 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.ellzone.slotpuzzle2d.sprites.reel.ReelSprites;
 import com.ellzone.slotpuzzle2d.tweenengine.TweenManager;
+import com.ellzone.slotpuzzle2d.utils.convert.TileMapToWorldConvert;
 
 import net.dermetfan.gdx.assets.AnnotationAssetManager;
 
 public interface LevelCreatorInjectionInterface {
-    public AnnotationAssetManager getAnnotationAssetManager();
-    public ReelSprites getReelSprites();
-    public Texture getSlotReelScrollTexture();
-    public TweenManager getTweenManager();
-    public TextureAtlas getSlotHandleAtlas();
+    AnnotationAssetManager getAnnotationAssetManager();
+    ReelSprites getReelSprites();
+    Texture getSlotReelScrollTexture();
+    TweenManager getTweenManager();
+    TextureAtlas getSlotHandleAtlas();
+    TileMapToWorldConvert getTileMapToWorldConvert();
 }

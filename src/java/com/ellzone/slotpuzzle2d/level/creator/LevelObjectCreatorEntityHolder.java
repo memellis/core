@@ -64,7 +64,7 @@ public class LevelObjectCreatorEntityHolder extends LevelObjectCreator {
     private LevelAnimatedReelTileMapCallback levelAnimatedReelTileMapCallback;
 
     public LevelObjectCreatorEntityHolder(
-            LevelCreatorInjectionExtendedInterface injection, World world, RayHandler rayHandler) {
+            LevelCreatorInjectionInterface injection, World world, RayHandler rayHandler) {
         super(injection, world, rayHandler);
     }
 
@@ -88,33 +88,33 @@ public class LevelObjectCreatorEntityHolder extends LevelObjectCreator {
 
     @Override
     public AnnotationAssetManager getAnnotationAssetManager() {
-        return super.levelCreatorInjectionExtendedInterface.getAnnotationAssetManager();
+        return super.levelCreatorInjectionInterface.getAnnotationAssetManager();
     }
 
     @Override
     public Texture getSlotReelScrollTexture() {
-        return levelCreatorInjectionExtendedInterface.getSlotReelScrollTexture();
+        return levelCreatorInjectionInterface.getSlotReelScrollTexture();
     }
 
     @Override
     public Sound getReelSpinningSound() {
-        return levelCreatorInjectionExtendedInterface.getAnnotationAssetManager()
+        return levelCreatorInjectionInterface.getAnnotationAssetManager()
                 .get(AssetsAnnotation.SOUND_REEL_SPINNING);
     }
 
     @Override
     public Sound getReelStoppingSound() {
-        return levelCreatorInjectionExtendedInterface.getAnnotationAssetManager()
+        return levelCreatorInjectionInterface.getAnnotationAssetManager()
                 .get(AssetsAnnotation.SOUND_REEL_STOPPED);
     }
 
     @Override
     public ReelSprites getReelSprites() {
-        return levelCreatorInjectionExtendedInterface.getReelSprites();
+        return levelCreatorInjectionInterface.getReelSprites();
     }
 
     public TileMapToWorldConvert getTileMapToWorldConvert() {
-        return levelCreatorInjectionExtendedInterface.getTileMapToWorldConvert();
+        return levelCreatorInjectionInterface.getTileMapToWorldConvert();
     }
 
     public Array<ReelTile> getReelTiles() { return reelTiles; }

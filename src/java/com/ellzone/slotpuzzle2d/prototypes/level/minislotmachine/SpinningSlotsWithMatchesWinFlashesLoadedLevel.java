@@ -36,7 +36,6 @@ import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import com.ellzone.slotpuzzle2d.effects.ReelAccessor;
 import com.ellzone.slotpuzzle2d.effects.SpriteAccessor;
-import com.ellzone.slotpuzzle2d.level.creator.LevelCreatorInjectionExtendedInterface;
 import com.ellzone.slotpuzzle2d.level.creator.LevelCreatorInjectionInterface;
 import com.ellzone.slotpuzzle2d.level.creator.LevelObjectCreatorEntityHolder;
 import com.ellzone.slotpuzzle2d.level.map.MapLevelNameComparator;
@@ -75,7 +74,7 @@ import static com.ellzone.slotpuzzle2d.SlotPuzzleConstants.PIXELS_PER_METER;
 
 public class SpinningSlotsWithMatchesWinFlashesLoadedLevel
        extends SPPrototypeTemplate
-       implements LevelCreatorInjectionExtendedInterface {
+       implements LevelCreatorInjectionInterface {
 
     public static final String LEVELS_LEVEL_6 = "levels/level 6 - 40x40.tmx";
     public static final String LEVEL_6_NAME = "1-6";

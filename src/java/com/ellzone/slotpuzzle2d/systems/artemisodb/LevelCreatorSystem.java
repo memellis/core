@@ -24,7 +24,6 @@ import com.badlogic.gdx.maps.MapObject;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.utils.Array;
 import com.ellzone.slotpuzzle2d.component.artemis.Position;
-import com.ellzone.slotpuzzle2d.level.creator.LevelCreatorInjectionExtendedInterface;
 import com.ellzone.slotpuzzle2d.level.creator.LevelCreatorInjectionInterface;
 import com.ellzone.slotpuzzle2d.level.creator.LevelObjectCreatorEntityHolder;
 import com.ellzone.slotpuzzle2d.spin.SpinWheelSlotPuzzleTileMap;
@@ -40,16 +39,16 @@ public class LevelCreatorSystem extends BaseSystem {
     private final RayHandler rayHandler;
     private TiledMapSystem tiledMapSystem;
     private LevelObjectCreatorEntityHolder levelObjectCreatorEntityHolder;
-    private final LevelCreatorInjectionExtendedInterface levelCreatorInjectionExtendedInterface;
+    private final LevelCreatorInjectionInterface levelCreatorInjectionInterface;
     private Array<Object> entities = new Array<>();
 
     private boolean isSetup;
 
     public LevelCreatorSystem(
-            LevelCreatorInjectionExtendedInterface levelCreatorInjectionExtendedInterface,
+            LevelCreatorInjectionInterface levelCreatorInjectionInterface,
             World box2dWorld,
             RayHandler rayHandler) {
-        this.levelCreatorInjectionExtendedInterface = levelCreatorInjectionExtendedInterface;
+        this.levelCreatorInjectionInterface = levelCreatorInjectionInterface;
         this.box2dWorld = box2dWorld;
         this.rayHandler = rayHandler;
     }
@@ -57,7 +56,7 @@ public class LevelCreatorSystem extends BaseSystem {
     @Override
     public void initialize() {
         levelObjectCreatorEntityHolder = new LevelObjectCreatorEntityHolder(
-              levelCreatorInjectionExtendedInterface,
+              levelCreatorInjectionInterface,
               box2dWorld,
               rayHandler
         );
