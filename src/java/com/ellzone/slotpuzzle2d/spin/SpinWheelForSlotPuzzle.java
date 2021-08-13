@@ -50,8 +50,8 @@ public class SpinWheelForSlotPuzzle implements SpinWheelSlotPuzzle {
     private static final float STANDARD_SIZE = 512F;
     private static final short BIT_PEG = 4;
     private static final short BIT_NEEDLE = 8;
-    private static final short BIT_B1 = 16;
-    private static final short BIT_B2 = 32;
+    private static final short BIT_NEEDLE_BODY_LEFT_BASE_CONSTRAINT = 16;
+    private static final short BIT_NEEDLE_BODY_RIGHT_BASE_CONSTRAINT = 32;
 
     private World world;
     private final BodyDef bodyDef = new BodyDef();                                // general body definition.
@@ -62,12 +62,15 @@ public class SpinWheelForSlotPuzzle implements SpinWheelSlotPuzzle {
     private Body wheelCore;     // circle shape which join with all pegs.
     private Body wheelBase;     // any shape to join with core of wheel.
     private Body needle;        // polygon shape.
-    private Body B0, B1, B2;    // three bodies to constrain and keep the needle in the place.
+    private Body
+            needleBodyCenterBaseConstraint,
+            needleBodyLeftBaseConstraint,
+            needleBodyRightBaseConstraint;    // three bodies to constrain and keep the needle in the place.
 
-    private final float diameter;         // diameter of wheel
-    private final float x, y;             // position
-    private final int nPegs;              // number of pegs
-    private float farNeedle;              // distance of needle from the wheel
+    private final float diameter;
+    private final float x, y;
+    private final int nPegs;
+    private float distanceOfNeedleFromWheel;
     private Image needleImage;
     private Image wheelImage;
 
@@ -207,11 +210,13 @@ public class SpinWheelForSlotPuzzle implements SpinWheelSlotPuzzle {
     }
 
     private void setUpSpinWheelNeedleBody(TextureAtlas atlas) {
-        getNeedleBody().setUserData(needleImage = new Image(new Sprite(atlas.findRegion("needle"))));
+        getNeedleBody().setUserData(
+                needleImage = new Image(new Sprite(atlas.findRegion("needle"))));
         needleImage.setWidth((needleImage.getWidth() * (diameter / 7.5f))  / SpinWheel.PPM);
         needleImage.setHeight((needleImage.getHeight() * (diameter / 7.5f)) / SpinWheel.PPM);
         updateCoordinates(getNeedleBody(), needleImage, 0, -25F);
-        needleImage.setOrigin(getNeedleCenterX(needleImage.getWidth()), getNeedleCenterY(needleImage.getHeight()));
+        needleImage.setOrigin(
+                getNeedleCenterX(needleImage.getWidth()), getNeedleCenterY(needleImage.getHeight()));
     }
 
     private void setUpSpinWheelNeedleBody(TextureAtlas atlas, Stage stage) {
@@ -273,136 +278,126 @@ public class SpinWheelForSlotPuzzle implements SpinWheelSlotPuzzle {
     }
 
     private void createWheel() {
-        base_of_wheel();
-
-        core_of_wheel();
-
-        pegs_of_wheel();
-
-        // 4- Revolute Joint (Base & Core) of Wheel
-        joint_base_core_of_wheel();
+        baseOfWheel();
+        coreOfWheel();
+        pegsOfWheel();
+        revolutionJointBaseAndCoreOfWheel();
     }
 
     private void createNeedle() {
-        core_of_needle(30F * (diameter / STANDARD_SIZE), 80F * (diameter / STANDARD_SIZE));
+        coreOfNeedle(
+                30F * (diameter / STANDARD_SIZE),
+                80F * (diameter / STANDARD_SIZE));
 
-        // 2- B0 which is (CENTER) base of CN-needle
-        B0_of_needle();
-
-        // 3- joint (B0) base of needle with CN-needle
-        joint_B0_CN_Needle();
-
-        // 4- create B1 which is (LEFT) base of constrain joint with UP-needle
-        B1_of_needle();
-
-        // 5- create B2 which is (RIGHT) base of constrain joint with UP-needle
-        B2_of_needle();
-
-        // 6- joint (B1 & B2) with UP-needle
-        joint_B1_B2_with_UP_needle();
+        centreBaseOfCnNeedle();
+        jointBaseOfNeedleWithConstraintNeedle();
+        leftBaseOfConstraintJointWithUpNeedle();
+        rightBaseOfConstraintJointWithUpNeedle();
+        jointLeftBaseConstraintRightBaseConstraintWithUpNeedle();
     }
 
     /**
      * The base of wheel is a static body with as a square shape.
      */
-    private void base_of_wheel() {
+    private void baseOfWheel() {
         PolygonShape polygon = new PolygonShape();
-        // Define The Base Of Wheel
         bodyDef.type = BodyDef.BodyType.StaticBody;
-
-        // set The Base Position
         bodyDef.position.set(x, y);
-
-        // Create The Base Body
         wheelBase = world.createBody(bodyDef);
+        setTheShapeOfBase(polygon);
+        wheelBase.createFixture(fixtureDef);
+        polygon.dispose();
+    }
 
-        // set The Shape of Base
+    private void setTheShapeOfBase(PolygonShape polygon) {
         polygon.setAsBox(32 / PPM, 32 / PPM);
         fixtureDef.shape = polygon;
-
-        // Create The Base Fixture
-        wheelBase.createFixture(fixtureDef);
-
-        polygon.dispose();
     }
 
     /**
      * The core of wheel is a dynamic body as a circle shape
      */
-    private void core_of_wheel() {
+    private void coreOfWheel() {
         CircleShape circle = new CircleShape();
-        // Define The Base Of Wheel
         bodyDef.type = BodyDef.BodyType.DynamicBody;
-
-        // To Stop after spinning
-        bodyDef.angularDamping = 0.25f;
-        bodyDef.position.set(x, y);
-
-        // Create The Core Body
+        setToStopAfterSpinning();
         wheelCore = world.createBody(bodyDef);
+        setTheShapeOfBase(circle);
+        setShapePhysicProperties(0.25f, 0.25f);
+        wheelCore.createFixture(fixtureDef);
+        circle.dispose();
+    }
 
-        // set The Shape of Base
+    private void setShapePhysicProperties(float density, float friction) {
+        fixtureDef.density = density;
+        fixtureDef.friction = friction;
+    }
+
+    private void setTheShapeOfBase(CircleShape circle) {
         circle.setRadius(diameter / 2);
         fixtureDef.shape = circle;
+    }
 
-        // set The physics properties of The Shape
-        fixtureDef.density = 0.25f;
-        fixtureDef.friction = 0.25f;
-
-        // Create The Base Fixture
-        wheelCore.createFixture(fixtureDef);
-
-        // Dispose The Shape
-        circle.dispose();
+    private void setToStopAfterSpinning() {
+        bodyDef.angularDamping = 0.25f;
+        bodyDef.position.set(x, y);
     }
 
     /**
      * The pegs of wheel allowing the needle to collide only with the pegs and not the wheel.
      **/
-    private void pegs_of_wheel() {
+    private void pegsOfWheel() {
         if (nPegs == 0)
             return;
 
         CircleShape circle = new CircleShape();
-        // Define The Pegs Of Wheel
         bodyDef.type = BodyDef.BodyType.DynamicBody;
         bodyDef.position.set(x, y);
+        setShapePhysicProperties(0.0f, 0.0f);
+        setCategoryBitsToCollideWithNeedle();
+        defineWheelPegs(circle);
+        circle.dispose();
+    }
 
-        // set The physics properties of The Shape
-        fixtureDef.density = 0.0f;
-        fixtureDef.friction = 0.0f;
+    private void setCategoryBitsToCollideWithNeedle() {
+        setCategoryBitsToCollideWithNeedle(BIT_PEG, BIT_NEEDLE);
+    }
 
-        // set categoryBits To allow collide with (needle)
-        fixtureDef.filter.categoryBits = BIT_PEG;
-        fixtureDef.filter.maskBits = BIT_NEEDLE;
-
+    private void defineWheelPegs(CircleShape circle) {
         for (int i = 0; i < nPegs; i++) {
             double theta = Math.toRadians((360.0f / nPegs) * i);
             float x = (float) Math.cos(theta);
             float y = (float) Math.sin(theta);
 
-            // set The Peg Position
-            circle.setPosition(circle.getPosition().set(x * diameter / 2, y * diameter / 2).scl(0.90f));
-
-            // set The Shape of Pegs
-            circle.setRadius(12 * (diameter / STANDARD_SIZE) / 2);
-            fixtureDef.shape = circle;
-
-            // Create The Base Fixture
-            Fixture fixture = wheelCore.createFixture(fixtureDef);
-
-            // set user data as a number of peg to indecator to lucky win element.
-            fixture.setUserData((i + 1));
+            setThePegPosition(circle, x, y);
+            setTheShapeOfPegs(circle);
+            Fixture fixture = createBaseFixture();
+            setUserDataAsPegNumberToIndicatorToLuckyElement(i, fixture);
         }
+    }
 
-        // the shape is no longer used.
-        circle.dispose();
+    private Fixture createBaseFixture() {
+        return wheelCore.createFixture(fixtureDef);
+    }
+
+    private void setUserDataAsPegNumberToIndicatorToLuckyElement(int i, Fixture fixture) {
+        fixture.setUserData((i + 1));
+    }
+
+    private void setThePegPosition(CircleShape circle, float x, float y) {
+        circle.setPosition(
+                circle.getPosition().set(x * diameter / 2, y * diameter / 2).scl(0.90f));
+    }
+
+    private void setTheShapeOfPegs(CircleShape circle) {
+        circle.setRadius(12 * (diameter / STANDARD_SIZE) / 2);
+        fixtureDef.shape = circle;
     }
 
     /**
      * Left static body to constrain and keep needle in the center.
      */
-    private void B1_of_needle() {
+    private void leftBaseOfConstraintJointWithUpNeedle() {
         CircleShape circle = new CircleShape();
 
         circle.setRadius(4 * (diameter / STANDARD_SIZE));
@@ -416,26 +411,31 @@ public class SpinWheelForSlotPuzzle implements SpinWheelSlotPuzzle {
         // correctly.
         bodyDef.bullet = true;
 
-        bodyDef.position.set(x - 40F * (diameter / STANDARD_SIZE), y + farNeedle);
+        bodyDef.position.set(x - 40F * (diameter / STANDARD_SIZE), y + distanceOfNeedleFromWheel);
 
-        B1 = world.createBody(bodyDef);
+        needleBodyLeftBaseConstraint = world.createBody(bodyDef);
 
+        setShapePhysicsProperties();
+        setCategoryBitsToCollideWithNeedle(BIT_NEEDLE_BODY_LEFT_BASE_CONSTRAINT, BIT_NEEDLE);
+        needleBodyLeftBaseConstraint.createFixture(fixtureDef);
+        circle.dispose();
+    }
+
+    private void setCategoryBitsToCollideWithNeedle(short bits, short bitNeedle) {
+        fixtureDef.filter.categoryBits = bits;
+        fixtureDef.filter.maskBits = bitNeedle;
+    }
+
+    private void setShapePhysicsProperties() {
         fixtureDef.density = 1f;
         fixtureDef.restitution = 1f;
         fixtureDef.friction = 1f;
-
-        fixtureDef.filter.categoryBits = BIT_B1;
-        fixtureDef.filter.maskBits = BIT_NEEDLE;
-
-        B1.createFixture(fixtureDef);
-
-        circle.dispose();
     }
 
     /**
      * Right static body to constrain and keep needle in the center.
      */
-    private void B2_of_needle() {
+    private void rightBaseOfConstraintJointWithUpNeedle() {
         CircleShape circle = new CircleShape();
 
         circle.setRadius(4 * (diameter / STANDARD_SIZE));
@@ -444,29 +444,19 @@ public class SpinWheelForSlotPuzzle implements SpinWheelSlotPuzzle {
         bodyDef.type = BodyDef.BodyType.StaticBody;
         bodyDef.bullet = true;
 
-        bodyDef.position.set(x + 40F * (diameter / STANDARD_SIZE), y + farNeedle);
+        bodyDef.position.set(x + 40F * (diameter / STANDARD_SIZE), y + distanceOfNeedleFromWheel);
 
-        B2 = world.createBody(bodyDef);
-
-        fixtureDef.density = 1f;
-        fixtureDef.restitution = 1f;
-        fixtureDef.friction = 1f;
-
-        fixtureDef.filter.categoryBits = BIT_B2;
-        fixtureDef.filter.maskBits = BIT_NEEDLE;
-
-        B2.createFixture(fixtureDef);
-
+        needleBodyRightBaseConstraint = world.createBody(bodyDef);
+        setShapePhysicsProperties();
+        setCategoryBitsToCollideWithNeedle(BIT_NEEDLE_BODY_RIGHT_BASE_CONSTRAINT, BIT_NEEDLE);
+        needleBodyRightBaseConstraint.createFixture(fixtureDef);
         circle.dispose();
-
-        // add B2 body to pegsSelectors
-        // bodies.add(B2);
     }
 
     /**
      * Center static body to join needle with it by joint.
      */
-    private void B0_of_needle() {
+    private void centreBaseOfCnNeedle() {
         CircleShape circle = new CircleShape();
 
         circle.setRadius(4 * (diameter / STANDARD_SIZE));
@@ -474,13 +464,11 @@ public class SpinWheelForSlotPuzzle implements SpinWheelSlotPuzzle {
 
         bodyDef.type = BodyDef.BodyType.StaticBody;
 
-        bodyDef.position.set(x, y + farNeedle + 5F * (diameter / STANDARD_SIZE));
+        bodyDef.position.set(x, y + distanceOfNeedleFromWheel + 5F * (diameter / STANDARD_SIZE));
 
-        B0 = world.createBody(bodyDef);
-
+        needleBodyCenterBaseConstraint = world.createBody(bodyDef);
         fixtureDef.density = 0.0f;
-
-        B0.createFixture(fixtureDef);
+        needleBodyCenterBaseConstraint.createFixture(fixtureDef);
 
         circle.dispose();
     }
@@ -488,7 +476,7 @@ public class SpinWheelForSlotPuzzle implements SpinWheelSlotPuzzle {
     /**
      * The needle is a body with a single fixture in the shape of a polygon as a kite shape.
      */
-    private void core_of_needle(float needleWidth, float needleHeight) {
+    private void coreOfNeedle(float needleWidth, float needleHeight) {
         PolygonShape polygon = new PolygonShape();
 
         float[] vertices = {-needleWidth / 2, 0f, 0f, needleHeight / 4, needleWidth / 2, 0f, 0f, -3 * needleHeight / 4};
@@ -497,19 +485,21 @@ public class SpinWheelForSlotPuzzle implements SpinWheelSlotPuzzle {
 
         bodyDef.type = BodyDef.BodyType.DynamicBody;
 
-        farNeedle = diameter / 1.95f;
+        distanceOfNeedleFromWheel = diameter / 1.95f;
 
-        bodyDef.position.set(x, y + farNeedle);
+        bodyDef.position.set(x, y + distanceOfNeedleFromWheel);
 
         bodyDef.bullet = true;
         bodyDef.angularDamping = 0.25f;
-        fixtureDef.density = 1f;
-        fixtureDef.friction = 0.0f;
+        setShapePhysicProperties(1f, 0.0f);
 
         needle = world.createBody(bodyDef);
 
-        fixtureDef.filter.categoryBits = BIT_NEEDLE;
-        fixtureDef.filter.maskBits = BIT_PEG | BIT_B1 | BIT_B2;
+        setCategoryBitsToCollideWithNeedle(
+                BIT_NEEDLE,
+                (short) (BIT_PEG |
+                         BIT_NEEDLE_BODY_LEFT_BASE_CONSTRAINT |
+                         BIT_NEEDLE_BODY_RIGHT_BASE_CONSTRAINT));
 
         needle.createFixture(fixtureDef);
 
@@ -517,9 +507,9 @@ public class SpinWheelForSlotPuzzle implements SpinWheelSlotPuzzle {
     }
 
     /**
-     * attach wheel to its base via a revolute joint. This joint allows the wheel to spin freely about the center.
+     * attach wheel to its base via a revolution joint. This joint allows the wheel to spin freely about the center.
      */
-    private void joint_base_core_of_wheel() {
+    private void revolutionJointBaseAndCoreOfWheel() {
         revJointDef.bodyA = wheelBase;
         revJointDef.bodyB = wheelCore;
         revJointDef.collideConnected = false;
@@ -529,23 +519,23 @@ public class SpinWheelForSlotPuzzle implements SpinWheelSlotPuzzle {
     /**
      * keep needle in the center position with two distances joint connected by two bodies B1 and B2.
      */
-    private void joint_B1_B2_with_UP_needle() {
-        disJointDef.bodyA = B1;
+    private void jointLeftBaseConstraintRightBaseConstraintWithUpNeedle() {
+        disJointDef.bodyA = needleBodyLeftBaseConstraint;
         disJointDef.bodyB = needle;
         disJointDef.localAnchorB.set(0, 15 / PPM);
         disJointDef.length = (float) Math.sqrt(Math.pow(40F * (diameter / STANDARD_SIZE), 2) + Math.pow(15 / PPM + 5F * (diameter / STANDARD_SIZE), 2));
         disJointDef.collideConnected = true;
         world.createJoint(disJointDef);
 
-        disJointDef.bodyA = B2;
+        disJointDef.bodyA = needleBodyRightBaseConstraint;
         disJointDef.bodyB = needle;
         disJointDef.collideConnected = true;
         world.createJoint(disJointDef);
     }
 
-    // The needle base rotate about the revolute joint.
-    private void joint_B0_CN_Needle() {
-        revJointDef.bodyA = B0;
+    // The needle base rotate about the revolution joint.
+    private void jointBaseOfNeedleWithConstraintNeedle() {
+        revJointDef.bodyA = needleBodyCenterBaseConstraint;
         revJointDef.bodyB = needle;
         world.createJoint(revJointDef);
     }
@@ -568,20 +558,27 @@ public class SpinWheelForSlotPuzzle implements SpinWheelSlotPuzzle {
 
             int nPeg = (Integer) data, peg2;
 
-            if (wheelCore.getAngularVelocity() <= 0) {    // add [before] peg
-                int before = nPeg + 1;
-                if (before == nPegs)
-                    before = 0;
-                peg2 = before;
-            } else {                                      // add [after] peg
-                int after = nPeg - 1;
-                if (after == 0)
-                    after = nPegs;
-                peg2 = after;
-            }
+            if (wheelCore.getAngularVelocity() <= 0)
+                peg2 = addBeforePeg(nPeg);
+            else
+                peg2 = addAfterPeg(nPeg);
 
             pegsSelectors.clear();
             pegsSelectors.addAll(nPeg, peg2);
+        }
+
+        private int addAfterPeg(int nPeg) {
+             int after = nPeg - 1;
+            if (after == 0)
+                after = nPegs;
+            return after;
+        }
+
+        private int addBeforePeg(int nPeg) {
+            int before = nPeg + 1;
+            if (before == nPegs)
+                before = 0;
+            return before;
         }
 
         @Override
