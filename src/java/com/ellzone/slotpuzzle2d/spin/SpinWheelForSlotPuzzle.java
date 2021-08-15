@@ -20,7 +20,9 @@ package com.ellzone.slotpuzzle2d.spin;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
+import com.badlogic.gdx.math.Circle;
 import com.badlogic.gdx.math.MathUtils;
+import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.BodyDef;
 import com.badlogic.gdx.physics.box2d.CircleShape;
@@ -52,10 +54,21 @@ public class SpinWheelForSlotPuzzle implements SpinWheelSlotPuzzle {
     private static final short BIT_NEEDLE = 8;
     private static final short BIT_NEEDLE_BODY_LEFT_BASE_CONSTRAINT = 16;
     private static final short BIT_NEEDLE_BODY_RIGHT_BASE_CONSTRAINT = 32;
+    public static final String RED = "f04950";
+    public static final String ORANGE = "f9a54b";
+    public static final String BRIGHT_YELLOW = "fff533";
+    public static final String YELLOW = "fece3e";
+    public static final String BRIGHT_GREEN = "a3fd39";
+    public static final String CYAN = "33b8a5";
+    public static final String LIGHT_BLUE = "33a7d8";
+    public static final String BLUE = "3276b5";
+    public static final String PURPLE = "8869ad";
+    public static final String PINK = "b868ad";
+    public static final String BRIGHT_PINK = "e966ac";
 
     private World world;
-    private final BodyDef bodyDef = new BodyDef();                                // general body definition.
-    private final FixtureDef fixtureDef = new FixtureDef();                       // general fixture definition.
+    private final BodyDef bodyDef = new BodyDef();
+    private final FixtureDef fixtureDef = new FixtureDef();
     private final RevoluteJointDef revJointDef = new RevoluteJointDef();          // keep needle and wheel in the place.
     private final DistanceJointDef disJointDef = new DistanceJointDef();          // join needle with external bodies to constrain and keep it in place.
 
@@ -65,7 +78,7 @@ public class SpinWheelForSlotPuzzle implements SpinWheelSlotPuzzle {
     private Body
             needleBodyCenterBaseConstraint,
             needleBodyLeftBaseConstraint,
-            needleBodyRightBaseConstraint;    // three bodies to constrain and keep the needle in the place.
+            needleBodyRightBaseConstraint;
 
     private final float diameter;
     private final float x, y;
@@ -73,6 +86,10 @@ public class SpinWheelForSlotPuzzle implements SpinWheelSlotPuzzle {
     private float distanceOfNeedleFromWheel;
     private Image needleImage;
     private Image wheelImage;
+    private Image spinButton;
+    private Circle spinButtonCircle;
+    private float scaleFactor;
+    private float scaledDiameter;
 
     public SpinWheelForSlotPuzzle(
                      float diameter,
@@ -80,7 +97,7 @@ public class SpinWheelForSlotPuzzle implements SpinWheelSlotPuzzle {
                      float y,
                      int nPegs,
                      World world) {
-        this.diameter = diameter / PPM;
+        this.diameter = (diameter / STANDARD_SIZE * diameter) / PPM;
         this.x = x / PPM;
         this.y = y / PPM;
         this.nPegs = nPegs;
@@ -96,9 +113,8 @@ public class SpinWheelForSlotPuzzle implements SpinWheelSlotPuzzle {
     public void setUpSpinWheel() {
         final TextureAtlas spinWheelAtlas =
                 new TextureAtlas("spin/spin_wheel_ui.atlas");
-
         setUpSpinWheelBody(spinWheelAtlas);
-        setUpSpinWheelSpinButton(spinWheelAtlas);
+        spinButton = setUpSpinWheelSpinButton(spinWheelAtlas);
         setUpSpinWheelNeedleBody(spinWheelAtlas);
         setElementData();
     }
@@ -123,6 +139,8 @@ public class SpinWheelForSlotPuzzle implements SpinWheelSlotPuzzle {
     public Image getNeedleImage() {
         return needleImage;
     }
+
+    public Image getSpinButton() { return spinButton; }
 
     @Override
     public void updateCoordinates(Body body, Image image, float incX, float incY) {
@@ -209,6 +227,10 @@ public class SpinWheelForSlotPuzzle implements SpinWheelSlotPuzzle {
         return null;
     }
 
+    public boolean isInsideSpinButton(Vector2 point) {
+        return spinButtonCircle.contains(point);
+    }
+
     private void setUpSpinWheelNeedleBody(TextureAtlas atlas) {
         getNeedleBody().setUserData(
                 needleImage = new Image(new Sprite(atlas.findRegion("needle"))));
@@ -225,19 +247,23 @@ public class SpinWheelForSlotPuzzle implements SpinWheelSlotPuzzle {
     }
 
     private Image setUpSpinWheelSpinButton(TextureAtlas atlas) {
-        final Image btnSpin = new Image(atlas.findRegion("spin_button"));
-        btnSpin.setOrigin(Align.center);
-        btnSpin.setWidth((btnSpin.getWidth() * (diameter / 7.5f))  / SpinWheel.PPM);
-        btnSpin.setHeight((btnSpin.getHeight() * (diameter / 7.5f)) / SpinWheel.PPM);
-        btnSpin.setPosition(x, y, Align.center);
-        btnSpin.addListener(new ClickListener() {
+        final Image spinButton = new Image(atlas.findRegion("spin_button"));
+        spinButton.setOrigin(Align.center);
+        spinButton.setWidth((spinButton.getWidth() * (diameter / 7.5f))  / SpinWheel.PPM);
+        spinButton.setHeight((spinButton.getHeight() * (diameter / 7.5f)) / SpinWheel.PPM);
+        spinButton.setPosition(x, y, Align.center);
+        spinButton.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                btnSpin.addAction(sequence(scaleTo(1.25F, 1.25F, 0.10F), scaleTo(1F, 1F, 0.10F)));
+                spinButton.addAction(
+                        sequence(scaleTo(1.25F, 1.25F, 0.10F),
+                                 scaleTo(1F, 1F, 0.10F)));
                 spin(MathUtils.random(5F, 30F));
             }
         });
-        return btnSpin;
+        spinButtonCircle = new Circle(
+                x, y, spinButton.getWidth() * diameter / 7.5f);
+        return spinButton;
     }
 
     private void setUpSpinWheelSpinButton(TextureAtlas atlas, Stage stage) {
@@ -258,17 +284,17 @@ public class SpinWheelForSlotPuzzle implements SpinWheelSlotPuzzle {
     }
 
     private void setElementData() {
-        addElementData(Color.valueOf("e966ac"), getData(2, 1));
-        addElementData(Color.valueOf("b868ad"), getData(3, 2));
-        addElementData(Color.valueOf("8869ad"), getData(4, 3));
-        addElementData(Color.valueOf("3276b5"), getData(5, 4));
-        addElementData(Color.valueOf("33a7d8"), getData(6, 5));
-        addElementData(Color.valueOf("33b8a5"), getData(7, 6));
-        addElementData(Color.valueOf("a3fd39"), getData(8, 7));
-        addElementData(Color.valueOf("fff533"), getData(9, 8));
-        addElementData(Color.valueOf("fece3e"), getData(10, 9));
-        addElementData(Color.valueOf("f9a54b"), getData(11,10));
-        addElementData(Color.valueOf("f04950"), getData(1, 12));
+        addElementData(Color.valueOf(BRIGHT_PINK), getData(2, 1));
+        addElementData(Color.valueOf(PINK), getData(3, 2));
+        addElementData(Color.valueOf(PURPLE), getData(4, 3));
+        addElementData(Color.valueOf(BLUE), getData(5, 4));
+        addElementData(Color.valueOf(LIGHT_BLUE), getData(6, 5));
+        addElementData(Color.valueOf(CYAN), getData(7, 6));
+        addElementData(Color.valueOf(BRIGHT_GREEN), getData(8, 7));
+        addElementData(Color.valueOf(BRIGHT_YELLOW), getData(9, 8));
+        addElementData(Color.valueOf(YELLOW), getData(10, 9));
+        addElementData(Color.valueOf(ORANGE), getData(11,10));
+        addElementData(Color.valueOf(RED), getData(1, 12));
     }
 
     private IntArray getData(int peg_1, int peg_2) {
@@ -372,7 +398,7 @@ public class SpinWheelForSlotPuzzle implements SpinWheelSlotPuzzle {
             setThePegPosition(circle, x, y);
             setTheShapeOfPegs(circle);
             Fixture fixture = createBaseFixture();
-            setUserDataAsPegNumberToIndicatorToLuckyElement(i, fixture);
+            setUserDataAsPegNumberAsIndicatorToLuckyElement(i, fixture);
         }
     }
 
@@ -380,7 +406,7 @@ public class SpinWheelForSlotPuzzle implements SpinWheelSlotPuzzle {
         return wheelCore.createFixture(fixtureDef);
     }
 
-    private void setUserDataAsPegNumberToIndicatorToLuckyElement(int i, Fixture fixture) {
+    private void setUserDataAsPegNumberAsIndicatorToLuckyElement(int i, Fixture fixture) {
         fixture.setUserData((i + 1));
     }
 
@@ -523,7 +549,9 @@ public class SpinWheelForSlotPuzzle implements SpinWheelSlotPuzzle {
         disJointDef.bodyA = needleBodyLeftBaseConstraint;
         disJointDef.bodyB = needle;
         disJointDef.localAnchorB.set(0, 15 / PPM);
-        disJointDef.length = (float) Math.sqrt(Math.pow(40F * (diameter / STANDARD_SIZE), 2) + Math.pow(15 / PPM + 5F * (diameter / STANDARD_SIZE), 2));
+        disJointDef.length =
+                (float) Math.sqrt(Math.pow(40F * (diameter / STANDARD_SIZE), 2) +
+                        Math.pow(15 / PPM + 5F * (diameter / STANDARD_SIZE), 2));
         disJointDef.collideConnected = true;
         world.createJoint(disJointDef);
 

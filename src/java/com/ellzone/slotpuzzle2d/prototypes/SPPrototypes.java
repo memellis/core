@@ -108,6 +108,7 @@ import com.ellzone.slotpuzzle2d.prototypes.spin.SpinReelTileUsingBox2d;
 import com.ellzone.slotpuzzle2d.prototypes.spin.SpinScreen;
 import com.ellzone.slotpuzzle2d.prototypes.spin.SpinWheelUsingSpinWheelForSlotPuzzle;
 import com.ellzone.slotpuzzle2d.prototypes.spin.SpinWheelWithoutStage;
+import com.ellzone.slotpuzzle2d.prototypes.spin.SpinWheelWithoutStageChangeSize;
 import com.ellzone.slotpuzzle2d.prototypes.starfield.Starfield;
 import com.ellzone.slotpuzzle2d.prototypes.starfield.StarfieldUsingStarfieldObject;
 import com.ellzone.slotpuzzle2d.prototypes.tween.DelayFlash;
@@ -237,6 +238,7 @@ public class SPPrototypes {
         SpinningSlotsWithMatchesWinFlashesLoadedLevel.class,
 		SpinScreen.class,
 		SpinWheelWithoutStage.class,
+		SpinWheelWithoutStageChangeSize.class,
 		SpinWheelUsingSpinWheelForSlotPuzzle.class,
 		SpinReelMetaSpinScreen.class,
 		SlotPuzzleGame.class,
