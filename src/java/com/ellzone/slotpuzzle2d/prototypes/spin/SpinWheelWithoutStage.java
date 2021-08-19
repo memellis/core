@@ -21,34 +21,27 @@ import com.badlogic.gdx.Input;
 import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
-import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer;
 import com.badlogic.gdx.physics.box2d.World;
-import com.badlogic.gdx.scenes.scene2d.Actor;
-import com.badlogic.gdx.scenes.scene2d.EventListener;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
-import com.badlogic.gdx.utils.DelayedRemovalArray;
 import com.ellzone.slotpuzzle2d.prototypes.SPPrototype;
 import com.ellzone.slotpuzzle2d.spin.SpinWheel;
 import com.ellzone.slotpuzzle2d.spin.SpinWheelForSlotPuzzle;
 
 public class SpinWheelWithoutStage extends SPPrototype {
-    public static final float WHEEL_DIAMETER = 500F;
     public static final int NUMBER_OF_PEGS = 12;
     private static final float GRAVITY = -9.80f;
 
-    private static final String TAG = SpinWheelWithoutStage.class.getSimpleName();
     protected World world;
     protected SpinWheelForSlotPuzzle spinWheel;
     private SpriteBatch batch;
-    private boolean box2dDebugRender = true;
     private Box2DDebugRenderer renderer;
-    private OrthographicCamera camera;
-    private DelayedRemovalArray<EventListener> listeners;
+    protected OrthographicCamera camera;
+    private boolean box2dDebugRender = true;
 
     public class SpinWheelInputProcessor implements InputProcessor {
 
@@ -112,7 +105,7 @@ public class SpinWheelWithoutStage extends SPPrototype {
                image.getY() <= y && y <= image.getY() + image.getHeight();
     }
 
-    private void setUpCamera() {
+    protected void setUpCamera() {
         camera = new OrthographicCamera(
                 Gdx.graphics.getWidth() / SpinWheel.PPM,
                 Gdx.graphics.getHeight() / SpinWheel.PPM);
@@ -123,7 +116,7 @@ public class SpinWheelWithoutStage extends SPPrototype {
 
     protected void setUpSpinWheel() {
         spinWheel = new SpinWheelForSlotPuzzle(
-                WHEEL_DIAMETER,
+                SpinWheelForSlotPuzzle.STANDARD_SIZE,
                 Gdx.graphics.getWidth() / 2,
                 Gdx.graphics.getHeight() / 2,
                 NUMBER_OF_PEGS,

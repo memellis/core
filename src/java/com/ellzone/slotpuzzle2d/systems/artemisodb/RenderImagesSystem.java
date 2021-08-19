@@ -20,10 +20,13 @@ import com.artemis.ComponentMapper;
 import com.artemis.Entity;
 import com.artemis.annotations.All;
 import com.artemis.systems.EntityProcessingSystem;
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.ellzone.slotpuzzle2d.component.artemis.ImageRender;
 import com.ellzone.slotpuzzle2d.component.artemis.Position;
+import com.ellzone.slotpuzzle2d.spin.SpinWheel;
 
 @All({Position.class, ImageRender.class})
 public class RenderImagesSystem extends EntityProcessingSystem {
@@ -31,11 +34,19 @@ public class RenderImagesSystem extends EntityProcessingSystem {
     protected ComponentMapper<ImageRender> imageRenderComponentMapper;
     private SpriteBatch batch;
     private LevelCreatorSystem levelCreatorSystem;
+    private OrthographicCamera camera;
 
     @Override
     protected void initialize() {
         super.initialize();
         batch = new SpriteBatch(2000);
+        camera = new OrthographicCamera(
+                Gdx.graphics.getWidth() / SpinWheel.PPM,
+                Gdx.graphics.getHeight() / SpinWheel.PPM);
+        camera.setToOrtho(false,
+                Gdx.graphics.getWidth() / SpinWheel.PPM,
+                Gdx.graphics.getHeight() / SpinWheel.PPM);
+        batch.setProjectionMatrix(camera.combined);
     }
 
     @Override
@@ -50,9 +61,7 @@ public class RenderImagesSystem extends EntityProcessingSystem {
 
     @Override
     protected void process(Entity e) {
-        Image entityImage =
-                (Image) levelCreatorSystem.getEntities().get(e.getId());
-        entityImage.draw(batch,
-                1.0f);
+        Image entityImage = (Image) levelCreatorSystem.getEntities().get(e.getId());
+        entityImage.draw(batch,1.0f);
     }
 }

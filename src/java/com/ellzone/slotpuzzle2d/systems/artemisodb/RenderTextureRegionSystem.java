@@ -21,10 +21,13 @@ import com.artemis.ComponentMapper;
 import com.artemis.Entity;
 import com.artemis.annotations.All;
 import com.artemis.systems.EntityProcessingSystem;
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.ellzone.slotpuzzle2d.component.artemis.Position;
 import com.ellzone.slotpuzzle2d.component.artemis.TextureRegionRender;
+import com.ellzone.slotpuzzle2d.utils.PixmapProcessors;
 
 @All({Position.class, TextureRegionRender.class})
 public class RenderTextureRegionSystem extends EntityProcessingSystem {
@@ -41,6 +44,7 @@ public class RenderTextureRegionSystem extends EntityProcessingSystem {
 
     @Override
     protected void begin() {
+        Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
         batch.begin();
    }
 
@@ -55,6 +59,7 @@ public class RenderTextureRegionSystem extends EntityProcessingSystem {
 
             TextureRegion entityTextureRegion =
                     (TextureRegion) levelCreatorSystem.getEntities().get(e.getId());
+        PixmapProcessors.saveTextureRegion(entityTextureRegion);
             batch.draw(
                     entityTextureRegion,
                     position.x,

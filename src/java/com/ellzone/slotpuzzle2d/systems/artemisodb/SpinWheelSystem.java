@@ -19,6 +19,8 @@ package com.ellzone.slotpuzzle2d.systems.artemisodb;
 import com.artemis.Entity;
 import com.artemis.annotations.All;
 import com.artemis.systems.EntityProcessingSystem;
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
@@ -37,6 +39,8 @@ public class SpinWheelSystem extends EntityProcessingSystem  {
     }
 
     private void updateSpinWheel(SpinWheelSlotPuzzleTileMap spinWheel) {
+        if(isSpinPressed())
+            spinWheel.spin(MathUtils.random(5F, 30F));
         if (!spinWheel.spinningStopped()) {
             updateCoordinates(spinWheel.getWheelBody(), spinWheel.getWheelImage(), 0);
             updateCoordinates(spinWheel.getNeedleBody(), spinWheel.getNeedleImage(), -25F);
@@ -45,9 +49,15 @@ public class SpinWheelSystem extends EntityProcessingSystem  {
 
     private void updateCoordinates(Body body, Image image, float incY) {
         image.setPosition(
-                (body.getPosition().x + ((float) 0 / com.ellzone.slotpuzzle2d.spin.SpinWheel.PPM)) * com.ellzone.slotpuzzle2d.spin.SpinWheel.PPM,
-                (body.getPosition().y + (incY / com.ellzone.slotpuzzle2d.spin.SpinWheel.PPM)) * com.ellzone.slotpuzzle2d.spin.SpinWheel.PPM,
+                (body.getPosition().x +
+                        ((float) 0 / com.ellzone.slotpuzzle2d.spin.SpinWheel.PPM)),
+                (body.getPosition().y +
+                        (incY / com.ellzone.slotpuzzle2d.spin.SpinWheel.PPM)),
                 Align.center);
         image.setRotation(body.getAngle() * MathUtils.radiansToDegrees);
+    }
+
+    private boolean isSpinPressed() {
+        return Gdx.input.isKeyPressed(Input.Keys.S);
     }
 }

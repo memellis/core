@@ -22,12 +22,14 @@ import com.artemis.annotations.All;
 import com.badlogic.gdx.maps.MapLayer;
 import com.badlogic.gdx.maps.MapObject;
 import com.badlogic.gdx.physics.box2d.World;
+import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.Array;
 import com.ellzone.slotpuzzle2d.component.artemis.Position;
 import com.ellzone.slotpuzzle2d.level.creator.LevelCreatorInjectionInterface;
 import com.ellzone.slotpuzzle2d.level.creator.LevelObjectCreatorEntityHolder;
 import com.ellzone.slotpuzzle2d.spin.SpinWheelSlotPuzzleTileMap;
 import com.ellzone.slotpuzzle2d.sprites.slothandle.SlotHandleSprite;
+import com.ellzone.slotpuzzle2d.utils.PixmapProcessors;
 
 import box2dLight.RayHandler;
 
@@ -111,7 +113,8 @@ public class LevelCreatorSystem extends BaseSystem {
 
         e = E.E()
                 .positionX(handle.getSlotHandleSprite().getX())
-                .positionY(handle.getSlotHandleSprite().getY());
+                .positionY(handle.getSlotHandleSprite().getY())
+                .textureRegionRender();
         entityIds.add(e.id());
         handle.setEntityIds(entityIds);
         entities.add(handle.getSlotHandleSprite());
@@ -120,25 +123,23 @@ public class LevelCreatorSystem extends BaseSystem {
     private void processSpinWheel(SpinWheelSlotPuzzleTileMap spinWheel) {
         Array<Integer> entityIds = new Array<>();
         spinWheel.setUpSpinWheel();
-        spinWheel.getNeedleImage().setWidth(spinWheel.getNeedleImage().getWidth() * 10);
-        spinWheel.getNeedleImage().setHeight(spinWheel.getNeedleImage().getHeight() * 10);
-        spinWheel.getWheelImage().setWidth(spinWheel.getWheelImage().getWidth() * 10);
-        spinWheel.getWheelImage().setHeight(spinWheel.getWheelImage().getHeight() * 10);
 
         E.E()
          .spinWheel();
         entities.add(spinWheel);
 
         E.E()
-         .positionX(spinWheel.getNeedleImage().getImageX())
-         .positionY(spinWheel.getNeedleImage().getImageY())
-         .imageRender();
-        entities.add(spinWheel.getNeedleImage());
-
-        E.E()
          .positionX(spinWheel.getWheelImage().getImageX())
          .positionY(spinWheel.getWheelImage().getImageY())
+         .boxedBody(spinWheel.getWheelBody())
          .imageRender();
         entities.add(spinWheel.getWheelImage());
+
+        E.E()
+                .positionX(spinWheel.getNeedleImage().getImageX())
+                .positionY(spinWheel.getNeedleImage().getImageY())
+                .boxedBody(spinWheel.getNeedleBody())
+                .imageRender();
+        entities.add(spinWheel.getNeedleImage());
     }
 }

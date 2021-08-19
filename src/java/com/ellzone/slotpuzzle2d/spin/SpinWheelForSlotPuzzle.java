@@ -49,7 +49,7 @@ import static com.badlogic.gdx.scenes.scene2d.actions.Actions.sequence;
 
 public class SpinWheelForSlotPuzzle implements SpinWheelSlotPuzzle {
     public static final float PPM = 100f;
-    private static final float STANDARD_SIZE = 512F;
+    public static final float STANDARD_SIZE = 512F;
     private static final short BIT_PEG = 4;
     private static final short BIT_NEEDLE = 8;
     private static final short BIT_NEEDLE_BODY_LEFT_BASE_CONSTRAINT = 16;
@@ -543,7 +543,8 @@ public class SpinWheelForSlotPuzzle implements SpinWheelSlotPuzzle {
     }
 
     /**
-     * keep needle in the center position with two distances joint connected by two bodies B1 and B2.
+     * keep needle in the center position with two distances joint connected by two bodies
+     * left constraint body and right constraint body.
      */
     private void jointLeftBaseConstraintRightBaseConstraintWithUpNeedle() {
         disJointDef.bodyA = needleBodyLeftBaseConstraint;

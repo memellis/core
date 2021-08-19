@@ -24,6 +24,7 @@ import com.ellzone.slotpuzzle2d.level.builder.WorldBuilder;
 import com.ellzone.slotpuzzle2d.level.creator.LevelCreatorInjector;
 import com.ellzone.slotpuzzle2d.level.creator.LevelCreatorInjectorExtended;
 import com.ellzone.slotpuzzle2d.prototypes.SPPrototype;
+import com.ellzone.slotpuzzle2d.systems.artemisodb.Box2DPhysicsSystem;
 import com.ellzone.slotpuzzle2d.systems.artemisodb.DebugPointRenderSystem;
 import com.ellzone.slotpuzzle2d.systems.artemisodb.LevelCreatorSystem;
 import com.ellzone.slotpuzzle2d.systems.artemisodb.RenderImagesSystem;
@@ -75,6 +76,7 @@ public class SuperSlotMachine extends SPPrototype {
                                 worldBuilder.getBox2dWorld(),
                                 worldBuilder.getRayHandler()),
                         new SpinWheelSystem(),
+                        new Box2DPhysicsSystem(worldBuilder.getBox2dWorld()),
                         new RenderTextureRegionSystem(),
                         new RenderImagesSystem(),
                         new DebugPointRenderSystem()

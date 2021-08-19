@@ -754,21 +754,23 @@ public class PlayScreen implements Screen, PlayInterface, LevelCreatorInjectionI
         if (Gdx.input.justTouched()) {
             int touchX = Gdx.input.getX();
             int touchY = Gdx.input.getY();
-            Vector3 unprojTouch = new Vector3(touchX, touchY, 0);
-            viewport.unproject(unprojTouch);
+            Vector3 unProjectTouch = new Vector3(touchX, touchY, 0);
+            viewport.unproject(unProjectTouch);
             switch (playState) {
                 case INTRO_POPUP:
-                    if (isOver(playScreenPopUps.getLevelPopUpSprites().get(0), unprojTouch.x, unprojTouch.y))
+                    if (isOver(playScreenPopUps.getLevelPopUpSprites().get(0),
+                               unProjectTouch.x,
+                               unProjectTouch.y))
                         playScreenPopUps.getLevelPopUp().hideLevelPopUp(hideLevelPopUpCallback);
                     break;
                 case LEVEL_LOST:
                     Gdx.app.debug(SLOTPUZZLE_SCREEN, "Lost Level");
-                    if (isOver(playScreenPopUps.getLevelLostSprites().get(0), unprojTouch.x, unprojTouch.y))
+                    if (isOver(playScreenPopUps.getLevelLostSprites().get(0), unProjectTouch.x, unProjectTouch.y))
                         playScreenPopUps.getLevelLostPopUp().hideLevelPopUp(levelOverCallback);
                     break;
                 case WON_LEVEL:
                     Gdx.app.debug(SLOTPUZZLE_SCREEN, "Won Level");
-                    if(isOver(playScreenPopUps.getLevelWonSprites().get(0), unprojTouch.x, unprojTouch.y))
+                    if(isOver(playScreenPopUps.getLevelWonSprites().get(0), unProjectTouch.x, unProjectTouch.y))
                         playScreenPopUps.getLevelWonPopUp().hideLevelPopUp(levelWonCallback);
                     break;
                 default: break;
@@ -776,9 +778,9 @@ public class PlayScreen implements Screen, PlayInterface, LevelCreatorInjectionI
             if (playStateMachine.getStateMachine().getCurrentState() == PlayState.PLAY) {
                 Gdx.app.debug(SLOTPUZZLE_SCREEN, "Play");
                 if (levelDoor.getLevelType().equals(HIDDEN_PATTERN_LEVEL_TYPE))
-                    processIsTileClicked(unprojTouch.x, unprojTouch.y);
+                    processIsTileClicked(unProjectTouch.x, unProjectTouch.y);
                 if (levelDoor.getLevelType().equals(PLAYING_CARD_LEVEL_TYPE))
-                    processIsTileClicked(unprojTouch.x, unprojTouch.y);
+                    processIsTileClicked(unProjectTouch.x, unProjectTouch.y);
             }
         }
     }
