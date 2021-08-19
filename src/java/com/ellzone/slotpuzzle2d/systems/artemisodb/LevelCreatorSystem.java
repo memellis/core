@@ -105,23 +105,22 @@ public class LevelCreatorSystem extends BaseSystem {
     private void processSlotHandle(SlotHandleSprite handle) {
         Array<Integer> entityIds = new Array<>();
         E e = E.E()
-                .positionX(handle.getSlotHandleBaseSprite().getX())
-                .positionY(handle.getSlotHandleBaseSprite().getY())
-                .textureRegionRender();
+            .positionX(handle.getSlotHandleBaseSprite().getX())
+            .positionY(handle.getSlotHandleBaseSprite().getY())
+            .textureRegionRender();
         entityIds.add(e.id());
         entities.add(handle.getSlotHandleBaseSprite());
 
         e = E.E()
-                .positionX(handle.getSlotHandleSprite().getX())
-                .positionY(handle.getSlotHandleSprite().getY())
-                .textureRegionRender();
+            .positionX(handle.getSlotHandleSprite().getX())
+            .positionY(handle.getSlotHandleSprite().getY())
+            .textureRegionRender();
         entityIds.add(e.id());
         handle.setEntityIds(entityIds);
         entities.add(handle.getSlotHandleSprite());
     }
 
     private void processSpinWheel(SpinWheelSlotPuzzleTileMap spinWheel) {
-        Array<Integer> entityIds = new Array<>();
         spinWheel.setUpSpinWheel();
 
         E.E()
@@ -129,17 +128,17 @@ public class LevelCreatorSystem extends BaseSystem {
         entities.add(spinWheel);
 
         E.E()
-         .positionX(spinWheel.getWheelImage().getImageX())
-         .positionY(spinWheel.getWheelImage().getImageY())
-         .boxedBody(spinWheel.getWheelBody())
-         .imageRender();
+            .positionX(spinWheel.getWheelImage().getImageX())
+            .positionY(spinWheel.getWheelImage().getImageY())
+            .boxedBody(spinWheel.getWheelBody())
+            .imageRender();
         entities.add(spinWheel.getWheelImage());
 
         E.E()
-                .positionX(spinWheel.getNeedleImage().getImageX())
-                .positionY(spinWheel.getNeedleImage().getImageY())
-                .boxedBody(spinWheel.getNeedleBody())
-                .imageRender();
+            .positionX(spinWheel.getNeedleImage().getImageX())
+            .positionY(spinWheel.getNeedleImage().getImageY())
+            .boxedBody(spinWheel.getNeedleBody())
+            .imageRender();
         entities.add(spinWheel.getNeedleImage());
     }
 }
