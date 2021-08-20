@@ -57,13 +57,12 @@ public class RenderTextureRegionSystem extends EntityProcessingSystem {
     protected void process(Entity e) {
         final Position position = mPositionComponent.get(e);
 
-            TextureRegion entityTextureRegion =
+        TextureRegion entityTextureRegion =
                     (TextureRegion) levelCreatorSystem.getEntities().get(e.getId());
-        PixmapProcessors.saveTextureRegion(entityTextureRegion);
-            batch.draw(
-                    entityTextureRegion,
-                    position.x,
-                    position.y
-            );
+         batch.draw(
+             entityTextureRegion,
+             position.x,
+             position.y
+        );
     }
 }

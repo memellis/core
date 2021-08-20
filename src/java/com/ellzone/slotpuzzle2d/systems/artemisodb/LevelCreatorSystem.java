@@ -28,6 +28,7 @@ import com.ellzone.slotpuzzle2d.component.artemis.Position;
 import com.ellzone.slotpuzzle2d.level.creator.LevelCreatorInjectionInterface;
 import com.ellzone.slotpuzzle2d.level.creator.LevelObjectCreatorEntityHolder;
 import com.ellzone.slotpuzzle2d.spin.SpinWheelSlotPuzzleTileMap;
+import com.ellzone.slotpuzzle2d.sprites.reel.AnimatedReel;
 import com.ellzone.slotpuzzle2d.sprites.slothandle.SlotHandleSprite;
 import com.ellzone.slotpuzzle2d.utils.PixmapProcessors;
 
@@ -91,6 +92,11 @@ public class LevelCreatorSystem extends BaseSystem {
     }
 
     private void setEntityComponents() {
+        for (AnimatedReel animatedReel :
+                new Array.ArrayIterator<>(
+                        levelObjectCreatorEntityHolder.getAnimatedReels()))
+            processAnimatedReel(animatedReel);
+
         for (SlotHandleSprite handle :
                 new Array.ArrayIterator<>(
                         levelObjectCreatorEntityHolder.getHandles()))
@@ -100,6 +106,14 @@ public class LevelCreatorSystem extends BaseSystem {
             new Array.ArrayIterator<>(
                     levelObjectCreatorEntityHolder.getSpinWheels()))
             processSpinWheel(spinWheel);
+    }
+
+    private void processAnimatedReel(AnimatedReel animatedReel) {
+        E.E()
+            .positionX(animatedReel.getReel().getX())
+            .positionY(animatedReel.getReel().getY())
+            .textureRegionRender();
+        entities.add(animatedReel.getReel().getRegion());
     }
 
     private void processSlotHandle(SlotHandleSprite handle) {

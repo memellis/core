@@ -36,7 +36,7 @@ import com.ellzone.slotpuzzle2d.utils.tilemap.TileMapAttributes;
 
 import net.mostlyoriginal.plugin.ProfilerPlugin;
 
-public class SuperSlotMachine extends SPPrototype {
+public class SuperSlotMachineECS extends SPPrototype {
 
     public static final String WORLD_NOT_INITIALISED = "World not initialised";
     public static final float MIN_DELTA = 1 / 15f;

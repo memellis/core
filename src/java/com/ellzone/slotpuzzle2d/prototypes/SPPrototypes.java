@@ -61,7 +61,7 @@ import com.ellzone.slotpuzzle2d.prototypes.events.GdxAiEntityMessaging;
 import com.ellzone.slotpuzzle2d.prototypes.framebuffer.FrameBufferParticleEffectSample;
 import com.ellzone.slotpuzzle2d.prototypes.gdxfreetype.GdxFreeType;
 import com.ellzone.slotpuzzle2d.prototypes.icons.DownloadMamuIcons;
-import com.ellzone.slotpuzzle2d.prototypes.level.SuperSlotMachine.SuperSlotMachine;
+import com.ellzone.slotpuzzle2d.prototypes.level.SuperSlotMachine.SuperSlotMachineECS;
 import com.ellzone.slotpuzzle2d.prototypes.level.bombreel.BombReel;
 import com.ellzone.slotpuzzle2d.prototypes.level.bombreel.ExplosionDemo;
 import com.ellzone.slotpuzzle2d.prototypes.level.bombreel.ParticleEffectExplosion;
@@ -207,7 +207,7 @@ public class SPPrototypes {
         ScrollingSign.class,
         ScrollSignWithMultipleMessages.class,
         ScrollingSignDynamicSignChange.class,
-		SuperSlotMachine.class,
+		SuperSlotMachineECS.class,
 		Dynamic.class,																			   
 		Flash.class,
         DelayFlash.class,
