@@ -16,8 +16,10 @@
 package com.ellzone.slotpuzzle2d.prototypes.level.SuperSlotMachine;
 
 import com.artemis.FluidEntityPlugin;
+import com.artemis.SuperMapper;
 import com.artemis.World;
 import com.artemis.WorldConfigurationBuilder;
+import com.artemis.link.EntityLinkManager;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.math.MathUtils;
 import com.ellzone.slotpuzzle2d.level.builder.WorldBuilder;
@@ -25,6 +27,7 @@ import com.ellzone.slotpuzzle2d.level.creator.LevelCreatorInjector;
 import com.ellzone.slotpuzzle2d.level.creator.LevelCreatorInjectorExtended;
 import com.ellzone.slotpuzzle2d.prototypes.SPPrototype;
 import com.ellzone.slotpuzzle2d.systems.artemisodb.Box2DPhysicsSystem;
+import com.ellzone.slotpuzzle2d.systems.artemisodb.ClearScreenSystem;
 import com.ellzone.slotpuzzle2d.systems.artemisodb.DebugPointRenderSystem;
 import com.ellzone.slotpuzzle2d.systems.artemisodb.LevelCreatorSystem;
 import com.ellzone.slotpuzzle2d.systems.artemisodb.RenderImagesSystem;
@@ -35,6 +38,7 @@ import com.ellzone.slotpuzzle2d.utils.convert.TileMapToWorldConvert;
 import com.ellzone.slotpuzzle2d.utils.tilemap.TileMapAttributes;
 
 import net.mostlyoriginal.plugin.ProfilerPlugin;
+import net.mostlyoriginal.plugin.OperationsPlugin;
 
 public class SuperSlotMachineECS extends SPPrototype {
 
@@ -67,8 +71,13 @@ public class SuperSlotMachineECS extends SPPrototype {
         return new World(new WorldConfigurationBuilder()
                 .alwaysDelayComponentRemoval(true)
                 .dependsOn(
+                        EntityLinkManager.class,
                         ProfilerPlugin.class,
-                        FluidEntityPlugin.class)
+                        FluidEntityPlugin.class,
+                        OperationsPlugin.class)
+                .with(
+                        new SuperMapper()
+                )
                 .with(
                         new TiledMapSystem(tileMapAttributes),
                         new LevelCreatorSystem(
@@ -77,6 +86,7 @@ public class SuperSlotMachineECS extends SPPrototype {
                                 worldBuilder.getRayHandler()),
                         new SpinWheelSystem(),
                         new Box2DPhysicsSystem(worldBuilder.getBox2dWorld()),
+                        new ClearScreenSystem(),
                         new RenderTextureRegionSystem(),
                         new RenderImagesSystem(),
                         new DebugPointRenderSystem()
