@@ -495,7 +495,8 @@ public class PlayScreen implements Screen, PlayInterface, LevelCreatorInjectionI
             if (!reelTile.isReelTileDeleted()) {
                 if (reelTile.isSpinning()) {
                     if (animatedReel.getDampenedSineState() == DampenedSineParticle.DSState.UPDATING_DAMPENED_SINE)
-                        processReelTouchedWhileSpinning(reelTile, reelTile.getCurrentReel(), reelTile.getCurrentReel());
+                        processReelTouchedWhileSpinning(
+                                reelTile, reelTile.getCurrentReel(), reelTile.getCurrentReel());
                 } else
                 if (!reelTile.getFlashTween())
                     startReelSpinning(reelTile, animatedReel);
@@ -513,7 +514,8 @@ public class PlayScreen implements Screen, PlayInterface, LevelCreatorInjectionI
                                 SlotPuzzleConstants.GAME_LEVEL_WIDTH,
                                 SlotPuzzleConstants.GAME_LEVEL_HEIGHT));
         puzzleGrid.matchGridSlots(matchGrid);
-        if (hiddenPattern.isHiddenPatternRevealed(matchGrid, reelTiles, SlotPuzzleConstants.GAME_LEVEL_WIDTH, SlotPuzzleConstants.GAME_LEVEL_HEIGHT))
+        if (hiddenPattern.isHiddenPatternRevealed(
+                matchGrid, reelTiles, SlotPuzzleConstants.GAME_LEVEL_WIDTH, SlotPuzzleConstants.GAME_LEVEL_HEIGHT))
             iWonTheLevel();
     }
 

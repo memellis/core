@@ -31,9 +31,11 @@ public class AnimatedCoin extends SPPrototype {
     public void render() {
         clearScreen();
         update();
-        spriteBatch.begin();
-        spriteBatch.draw(currentFrame, 50, 50);
-        spriteBatch.end();
+        renderCurrentFrame();
+    }
+
+    private void clearScreen() {
+        Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
     }
 
     private void update() {
@@ -41,8 +43,10 @@ public class AnimatedCoin extends SPPrototype {
         currentFrame = (TextureRegion) coinAnimation.getKeyFrame(stateTime, true);
     }
 
-    private void clearScreen() {
-        Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+    private void renderCurrentFrame() {
+        spriteBatch.begin();
+        spriteBatch.draw(currentFrame, 50, 50);
+        spriteBatch.end();
     }
 
     @Override

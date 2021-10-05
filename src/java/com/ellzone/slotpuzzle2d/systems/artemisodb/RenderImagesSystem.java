@@ -21,6 +21,7 @@ import com.artemis.Entity;
 import com.artemis.annotations.All;
 import com.artemis.systems.EntityProcessingSystem;
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
@@ -64,4 +65,6 @@ public class RenderImagesSystem extends EntityProcessingSystem {
         Image entityImage = (Image) levelCreatorSystem.getEntities().get(e.getId());
         entityImage.draw(batch,1.0f);
     }
+
+    public Camera getCamera() { return camera; }
 }

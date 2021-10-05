@@ -110,6 +110,12 @@ public class LevelCreatorSystem extends BaseSystem {
 
     private void processAnimatedReel(AnimatedReel animatedReel) {
         E.E()
+                .positionX(animatedReel.getReel().getX())
+                .positionY(animatedReel.getReel().getY())
+                .animatedReelComponent();
+        entities.add(animatedReel);
+
+        E.E()
             .positionX(animatedReel.getReel().getX())
             .positionY(animatedReel.getReel().getY())
             .textureRegionRender();

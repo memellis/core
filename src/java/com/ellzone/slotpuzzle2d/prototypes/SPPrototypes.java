@@ -49,6 +49,7 @@ import com.ellzone.slotpuzzle2d.prototypes.box2d.Light;
 import com.ellzone.slotpuzzle2d.prototypes.box2d.collisions.Box2DBoxesFallingFromSlotPuzzleMatrices;
 import com.ellzone.slotpuzzle2d.prototypes.box2d.collisions.Box2dToggleActiveBoxBodies;
 import com.ellzone.slotpuzzle2d.prototypes.box2d.effects.Box2dParticleEffects;
+import com.ellzone.slotpuzzle2d.prototypes.camera.UnProjectCamera;
 import com.ellzone.slotpuzzle2d.prototypes.cylinder.Render3DCylinder1;
 import com.ellzone.slotpuzzle2d.prototypes.cylinder.Render3DCylinder2;
 import com.ellzone.slotpuzzle2d.prototypes.cylinder.Render3DCylinder3;
@@ -220,6 +221,7 @@ public class SPPrototypes {
         LevelPopUpUsingLevelPopUp.class,
 		ReelLetterTilePlay.class,
         TileInputSelect.class,
+		UnProjectCamera.class,
         Veil.class,
         WayPoints1.class,
         WayPoints2.class,

@@ -26,9 +26,11 @@ import com.ellzone.slotpuzzle2d.level.builder.WorldBuilder;
 import com.ellzone.slotpuzzle2d.level.creator.LevelCreatorInjector;
 import com.ellzone.slotpuzzle2d.level.creator.LevelCreatorInjectorExtended;
 import com.ellzone.slotpuzzle2d.prototypes.SPPrototype;
+import com.ellzone.slotpuzzle2d.systems.artemisodb.AnimatedReelSystem;
 import com.ellzone.slotpuzzle2d.systems.artemisodb.Box2DPhysicsSystem;
 import com.ellzone.slotpuzzle2d.systems.artemisodb.ClearScreenSystem;
 import com.ellzone.slotpuzzle2d.systems.artemisodb.DebugPointRenderSystem;
+import com.ellzone.slotpuzzle2d.systems.artemisodb.InputSystem;
 import com.ellzone.slotpuzzle2d.systems.artemisodb.LevelCreatorSystem;
 import com.ellzone.slotpuzzle2d.systems.artemisodb.RenderImagesSystem;
 import com.ellzone.slotpuzzle2d.systems.artemisodb.RenderTextureRegionSystem;
@@ -86,6 +88,8 @@ public class SuperSlotMachineECS extends SPPrototype {
                                 worldBuilder.getRayHandler()),
                         new SpinWheelSystem(),
                         new Box2DPhysicsSystem(worldBuilder.getBox2dWorld()),
+                        new AnimatedReelSystem(),
+                        new InputSystem(),
                         new ClearScreenSystem(),
                         new RenderTextureRegionSystem(),
                         new RenderImagesSystem(),

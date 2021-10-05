@@ -18,24 +18,24 @@ package com.ellzone.slotpuzzle2d.systems.artemisodb;
 
 import com.artemis.BaseSystem;
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.graphics.GL20;
+import com.badlogic.gdx.math.Vector3;
+import com.ellzone.slotpuzzle2d.component.artemis.Position;
 
-public class ClearScreenSystem extends BaseSystem {
-    public Color color;
+import net.mostlyoriginal.api.plugin.extendedcomponentmapper.M;
 
-    public ClearScreenSystem() {
-        this(Color.BLACK);
-    }
-
-    public ClearScreenSystem(Color color) {
-        this.color = color;
-    }
+public class InputSystem extends BaseSystem {
+    private AnimatedReelSystem animatedReelSystem;
 
     @Override
-    protected void processSystem( ) {
-        Gdx.gl.glClearColor(color.r, color.g, color.b, color.a);
-        Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+    protected void processSystem() {
+        if (Gdx.input.isTouched()) {
+            processTouched();
+        }
     }
 
+    private void processTouched() {
+        Vector3 unProjectTouch =
+                new Vector3(Gdx.input.getX(), Gdx.input.getY(), 0);
+        animatedReelSystem.touched(unProjectTouch);
+    }
 }
