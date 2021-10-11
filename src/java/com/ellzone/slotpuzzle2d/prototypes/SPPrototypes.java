@@ -24,6 +24,7 @@ import com.ellzone.slotpuzzle2d.prototypes.animation.AnimatedCoin;
 import com.ellzone.slotpuzzle2d.prototypes.animation.AnimatedReelPrototype;
 import com.ellzone.slotpuzzle2d.prototypes.artemis.ArtemisOdbQuickStart;
 import com.ellzone.slotpuzzle2d.prototypes.artemis.RenderReelsUsingArtemis;
+import com.ellzone.slotpuzzle2d.prototypes.artemis.TweenUsingArtemis;
 import com.ellzone.slotpuzzle2d.prototypes.ashley.RenderLightButtons;
 import com.ellzone.slotpuzzle2d.prototypes.ashley.RenderMiniSllotMachineLoadedFromALevel;
 import com.ellzone.slotpuzzle2d.prototypes.ashley.RenderReels;
@@ -245,7 +246,8 @@ public class SPPrototypes {
 		SpinReelMetaSpinScreen.class,
 		SlotPuzzleGame.class,
         Starfield.class,
-        StarfieldUsingStarfieldObject.class
+        StarfieldUsingStarfieldObject.class,
+		TweenUsingArtemis.class
     ));
 
     public static List<String> getNames () {
