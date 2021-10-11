@@ -86,10 +86,10 @@ public class SlotPuzzleUsingTweenSystem extends FluidIteratingSystem {
                                     moveBetween(
                                             e.posX(),
                                             e.posY(),
-                                            e.posX() + 100,
-                                            e.posY() + 100,
-                                            5.0f,
-                                            Interpolation.bounce)
+                                            e.posX(),
+                                            0,
+                                            MathUtils.random(0.5f, 3.0f),
+                                            Interpolation.bounceOut)
                             )
                     );
         }
