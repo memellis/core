@@ -29,6 +29,7 @@ import com.ellzone.slotpuzzle2d.level.creator.LevelCreatorInjectionInterface;
 import com.ellzone.slotpuzzle2d.level.creator.LevelObjectCreatorEntityHolder;
 import com.ellzone.slotpuzzle2d.spin.SpinWheelSlotPuzzleTileMap;
 import com.ellzone.slotpuzzle2d.sprites.reel.AnimatedReel;
+import com.ellzone.slotpuzzle2d.sprites.reel.AnimatedReelECS;
 import com.ellzone.slotpuzzle2d.sprites.slothandle.SlotHandleSprite;
 import com.ellzone.slotpuzzle2d.utils.PixmapProcessors;
 
@@ -109,17 +110,37 @@ public class LevelCreatorSystem extends BaseSystem {
     }
 
     private void processAnimatedReel(AnimatedReel animatedReel) {
+        Array<Integer> entityIds = new Array<>();
+        AnimatedReelECS animatedReelECS =
+                createAnimatedReeECSFromAnimatedReel(animatedReel);
         E.E()
                 .positionX(animatedReel.getReel().getX())
                 .positionY(animatedReel.getReel().getY())
+                .spinScrollSY(animatedReel.getReel().getSy())
                 .animatedReelComponent();
-        entities.add(animatedReel);
+        entities.add(animatedReelECS);
 
-        E.E()
+        E e =E.E()
             .positionX(animatedReel.getReel().getX())
             .positionY(animatedReel.getReel().getY())
             .textureRegionRender();
         entities.add(animatedReel.getReel().getRegion());
+        entityIds.add(e.id());
+        animatedReelECS.getReel().setEntityIds(entityIds);
+
+    }
+
+    private AnimatedReelECS createAnimatedReeECSFromAnimatedReel(AnimatedReel animatedReel) {
+        return new AnimatedReelECS(
+                animatedReel.getTexture(),
+                animatedReel.getX(),
+                animatedReel.getY(),
+                animatedReel.getTileWidth(),
+                animatedReel.getTileHeight(),
+                animatedReel.getReelDisplayWidth(),
+                animatedReel.getReelDisplayHeight(),
+                animatedReel.getEndReel(),
+                null);
     }
 
     private void processSlotHandle(SlotHandleSprite handle) {

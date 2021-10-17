@@ -24,8 +24,6 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Array;
-import com.ellzone.slotpuzzle2d.sprites.reel.ReelTileInterface;
-import com.ellzone.slotpuzzle2d.sprites.reel.ReelSprite;
 import com.ellzone.slotpuzzle2d.utils.PixmapProcessors;
 import com.ellzone.slotpuzzle2d.utils.Random;
 
@@ -47,6 +45,7 @@ public class ReelTile extends ReelSprite implements ReelTileInterface {
 	private boolean reelFlashTween;
 	private boolean isFallen;
     private boolean isStoppedFalling;
+    private Array<Integer> entityIds;
 
     public enum FlashState {FLASH_OFF, FLASH_ON};
 	private FlashState reelFlashState;
@@ -352,6 +351,10 @@ public class ReelTile extends ReelSprite implements ReelTileInterface {
         setRegion(region);
     }
 
+    public void resetSy() {
+        sy = sy % scrollTexture.getHeight();
+    }
+
     @Override
     public int getScrollTextureHeight() {
         return scrollTexture.getHeight();
@@ -367,11 +370,11 @@ public class ReelTile extends ReelSprite implements ReelTileInterface {
         shapeRenderer.begin(ShapeRenderer.ShapeType.Line);
         shapeRenderer.setColor(flashColor);
         for (Vector2 reelFlashSegment : reelFlashSegments)
-            drawFlashSegmemnt(shapeRenderer, reelFlashSegment);
+            drawFlashSegment(shapeRenderer, reelFlashSegment);
         shapeRenderer.end();
     }
 
-    private void drawFlashSegmemnt(ShapeRenderer shapeRenderer, Vector2 reelFlashSegment) {
+    private void drawFlashSegment(ShapeRenderer shapeRenderer, Vector2 reelFlashSegment) {
         shapeRenderer.rect(reelFlashSegment.x + 0, reelFlashSegment.y + 0, tileWidth - 0, tileHeight - 0);
         shapeRenderer.rect(reelFlashSegment.x + 1, reelFlashSegment.y + 1, tileWidth - 2, tileHeight - 2);
         shapeRenderer.rect(reelFlashSegment.x + 2, reelFlashSegment.y + 2, tileWidth - 4, tileHeight - 4);
@@ -410,5 +413,13 @@ public class ReelTile extends ReelSprite implements ReelTileInterface {
                 super.getY(),
                 screenDisplayWidth == 0 ? region.getRegionWidth() : screenDisplayWidth,
                 screenDisplayHeight == 0 ? region.getRegionHeight() : screenDisplayHeight);
+    }
+
+    public Array<Integer> getEntityIds() {
+        return entityIds;
+    }
+
+    public void setEntityIds(Array<Integer> entityIds) {
+        this.entityIds = entityIds;
     }
 }

@@ -180,7 +180,22 @@ public class AnimatedReel implements AnimatedReelInterface {
 	public void setSy(float sy) {
 		reel.setSy(sy);
 	}
-	
+
+	@Override
+	public Texture getTexture() {
+		return texture;
+	}
+
+	@Override
+	public float getX() {
+		return x;
+	}
+
+	@Override
+	public float getY() {
+		return y;
+	}
+
 	@Override
 	public float getSx() {
 		return reel.getSx();
@@ -190,7 +205,27 @@ public class AnimatedReel implements AnimatedReelInterface {
 	public float getSy() {
 		return reel.getSy();
 	}
-	
+
+	@Override
+	public float getTileWidth() {
+		return tileWidth;
+	}
+
+	@Override
+	public float getTileHeight() {
+		return tileHeight;
+	}
+
+	@Override
+	public float getReelDisplayWidth() {
+		return reelDisplayWidth;
+	}
+
+	@Override
+	public float getReelDisplayHeight() {
+		return reelDisplayHeight;
+	}
+
 	@Override
 	public int getEndReel() {
 		return reel.getEndReel();
@@ -200,7 +235,7 @@ public class AnimatedReel implements AnimatedReelInterface {
 	public void setEndReel(int endReel) {
 		reel.setEndReel(endReel);
 	}
-	
+
 	@Override
 	public void update(float delta) {
 		reel.update(delta);

@@ -16,6 +16,7 @@
 
 package com.ellzone.slotpuzzle2d.sprites.reel;
 
+import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.ellzone.slotpuzzle2d.physics.DampenedSineParticle;
@@ -40,9 +41,10 @@ public class AnimatedReelTileMap implements AnimatedReelInterface {
             TweenManager tweenManager,
             AnnotationAssetManager annotationAssetManager) {
 
-        animatedReel = new SlotMachineAnimatedReel(
-                convertTileMapXToWorldPostionX(x) / 100,
-                convertTileMapYToWorldPostionY(y) / 100,
+        animatedReel =
+                new SlotMachineAnimatedReel(
+                convertTileMapXToWorldPositionX(x) / 100,
+                convertTileMapYToWorldPositionY(y) / 100,
                 tileWidth,
                 tileHeight,
                 tileWidth,
@@ -92,6 +94,26 @@ public class AnimatedReelTileMap implements AnimatedReelInterface {
     }
 
     @Override
+    public float getTileWidth() {
+        return 0;
+    }
+
+    @Override
+    public float getTileHeight() {
+        return 0;
+    }
+
+    @Override
+    public float getReelDisplayWidth() {
+        return 0;
+    }
+
+    @Override
+    public float getReelDisplayHeight() {
+        return 0;
+    }
+
+    @Override
     public int getEndReel() {
         return animatedReel.getAnimatedReel().getEndReel();
     }
@@ -99,6 +121,21 @@ public class AnimatedReelTileMap implements AnimatedReelInterface {
     @Override
     public void setEndReel(int endReel) {
         animatedReel.getAnimatedReel().setEndReel(endReel);
+    }
+
+    @Override
+    public Texture getTexture() {
+        return animatedReel.getReelTexture();
+    }
+
+    @Override
+    public float getX() {
+        return animatedReel.getX();
+    }
+
+    @Override
+    public float getY() {
+        return animatedReel.getY();
     }
 
     @Override
@@ -131,12 +168,12 @@ public class AnimatedReelTileMap implements AnimatedReelInterface {
         return animatedReel.getAnimatedReel().getDampenedSineState();
     }
 
-    private float convertTileMapXToWorldPostionX(float x) {
+    private float convertTileMapXToWorldPositionX(float x) {
         worldPositionX = TileMapToWorldConvert.convertTileMapXToWorldX(x);
         return worldPositionX;
     }
 
-    private float convertTileMapYToWorldPostionY(float y) {
+    private float convertTileMapYToWorldPositionY(float y) {
         worldPositionY = TileMapToWorldConvert.convertTileMapYToWorldY(y);
         return worldPositionY;
     }

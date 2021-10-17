@@ -1,24 +1,34 @@
 package com.ellzone.slotpuzzle2d.systems.artemisodb;
 
 import com.artemis.Aspect;
+import com.artemis.E;
 import com.artemis.Entity;
 import com.artemis.systems.EntityProcessingSystem;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.badlogic.gdx.math.Interpolation;
+import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector3;
 import com.ellzone.slotpuzzle2d.component.artemis.AnimatedReelComponent;
 import com.ellzone.slotpuzzle2d.component.artemis.Position;
-import com.ellzone.slotpuzzle2d.sprites.reel.AnimatedReel;
+import com.ellzone.slotpuzzle2d.component.artemis.SpinScroll;
+import com.ellzone.slotpuzzle2d.sprites.reel.AnimatedReelECS;
 import com.ellzone.slotpuzzle2d.sprites.reel.ReelTile;
 import com.ellzone.slotpuzzle2d.utils.Random;
 
+import net.mostlyoriginal.api.operation.common.Operation;
 import net.mostlyoriginal.api.plugin.extendedcomponentmapper.M;
+
+import static com.ellzone.slotpuzzle2d.operation.artemisodb.SlotPuzzleOperationFactory.spinScrollBetween;
+import static net.mostlyoriginal.api.operation.OperationFactory.*;
+
 
 public class AnimatedReelSystem extends EntityProcessingSystem {
     private LevelCreatorSystem levelCreatorSystem;
     private OrthographicCamera camera;
     protected M<Position> mPosition;
+    protected M<SpinScroll> mSpinScroll;
     private boolean touched = false;
     private Vector3 unProjectTouch;
 
@@ -48,22 +58,34 @@ public class AnimatedReelSystem extends EntityProcessingSystem {
 
     @Override
     protected void process(Entity e) {
-        if(touched)
+        update(e);
+        if (touched)
             processTouched(e);
     }
 
+    private void update(Entity e) {
+        AnimatedReelECS animatedReel =
+                (AnimatedReelECS) levelCreatorSystem.getEntities().get(e.getId());
+        final SpinScroll spinScroll = mSpinScroll.get(e.getId());
+
+        animatedReel.getReel().setSy(spinScroll.sY);
+        animatedReel.update(Gdx.graphics.getDeltaTime());
+        levelCreatorSystem.getEntities().set(
+                animatedReel.getReel().getEntityIds().get(0),
+                animatedReel.getReel().getRegion());
+    }
+
     public void touched(Vector3 unProjectTouch) {
-        this.unProjectTouch = unProjectTouch;
-        System.out.println("Touched="+unProjectTouch);
+        this.unProjectTouch = unProjectTouch;System.out.println("Touched="+unProjectTouch);
         camera.unproject(unProjectTouch);
-        System.out.println("UnProjectTouched="+unProjectTouch);
         touched = true;
     }
 
     private void processTouched(Entity e) {
         final Position position = mPosition.get(e);
-        AnimatedReel animatedReel =
-                (AnimatedReel) levelCreatorSystem.getEntities().get(e.getId());
+        AnimatedReelECS animatedReel =
+                (AnimatedReelECS) levelCreatorSystem.getEntities().get(e.getId());
+
         ReelTile reelTile = animatedReel.getReel();
         Rectangle rectangle =
                 new Rectangle(
@@ -71,16 +93,65 @@ public class AnimatedReelSystem extends EntityProcessingSystem {
                         position.y,
                         reelTile.getTileWidth(),
                         reelTile.getRegionHeight());
-        if (rectangle.contains(unProjectTouch.x, unProjectTouch.y)) {
-            System.out.println("An animated reel has been touched" + e.getId());
-            startReelSpinning(reelTile, animatedReel);
-        }
+        if (rectangle.contains(unProjectTouch.x, unProjectTouch.y))
+            startReelSpinning(e, reelTile, animatedReel);
     }
 
-    private void startReelSpinning(ReelTile reel, AnimatedReel animatedReel) {
+
+    private void startReelSpinning(
+            Entity animatedReelEntity,
+            final ReelTile reel,
+            AnimatedReelECS animatedReel) {
+
+        final SpinScroll spinScroll = mSpinScroll.get(animatedReelEntity.getId());
+        E.E(animatedReelEntity.getId())
+                .script(
+                        sequence(
+                                spinScrollBetween(
+                                        0,
+                                        spinScroll.sY,
+                                        0,
+                                        getNearestStartOfScrollHeight(
+                                                spinScroll.sY + 32768,
+                                                 reel.getTileWidth(),
+                                                 reel.getScrollTextureHeight()),
+                                        7.5f),
+                                spinScrollBetween(
+                                        0,
+                                        spinScroll.sY,
+                                        0,
+                                        getEndSpinScroll(
+                                                spinScroll.sY,
+                                                reel.getEndReel(),
+                                                reel.getTileWidth(),
+                                                reel.getScrollTextureHeight()
+                                        ),
+                                        2.5f,
+                                        new Interpolation.ElasticOut(
+                                                2,
+                                                10,
+                                                7,
+                                                1)
+                                ),
+                                new Operation() {
+                                    @Override
+                                    public boolean process(float delta, Entity e) {
+                                        System.out.println("spinScroll finished");
+                                        reel.setSpinning(false);
+                                        return true;
+                                    }
+                                })
+                        );
         reel.setEndReel(Random.getInstance().nextInt(7));
         reel.startSpinning();
-        reel.setSy(0);
-        animatedReel.reinitialise();
+    }
+
+    private int getNearestStartOfScrollHeight(float sy, float tileWidth, int reelScrollHeight) {
+        return (int) ((sy / reelScrollHeight)) * reelScrollHeight;
+    }
+
+    private float getEndSpinScroll(float sy, int endReel, float tileWidth, int reelScrollHeight) {
+        return getNearestStartOfScrollHeight(sy, tileWidth, reelScrollHeight) +
+                (endReel * tileWidth);
     }
 }

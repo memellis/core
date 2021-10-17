@@ -21,11 +21,16 @@ public class SlotMachineAnimatedReel {
                                    int endReel,
                                    TweenManager tweenManager,
                                    AnnotationAssetManager annotationAssetManager) {
-        initialiseAnimatedReel(x, y , tileWidth, tileHeight,
-                               reelDisplayWidth, reelDisplayHeight,
-                               endReel,
-                               tweenManager,
-                               annotationAssetManager);
+        initialiseAnimatedReel(
+                x,
+                y ,
+                tileWidth,
+                tileHeight,
+                reelDisplayWidth,
+                reelDisplayHeight,
+                endReel,
+                tweenManager,
+                annotationAssetManager);
     }
 
     public AnimatedReel getAnimatedReel() {
@@ -50,10 +55,14 @@ public class SlotMachineAnimatedReel {
                 tweenManager);
     }
 
-    private Texture getReelTexture() {
+    public Texture getReelTexture() {
         com.ellzone.slotpuzzle2d.sprites.reel.ReelSprites reelSprites = new ReelSprites(annotationAssetManager);
         Sprite[] sprites = reelSprites.getSprites();
         Pixmap slotReelScrollPixmap = PixmapProcessors.createPixmapToAnimate(sprites);
         return new Texture(slotReelScrollPixmap);
     }
+
+    public float getX() { return animatedReel.getX(); }
+
+    public float getY() { return  animatedReel.getY(); }
 }

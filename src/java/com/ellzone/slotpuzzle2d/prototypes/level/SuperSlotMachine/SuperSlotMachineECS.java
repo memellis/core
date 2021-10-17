@@ -36,6 +36,8 @@ import com.ellzone.slotpuzzle2d.systems.artemisodb.RenderImagesSystem;
 import com.ellzone.slotpuzzle2d.systems.artemisodb.RenderTextureRegionSystem;
 import com.ellzone.slotpuzzle2d.systems.artemisodb.SpinWheelSystem;
 import com.ellzone.slotpuzzle2d.systems.artemisodb.TiledMapSystem;
+import com.ellzone.slotpuzzle2d.systems.artemisodb.TweenEngineSystem;
+import com.ellzone.slotpuzzle2d.tweenengine.TweenManager;
 import com.ellzone.slotpuzzle2d.utils.convert.TileMapToWorldConvert;
 import com.ellzone.slotpuzzle2d.utils.tilemap.TileMapAttributes;
 
@@ -52,6 +54,7 @@ public class SuperSlotMachineECS extends SPPrototype {
     private LevelCreatorInjectorExtended levelCreatorInjectorExtended;
     private LevelCreatorSystem levelCreatorSystem;
     private TileMapAttributes tileMapAttributes;
+    private final TweenManager tweenManager= new TweenManager();
 
     public void create() {
         tileMapAttributes =
@@ -88,6 +91,7 @@ public class SuperSlotMachineECS extends SPPrototype {
                                 worldBuilder.getRayHandler()),
                         new SpinWheelSystem(),
                         new Box2DPhysicsSystem(worldBuilder.getBox2dWorld()),
+                        new TweenEngineSystem(tweenManager),
                         new AnimatedReelSystem(),
                         new InputSystem(),
                         new ClearScreenSystem(),

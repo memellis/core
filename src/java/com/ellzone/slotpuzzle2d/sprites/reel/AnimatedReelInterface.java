@@ -16,6 +16,7 @@
 
 package com.ellzone.slotpuzzle2d.sprites.reel;
 
+import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.ellzone.slotpuzzle2d.physics.DampenedSineParticle;
@@ -31,13 +32,31 @@ public interface AnimatedReelInterface {
 
     void setSy(float sy);
 
+    void setEndReel(int endReel);
+
+    Texture getTexture();
+
+    float getX();
+
+    float getY();
+
     float getSx();
 
     float getSy();
 
+    float getTileWidth();
+
+    float getTileHeight();
+
+    float getReelDisplayWidth();
+
+    float getReelDisplayHeight();
+
     int getEndReel();
 
-    void setEndReel(int endReel);
+    ReelTile getReel();
+
+    DampenedSineParticle.DSState getDampenedSineState();
 
     void update(float delta);
 
@@ -45,9 +64,5 @@ public interface AnimatedReelInterface {
 
     void draw(ShapeRenderer shapeRenderer);
 
-    ReelTile getReel();
-
     void reinitialise();
-
-    DampenedSineParticle.DSState getDampenedSineState();
 }
