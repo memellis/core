@@ -94,14 +94,30 @@ public class AnimatedReelSystem extends EntityProcessingSystem {
                         reelTile.getTileWidth(),
                         reelTile.getRegionHeight());
         if (rectangle.contains(unProjectTouch.x, unProjectTouch.y))
-            startReelSpinning(e, reelTile, animatedReel);
+            processReelTouched(e, reelTile, animatedReel);
+
+    }
+
+    private void processReelTouched(
+            Entity animatedReelEntity,
+            final ReelTile reelTile,
+            AnimatedReelECS animatedReel) {
+        if (reelTile.isSpinning())
+            setEndReelWhenReelFinishedSpinning(reelTile);
+        else
+            startReelSpinning(animatedReelEntity, reelTile);
+
+    }
+
+    private void setEndReelWhenReelFinishedSpinning(ReelTile reelTile) {
+        reelTile.setEndReel(reelTile.getCurrentReel());
+        System.out.println("current reel="+reelTile.getCurrentReel());
     }
 
 
     private void startReelSpinning(
             Entity animatedReelEntity,
-            final ReelTile reel,
-            AnimatedReelECS animatedReel) {
+            final ReelTile reel) {
 
         final SpinScroll spinScroll = mSpinScroll.get(animatedReelEntity.getId());
         E.E(animatedReelEntity.getId())
@@ -115,7 +131,7 @@ public class AnimatedReelSystem extends EntityProcessingSystem {
                                                 spinScroll.sY + 32768,
                                                  reel.getTileWidth(),
                                                  reel.getScrollTextureHeight()),
-                                        7.5f),
+                                        5.0f),
                                 spinScrollBetween(
                                         0,
                                         spinScroll.sY,
@@ -126,7 +142,7 @@ public class AnimatedReelSystem extends EntityProcessingSystem {
                                                 reel.getTileWidth(),
                                                 reel.getScrollTextureHeight()
                                         ),
-                                        2.5f,
+                                        1.0f,
                                         new Interpolation.ElasticOut(
                                                 2,
                                                 10,
@@ -136,13 +152,19 @@ public class AnimatedReelSystem extends EntityProcessingSystem {
                                 new Operation() {
                                     @Override
                                     public boolean process(float delta, Entity e) {
-                                        System.out.println("spinScroll finished");
                                         reel.setSpinning(false);
+                                        reel.setEndReel(
+                                                Random
+                                                   .getInstance()
+                                                   .nextInt(reel.getNumberOfReelsInTexture()));
                                         return true;
                                     }
                                 })
                         );
-        reel.setEndReel(Random.getInstance().nextInt(7));
+        reel.setEndReel(
+                Random
+                   .getInstance()
+                   .nextInt(reel.getNumberOfReelsInTexture()));
         reel.startSpinning();
     }
 
@@ -152,6 +174,6 @@ public class AnimatedReelSystem extends EntityProcessingSystem {
 
     private float getEndSpinScroll(float sy, int endReel, float tileWidth, int reelScrollHeight) {
         return getNearestStartOfScrollHeight(sy, tileWidth, reelScrollHeight) +
-                (endReel * tileWidth);
+                (endReel * tileWidth) + 4 * reelScrollHeight;
     }
 }
