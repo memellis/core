@@ -21,7 +21,9 @@ import com.artemis.annotations.All;
 import com.artemis.systems.EntityProcessingSystem;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
+import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.math.MathUtils;
+import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.utils.Align;
@@ -32,10 +34,42 @@ import com.ellzone.slotpuzzle2d.spin.SpinWheelSlotPuzzleTileMap;
 @All({SpinWheel.class})
 public class SpinWheelSystem extends EntityProcessingSystem  {
     private LevelCreatorSystem levelCreatorSystem;
+    private OrthographicCamera camera;
+    private Vector3 unProjectTouch;
+    private boolean touched = false;
+
+    public SpinWheelSystem() {
+        setup();
+    }
+
+    private void setup() {
+        setupCamera();
+    }
+
+    private void setupCamera() {
+        camera = new OrthographicCamera(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
+        camera.setToOrtho(
+                false,
+                Gdx.graphics.getWidth(),
+                Gdx.graphics.getHeight());
+    }
+
+    public void touched(Vector3 unProjectTouch) {
+        this.unProjectTouch = unProjectTouch;
+        camera.unproject(unProjectTouch);
+        touched = true;
+    }
+
 
     @Override
     protected void process(Entity e) {
         updateSpinWheel((SpinWheelSlotPuzzleTileMap) levelCreatorSystem.getEntities().get(e.getId()));
+        if (touched)
+            processTouched(e);
+    }
+
+    private void processTouched(Entity e) {
+//        System.out.println("spinWheel process touched!");
     }
 
     private void updateSpinWheel(SpinWheelSlotPuzzleTileMap spinWheel) {

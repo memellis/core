@@ -16,8 +16,13 @@
 
 package com.ellzone.slotpuzzle2d.operation.artemisodb;
 
+import com.artemis.Entity;
+import com.badlogic.gdx.math.MathUtils;
 import com.ellzone.slotpuzzle2d.component.artemis.SpinScroll;
+
+import net.mostlyoriginal.api.component.common.Tweenable;
 import net.mostlyoriginal.api.operation.temporal.TweenOperation;
+import net.mostlyoriginal.api.plugin.extendedcomponentmapper.M;
 
 public class TweenSpinScrollOperation extends TweenOperation<SpinScroll> {
     public TweenSpinScrollOperation() {

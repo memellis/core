@@ -32,7 +32,6 @@ public class AnimatedReelSystem extends EntityProcessingSystem {
     private boolean touched = false;
     private Vector3 unProjectTouch;
 
-
     public AnimatedReelSystem() {
         super(Aspect.all(Position.class, AnimatedReelComponent.class));
         setup();
@@ -49,7 +48,6 @@ public class AnimatedReelSystem extends EntityProcessingSystem {
                 Gdx.graphics.getWidth(),
                 Gdx.graphics.getHeight());
     }
-
 
     @Override
     protected void end() {
@@ -76,7 +74,7 @@ public class AnimatedReelSystem extends EntityProcessingSystem {
     }
 
     public void touched(Vector3 unProjectTouch) {
-        this.unProjectTouch = unProjectTouch;System.out.println("Touched="+unProjectTouch);
+        this.unProjectTouch = unProjectTouch;
         camera.unproject(unProjectTouch);
         touched = true;
     }
@@ -129,14 +127,14 @@ public class AnimatedReelSystem extends EntityProcessingSystem {
                                         0,
                                         getNearestStartOfScrollHeight(
                                                 spinScroll.sY + 32768,
-                                                 reel.getTileWidth(),
-                                                 reel.getScrollTextureHeight()),
+                                                reel.getTileWidth(),
+                                                reel.getScrollTextureHeight()),
                                         5.0f),
                                 spinScrollBetween(
                                         0,
                                         spinScroll.sY,
                                         0,
-                                        getEndSpinScroll(
+                                        spinScroll.newToSy = getEndSpinScroll(
                                                 spinScroll.sY,
                                                 reel.getEndReel(),
                                                 reel.getTileWidth(),
@@ -155,8 +153,8 @@ public class AnimatedReelSystem extends EntityProcessingSystem {
                                         reel.setSpinning(false);
                                         reel.setEndReel(
                                                 Random
-                                                   .getInstance()
-                                                   .nextInt(reel.getNumberOfReelsInTexture()));
+                                                        .getInstance()
+                                                        .nextInt(reel.getNumberOfReelsInTexture()));
                                         return true;
                                     }
                                 })
