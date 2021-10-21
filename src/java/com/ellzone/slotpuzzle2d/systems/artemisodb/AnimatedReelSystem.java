@@ -13,6 +13,7 @@ import com.badlogic.gdx.math.Vector3;
 import com.ellzone.slotpuzzle2d.component.artemis.AnimatedReelComponent;
 import com.ellzone.slotpuzzle2d.component.artemis.Position;
 import com.ellzone.slotpuzzle2d.component.artemis.SpinScroll;
+import com.ellzone.slotpuzzle2d.operation.artemisodb.TweenSpinScrollOperation;
 import com.ellzone.slotpuzzle2d.sprites.reel.AnimatedReelECS;
 import com.ellzone.slotpuzzle2d.sprites.reel.ReelTile;
 import com.ellzone.slotpuzzle2d.utils.Random;
@@ -92,14 +93,13 @@ public class AnimatedReelSystem extends EntityProcessingSystem {
                         reelTile.getTileWidth(),
                         reelTile.getRegionHeight());
         if (rectangle.contains(unProjectTouch.x, unProjectTouch.y))
-            processReelTouched(e, reelTile, animatedReel);
+            processReelTouched(e, reelTile);
 
     }
 
     private void processReelTouched(
             Entity animatedReelEntity,
-            final ReelTile reelTile,
-            AnimatedReelECS animatedReel) {
+            final ReelTile reelTile) {
         if (reelTile.isSpinning())
             setEndReelWhenReelFinishedSpinning(reelTile);
         else
@@ -108,8 +108,8 @@ public class AnimatedReelSystem extends EntityProcessingSystem {
     }
 
     private void setEndReelWhenReelFinishedSpinning(ReelTile reelTile) {
+        System.out.println("touched endReel="+reelTile.getCurrentReel());
         reelTile.setEndReel(reelTile.getCurrentReel());
-        System.out.println("current reel="+reelTile.getCurrentReel());
     }
 
 
@@ -126,39 +126,16 @@ public class AnimatedReelSystem extends EntityProcessingSystem {
                                         spinScroll.sY,
                                         0,
                                         getNearestStartOfScrollHeight(
-                                                spinScroll.sY + 32768,
-                                                reel.getTileWidth(),
+                                                spinScroll.sY + MathUtils.random(28000, 32768),
                                                 reel.getScrollTextureHeight()),
                                         5.0f),
-                                spinScrollBetween(
-                                        0,
-                                        spinScroll.sY,
-                                        0,
-                                        spinScroll.newToSy = getEndSpinScroll(
-                                                spinScroll.sY,
-                                                reel.getEndReel(),
-                                                reel.getTileWidth(),
-                                                reel.getScrollTextureHeight()
-                                        ),
-                                        1.0f,
-                                        new Interpolation.ElasticOut(
-                                                2,
-                                                10,
-                                                7,
-                                                1)
-                                ),
                                 new Operation() {
                                     @Override
                                     public boolean process(float delta, Entity e) {
-                                        reel.setSpinning(false);
-                                        reel.setEndReel(
-                                                Random
-                                                        .getInstance()
-                                                        .nextInt(reel.getNumberOfReelsInTexture()));
+                                        slowToFinish(e, spinScroll, reel);
                                         return true;
                                     }
-                                })
-                        );
+                                }));
         reel.setEndReel(
                 Random
                    .getInstance()
@@ -166,12 +143,41 @@ public class AnimatedReelSystem extends EntityProcessingSystem {
         reel.startSpinning();
     }
 
-    private int getNearestStartOfScrollHeight(float sy, float tileWidth, int reelScrollHeight) {
+    private void slowToFinish(Entity e, SpinScroll spinScroll, final ReelTile reelTile) {
+        E.E(e).script(
+                sequence(spinScrollBetween(
+                        0,
+                        spinScroll.sY,
+                        0,
+                        getEndSpinScroll(reelTile),
+                        1.0f,
+                        new Interpolation.ElasticOut(
+                                2,
+                                10,
+                                7,
+                                1)
+                        ),
+                        new Operation() {
+                            @Override
+                            public boolean process(float delta, Entity e) {
+                                reelTile.setSpinning(false);
+                                reelTile.setEndReel(
+                                        Random
+                                                .getInstance()
+                                                .nextInt(reelTile.getNumberOfReelsInTexture()));
+                                return true;
+                            }
+                        }));
+    }
+
+    private int getNearestStartOfScrollHeight(float sy, int reelScrollHeight) {
         return (int) ((sy / reelScrollHeight)) * reelScrollHeight;
     }
 
-    private float getEndSpinScroll(float sy, int endReel, float tileWidth, int reelScrollHeight) {
-        return getNearestStartOfScrollHeight(sy, tileWidth, reelScrollHeight) +
-                (endReel * tileWidth) + 4 * reelScrollHeight;
+    private float getEndSpinScroll(ReelTile reelTile) {
+        return getNearestStartOfScrollHeight(
+                reelTile.getSy(), reelTile.getScrollTextureHeight()) +
+                (MathUtils.random(2, 4) * reelTile.getScrollTextureHeight()) +
+                (reelTile.getEndReel() * reelTile.getTileWidth());
     }
 }
