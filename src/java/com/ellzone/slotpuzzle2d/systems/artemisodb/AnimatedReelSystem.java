@@ -76,7 +76,6 @@ public class AnimatedReelSystem extends EntityProcessingSystem {
 
     public void touched(Vector3 unProjectTouch) {
         this.unProjectTouch = unProjectTouch;
-        camera.unproject(unProjectTouch);
         touched = true;
     }
 
@@ -94,7 +93,6 @@ public class AnimatedReelSystem extends EntityProcessingSystem {
                         reelTile.getRegionHeight());
         if (rectangle.contains(unProjectTouch.x, unProjectTouch.y))
             processReelTouched(e, reelTile);
-
     }
 
     private void processReelTouched(
@@ -128,7 +126,8 @@ public class AnimatedReelSystem extends EntityProcessingSystem {
                                         getNearestStartOfScrollHeight(
                                                 spinScroll.sY + MathUtils.random(28000, 32768),
                                                 reel.getScrollTextureHeight()),
-                                        5.0f),
+                                        5.0f,
+                                        Interpolation.sineIn),
                                 new Operation() {
                                     @Override
                                     public boolean process(float delta, Entity e) {
