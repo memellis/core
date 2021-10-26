@@ -91,7 +91,7 @@ public class AnimatedReelSystem extends EntityProcessingSystem {
                         position.y,
                         reelTile.getTileWidth(),
                         reelTile.getRegionHeight());
-        if (rectangle.contains(unProjectTouch.x, unProjectTouch.y))
+        if (touched & rectangle.contains(unProjectTouch.x, unProjectTouch.y))
             processReelTouched(e, reelTile);
     }
 
@@ -102,7 +102,7 @@ public class AnimatedReelSystem extends EntityProcessingSystem {
             setEndReelWhenReelFinishedSpinning(reelTile);
         else
             startReelSpinning(animatedReelEntity, reelTile);
-
+        touched = false;
     }
 
     private void setEndReelWhenReelFinishedSpinning(ReelTile reelTile) {
@@ -127,7 +127,7 @@ public class AnimatedReelSystem extends EntityProcessingSystem {
                                                 spinScroll.sY + MathUtils.random(28000, 32768),
                                                 reel.getScrollTextureHeight()),
                                         5.0f,
-                                        Interpolation.sineIn),
+                                        Interpolation.fade),
                                 new Operation() {
                                     @Override
                                     public boolean process(float delta, Entity e) {

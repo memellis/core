@@ -29,9 +29,8 @@ public class InputSystem extends BaseSystem {
 
     @Override
     protected void processSystem() {
-        if (Gdx.input.isTouched()) {
+        if (Gdx.input.justTouched())
             processTouched();
-        }
     }
 
     private void processTouched() {

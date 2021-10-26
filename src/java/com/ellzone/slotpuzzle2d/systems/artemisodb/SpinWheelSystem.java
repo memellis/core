@@ -54,6 +54,10 @@ public class SpinWheelSystem extends EntityProcessingSystem  {
                 Gdx.graphics.getHeight());
     }
 
+    public void end() {
+        touched = false;
+    }
+
     public void touched(Vector3 unProjectTouch) {
         this.unProjectTouch = unProjectTouch;
         camera.unproject(unProjectTouch);
@@ -69,7 +73,8 @@ public class SpinWheelSystem extends EntityProcessingSystem  {
     }
 
     private void processTouched(Entity e) {
-//        System.out.println("spinWheel process touched!");
+        System.out.println("spinWheel process touched!");
+        touched = false;
     }
 
     private void updateSpinWheel(SpinWheelSlotPuzzleTileMap spinWheel) {
