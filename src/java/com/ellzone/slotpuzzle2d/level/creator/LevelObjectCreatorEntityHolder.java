@@ -24,6 +24,7 @@ import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.utils.Array;
 import com.ellzone.slotpuzzle2d.spin.SpinWheelSlotPuzzleTileMap;
+import com.ellzone.slotpuzzle2d.sprites.reel.AnimatedPredictedReel;
 import com.ellzone.slotpuzzle2d.sprites.reel.AnimatedReel;
 import com.ellzone.slotpuzzle2d.sprites.HoldLightButton;
 import com.ellzone.slotpuzzle2d.sprites.reel.ReelHelper;
@@ -51,17 +52,18 @@ public class LevelObjectCreatorEntityHolder extends LevelObjectCreator {
     private LevelConeLightCallback levelConeLightCallback;
     private LevelReelHelperCallback levelReelHelperCallback;
     private LevelSpinWheelCallback levelSpinWheelCallback;
-    private Array<ReelTile> reelTiles = new Array<>();
-    private Array<HoldLightButton> lightButtons = new Array<>();
-    private Array<AnimatedReel> reels = new Array<>();
-    private Array<AnimatedReelTileMap> animatedReels = new Array<>();
-    private Array<PointLight> pointLights = new Array<>();
-    private Array<ConeLight> coneLights = new Array<>();
-    private Array<SlotHandleSprite> handles = new Array<>();
-    private Array<SlotHandleTileMap> slotHandles = new Array<>();
-    private Array<SpinWheelSlotPuzzleTileMap> spinWheels = new Array<>();
-    private ReelHelper reelHelper;
+    private final Array<ReelTile> reelTiles = new Array<>();
+    private final Array<HoldLightButton> lightButtons = new Array<>();
+    private final Array<AnimatedReel> reels = new Array<>();
+    private final Array<AnimatedReelTileMap> animatedReels = new Array<>();
+    private final Array<AnimatedPredictedReel> animatedPredictedReels = new Array<>();
+    private final Array<PointLight> pointLights = new Array<>();
+    private final Array<ConeLight> coneLights = new Array<>();
+    private final Array<SlotHandleSprite> handles = new Array<>();
+    private final Array<SlotHandleTileMap> slotHandles = new Array<>();
+    private final Array<SpinWheelSlotPuzzleTileMap> spinWheels = new Array<>();
     private LevelAnimatedReelTileMapCallback levelAnimatedReelTileMapCallback;
+    private LevelAnimatedPredictedReelCallback levelAnimatedPredictedReelCallback;
 
     public LevelObjectCreatorEntityHolder(
             LevelCreatorInjectionInterface injection, World world, RayHandler rayHandler) {
@@ -140,6 +142,10 @@ public class LevelObjectCreatorEntityHolder extends LevelObjectCreator {
         animatedReels.add(animatedReel);
     }
 
+    public void addTo(AnimatedPredictedReel animatedPredictedReel) {
+        animatedPredictedReels.add(animatedPredictedReel);
+    }
+
     public void addTo(SlotHandleSprite handle) { handles.add(handle); }
 
     public void addTo(SlotHandleTileMap handle) { slotHandles.add(handle); }
@@ -148,7 +154,8 @@ public class LevelObjectCreatorEntityHolder extends LevelObjectCreator {
 
     public void addTo(ConeLight coneLight) { coneLights.add(coneLight); }
 
-    public void addTo(ReelHelper reelHelper) { this.reelHelper = reelHelper; }
+    public void addTo(ReelHelper reelHelper) {
+    }
 
     public void addTo(SpinWheelSlotPuzzleTileMap spinWheel) { spinWheels.add(spinWheel); }
 
@@ -210,6 +217,11 @@ public class LevelObjectCreatorEntityHolder extends LevelObjectCreator {
             levelAnimatedReelTileMapCallback.onEvent(animatedReelTileMap);
     }
 
+    public void delegateToCallback(AnimatedPredictedReel animatedReel) {
+        if (levelAnimatedPredictedReelCallback != null)
+            levelAnimatedPredictedReelCallback.onEvent(animatedReel);
+    }
+
     public void delegateToCallback(SlotHandleSprite slotHandleSprite) {
         if (levelSlotHandleSpriteCallback != null)
             levelSlotHandleSpriteCallback.onEvent(slotHandleSprite);
@@ -249,6 +261,10 @@ public class LevelObjectCreatorEntityHolder extends LevelObjectCreator {
     }
 
     public Array<AnimatedReelTileMap> getAnimatedReelsTileMap() { return animatedReels; }
+
+    public Array<AnimatedPredictedReel> getAnimatedPredictedReels() {
+        return animatedPredictedReels;
+    }
 
     public Array<SlotHandleSprite> getHandles() { return handles; }
 

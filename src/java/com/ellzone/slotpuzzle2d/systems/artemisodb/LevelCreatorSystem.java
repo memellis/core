@@ -28,6 +28,7 @@ import com.ellzone.slotpuzzle2d.component.artemis.Position;
 import com.ellzone.slotpuzzle2d.level.creator.LevelCreatorInjectionInterface;
 import com.ellzone.slotpuzzle2d.level.creator.LevelObjectCreatorEntityHolder;
 import com.ellzone.slotpuzzle2d.spin.SpinWheelSlotPuzzleTileMap;
+import com.ellzone.slotpuzzle2d.sprites.reel.AnimatedPredictedReel;
 import com.ellzone.slotpuzzle2d.sprites.reel.AnimatedReel;
 import com.ellzone.slotpuzzle2d.sprites.reel.AnimatedReelECS;
 import com.ellzone.slotpuzzle2d.sprites.slothandle.SlotHandleSprite;
@@ -93,16 +94,34 @@ public class LevelCreatorSystem extends BaseSystem {
     }
 
     private void setEntityComponents() {
+        getAnimatedReels();
+        getAnimatedPredictedReels();
+        getSlotHandle();
+        getSpinWheels();
+    }
+
+    private void getAnimatedReels() {
         for (AnimatedReel animatedReel :
                 new Array.ArrayIterator<>(
                         levelObjectCreatorEntityHolder.getAnimatedReels()))
             processAnimatedReel(animatedReel);
+    }
 
+    private void getAnimatedPredictedReels() {
+        for (AnimatedPredictedReel animatedPredictedReel :
+                new Array.ArrayIterator<>(
+                        levelObjectCreatorEntityHolder.getAnimatedPredictedReels()))
+            processAnimatedPredictedReel(animatedPredictedReel);
+    }
+
+    private void getSlotHandle() {
         for (SlotHandleSprite handle :
                 new Array.ArrayIterator<>(
                         levelObjectCreatorEntityHolder.getHandles()))
             processSlotHandle(handle);
+    }
 
+    private void getSpinWheels() {
         for (SpinWheelSlotPuzzleTileMap spinWheel :
             new Array.ArrayIterator<>(
                     levelObjectCreatorEntityHolder.getSpinWheels()))
@@ -141,6 +160,9 @@ public class LevelCreatorSystem extends BaseSystem {
                 animatedReel.getReelDisplayHeight(),
                 animatedReel.getEndReel(),
                 null);
+    }
+
+    private void processAnimatedPredictedReel(AnimatedPredictedReel animatedPredictedReel) {
     }
 
     private void processSlotHandle(SlotHandleSprite handle) {
