@@ -20,6 +20,7 @@ import com.artemis.SuperMapper;
 import com.artemis.World;
 import com.artemis.WorldConfigurationBuilder;
 import com.artemis.link.EntityLinkManager;
+import com.artemis.managers.TagManager;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.math.MathUtils;
 import com.ellzone.slotpuzzle2d.level.builder.WorldBuilder;
@@ -81,7 +82,8 @@ public class SuperSlotMachineECS extends SPPrototype {
                         FluidEntityPlugin.class,
                         OperationsPlugin.class)
                 .with(
-                        new SuperMapper()
+                        new SuperMapper(),
+                        new TagManager()
                 )
                 .with(
                         new TiledMapSystem(tileMapAttributes),

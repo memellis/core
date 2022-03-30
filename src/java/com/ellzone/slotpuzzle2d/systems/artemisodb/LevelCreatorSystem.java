@@ -146,7 +146,6 @@ public class LevelCreatorSystem extends BaseSystem {
         entities.add(animatedReel.getReel().getRegion());
         entityIds.add(e.id());
         animatedReelECS.getReel().setEntityIds(entityIds);
-
     }
 
     private AnimatedReelECS createAnimatedReeECSFromAnimatedReel(AnimatedReel animatedReel) {
@@ -163,6 +162,22 @@ public class LevelCreatorSystem extends BaseSystem {
     }
 
     private void processAnimatedPredictedReel(AnimatedPredictedReel animatedPredictedReel) {
+        System.out.println("processAnimatedPredictedReel");
+        Array<Integer> entityIds = new Array<>();
+        E.E()
+                .positionX(animatedPredictedReel.getReel().getX())
+                .positionY(animatedPredictedReel.getReel().getY())
+                .tag("AnimatedPredictedReel")
+                .animatedPredictedReelComponent();
+        entities.add(animatedPredictedReel);
+
+        E e = E.E()
+                .positionX(animatedPredictedReel.getReel().getX())
+                .positionY(animatedPredictedReel.getReel().getY())
+                .textureRegionRender();
+        entities.add(animatedPredictedReel.getReel().getRegion());
+        entityIds.add(e.id());
+        animatedPredictedReel.getReel().setEntityIds(entityIds);
     }
 
     private void processSlotHandle(SlotHandleSprite handle) {

@@ -14,6 +14,7 @@ import com.ellzone.slotpuzzle2d.component.artemis.AnimatedReelComponent;
 import com.ellzone.slotpuzzle2d.component.artemis.Position;
 import com.ellzone.slotpuzzle2d.component.artemis.SpinScroll;
 import com.ellzone.slotpuzzle2d.operation.artemisodb.TweenSpinScrollOperation;
+import com.ellzone.slotpuzzle2d.sprites.reel.AnimatedPredictedReel;
 import com.ellzone.slotpuzzle2d.sprites.reel.AnimatedReelECS;
 import com.ellzone.slotpuzzle2d.sprites.reel.ReelTile;
 import com.ellzone.slotpuzzle2d.utils.Random;
@@ -32,6 +33,7 @@ public class AnimatedReelSystem extends EntityProcessingSystem {
     protected M<SpinScroll> mSpinScroll;
     private boolean touched = false;
     private Vector3 unProjectTouch;
+    private AnimatedPredictedReel animatedPredictedReel;
 
     public AnimatedReelSystem() {
         super(Aspect.all(Position.class, AnimatedReelComponent.class));
@@ -106,8 +108,20 @@ public class AnimatedReelSystem extends EntityProcessingSystem {
     }
 
     private void setEndReelWhenReelFinishedSpinning(ReelTile reelTile) {
-        System.out.println("touched endReel="+reelTile.getCurrentReel());
         reelTile.setEndReel(reelTile.getCurrentReel());
+        if (animatedPredictedReel == null)
+            createPredictedAnimatedReel();
+        if (reelTile.getNumberOfReelsInTexture() > 0)
+        animatedPredictedReel.getReel().setSy(
+                ((reelTile.getCurrentReel() + 2) % reelTile.getNumberOfReelsInTexture())
+                        * reelTile.getTileHeight());
+        animatedPredictedReel.getReel().processSpinningState();
+    }
+
+    private void createPredictedAnimatedReel() {
+        E animatedPredictedReelEntity = E.withTag("AnimatedPredictedReel");
+        animatedPredictedReel = (AnimatedPredictedReel)
+                levelCreatorSystem.getEntities().get(animatedPredictedReelEntity.id());
     }
 
 
