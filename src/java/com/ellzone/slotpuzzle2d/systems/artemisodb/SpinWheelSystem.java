@@ -28,11 +28,8 @@ import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.utils.Align;
-import com.ellzone.slotpuzzle2d.component.artemis.Position;
 import com.ellzone.slotpuzzle2d.component.artemis.SpinWheel;
 import com.ellzone.slotpuzzle2d.spin.SpinWheelSlotPuzzleTileMap;
-
-import sun.security.provider.ConfigFile;
 
 @All({SpinWheel.class})
 public class SpinWheelSystem extends EntityProcessingSystem  {
