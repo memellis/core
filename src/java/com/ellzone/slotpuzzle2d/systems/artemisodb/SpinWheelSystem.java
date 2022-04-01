@@ -23,6 +23,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.math.MathUtils;
+import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
@@ -30,6 +31,8 @@ import com.badlogic.gdx.utils.Align;
 import com.ellzone.slotpuzzle2d.component.artemis.Position;
 import com.ellzone.slotpuzzle2d.component.artemis.SpinWheel;
 import com.ellzone.slotpuzzle2d.spin.SpinWheelSlotPuzzleTileMap;
+
+import sun.security.provider.ConfigFile;
 
 @All({SpinWheel.class})
 public class SpinWheelSystem extends EntityProcessingSystem  {
@@ -67,13 +70,17 @@ public class SpinWheelSystem extends EntityProcessingSystem  {
 
     @Override
     protected void process(Entity e) {
-        updateSpinWheel((SpinWheelSlotPuzzleTileMap) levelCreatorSystem.getEntities().get(e.getId()));
+        SpinWheelSlotPuzzleTileMap spinWheel =
+                (SpinWheelSlotPuzzleTileMap) levelCreatorSystem.getEntities().get(e.getId());
+        updateSpinWheel(spinWheel);
         if (touched)
-            processTouched(e);
+            processTouched(spinWheel);
     }
 
-    private void processTouched(Entity e) {
+    private void processTouched(SpinWheelSlotPuzzleTileMap spinWheel) {
         System.out.println("spinWheel process touched!");
+        if (spinWheel.isInsideSpinButton(new Vector2(unProjectTouch.x / 100, unProjectTouch.y / 100)))
+            spinWheel.spin(MathUtils.random(5F, 30F));
         touched = false;
     }
 
