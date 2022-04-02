@@ -221,5 +221,11 @@ public class LevelCreatorSystem extends BaseSystem {
             .boxedBody(spinWheel.getNeedleBody())
             .imageRender();
         entities.add(spinWheel.getNeedleImage());
+
+        E.E()
+                .positionX(spinWheel.getSpinButton().getImageX())
+                .positionY(spinWheel.getSpinButton().getImageY())
+                .imageRender();
+        entities.add(spinWheel.getSpinButton());
     }
 }

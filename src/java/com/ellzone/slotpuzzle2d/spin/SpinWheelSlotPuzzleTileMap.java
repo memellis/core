@@ -118,6 +118,8 @@ public class SpinWheelSlotPuzzleTileMap implements SpinWheelSlotPuzzle {
         return spinWheel.getNeedleImage();
     }
 
+    public Image getSpinButton() { return spinWheel.getSpinButton(); }
+
     @Override
     public void updateCoordinates(Body body, Image image, float incX, float incY) {
         spinWheel.updateCoordinates(body, image, incX, incY);
