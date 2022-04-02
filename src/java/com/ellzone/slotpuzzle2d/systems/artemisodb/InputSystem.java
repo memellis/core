@@ -26,6 +26,7 @@ import net.mostlyoriginal.api.plugin.extendedcomponentmapper.M;
 public class InputSystem extends BaseSystem {
     private AnimatedReelSystem animatedReelSystem;
     private SpinWheelSystem spinWheelSystem;
+    private SlotHandleSystem slotHandleSystem;
 
     @Override
     protected void processSystem() {
@@ -35,7 +36,8 @@ public class InputSystem extends BaseSystem {
 
     private void processTouched() {
         Vector3 unProjectTouch =
-                new Vector3(Gdx.input.getX(), Gdx.input.getY(), 0);
+                new Vector3(Gdx.input.getX(), Gdx.graphics.getHeight() - Gdx.input.getY(), 0);
+        slotHandleSystem.touched(unProjectTouch);
         animatedReelSystem.touched(unProjectTouch);
         spinWheelSystem.touched(unProjectTouch);
     }

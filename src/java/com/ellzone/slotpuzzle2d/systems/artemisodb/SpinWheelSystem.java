@@ -28,6 +28,7 @@ import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.utils.Align;
+import com.ellzone.slotpuzzle2d.SlotPuzzleConstants;
 import com.ellzone.slotpuzzle2d.component.artemis.SpinWheel;
 import com.ellzone.slotpuzzle2d.spin.SpinWheelSlotPuzzleTileMap;
 
@@ -75,8 +76,10 @@ public class SpinWheelSystem extends EntityProcessingSystem  {
     }
 
     private void processTouched(SpinWheelSlotPuzzleTileMap spinWheel) {
-        System.out.println("spinWheel process touched!");
-        if (spinWheel.isInsideSpinButton(new Vector2(unProjectTouch.x / 100, unProjectTouch.y / 100)))
+        if (spinWheel.isInsideSpinButton(
+                new Vector2(
+                        unProjectTouch.x / SlotPuzzleConstants.PIXELS_PER_METER,
+                        unProjectTouch.y / SlotPuzzleConstants.PIXELS_PER_METER)))
             spinWheel.spin(MathUtils.random(5F, 30F));
         touched = false;
     }

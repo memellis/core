@@ -182,6 +182,10 @@ public class LevelCreatorSystem extends BaseSystem {
 
     private void processSlotHandle(SlotHandleSprite handle) {
         Array<Integer> entityIds = new Array<>();
+        E.E()
+           .slotHandle();
+        entities.add(handle);
+
         E e = E.E()
             .positionX(handle.getSlotHandleBaseSprite().getX())
             .positionY(handle.getSlotHandleBaseSprite().getY())
@@ -200,7 +204,6 @@ public class LevelCreatorSystem extends BaseSystem {
 
     private void processSpinWheel(SpinWheelSlotPuzzleTileMap spinWheel) {
         spinWheel.setUpSpinWheel();
-
         E.E()
          .spinWheel();
         entities.add(spinWheel);
