@@ -1,5 +1,6 @@
 package com.ellzone.slotpuzzle2d.systems.artemisodb;
 
+import com.artemis.E;
 import com.artemis.Entity;
 import com.artemis.annotations.All;
 import com.artemis.systems.EntityProcessingSystem;
@@ -7,8 +8,15 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
+import com.ellzone.slotpuzzle2d.component.artemis.Rotation;
 import com.ellzone.slotpuzzle2d.component.artemis.SlotHandle;
+import com.ellzone.slotpuzzle2d.component.artemis.SpinScroll;
 import com.ellzone.slotpuzzle2d.sprites.slothandle.SlotHandleSprite;
+
+import net.mostlyoriginal.api.plugin.extendedcomponentmapper.M;
+
+import static net.mostlyoriginal.api.operation.OperationFactory.sequence;
+import static com.ellzone.slotpuzzle2d.operation.artemisodb.SlotPuzzleOperationFactory.rotateBetween;
 
 @All({SlotHandle.class})
 public class SlotHandleSystem extends EntityProcessingSystem {
@@ -16,6 +24,7 @@ public class SlotHandleSystem extends EntityProcessingSystem {
     private OrthographicCamera camera;
     private Vector3 unProjectTouch;
     private boolean touched;
+    protected M<Rotation> mRotation;
 
     public SlotHandleSystem() { setUp(); }
 
@@ -42,15 +51,28 @@ public class SlotHandleSystem extends EntityProcessingSystem {
     protected void process(Entity e) {
         SlotHandleSprite slotHandle = (SlotHandleSprite) levelCreatorSystem.getEntities().get(e.getId());
         if (touched)
-            processTouched(slotHandle);
+            processTouched(e, slotHandle);
     }
 
-
-    private void processTouched(SlotHandleSprite slotHandle) {
+    private void processTouched(Entity e, SlotHandleSprite slotHandle) {
         if (slotHandle.getBoundingRectangle().contains(
                 new Vector2(unProjectTouch.x , unProjectTouch.y))) {
             slotHandle.pullSlotHandle();
-            System.out.println("pull SlotHandle");
+
+            int slotHandleEntityId = slotHandle.getEntityIds().get(1);
+            Rotation rotation = E.E(slotHandleEntityId)
+                    .getRotation();
+            E.E(slotHandleEntityId)
+                    .script(
+                            sequence(
+                                    rotateBetween(
+                                            rotation.angle,
+                                        rotation.angle - 45,
+                                    1.0f),
+                                    rotateBetween(
+                                        rotation.angle - 45,
+                                            rotation.angle,
+                                    1.0f)));
         }
         touched = false;
     }

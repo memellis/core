@@ -35,4 +35,17 @@ public class SlotPuzzleOperationFactory {
         operation.getTo().set(sx2, sy2);
         return operation;
     }
+
+    public static TweenRotationOperation rotateBetween(float a1, float a2, float duration) {
+        return rotateBetween(a1, a2, duration, Interpolation.linear);
+    }
+
+    public static TweenRotationOperation rotateBetween(
+            float a1, float a2, float duration, Interpolation interpolation) {
+        final TweenRotationOperation operation = Operation.prepare(TweenRotationOperation.class);
+        operation.setup(interpolation, duration);
+        operation.getFrom().set(a1);
+        operation.getTo().set(a2);
+        return operation;
+    }
 }

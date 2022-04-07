@@ -34,6 +34,7 @@ import com.ellzone.slotpuzzle2d.systems.artemisodb.DebugPointRenderSystem;
 import com.ellzone.slotpuzzle2d.systems.artemisodb.InputSystem;
 import com.ellzone.slotpuzzle2d.systems.artemisodb.LevelCreatorSystem;
 import com.ellzone.slotpuzzle2d.systems.artemisodb.RenderImagesSystem;
+import com.ellzone.slotpuzzle2d.systems.artemisodb.RenderTextureRegionRotationSystem;
 import com.ellzone.slotpuzzle2d.systems.artemisodb.RenderTextureRegionSystem;
 import com.ellzone.slotpuzzle2d.systems.artemisodb.SlotHandleSystem;
 import com.ellzone.slotpuzzle2d.systems.artemisodb.SpinWheelSystem;
@@ -100,6 +101,7 @@ public class SuperSlotMachineECS extends SPPrototype {
                         new InputSystem(),
                         new ClearScreenSystem(),
                         new RenderTextureRegionSystem(),
+                        new RenderTextureRegionRotationSystem(),
                         new RenderImagesSystem(),
                         new DebugPointRenderSystem()
                 )

@@ -13,7 +13,6 @@ import com.badlogic.gdx.math.Vector3;
 import com.ellzone.slotpuzzle2d.component.artemis.AnimatedReelComponent;
 import com.ellzone.slotpuzzle2d.component.artemis.Position;
 import com.ellzone.slotpuzzle2d.component.artemis.SpinScroll;
-import com.ellzone.slotpuzzle2d.operation.artemisodb.TweenSpinScrollOperation;
 import com.ellzone.slotpuzzle2d.sprites.reel.AnimatedPredictedReel;
 import com.ellzone.slotpuzzle2d.sprites.reel.AnimatedReelECS;
 import com.ellzone.slotpuzzle2d.sprites.reel.ReelTile;

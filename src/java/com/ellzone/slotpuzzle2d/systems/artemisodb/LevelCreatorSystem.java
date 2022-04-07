@@ -196,6 +196,7 @@ public class LevelCreatorSystem extends BaseSystem {
         e = E.E()
             .positionX(handle.getSlotHandleSprite().getX())
             .positionY(handle.getSlotHandleSprite().getY())
+            .rotation(0)
             .textureRegionRender();
         entityIds.add(e.id());
         handle.setEntityIds(entityIds);

@@ -26,6 +26,7 @@ import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.ellzone.slotpuzzle2d.component.artemis.Position;
+import com.ellzone.slotpuzzle2d.component.artemis.Rotation;
 import com.ellzone.slotpuzzle2d.component.artemis.TextureRegionRender;
 
 import net.mostlyoriginal.api.plugin.extendedcomponentmapper.M;
@@ -38,7 +39,7 @@ public class RenderTextureRegionSystem extends EntityProcessingSystem {
     private LevelCreatorSystem levelCreatorSystem;
 
     public RenderTextureRegionSystem() {
-        super(Aspect.all(Position.class, TextureRegionRender.class));
+        super(Aspect.all(Position.class, TextureRegionRender.class).exclude(Rotation.class));
     }
 
     @Override
