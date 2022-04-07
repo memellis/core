@@ -6,6 +6,7 @@ import com.artemis.annotations.All;
 import com.artemis.systems.EntityProcessingSystem;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.badlogic.gdx.math.Interpolation;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.ellzone.slotpuzzle2d.component.artemis.Rotation;
@@ -68,11 +69,13 @@ public class SlotHandleSystem extends EntityProcessingSystem {
                                     rotateBetween(
                                             rotation.angle,
                                         rotation.angle - 45,
-                                    1.0f),
+                                    0.5f,
+                                            Interpolation.circle),
                                     rotateBetween(
                                         rotation.angle - 45,
                                             rotation.angle,
-                                    1.0f)));
+                                    0.5f,
+                                            Interpolation.circle)));
         }
         touched = false;
     }
