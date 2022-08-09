@@ -205,6 +205,8 @@ public class AnimatedReelSystem extends EntityProcessingSystem {
     }
 
     private void processSlotHandlePulled(Entity e) {
-         startReelSpinning(e, getReelTile(e));
+         ReelTile reelTile = getReelTile(e);
+         if (!reelTile.isSpinning())
+            startReelSpinning(e, getReelTile(e));
     }
 }
