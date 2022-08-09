@@ -26,6 +26,7 @@ public class SlotHandleSystem extends EntityProcessingSystem {
     private Vector3 unProjectTouch;
     private boolean touched;
     protected M<Rotation> mRotation;
+    private AnimatedReelSystem animatedReelSystem;
 
     public SlotHandleSystem() { setUp(); }
 
@@ -59,24 +60,34 @@ public class SlotHandleSystem extends EntityProcessingSystem {
         if (slotHandle.getBoundingRectangle().contains(
                 new Vector2(unProjectTouch.x , unProjectTouch.y))) {
             slotHandle.pullSlotHandle();
-
-            int slotHandleEntityId = slotHandle.getEntityIds().get(1);
-            Rotation rotation = E.E(slotHandleEntityId)
-                    .getRotation();
-            E.E(slotHandleEntityId)
-                    .script(
-                            sequence(
-                                    rotateBetween(
-                                            rotation.angle,
-                                        rotation.angle - 45,
-                                    0.5f,
-                                            Interpolation.circle),
-                                    rotateBetween(
-                                        rotation.angle - 45,
-                                            rotation.angle,
-                                    0.5f,
-                                            Interpolation.circle)));
+            rotateSlotHandle(slotHandle);
+            rotateReelsNotHeld();
         }
         touched = false;
+    }
+
+    private void rotateSlotHandle(SlotHandleSprite slotHandle) {
+        int slotHandleEntityId = slotHandle.getEntityIds().get(1);
+        Rotation rotation = E.E(slotHandleEntityId)
+                .getRotation();
+        E.E(slotHandleEntityId)
+                .script(
+                        sequence(
+                                rotateBetween(
+                                        rotation.angle,
+                                    rotation.angle - 45,
+                                0.5f,
+                                        Interpolation.circle),
+                                rotateBetween(
+                                    rotation.angle - 45,
+                                        rotation.angle,
+                                0.5f,
+                                        Interpolation.circle)));
+    }
+
+    private void rotateReelsNotHeld() {
+        System.out.println(" rotateReelsNotHeld() -> implement me!");
+
+        animatedReelSystem.actionSlotHandlePulled();
     }
 }

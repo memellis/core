@@ -50,10 +50,14 @@ public class PlayerControlSystem extends EntitySystem {
     private ImmutableArray<Entity> lightButtonEntities;
     private ImmutableArray<Entity> slotHandleEntities;
     private ImmutableArray<Entity> reelHelperEntities;
-    private ComponentMapper<AnimatedReelComponent> animatedReelComponentMapper = ComponentMapper.getFor(AnimatedReelComponent.class);
-    private ComponentMapper<LightButtonComponent> lightButtonComponentMapper = ComponentMapper.getFor(LightButtonComponent.class);
-    private ComponentMapper<SlothandleSpriteComponent> slothandleSpriteComponentMapper = ComponentMapper.getFor(SlothandleSpriteComponent.class);
-    private ComponentMapper<ReelHelperComponent> reelHelperComponentMapper = ComponentMapper.getFor(ReelHelperComponent.class);
+    private ComponentMapper<AnimatedReelComponent> animatedReelComponentMapper =
+            ComponentMapper.getFor(AnimatedReelComponent.class);
+    private ComponentMapper<LightButtonComponent> lightButtonComponentMapper =
+            ComponentMapper.getFor(LightButtonComponent.class);
+    private ComponentMapper<SlothandleSpriteComponent> slothandleSpriteComponentMapper =
+            ComponentMapper.getFor(SlothandleSpriteComponent.class);
+    private ComponentMapper<ReelHelperComponent> reelHelperComponentMapper =
+            ComponentMapper.getFor(ReelHelperComponent.class);
     private SystemCallback systemCallback;
 
     public PlayerControlSystem(Viewport viewport, Viewport lightViewPort, AnnotationAssetManager annotationAssetManager) {
@@ -64,10 +68,14 @@ public class PlayerControlSystem extends EntitySystem {
 
     @Override
     public void addedToEngine(Engine engine) {
-        animatedReelEntities = engine.getEntitiesFor(Family.all(AnimatedReelComponent.class, PlayerComponent.class).get());
-        lightButtonEntities = engine.getEntitiesFor(Family.all(LightButtonComponent.class, PlayerComponent.class).get());
-        slotHandleEntities = engine.getEntitiesFor(Family.all(SlothandleSpriteComponent.class, PlayerComponent.class).get());
-        reelHelperEntities = engine.getEntitiesFor(Family.all(ReelHelperComponent.class, PlayerComponent.class).get());
+        animatedReelEntities =
+                engine.getEntitiesFor(Family.all(AnimatedReelComponent.class, PlayerComponent.class).get());
+        lightButtonEntities =
+                engine.getEntitiesFor(Family.all(LightButtonComponent.class, PlayerComponent.class).get());
+        slotHandleEntities =
+                engine.getEntitiesFor(Family.all(SlothandleSpriteComponent.class, PlayerComponent.class).get());
+        reelHelperEntities =
+                engine.getEntitiesFor(Family.all(ReelHelperComponent.class, PlayerComponent.class).get());
     }
 
     @Override
@@ -136,7 +144,8 @@ public class PlayerControlSystem extends EntitySystem {
     }
 
     private void slotHandleEntityTouched(Entity slotHandleEntity) {
-        SlotHandleSprite slotHandleSprite = slotHandleEntity.getComponent(SlothandleSpriteComponent.class).slotHandleSprite;
+        SlotHandleSprite slotHandleSprite =
+                slotHandleEntity.getComponent(SlothandleSpriteComponent.class).slotHandleSprite;
         if (slotHandleSprite.getBoundingRectangle().contains(touch)) {
             if (isAnimatedReelsNotSpinning())
                 slotHandlePulled(slotHandleSprite);

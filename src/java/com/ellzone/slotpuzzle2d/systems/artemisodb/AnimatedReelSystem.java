@@ -30,13 +30,23 @@ public class AnimatedReelSystem extends EntityProcessingSystem {
     private OrthographicCamera camera;
     protected M<Position> mPosition;
     protected M<SpinScroll> mSpinScroll;
-    private boolean touched = false;
+    private boolean isTouched = false;
+    private boolean isSlotHandlePulled = false;
     private Vector3 unProjectTouch;
     private AnimatedPredictedReel animatedPredictedReel;
 
     public AnimatedReelSystem() {
         super(Aspect.all(Position.class, AnimatedReelComponent.class));
         setup();
+    }
+
+    public void touched(Vector3 unProjectTouch) {
+        this.unProjectTouch = unProjectTouch;
+        isTouched = true;
+    }
+
+    public void actionSlotHandlePulled() {
+        isSlotHandlePulled = true;
     }
 
     private void setup() {
@@ -53,14 +63,17 @@ public class AnimatedReelSystem extends EntityProcessingSystem {
 
     @Override
     protected void end() {
-        touched = false;
+        isTouched = false;
+        isSlotHandlePulled = false;
     }
 
     @Override
     protected void process(Entity e) {
         update(e);
-        if (touched)
+        if (isTouched)
             processTouched(e);
+        if (isSlotHandlePulled)
+            processSlotHandlePulled(e);
     }
 
     private void update(Entity e) {
@@ -75,25 +88,24 @@ public class AnimatedReelSystem extends EntityProcessingSystem {
                 animatedReel.getReel().getRegion());
     }
 
-    public void touched(Vector3 unProjectTouch) {
-        this.unProjectTouch = unProjectTouch;
-        touched = true;
-    }
-
     private void processTouched(Entity e) {
         final Position position = mPosition.get(e);
-        AnimatedReelECS animatedReel =
-                (AnimatedReelECS) levelCreatorSystem.getEntities().get(e.getId());
-
-        ReelTile reelTile = animatedReel.getReel();
+        ReelTile reelTile = getReelTile(e);
         Rectangle rectangle =
                 new Rectangle(
                         position.x,
                         position.y,
                         reelTile.getTileWidth(),
                         reelTile.getRegionHeight());
-        if (touched & rectangle.contains(unProjectTouch.x, unProjectTouch.y))
+        if (isTouched & rectangle.contains(unProjectTouch.x, unProjectTouch.y))
             processReelTouched(e, reelTile);
+    }
+
+    private ReelTile getReelTile(Entity e) {
+        AnimatedReelECS animatedReel =
+                (AnimatedReelECS) levelCreatorSystem.getEntities().get(e.getId());
+
+        return animatedReel.getReel();
     }
 
     private void processReelTouched(
@@ -103,7 +115,7 @@ public class AnimatedReelSystem extends EntityProcessingSystem {
             setEndReelWhenReelFinishedSpinning(reelTile);
         else
             startReelSpinning(animatedReelEntity, reelTile);
-        touched = false;
+        isTouched = false;
     }
 
     private void setEndReelWhenReelFinishedSpinning(ReelTile reelTile) {
@@ -122,7 +134,6 @@ public class AnimatedReelSystem extends EntityProcessingSystem {
         animatedPredictedReel = (AnimatedPredictedReel)
                 levelCreatorSystem.getEntities().get(animatedPredictedReelEntity.id());
     }
-
 
     private void startReelSpinning(
             Entity animatedReelEntity,
@@ -191,5 +202,9 @@ public class AnimatedReelSystem extends EntityProcessingSystem {
                 reelTile.getSy(), reelTile.getScrollTextureHeight()) +
                 (MathUtils.random(2, 4) * reelTile.getScrollTextureHeight()) +
                 (reelTile.getEndReel() * reelTile.getTileWidth());
+    }
+
+    private void processSlotHandlePulled(Entity e) {
+         startReelSpinning(e, getReelTile(e));
     }
 }
