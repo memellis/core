@@ -34,6 +34,7 @@ public class AnimatedReelSystem extends EntityProcessingSystem {
     private boolean isSlotHandlePulled = false;
     private Vector3 unProjectTouch;
     private AnimatedPredictedReel animatedPredictedReel;
+    private boolean isReelSpinDirectionClockwise = false;
 
     public AnimatedReelSystem() {
         super(Aspect.all(Position.class, AnimatedReelComponent.class));
@@ -148,7 +149,7 @@ public class AnimatedReelSystem extends EntityProcessingSystem {
                                         spinScroll.sY,
                                         0,
                                         getNearestStartOfScrollHeight(
-                                                spinScroll.sY + MathUtils.random(28000, 32768),
+                                                getNewSy(spinScroll, isReelSpinDirectionClockwise),
                                                 reel.getScrollTextureHeight()),
                                         MathUtils.random(3.0f, 7.0f),
                                         Interpolation.fade),
@@ -164,6 +165,11 @@ public class AnimatedReelSystem extends EntityProcessingSystem {
                    .getInstance()
                    .nextInt(reel.getNumberOfReelsInTexture()));
         reel.startSpinning();
+    }
+
+    private float getNewSy(SpinScroll spinScroll, boolean isReelSpinDirectionClockwise) {
+        return spinScroll.sY + (isReelSpinDirectionClockwise ?
+                MathUtils.random(28000, 32768) : - MathUtils.random(28000, 32768));
     }
 
     private void slowToFinish(Entity e, SpinScroll spinScroll, final ReelTile reelTile) {
