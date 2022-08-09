@@ -150,7 +150,7 @@ public class AnimatedReelSystem extends EntityProcessingSystem {
                                         getNearestStartOfScrollHeight(
                                                 spinScroll.sY + MathUtils.random(28000, 32768),
                                                 reel.getScrollTextureHeight()),
-                                        5.0f,
+                                        MathUtils.random(3.0f, 7.0f),
                                         Interpolation.fade),
                                 new Operation() {
                                     @Override
