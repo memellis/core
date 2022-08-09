@@ -58,6 +58,7 @@ public class SuperSlotMachineECS extends SPPrototype {
     private LevelCreatorSystem levelCreatorSystem;
     private TileMapAttributes tileMapAttributes;
     private final TweenManager tweenManager= new TweenManager();
+    private boolean isDebugPointRenderSystemEnabled = false;
 
     public void create() {
         tileMapAttributes =
@@ -103,7 +104,7 @@ public class SuperSlotMachineECS extends SPPrototype {
                         new RenderTextureRegionSystem(),
                         new RenderTextureRegionRotationSystem(),
                         new RenderImagesSystem(),
-                        new DebugPointRenderSystem()
+                        new DebugPointRenderSystem(isDebugPointRenderSystemEnabled)
                 )
                 .build());
     }

@@ -30,9 +30,20 @@ public class DebugPointRenderSystem extends EntityProcessingSystem {
     protected ComponentMapper<Position> mPositionComponent;
     private SpriteBatch batch;
     private ShapeRenderer shapeRenderer;
+    private boolean isEnabled = true;
+
+    public DebugPointRenderSystem() {
+        this.isEnabled = isEnabled;
+    }
+
+    public DebugPointRenderSystem(boolean isEnabled) {
+        this.isEnabled = isEnabled;
+    }
 
     @Override
     protected void initialize() {
+        if (!isEnabled)
+            return;
         super.initialize();
         batch = new SpriteBatch(2000);
         shapeRenderer = new ShapeRenderer();
@@ -40,18 +51,24 @@ public class DebugPointRenderSystem extends EntityProcessingSystem {
 
     @Override
     protected void begin() {
+        if (!isEnabled)
+            return;
         batch.begin();
         shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
     }
 
     @Override
     protected void end() {
+        if (!isEnabled)
+            return;
         shapeRenderer.end();
         batch.end();
     }
 
     @Override
     protected void process(Entity e) {
+        if (!isEnabled)
+            return;
         final Position position = mPositionComponent.get(e);
         shapeRenderer.circle(position.x, position.y, 5);
     }
