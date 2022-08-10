@@ -24,7 +24,7 @@ public class TestBombReel {
     @Test
     public void testWithOneBombReel() throws Exception {
         Gdx.app = new MyGDXApplication();
-        Array<AnimatedReel> animatedReels = getAnimatedReels(SlotPuzzleMatrices.createMatrixFWithOneBomb());
+        Array<AnimatedReel> animatedReels = getAnimatedReels(SlotPuzzleMatrices.createMatrixWithOneBomb());
 
         Array<ReelTileGridValue> matchedSlots = getMatchedSlots(animatedReels);
         assertThat(matchedSlots.size, is(equalTo(0)));
@@ -34,11 +34,11 @@ public class TestBombReel {
     public void testWithTwoBombReels() {
         Gdx.app = new MyGDXApplication();
         Array<AnimatedReel> animatedReels =
-                getAnimatedReels(SlotPuzzleMatrices.createMatrixFWithTwoBombs());
+                getAnimatedReels(SlotPuzzleMatrices.createMatrixWithTwoBombs());
 
         Array<ReelTileGridValue> matchedSlots = getMatchedSlots(animatedReels);
         Array<TupleValueIndex> createdMatrixEntries = getMatrixEntriesNotDeleted(
-                SlotPuzzleMatrices.createMatrixFWithTwoBombs());
+                SlotPuzzleMatrices.createMatrixWithTwoBombs());
 
         assertThat(matchedSlots.size, is(equalTo(createdMatrixEntries.size)));
         int index = 0;

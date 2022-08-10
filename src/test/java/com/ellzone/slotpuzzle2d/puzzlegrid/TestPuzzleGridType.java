@@ -26,7 +26,7 @@ import static org.junit.Assert.*;
 import static org.hamcrest.CoreMatchers.*;
 
 @RunWith(JUnitParamsRunner.class)
-public class TestPuzzleGridType {
+public class    TestPuzzleGridType {
     private static final int GRID_SIZE_X = 4;
     private static final int GRID_SIZE_Y = 4;
 

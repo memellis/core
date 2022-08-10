@@ -51,7 +51,7 @@ public class TestGetSurroundingReelTiles {
     @Test
     public void testGetSurroundingReelWithTwoReelTilesAndNoSurroundingReelTiles() {
         Gdx.app = new MyGDXApplication();
-        Array<AnimatedReel> animatedReels = getAnimatedReels(SlotPuzzleMatrices.createMatrixFWithTwoBombs());
+        Array<AnimatedReel> animatedReels = getAnimatedReels(SlotPuzzleMatrices.createMatrixWithTwoBombs());
 
         MatchSlots matchSlots = getMatchedSlots(animatedReels);
         Array<ReelTileGridValue> matchedSlots = matchSlots.getMatchedSlots();
@@ -66,7 +66,7 @@ public class TestGetSurroundingReelTiles {
         Gdx.app = new MyGDXApplication();
         PuzzleGridTypeReelTile puzzleGridTypeReelTile = new PuzzleGridTypeReelTile();
         AnimatedReelsMatrixCreator animatedReelsMatrixCreator = new AnimatedReelsMatrixCreator();
-        int[][] grid = SlotPuzzleMatrices.createMatrixFWithTwoBombsSurroundedByReelTilesTopLeft();
+        int[][] grid = SlotPuzzleMatrices.createMatrixWithTwoBombsSurroundedByReelTilesTopLeft();
         Array<AnimatedReel> animatedReels = getAnimatedReels(grid);
         Array<ReelTile> reelTiles = animatedReelsMatrixCreator.
                 getReelTilesFromAnimatedReels(animatedReels);

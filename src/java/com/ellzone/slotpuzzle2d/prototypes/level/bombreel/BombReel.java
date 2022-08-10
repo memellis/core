@@ -217,7 +217,7 @@ public class BombReel extends SPPrototype implements InputProcessor {
 
     private void testBombReelSetUp() {
         animatedReels = animatedReelsMatrixCreator.createAnimatedReelsFromSlotPuzzleMatrix(
-                SlotPuzzleMatrices.createMatrixFWithTwoBombsSurroundedBySomeReelTiles(), false);
+                SlotPuzzleMatrices.createMatrixWithTwoBombsSurroundedBySomeReelTiles(), false);
         numberOfReelsToFall = animatedReelsMatrixCreator.getNumberOfReelsToFall();
     }
 

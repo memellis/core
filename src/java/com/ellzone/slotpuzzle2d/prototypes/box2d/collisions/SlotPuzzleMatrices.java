@@ -21,7 +21,7 @@ import com.ellzone.slotpuzzle2d.utils.InputMatrix;
 
 public class SlotPuzzleMatrices {
 
-    public static int[][] createMatrixMimicingDynamicMatrixFailed1() {
+    public static int[][] createMatrixMimickingDynamicMatrixFailed1() {
         String matrixToInput = "12 x 9\n"
                 + "-1  0 -1  0 -1 -1 -1 -1 -1  0 -1  0\n"
                 + "-1 -1  0  0 -1 -1  0 -1 -1 -1  0  0\n"
@@ -36,7 +36,7 @@ public class SlotPuzzleMatrices {
            new InputMatrix(matrixToInput).readMatrix();
     }
 
-    public static int[][] createMatrixMimicingDynamicMatrixFailed2() {
+    public static int[][] createMatrixMimickingDynamicMatrixFailed2() {
         String matrixToInput = "12 x 9\n"
                 + " 0  0 -1  0 -1 -1 -1 -1 -1 -1 -1 -1\n"
                 + " 0 -1  0  0 -1 -1 -1 -1 -1 -1 -1 -1\n"
@@ -51,7 +51,7 @@ public class SlotPuzzleMatrices {
            new InputMatrix(matrixToInput).readMatrix();
     }
 
-    public static int[][] createMatrixMimicingDynamicMatrixFailed3() {
+    public static int[][] createMatrixMimickingDynamicMatrixFailed3() {
         String matrixToInput = "12 x 9\n"
                 + "-1  0 -1  0 -1  0 -1  0 -1  0 -1  0\n"
                 + "-1  0  0  0 -1 -1  0  0 -1 -1  0  0\n"
@@ -66,7 +66,7 @@ public class SlotPuzzleMatrices {
            new InputMatrix(matrixToInput).readMatrix();
     }
 
-    public static int[][] createMatrixMimicingDynamicMatrix() {
+    public static int[][] createMatrixMimickingDynamicMatrix() {
         String matrixToInput = "12 x 9\n"
                 + "-1  0 -1  0 -1  0 -1  0 -1  0 -1  0\n"
                 + "-1 -1  0  0 -1 -1  0  0 -1 -1  0  0\n"
@@ -351,7 +351,7 @@ public class SlotPuzzleMatrices {
            new InputMatrix(matrixToInput).readMatrix();
     }
 
-    public static int[][] createMatrixFWithOneBomb() {
+    public static int[][] createMatrixWithOneBomb() {
         String matrixToInput = "12 x 9\n"
                 + "-1 -1 -1 -1 -1 -1 -1 -1 -1 -1  -1  -1\n"
                 + "-1 -1 -1 -1 -1 -1 -1 -1 -1 -1  -1  -1\n"
@@ -366,7 +366,7 @@ public class SlotPuzzleMatrices {
            new InputMatrix(matrixToInput).readMatrix();
     }
 
-    public static int[][] createMatrixFWithTwoBombs() {
+    public static int[][] createMatrixWithTwoBombs() {
         String matrixToInput = "12 x 9\n"
                 + "-1 -1 -1 -1 -1 -1 -1 -1 -1 -1  -1  -1\n"
                 + "-1 -1 -1 -1 -1 -1 -1 -1 -1 -1  -1  -1\n"
@@ -381,7 +381,7 @@ public class SlotPuzzleMatrices {
            new InputMatrix(matrixToInput).readMatrix();
     }
 
-    public static int[][] createMatrixFWithTwoBombsSurroundedByReelTilesTopLeft() {
+    public static int[][] createMatrixWithTwoBombsSurroundedByReelTilesTopLeft() {
         String matrixToInput = "12 x 9\n"
                 + " 0  1  2  3 -1 -1 -1 -1 -1 -1  -1  -1\n"
                 + " 1  8  8  4 -1 -1 -1 -1 -1 -1  -1  -1\n"
@@ -393,10 +393,10 @@ public class SlotPuzzleMatrices {
                 + "-1 -1 -1 -1 -1 -1 -1 -1 -1 -1  -1  -1\n"
                 + "-1 -1 -1 -1 -1 -1 -1 -1 -1 -1  -1  -1\n";
         return
-            new InputMatrix(matrixToInput).readMatrix();
+                new InputMatrix(matrixToInput).readMatrix();
     }
 
-    public static int[][] createMatrixFWithTwoBombsSurroundedBySomeReelTiles() {
+    public static int[][] createMatrixWithTwoBombsSurroundedBySomeReelTiles() {
         String matrixToInput = "12 x 9\n"
                 + "-1 -1 -1 -1 -1 -1 -1 -1 -1 -1  -1  -1\n"
                 + "-1 -1 -1 -1 -1 -1 -1 -1 -1 -1  -1  -1\n"
@@ -408,9 +408,8 @@ public class SlotPuzzleMatrices {
                 + "-1 -1 -1 -1 -1 -1 -1 -1 -1 -1  -1  -1\n"
                 + "-1 -1 -1 -1 -1 -1 -1 -1 -1 -1  -1  -1\n";
         return
-           new InputMatrix(matrixToInput).readMatrix();
+                new InputMatrix(matrixToInput).readMatrix();
     }
-
 
     public static int[][] createDynamicMatrix(int[] matrixIdentifier,
                                               int width,
@@ -431,10 +430,10 @@ public class SlotPuzzleMatrices {
 
     public static Array<int[][]> getSlotMatrices() {
         Array<int[][]> slotMatrices = new Array<>();
-        slotMatrices.add(createMatrixMimicingDynamicMatrixFailed1());
-        slotMatrices.add(createMatrixMimicingDynamicMatrixFailed2());
-        slotMatrices.add(createMatrixMimicingDynamicMatrixFailed3());
-        slotMatrices.add(createMatrixMimicingDynamicMatrix());
+        slotMatrices.add(createMatrixMimickingDynamicMatrixFailed1());
+        slotMatrices.add(createMatrixMimickingDynamicMatrixFailed2());
+        slotMatrices.add(createMatrixMimickingDynamicMatrixFailed3());
+        slotMatrices.add(createMatrixMimickingDynamicMatrix());
         slotMatrices.add(createMatrixWithNoBoxes());
         slotMatrices.add(createMatrixWithOneBox());
         slotMatrices.add(createMatrixWithOneBoxGapThreeOnOneBox());
