@@ -381,21 +381,6 @@ public class SlotPuzzleMatrices {
            new InputMatrix(matrixToInput).readMatrix();
     }
 
-    public static int[][] createMatrixFWithTwoBombsSurroundedByReelTiles() {
-        String matrixToInput = "12 x 9\n"
-                + "-1 -1 -1 -1 -1 -1 -1 -1 -1 -1  -1  -1\n"
-                + "-1 -1 -1 -1 -1 -1 -1 -1 -1 -1  -1  -1\n"
-                + "-1 -1 -1 -1 -1 -1 -1 -1 -1 -1  -1  -1\n"
-                + "-1 -1 -1  0  1  2  3 -1 -1 -1  -1  -1\n"
-                + "-1 -1 -1  1  9  9  4 -1 -1 -1  -1  -1\n"
-                + "-1 -1 -1  0  8  6  5 -1 -1 -1  -1  -1\n"
-                + "-1 -1 -1 -1 -1 -1 -1 -1 -1 -1  -1  -1\n"
-                + "-1 -1 -1 -1 -1 -1 -1 -1 -1 -1  -1  -1\n"
-                + "-1 -1 -1 -1 -1 -1 -1 -1 -1 -1  -1  -1\n";
-        return
-            new InputMatrix(matrixToInput).readMatrix();
-    }
-
     public static int[][] createMatrixFWithTwoBombsSurroundedByReelTilesTopLeft() {
         String matrixToInput = "12 x 9\n"
                 + " 0  1  2  3 -1 -1 -1 -1 -1 -1  -1  -1\n"
