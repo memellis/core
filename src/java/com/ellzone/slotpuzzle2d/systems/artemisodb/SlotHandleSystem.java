@@ -86,8 +86,6 @@ public class SlotHandleSystem extends EntityProcessingSystem {
     }
 
     private void rotateReelsNotHeld() {
-        System.out.println(" rotateReelsNotHeld() -> implement me!");
-
         animatedReelSystem.actionSlotHandlePulled();
     }
 }

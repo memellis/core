@@ -26,6 +26,7 @@ import static net.mostlyoriginal.api.operation.OperationFactory.*;
 
 
 public class AnimatedReelSystem extends EntityProcessingSystem {
+    private static int numberOfReelsSpinning = 0;
     private LevelCreatorSystem levelCreatorSystem;
     private OrthographicCamera camera;
     protected M<Position> mPosition;
@@ -140,6 +141,8 @@ public class AnimatedReelSystem extends EntityProcessingSystem {
             Entity animatedReelEntity,
             final ReelTile reel) {
 
+        numberOfReelsSpinning++;
+
         final SpinScroll spinScroll = mSpinScroll.get(animatedReelEntity.getId());
         E.E(animatedReelEntity.getId())
                 .script(
@@ -194,6 +197,10 @@ public class AnimatedReelSystem extends EntityProcessingSystem {
                                         Random
                                                 .getInstance()
                                                 .nextInt(reelTile.getNumberOfReelsInTexture()));
+                                numberOfReelsSpinning--;
+                                System.out.println("numberOfReelsSpinning="+numberOfReelsSpinning);
+                                if (numberOfReelsSpinning==0)
+                                    checkForMatches();
                                 return true;
                             }
                         }));
@@ -214,5 +221,9 @@ public class AnimatedReelSystem extends EntityProcessingSystem {
          ReelTile reelTile = getReelTile(e);
          if (!reelTile.isSpinning())
             startReelSpinning(e, getReelTile(e));
+    }
+
+    private void checkForMatches() {
+        System.out.println("Implement checkForMatches() when all reels have stopped spinning");
     }
 }
