@@ -14,10 +14,8 @@
  limitations under the License.
  */
 
-package com.ellzone.slotpuzzle2d.testpuzzlegrid;
+package com.ellzone.slotpuzzle2d.puzzlegrid;
 
-import com.ellzone.slotpuzzle2d.puzzlegrid.PuzzleGridType;
-import com.ellzone.slotpuzzle2d.puzzlegrid.TupleValueIndex;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 

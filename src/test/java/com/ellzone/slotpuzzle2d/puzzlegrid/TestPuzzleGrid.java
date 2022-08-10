@@ -14,12 +14,12 @@
  limitations under the License.
  */
 
-package com.ellzone.slotpuzzle2d.testpuzzlegrid;
+package com.ellzone.slotpuzzle2d.puzzlegrid;
 
 import static org.junit.Assert.*;
 
 import com.badlogic.gdx.utils.Array;
-import com.ellzone.slotpuzzle2d.puzzlegrid.*;
+
 import org.junit.Test;
 
 public class TestPuzzleGrid {

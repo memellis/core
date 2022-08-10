@@ -13,6 +13,7 @@ import com.badlogic.gdx.math.Vector3;
 import com.ellzone.slotpuzzle2d.component.artemis.AnimatedReelComponent;
 import com.ellzone.slotpuzzle2d.component.artemis.Position;
 import com.ellzone.slotpuzzle2d.component.artemis.SpinScroll;
+import com.ellzone.slotpuzzle2d.puzzlegrid.CalculateMatches;
 import com.ellzone.slotpuzzle2d.sprites.reel.AnimatedPredictedReel;
 import com.ellzone.slotpuzzle2d.sprites.reel.AnimatedReelECS;
 import com.ellzone.slotpuzzle2d.sprites.reel.ReelTile;
@@ -36,6 +37,7 @@ public class AnimatedReelSystem extends EntityProcessingSystem {
     private Vector3 unProjectTouch;
     private AnimatedPredictedReel animatedPredictedReel;
     private boolean isReelSpinDirectionClockwise = false;
+    private CalculateMatches calculateMatches;
 
     public AnimatedReelSystem() {
         super(Aspect.all(Position.class, AnimatedReelComponent.class));
@@ -53,6 +55,7 @@ public class AnimatedReelSystem extends EntityProcessingSystem {
 
     private void setup() {
         setupCamera();
+        calculateMatches = new CalculateMatches(5,5);
     }
 
     private void setupCamera() {

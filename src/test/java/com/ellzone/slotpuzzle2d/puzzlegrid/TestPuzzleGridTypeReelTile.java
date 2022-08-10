@@ -1,5 +1,3 @@
-package com.ellzone.slotpuzzle2d.testpuzzlegrid;
-
 /*
  Copyright 2011 See AUTHORS file.
 
@@ -16,14 +14,12 @@ package com.ellzone.slotpuzzle2d.testpuzzlegrid;
  limitations under the License.
  */
 
+package com.ellzone.slotpuzzle2d.puzzlegrid;
+
 import com.badlogic.gdx.Application;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.utils.Array;
 import com.ellzone.slotpuzzle2d.SlotPuzzleConstants;
-import com.ellzone.slotpuzzle2d.puzzlegrid.GridSize;
-import com.ellzone.slotpuzzle2d.puzzlegrid.PuzzleGridTypeReelTile;
-import com.ellzone.slotpuzzle2d.puzzlegrid.ReelTileGridValue;
-import com.ellzone.slotpuzzle2d.puzzlegrid.TupleValueIndex;
 import com.ellzone.slotpuzzle2d.screens.PlayScreen;
 import com.ellzone.slotpuzzle2d.sprites.reel.ReelTile;
 import com.ellzone.slotpuzzle2d.utils.InputMatrix;
