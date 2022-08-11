@@ -7,12 +7,9 @@ import com.ellzone.slotpuzzle2d.utils.InputMatrix;
 import org.junit.Test;
 
 import static org.hamcrest.CoreMatchers.equalTo;
-import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.empty;
 import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.notNullValue;
-import static org.hamcrest.Matchers.nullValue;
+
 
 public class TestCalculateMatches {
     private static final int TEST_GRID_WIDTH = 5;
