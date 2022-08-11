@@ -55,7 +55,7 @@ public class AnimatedReelSystem extends EntityProcessingSystem {
 
     private void setup() {
         setupCamera();
-        calculateMatches = new CalculateMatches(5,5);
+        calculateMatches = new CalculateMatches();
     }
 
     private void setupCamera() {
