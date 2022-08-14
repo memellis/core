@@ -34,6 +34,8 @@ import com.ellzone.slotpuzzle2d.sprites.reel.AnimatedReel;
 import com.ellzone.slotpuzzle2d.sprites.reel.AnimatedReelECS;
 import com.ellzone.slotpuzzle2d.sprites.slothandle.SlotHandleSprite;
 
+import java.util.Comparator;
+
 import box2dLight.RayHandler;
 
 @All({Position.class})
@@ -46,6 +48,7 @@ public class LevelCreatorSystem extends BaseSystem {
     private LevelObjectCreatorEntityHolder levelObjectCreatorEntityHolder;
     private final LevelCreatorInjectionInterface levelCreatorInjectionInterface;
     private Array<Object> entities = new Array<>();
+    private Array<AnimatedReelECS> animatedReelsECS = new Array<>();
 
     private boolean isSetup;
 
@@ -77,6 +80,14 @@ public class LevelCreatorSystem extends BaseSystem {
 
     public Array<Object> getEntities() { return entities; }
 
+    public LevelObjectCreatorEntityHolder getLevelObjectCreatorEntityHolder() {
+        return levelObjectCreatorEntityHolder;
+    }
+
+    public Array<AnimatedReelECS> getAnimatedReelsECS() {
+        return animatedReelsECS;
+    }
+
     private void setup() {
         createLevelEntities();
         setEntityComponents();
@@ -94,43 +105,43 @@ public class LevelCreatorSystem extends BaseSystem {
     }
 
     private void setEntityComponents() {
-        getAnimatedReels();
-        getAnimatedPredictedReels();
-        getSlotHandle();
-        getSpinWheels();
-        getReelGrids();
-        getAnimatedReelsWithinReelGrids();
+        setUpAnimatedReels();
+        setUpAnimatedPredictedReels();
+        setUpSlotHandle();
+        setUpSpinWheels();
+        setUpReelGrids();
+        setUpAnimatedReelsWithinReelGrids();
     }
 
-    private void getAnimatedReels() {
+    private void setUpAnimatedReels() {
         for (AnimatedReel animatedReel :
                 new Array.ArrayIterator<>(
                         levelObjectCreatorEntityHolder.getAnimatedReels()))
             processAnimatedReel(animatedReel);
     }
 
-    private void getAnimatedPredictedReels() {
+    private void setUpAnimatedPredictedReels() {
         for (AnimatedPredictedReel animatedPredictedReel :
                 new Array.ArrayIterator<>(
                         levelObjectCreatorEntityHolder.getAnimatedPredictedReels()))
             processAnimatedPredictedReel(animatedPredictedReel);
     }
 
-    private void getSlotHandle() {
+    private void setUpSlotHandle() {
         for (SlotHandleSprite handle :
                 new Array.ArrayIterator<>(
                         levelObjectCreatorEntityHolder.getHandles()))
             processSlotHandle(handle);
     }
 
-    private void getSpinWheels() {
+    private void setUpSpinWheels() {
         for (SpinWheelSlotPuzzleTileMap spinWheel :
             new Array.ArrayIterator<>(
                     levelObjectCreatorEntityHolder.getSpinWheels()))
             processSpinWheel(spinWheel);
     }
 
-    private void getReelGrids() {
+    private void setUpReelGrids() {
         for (ReelGrid reelGrid :
             new Array.ArrayIterator<>(levelObjectCreatorEntityHolder.getReelGrids()))
                 processReelGrid(reelGrid);
@@ -140,6 +151,7 @@ public class LevelCreatorSystem extends BaseSystem {
         Array<Integer> entityIds = new Array<>();
         AnimatedReelECS animatedReelECS =
                 createAnimatedReeECSFromAnimatedReel(animatedReel);
+        animatedReelsECS.add(animatedReelECS);
         E.E()
                 .positionX(animatedReel.getReel().getX())
                 .positionY(animatedReel.getReel().getY())
@@ -243,20 +255,19 @@ public class LevelCreatorSystem extends BaseSystem {
                 .positionY(reelGrid.getY());
     }
 
-    private void getAnimatedReelsWithinReelGrids() {
-          for (AnimatedReel animatedReel :
-                  new Array.ArrayIterator<>(
-                    levelObjectCreatorEntityHolder.getAnimatedReels()))
+    private void setUpAnimatedReelsWithinReelGrids() {
+          for (AnimatedReelECS animatedReel :
+                  new Array.ArrayIterator<>(getAnimatedReelsECS()))
               checkAnimatedReelWithinReelGrids(animatedReel);
     }
 
-    private void checkAnimatedReelWithinReelGrids(AnimatedReel animatedReel) {
+    private void checkAnimatedReelWithinReelGrids(AnimatedReelECS animatedReel) {
         for (ReelGrid reelGrid :
                 new Array.ArrayIterator<>(levelObjectCreatorEntityHolder.getReelGrids()))
                     checkAnimatedReelWithinReelGrid(animatedReel, reelGrid);
     }
 
-    private void checkAnimatedReelWithinReelGrid(AnimatedReel animatedReel, ReelGrid reelGrid) {
+    private void checkAnimatedReelWithinReelGrid(AnimatedReelECS animatedReel, ReelGrid reelGrid) {
         Rectangle animatedReelRectangle = new Rectangle(
                 animatedReel.getX(),
                 animatedReel.getY(),
@@ -270,5 +281,13 @@ public class LevelCreatorSystem extends BaseSystem {
         );
         if (animatedReelRectangle.overlaps(reelGridRectangle))
             reelGrid.addAnimatedReel(animatedReel);
+        reelGrid.getAnimatedReelsWithinReelGrid().sort(
+                new Comparator<AnimatedReelECS>() {
+                    @Override
+                    public int compare(AnimatedReelECS reel1, AnimatedReelECS reel2) {
+                        return (int) (reel1.getReel().getX() - reel2.getReel().getX());
+                    }
+                }
+        );
     }
 }

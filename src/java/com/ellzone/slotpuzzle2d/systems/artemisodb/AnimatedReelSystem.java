@@ -10,9 +10,11 @@ import com.badlogic.gdx.math.Interpolation;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector3;
+import com.badlogic.gdx.utils.Array;
 import com.ellzone.slotpuzzle2d.component.artemis.AnimatedReelComponent;
 import com.ellzone.slotpuzzle2d.component.artemis.Position;
 import com.ellzone.slotpuzzle2d.component.artemis.SpinScroll;
+import com.ellzone.slotpuzzle2d.level.reel.ReelGrid;
 import com.ellzone.slotpuzzle2d.puzzlegrid.CalculateMatches;
 import com.ellzone.slotpuzzle2d.sprites.reel.AnimatedPredictedReel;
 import com.ellzone.slotpuzzle2d.sprites.reel.AnimatedReelECS;
@@ -27,6 +29,8 @@ import static net.mostlyoriginal.api.operation.OperationFactory.*;
 
 
 public class AnimatedReelSystem extends EntityProcessingSystem {
+    public static final int MIN_REEL_SPIN_RANGE = 28000;
+    public static final int MAX_REEL_SPIN_RANGE = 32768;
     private static int numberOfReelsSpinning = 0;
     private LevelCreatorSystem levelCreatorSystem;
     private OrthographicCamera camera;
@@ -145,7 +149,6 @@ public class AnimatedReelSystem extends EntityProcessingSystem {
             final ReelTile reel) {
 
         numberOfReelsSpinning++;
-
         final SpinScroll spinScroll = mSpinScroll.get(animatedReelEntity.getId());
         E.E(animatedReelEntity.getId())
                 .script(
@@ -175,7 +178,8 @@ public class AnimatedReelSystem extends EntityProcessingSystem {
 
     private float getNewSy(SpinScroll spinScroll, boolean isReelSpinDirectionClockwise) {
         return spinScroll.sY + (isReelSpinDirectionClockwise ?
-                MathUtils.random(28000, 32768) : - MathUtils.random(28000, 32768));
+                  MathUtils.random(MIN_REEL_SPIN_RANGE, MAX_REEL_SPIN_RANGE) :
+                - MathUtils.random(MIN_REEL_SPIN_RANGE, MAX_REEL_SPIN_RANGE));
     }
 
     private void slowToFinish(Entity e, SpinScroll spinScroll, final ReelTile reelTile) {
@@ -201,7 +205,6 @@ public class AnimatedReelSystem extends EntityProcessingSystem {
                                                 .getInstance()
                                                 .nextInt(reelTile.getNumberOfReelsInTexture()));
                                 numberOfReelsSpinning--;
-                                System.out.println("numberOfReelsSpinning="+numberOfReelsSpinning);
                                 if (numberOfReelsSpinning==0)
                                     checkForMatches();
                                 return true;
@@ -227,6 +230,32 @@ public class AnimatedReelSystem extends EntityProcessingSystem {
     }
 
     private void checkForMatches() {
-        System.out.println("Implement checkForMatches() when all reels have stopped spinning");
+        for (ReelGrid reelGrid :
+                new Array.ArrayIterator<>(
+                        levelCreatorSystem.getLevelObjectCreatorEntityHolder().getReelGrids()))
+            checkForMatchesForReelGrid(reelGrid);
+    }
+
+    private void checkForMatchesForReelGrid(ReelGrid reelGrid) {
+        int reelGridMatrixWidth = (int)
+            (reelGrid.getWidth() / reelGrid.getAnimatedReelsWithinReelGrid().get(0).getTileWidth());
+        int reelGridMatrixHeight = (int)
+            (reelGrid.getHeight() / reelGrid.getAnimatedReelsWithinReelGrid().get(0).getTileHeight());
+        int[][] reelGridMatrix = new int[reelGridMatrixWidth][reelGridMatrixHeight];
+        captureReelPositions(reelGrid.getAnimatedReelsWithinReelGrid(), reelGridMatrix);
+        calculateMatches.process(reelGridMatrix);
+    }
+
+    private int[][] captureReelPositions(Array<AnimatedReelECS> reelsTiles, int[][] reelGridMatrix) {
+        for (int r = 0; r < reelGridMatrix.length; r++)
+            for (int c = 0; c < reelGridMatrix[0].length; c++)
+                reelGridMatrix[r][c] = getReelPosition(reelsTiles, r, c);
+
+        return reelGridMatrix;
+    }
+
+    private int getReelPosition(Array<AnimatedReelECS> reelTiles, int r, int c) {
+        return (reelTiles.get(c).getReel().getCurrentReel() + 8 + r) %
+                reelTiles.get(c).getReel().getNumberOfReelsInTexture();
     }
 }

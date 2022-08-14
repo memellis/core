@@ -53,6 +53,7 @@ public class ReelTile extends ReelSprite implements ReelTileInterface {
 	private final Array<Vector2> reelFlashSegments = new Array<>();
 	private int score;
     private Pixmap flashOnReelPixmap;
+    private boolean isReelSpinDirectionClockwise = false;
 	
     public ReelTile(
             Texture scrollTexture,
@@ -211,7 +212,9 @@ public class ReelTile extends ReelSprite implements ReelTileInterface {
 	@Override
     public int getCurrentReel() {
         float syModulus = sy % scrollTexture.getHeight();
- 		return (int) ((int) ((syModulus + (tileHeight / 2)) % scrollTexture.getHeight()) / tileHeight);
+        return calculateCurrentReel(syModulus);
+ //		return (int) ((int) ((syModulus - (tileHeight / 2)) % scrollTexture.getHeight()) / tileHeight);
+//        return (int) ((int) ((syModulus + (tileHeight / 2)) % scrollTexture.getHeight()) / tileHeight);
 	}
 
 	@Override
@@ -421,5 +424,11 @@ public class ReelTile extends ReelSprite implements ReelTileInterface {
 
     public void setEntityIds(Array<Integer> entityIds) {
         this.entityIds = entityIds;
+    }
+
+    private int calculateCurrentReel(float syModulus) {
+        return (int) ((isReelSpinDirectionClockwise ?
+                ((int) ((syModulus + (tileHeight / 2)) % scrollTexture.getHeight()) / tileHeight) :
+                ((int) ((syModulus - (tileHeight / 2)) % scrollTexture.getHeight()) / tileHeight)));
     }
 }

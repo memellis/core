@@ -17,14 +17,14 @@
 package com.ellzone.slotpuzzle2d.level.reel;
 
 import com.badlogic.gdx.utils.Array;
-import com.ellzone.slotpuzzle2d.sprites.reel.AnimatedReel;
+import com.ellzone.slotpuzzle2d.sprites.reel.AnimatedReelECS;
 
 public class ReelGrid {
     private float x;
     private float y;
     private float width;
     private float height;
-    private Array<AnimatedReel> animatedReelsWithinReelGrid = new Array<>();
+    private Array<AnimatedReelECS> animatedReelsWithinReelGrid = new Array<>();
 
     public ReelGrid(float x, float y, float width, float height) {
         this.setX(x);
@@ -65,11 +65,11 @@ public class ReelGrid {
         this.height = height;
     }
 
-    public void addAnimatedReel(AnimatedReel animatedReel) {
+    public void addAnimatedReel(AnimatedReelECS animatedReel) {
         animatedReelsWithinReelGrid.add(animatedReel);
     }
 
-    public Array<AnimatedReel> getAnimatedReelsWithinReelGrid() {
+    public Array<AnimatedReelECS> getAnimatedReelsWithinReelGrid() {
         return animatedReelsWithinReelGrid;
     }
 }
