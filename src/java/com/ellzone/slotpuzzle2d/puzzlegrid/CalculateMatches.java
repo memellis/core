@@ -18,40 +18,46 @@ package com.ellzone.slotpuzzle2d.puzzlegrid;
 
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Array;
+import com.ellzone.slotpuzzle2d.level.reel.ReelGrid;
 
 public class CalculateMatches {
-    public Array<Array<Vector2>> process(int[][] reelGrid) {
-        return matchReels(reelGrid);
+    public Array<Array<Vector2>> process(int[][] reelGridMatrix, ReelGrid reelGrid) {
+        return matchReels(reelGridMatrix, reelGrid);
     }
 
-    private Array<Array<Vector2>> matchReels(int[][] reelGrid) {
+    private Array<Array<Vector2>> matchReels(int[][] reelGridMatrix, ReelGrid reelGrid) {
         PuzzleGridTypeReelTile puzzleGrid = new PuzzleGridTypeReelTile();
-        ReelTileGridValue[][] matchGrid = puzzleGrid.populateMatchGrid(reelGrid);
+        ReelTileGridValue[][] matchGrid = puzzleGrid.populateMatchGrid(reelGridMatrix);
         PuzzleGridTypeReelTile puzzleGridTypeReelTile = new PuzzleGridTypeReelTile();
         PuzzleGridTypeReelTile.printGrid(matchGrid);
         matchGrid = puzzleGridTypeReelTile.createGridLinks(matchGrid);
         System.out.println();
-        return matchRowsToDraw(matchGrid, puzzleGridTypeReelTile);
+        return matchRowsToDraw(matchGrid, puzzleGridTypeReelTile, reelGrid);
      }
 
     private Array<Array<Vector2>> matchRowsToDraw(
             ReelTileGridValue[][] matchGrid,
-            PuzzleGridTypeReelTile puzzleGridTypeReelTile) {
+            PuzzleGridTypeReelTile puzzleGridTypeReelTile,
+            ReelGrid reelGrid) {
         Array<ReelTileGridValue> depthSearchResults;
         Array<Array<Vector2>> rowMatchesToDraw = new Array<>();
         for (ReelTileGridValue[] reelTileGridValues : matchGrid) {
             depthSearchResults = puzzleGridTypeReelTile.depthFirstSearchIncludeDiagonals(reelTileGridValues[0]);
             if (puzzleGridTypeReelTile.isRow(depthSearchResults, matchGrid)) {
-                rowMatchesToDraw.add(getRowMatchPattern(depthSearchResults));
+                rowMatchesToDraw.add(getRowMatchPattern(depthSearchResults, reelGrid));
             }
         }
         return rowMatchesToDraw;
     }
 
-    private Array<Vector2> getRowMatchPattern(Array<ReelTileGridValue> depthSearchResults) {
+    private Array<Vector2> getRowMatchPattern(
+            Array<ReelTileGridValue> depthSearchResults, ReelGrid reelGrid) {
+        int x_offset = (int) reelGrid.getX();
+        int y_offset = (int) reelGrid.getY();
         Array<Vector2> rowMatchPattern = new Array<>();
         for (ReelTileGridValue cell : new Array.ArrayIterator<>(depthSearchResults)) {
-            rowMatchPattern.add(new Vector2(cell.c * 40, cell.r * 40));
+            rowMatchPattern.add(new Vector2(
+                    x_offset + 20 +  cell.c * 40, y_offset + 20 + cell.r * 40));
         }
         return rowMatchPattern;
     }

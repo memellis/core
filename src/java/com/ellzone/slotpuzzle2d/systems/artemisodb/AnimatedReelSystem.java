@@ -248,7 +248,7 @@ public class AnimatedReelSystem extends EntityProcessingSystem {
             (reelGrid.getHeight() / reelGrid.getAnimatedReelsWithinReelGrid().get(0).getTileHeight());
         int[][] reelGridMatrix = new int[reelGridMatrixWidth][reelGridMatrixHeight];
         captureReelPositions(reelGrid.getAnimatedReelsWithinReelGrid(), reelGridMatrix);
-        return calculateMatches.process(reelGridMatrix);
+        return calculateMatches.process(reelGridMatrix, reelGrid);
     }
 
     private int[][] captureReelPositions(Array<AnimatedReelECS> reelsTiles, int[][] reelGridMatrix) {
