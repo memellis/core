@@ -9,6 +9,7 @@ import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.math.Interpolation;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Rectangle;
+import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.Array;
 import com.ellzone.slotpuzzle2d.component.artemis.AnimatedReelComponent;
@@ -232,18 +233,22 @@ public class AnimatedReelSystem extends EntityProcessingSystem {
     private void checkForMatches() {
         for (ReelGrid reelGrid :
                 new Array.ArrayIterator<>(
-                        levelCreatorSystem.getLevelObjectCreatorEntityHolder().getReelGrids()))
-            checkForMatchesForReelGrid(reelGrid);
+                        levelCreatorSystem.getLevelObjectCreatorEntityHolder().getReelGrids())) {
+            Array<Array<Vector2>> matchedRows = checkForMatchesForReelGrid(reelGrid);
+            if (matchedRows.size > 0)
+                setMatchesToBeDisplayed(matchedRows);
+        }
     }
 
-    private void checkForMatchesForReelGrid(ReelGrid reelGrid) {
+
+    private Array<Array<Vector2>> checkForMatchesForReelGrid(ReelGrid reelGrid) {
         int reelGridMatrixWidth = (int)
             (reelGrid.getWidth() / reelGrid.getAnimatedReelsWithinReelGrid().get(0).getTileWidth());
         int reelGridMatrixHeight = (int)
             (reelGrid.getHeight() / reelGrid.getAnimatedReelsWithinReelGrid().get(0).getTileHeight());
         int[][] reelGridMatrix = new int[reelGridMatrixWidth][reelGridMatrixHeight];
         captureReelPositions(reelGrid.getAnimatedReelsWithinReelGrid(), reelGridMatrix);
-        calculateMatches.process(reelGridMatrix);
+        return calculateMatches.process(reelGridMatrix);
     }
 
     private int[][] captureReelPositions(Array<AnimatedReelECS> reelsTiles, int[][] reelGridMatrix) {
@@ -257,5 +262,18 @@ public class AnimatedReelSystem extends EntityProcessingSystem {
     private int getReelPosition(Array<AnimatedReelECS> reelTiles, int r, int c) {
         return (reelTiles.get(c).getReel().getCurrentReel() + 8 + r) %
                 reelTiles.get(c).getReel().getNumberOfReelsInTexture();
+    }
+
+    private void setMatchesToBeDisplayed(Array<Array<Vector2>> matchedRows) {
+        System.out.println("I've got some matched rows to display!");
+        for (Array<Vector2> matchedRow : new Array.ArrayIterator<>(matchedRows))
+            setUpMatchedRowToBeDisplay(matchedRow);
+    }
+
+    private void setUpMatchedRowToBeDisplay(Array<Vector2> matchedRow) {
+        E.E()
+                .vector2ShapeVectors(matchedRow)
+                .colorRed(255)
+                .group("ReelGridMatchedRow");
     }
 }

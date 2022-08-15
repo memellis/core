@@ -1,6 +1,7 @@
 package com.ellzone.slotpuzzle2d.systems.artemisodb;
 
 import com.artemis.E;
+import com.artemis.EBag;
 import com.artemis.Entity;
 import com.artemis.annotations.All;
 import com.artemis.systems.EntityProcessingSystem;
@@ -9,12 +10,15 @@ import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.math.Interpolation;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
+import com.badlogic.gdx.utils.Array;
 import com.ellzone.slotpuzzle2d.component.artemis.Rotation;
 import com.ellzone.slotpuzzle2d.component.artemis.SlotHandle;
 import com.ellzone.slotpuzzle2d.component.artemis.SpinScroll;
 import com.ellzone.slotpuzzle2d.sprites.slothandle.SlotHandleSprite;
 
 import net.mostlyoriginal.api.plugin.extendedcomponentmapper.M;
+
+import java.util.Iterator;
 
 import static net.mostlyoriginal.api.operation.OperationFactory.sequence;
 import static com.ellzone.slotpuzzle2d.operation.artemisodb.SlotPuzzleOperationFactory.rotateBetween;
@@ -59,6 +63,7 @@ public class SlotHandleSystem extends EntityProcessingSystem {
     private void processTouched(Entity e, SlotHandleSprite slotHandle) {
         if (slotHandle.getBoundingRectangle().contains(
                 new Vector2(unProjectTouch.x , unProjectTouch.y))) {
+            removeMatchedRowsDisplayed();
             slotHandle.pullSlotHandle();
             rotateSlotHandle(slotHandle);
             rotateReelsNotHeld();
@@ -87,5 +92,13 @@ public class SlotHandleSystem extends EntityProcessingSystem {
 
     private void rotateReelsNotHeld() {
         animatedReelSystem.actionSlotHandlePulled();
+    }
+
+    private void removeMatchedRowsDisplayed() {
+        EBag reelGridMatchedRows = E.withGroup("ReelGridMatchedRow");
+        for (Iterator<E> it = reelGridMatchedRows.iterator(); it.hasNext(); ) {
+            E reelGridMatchedRow = it.next();
+            reelGridMatchedRow.deleteFromWorld();
+        }
     }
 }

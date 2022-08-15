@@ -20,6 +20,7 @@ import com.artemis.SuperMapper;
 import com.artemis.World;
 import com.artemis.WorldConfigurationBuilder;
 import com.artemis.link.EntityLinkManager;
+import com.artemis.managers.GroupManager;
 import com.artemis.managers.TagManager;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.math.MathUtils;
@@ -36,6 +37,7 @@ import com.ellzone.slotpuzzle2d.systems.artemisodb.LevelCreatorSystem;
 import com.ellzone.slotpuzzle2d.systems.artemisodb.RenderImagesSystem;
 import com.ellzone.slotpuzzle2d.systems.artemisodb.RenderTextureRegionRotationSystem;
 import com.ellzone.slotpuzzle2d.systems.artemisodb.RenderTextureRegionSystem;
+import com.ellzone.slotpuzzle2d.systems.artemisodb.RenderVectorsSystem;
 import com.ellzone.slotpuzzle2d.systems.artemisodb.SlotHandleSystem;
 import com.ellzone.slotpuzzle2d.systems.artemisodb.SpinWheelSystem;
 import com.ellzone.slotpuzzle2d.systems.artemisodb.TiledMapSystem;
@@ -86,7 +88,8 @@ public class SuperSlotMachineECS extends SPPrototype {
                         OperationsPlugin.class)
                 .with(
                         new SuperMapper(),
-                        new TagManager()
+                        new TagManager(),
+                        new GroupManager()
                 )
                 .with(
                         new TiledMapSystem(tileMapAttributes),
@@ -104,6 +107,7 @@ public class SuperSlotMachineECS extends SPPrototype {
                         new RenderTextureRegionSystem(),
                         new RenderTextureRegionRotationSystem(),
                         new RenderImagesSystem(),
+                        new RenderVectorsSystem(),
                         new DebugPointRenderSystem(isDebugPointRenderSystemEnabled)
                 )
                 .build());
