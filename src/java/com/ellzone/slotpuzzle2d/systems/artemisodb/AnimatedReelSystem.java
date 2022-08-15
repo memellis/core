@@ -265,7 +265,6 @@ public class AnimatedReelSystem extends EntityProcessingSystem {
     }
 
     private void setMatchesToBeDisplayed(Array<Array<Vector2>> matchedRows) {
-        System.out.println("I've got some matched rows to display!");
         for (Array<Vector2> matchedRow : new Array.ArrayIterator<>(matchedRows))
             setUpMatchedRowToBeDisplay(matchedRow);
     }

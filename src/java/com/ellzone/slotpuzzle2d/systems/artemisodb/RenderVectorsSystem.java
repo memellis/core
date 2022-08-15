@@ -59,7 +59,6 @@ public class RenderVectorsSystem extends EntityProcessingSystem {
     protected void process(Entity e) {
         final Vector2Shape vector2Shape = mVector2Shape.get(e);
         final Color color = mColor.get(e);
-        System.out.println("In RenderVectorsSystem I've got some matched rows to display!");
         if (vector2Shape.getVectors().size<2)
             return;
         shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
