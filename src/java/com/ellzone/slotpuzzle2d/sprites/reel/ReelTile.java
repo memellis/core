@@ -103,6 +103,7 @@ public class ReelTile extends ReelSprite implements ReelTileInterface {
             int randomSy = 0;
             if (numberOfReelsInTexture > 0) {
                 randomSy = Random.getInstance().nextInt(numberOfReelsInTexture) * (int) tileHeight;
+                randomSy = isReelSpinDirectionClockwise ? randomSy : randomSy * -1;
                 sy = randomSy;
             }
             if ((reelDisplayWidth == 0) && (reelDisplayHeight == 0)) {
@@ -213,9 +214,7 @@ public class ReelTile extends ReelSprite implements ReelTileInterface {
     public int getCurrentReel() {
         float syModulus = sy % scrollTexture.getHeight();
         return calculateCurrentReel(syModulus);
- //		return (int) ((int) ((syModulus - (tileHeight / 2)) % scrollTexture.getHeight()) / tileHeight);
-//        return (int) ((int) ((syModulus + (tileHeight / 2)) % scrollTexture.getHeight()) / tileHeight);
-	}
+ 	}
 
 	@Override
     public boolean isReelTileDeleted() {

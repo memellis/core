@@ -153,17 +153,23 @@ public class LevelCreatorSystem extends BaseSystem {
                 createAnimatedReeECSFromAnimatedReel(animatedReel);
         animatedReelsECS.add(animatedReelECS);
         E.E()
-                .positionX(animatedReel.getReel().getX())
-                .positionY(animatedReel.getReel().getY())
-                .spinScrollSY(animatedReel.getReel().getSy())
+                .positionX(animatedReelECS.getReel().getX())
+                .positionY(animatedReelECS.getReel().getY())
+                .spinScrollSY(animatedReelECS.getReel().getSy())
                 .animatedReelComponent();
         entities.add(animatedReelECS);
 
+        System.out.print("reelTile="+animatedReelECS.getReel());
+        System.out.print(" x="+animatedReelECS.getReel().getX());
+        System.out.print(" y="+animatedReelECS.getReel().getY());
+        System.out.print(" sY="+animatedReelECS.getReel().getSy());
+        System.out.println();
+
         E e = E.E()
-            .positionX(animatedReel.getReel().getX())
-            .positionY(animatedReel.getReel().getY())
+            .positionX(animatedReelECS.getReel().getX())
+            .positionY(animatedReelECS.getReel().getY())
             .textureRegionRender();
-        entities.add(animatedReel.getReel().getRegion());
+        entities.add(animatedReelECS.getReel().getRegion());
         entityIds.add(e.id());
         animatedReelECS.getReel().setEntityIds(entityIds);
     }

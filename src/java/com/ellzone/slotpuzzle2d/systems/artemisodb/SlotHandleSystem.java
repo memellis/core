@@ -10,10 +10,8 @@ import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.math.Interpolation;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
-import com.badlogic.gdx.utils.Array;
 import com.ellzone.slotpuzzle2d.component.artemis.Rotation;
 import com.ellzone.slotpuzzle2d.component.artemis.SlotHandle;
-import com.ellzone.slotpuzzle2d.component.artemis.SpinScroll;
 import com.ellzone.slotpuzzle2d.sprites.slothandle.SlotHandleSprite;
 
 import net.mostlyoriginal.api.plugin.extendedcomponentmapper.M;

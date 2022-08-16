@@ -90,7 +90,6 @@ public class AnimatedReelSystem extends EntityProcessingSystem {
         AnimatedReelECS animatedReel =
                 (AnimatedReelECS) levelCreatorSystem.getEntities().get(e.getId());
         final SpinScroll spinScroll = mSpinScroll.get(e.getId());
-
         animatedReel.getReel().setSy(spinScroll.sY);
         animatedReel.update(Gdx.graphics.getDeltaTime());
         levelCreatorSystem.getEntities().set(
@@ -206,7 +205,7 @@ public class AnimatedReelSystem extends EntityProcessingSystem {
                                                 .getInstance()
                                                 .nextInt(reelTile.getNumberOfReelsInTexture()));
                                 numberOfReelsSpinning--;
-                                if (numberOfReelsSpinning==0)
+                                if (numberOfReelsSpinning == 0)
                                     checkForMatches();
                                 return true;
                             }
@@ -255,7 +254,6 @@ public class AnimatedReelSystem extends EntityProcessingSystem {
         for (int r = 0; r < reelGridMatrix.length; r++)
             for (int c = 0; c < reelGridMatrix[0].length; c++)
                 reelGridMatrix[r][c] = getReelPosition(reelsTiles, r, c);
-
         return reelGridMatrix;
     }
 
