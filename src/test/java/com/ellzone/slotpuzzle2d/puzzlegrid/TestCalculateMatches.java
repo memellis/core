@@ -69,6 +69,13 @@ public class TestCalculateMatches {
         assertThat(matchPattern.size, is(equalTo(3)));
     }
 
+    @Test
+    public void interCrossRowsMatchGrid() {
+        int[][] testReelGrid = interCrossRowsMatchGrid(TEST_GRID_WIDTH, TEST_GRID_HEIGHT);
+        Array<Array<Vector2>> matchPattern = calculateMatches.process(testReelGrid, reelGrid);
+        assertThat(matchPattern.size, is(equalTo(5)));
+    }
+
     private static int[][] onePairReelsMatchGrid(int testGridWidth, int testGridHeight) {
         String matrixToInput = getMatrixSizeAsString(testGridWidth, testGridHeight)
                 + " 1  1  2  3  4\n"
@@ -120,6 +127,17 @@ public class TestCalculateMatches {
                 + " 2  3  4  3  2\n"
                 + " 3  4  5  4  3\n"
                 + " 4  5  6  4  4\n";
+        return
+                new InputMatrix(matrixToInput).readMatrix();
+    }
+
+    private static int[][] interCrossRowsMatchGrid(int testGridWidth, int testGridHeight) {
+        String matrixToInput = getMatrixSizeAsString(testGridWidth, testGridHeight)
+                + " 0  0  0  1  1\n"
+                + " 1  1  1  0  0\n"
+                + " 2  2  2  3  3\n"
+                + " 3  3  3  2  2\n"
+                + " 4  4  4  4  4\n";
         return
                 new InputMatrix(matrixToInput).readMatrix();
     }
