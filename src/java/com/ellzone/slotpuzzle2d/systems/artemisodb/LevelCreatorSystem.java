@@ -49,16 +49,28 @@ public class LevelCreatorSystem extends BaseSystem {
     private final LevelCreatorInjectionInterface levelCreatorInjectionInterface;
     private Array<Object> entities = new Array<>();
     private Array<AnimatedReelECS> animatedReelsECS = new Array<>();
-
+    private boolean isReelSpinDirectionClockwise = false;
     private boolean isSetup;
 
     public LevelCreatorSystem(
             LevelCreatorInjectionInterface levelCreatorInjectionInterface,
             World box2dWorld,
-            RayHandler rayHandler) {
+            RayHandler rayHandler
+            ) {
         this.levelCreatorInjectionInterface = levelCreatorInjectionInterface;
         this.box2dWorld = box2dWorld;
         this.rayHandler = rayHandler;
+    }
+
+    public LevelCreatorSystem(
+            LevelCreatorInjectionInterface levelCreatorInjectionInterface,
+            World box2dWorld,
+            RayHandler rayHandler,
+            boolean isReelSpinDirectionClockwise) {
+        this.levelCreatorInjectionInterface = levelCreatorInjectionInterface;
+        this.box2dWorld = box2dWorld;
+        this.rayHandler = rayHandler;
+        this.isReelSpinDirectionClockwise = isReelSpinDirectionClockwise;
     }
 
     @Override
@@ -159,12 +171,6 @@ public class LevelCreatorSystem extends BaseSystem {
                 .animatedReelComponent();
         entities.add(animatedReelECS);
 
-        System.out.print("reelTile="+animatedReelECS.getReel());
-        System.out.print(" x="+animatedReelECS.getReel().getX());
-        System.out.print(" y="+animatedReelECS.getReel().getY());
-        System.out.print(" sY="+animatedReelECS.getReel().getSy());
-        System.out.println();
-
         E e = E.E()
             .positionX(animatedReelECS.getReel().getX())
             .positionY(animatedReelECS.getReel().getY())
@@ -184,7 +190,8 @@ public class LevelCreatorSystem extends BaseSystem {
                 animatedReel.getReelDisplayWidth(),
                 animatedReel.getReelDisplayHeight(),
                 animatedReel.getEndReel(),
-                null);
+                null,
+                isReelSpinDirectionClockwise);
     }
 
     private void processAnimatedPredictedReel(AnimatedPredictedReel animatedPredictedReel) {

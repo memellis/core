@@ -95,6 +95,31 @@ public class ReelTile extends ReelSprite implements ReelTileInterface {
         defineReelSlotTileScroll();
     }
 
+    public ReelTile(
+            Texture texture,
+            int numberOfReelsInTexture,
+            float x,
+            float y,
+            float tileWidth,
+            float tileHeight,
+            float reelDisplayWidth,
+            float reelDisplayHeight,
+            int endReel,
+            boolean isReelSpinDirectionClockwise) {
+        this.scrollTexture = texture;
+        this.numberOfReelsInTexture = numberOfReelsInTexture;
+        super.setX(x);
+        super.setY(y);
+        this.tileWidth = tileWidth;
+        this.tileHeight = tileHeight;
+        this.reelDisplayWidth = reelDisplayWidth;
+        this.reelDisplayHeight = reelDisplayHeight;
+        super.setEndReel(endReel);
+        this.isReelSpinDirectionClockwise = isReelSpinDirectionClockwise;
+        defineReelSlotTileScroll();
+    }
+
+
     private void defineReelSlotTileScroll() {
     	setPosition((int) super.getX(), (int) super.getY());
         if (scrollTexture != null) {
@@ -207,7 +232,8 @@ public class ReelTile extends ReelSprite implements ReelTileInterface {
     @Override
     public void setEndReel() {
         float syModulus = sy % scrollTexture.getHeight();
-        super.setEndReel((int) ((int) ((syModulus + (tileHeight / 2)) % scrollTexture.getHeight()) / tileHeight));
+        super.setEndReel(
+            (int) ((int) ((syModulus + (tileHeight / 2)) % scrollTexture.getHeight()) / tileHeight));
     }
 
 	@Override
@@ -423,6 +449,14 @@ public class ReelTile extends ReelSprite implements ReelTileInterface {
 
     public void setEntityIds(Array<Integer> entityIds) {
         this.entityIds = entityIds;
+    }
+
+    public boolean isReelSpinDirectionClockwise() {
+        return isReelSpinDirectionClockwise;
+    }
+
+    public void setReelSpinDirectionClockwise(boolean isReelSpinDirectionClockwise) {
+        this.isReelSpinDirectionClockwise = isReelSpinDirectionClockwise;
     }
 
     private int calculateCurrentReel(float syModulus) {

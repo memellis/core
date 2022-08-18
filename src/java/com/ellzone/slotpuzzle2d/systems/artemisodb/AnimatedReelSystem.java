@@ -49,6 +49,13 @@ public class AnimatedReelSystem extends EntityProcessingSystem {
         setup();
     }
 
+    public AnimatedReelSystem(boolean isReelSpinDirectionClockwise) {
+        super(Aspect.all(Position.class, AnimatedReelComponent.class));
+        this.isReelSpinDirectionClockwise = isReelSpinDirectionClockwise;
+        setup();
+    }
+
+
     public void touched(Vector3 unProjectTouch) {
         this.unProjectTouch = unProjectTouch;
         isTouched = true;
@@ -258,7 +265,8 @@ public class AnimatedReelSystem extends EntityProcessingSystem {
     }
 
     private int getReelPosition(Array<AnimatedReelECS> reelTiles, int r, int c) {
-        return (reelTiles.get(c).getReel().getCurrentReel() + 8 + r) %
+            int reelOffset = isReelSpinDirectionClockwise ? 0 : 8;
+        return (reelTiles.get(c).getReel().getCurrentReel() + reelOffset + r) %
                 reelTiles.get(c).getReel().getNumberOfReelsInTexture();
     }
 

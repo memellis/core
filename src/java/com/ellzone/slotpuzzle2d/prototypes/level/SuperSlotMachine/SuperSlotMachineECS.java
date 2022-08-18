@@ -99,7 +99,7 @@ public class SuperSlotMachineECS extends SPPrototype {
                                 worldBuilder.getRayHandler()),
                         new Box2DPhysicsSystem(worldBuilder.getBox2dWorld()),
                         new TweenEngineSystem(tweenManager),
-                        new AnimatedReelSystem(),
+                        new AnimatedReelSystem(false),
                         new SpinWheelSystem(),
                         new SlotHandleSystem(),
                         new InputSystem(),

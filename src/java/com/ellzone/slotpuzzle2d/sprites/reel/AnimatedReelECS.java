@@ -56,6 +56,30 @@ public class AnimatedReelECS extends AnimatedReel {
                 tweenManager);
     }
 
+    public AnimatedReelECS(
+            Texture texture,
+            float x,
+            float y,
+            float tileWidth,
+            float tileHeight,
+            float reelDisplayWidth,
+            float reelDisplayHeight,
+            int endReel,
+            TweenManager tweenManager,
+            boolean isReelSpinDirectionClockwise) {
+        super(
+                texture,
+                x,
+                y,
+                tileWidth,
+                tileHeight,
+                reelDisplayWidth,
+                reelDisplayHeight,
+                endReel,
+                tweenManager,
+                isReelSpinDirectionClockwise);
+    }
+
     @Override
     public void setupSpinning() {
         System.out.println("setUpSpinning called");

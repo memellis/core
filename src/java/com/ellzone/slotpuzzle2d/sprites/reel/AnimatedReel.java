@@ -54,6 +54,7 @@ public class AnimatedReel implements AnimatedReelInterface {
 	private int reelScrollHeight;
 	private final TweenManager tweenManager;
 	private float reelSlowingTargetTime;
+	private boolean isReelSpinDirectionClockwise;
 
 	public AnimatedReel(
 			Texture texture,
@@ -76,7 +77,33 @@ public class AnimatedReel implements AnimatedReelInterface {
 		this.tweenManager = tweenManager;
 		initialiseAnimatedReel();
 	}
-	
+
+	public AnimatedReel(
+			Texture texture,
+			float x,
+			float y,
+			float tileWidth,
+			float tileHeight,
+			float reelDisplayWidth,
+			float reelDisplayHeight,
+			int endReel,
+			TweenManager tweenManager,
+			boolean isReelSpinDirectionClockwise) {
+		this.texture = texture;
+		this.x = x;
+		this.y = y;
+		this.tileWidth = tileWidth;
+		this.tileHeight = tileHeight;
+		this.reelDisplayWidth = reelDisplayWidth;
+		this.reelDisplayHeight = reelDisplayHeight;
+		this.endReel = endReel;
+		this.tweenManager = tweenManager;
+		this.isReelSpinDirectionClockwise = isReelSpinDirectionClockwise;
+		initialiseAnimatedReel();
+	}
+
+
+
 	private void initialiseAnimatedReel() {
 		reel = new ReelTile(
 		        texture,
@@ -87,7 +114,8 @@ public class AnimatedReel implements AnimatedReelInterface {
                 tileHeight,
                 reelDisplayWidth,
                 reelDisplayHeight,
-                endReel
+                endReel,
+				isReelSpinDirectionClockwise
         );
 		reelScrollHeight = texture == null ? 0 : texture.getHeight();
 		reel.setSpinning(false);
