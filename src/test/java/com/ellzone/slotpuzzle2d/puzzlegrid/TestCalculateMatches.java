@@ -3,6 +3,7 @@ package com.ellzone.slotpuzzle2d.puzzlegrid;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Array;
 import com.ellzone.slotpuzzle2d.level.reel.ReelGrid;
+import com.ellzone.slotpuzzle2d.physics.Vector;
 import com.ellzone.slotpuzzle2d.utils.InputMatrix;
 
 import org.junit.After;
@@ -36,45 +37,71 @@ public class TestCalculateMatches {
 
     @Test
     public void testOnePairReelsMatchGrid() {
-        int[][] testReelGrid = onePairReelsMatchGrid(TEST_GRID_WIDTH, TEST_GRID_HEIGHT);
-        Array<Array<Vector2>> matchPattern = calculateMatches.process(testReelGrid, reelGrid);
+        Array<Array<Vector2>> matchPattern =
+                calculateMatchPattern(onePairReelsMatchGrid(TEST_GRID_WIDTH, TEST_GRID_HEIGHT));
         assertThat(matchPattern.size, is(equalTo(0)));
     }
 
     @Test
     public void testOneRowMatchGrid() {
-        int[][] testReelGrid = oneRowMatchGrid(TEST_GRID_WIDTH, TEST_GRID_HEIGHT);
-        Array<Array<Vector2>> matchPattern = calculateMatches.process(testReelGrid, reelGrid);
+        Array<Array<Vector2>> matchPattern =
+                calculateMatchPattern(oneRowMatchGrid(TEST_GRID_WIDTH, TEST_GRID_HEIGHT));
         assertThat(matchPattern.size, is(equalTo(1)));
     }
 
     @Test
     public void testOneRowAcrossDifferentRows() {
-        int[][] testReelGrid = oneRowAcrossDifferentRowsMatchGrid(TEST_GRID_WIDTH, TEST_GRID_HEIGHT);
-        Array<Array<Vector2>> matchPattern = calculateMatches.process(testReelGrid, reelGrid);
+        Array<Array<Vector2>> matchPattern =
+                calculateMatchPattern(
+                        oneRowAcrossDifferentRowsMatchGrid(TEST_GRID_WIDTH, TEST_GRID_HEIGHT));
         assertThat(matchPattern.size, is(equalTo(1)));
     }
 
     @Test
     public void testTwoRowAcrossDifferentRows() {
-        int[][] testReelGrid = twoRowsAcrossDifferentRowsMatchGrid(TEST_GRID_WIDTH, TEST_GRID_HEIGHT);
-        Array<Array<Vector2>> matchPattern = calculateMatches.process(testReelGrid, reelGrid);
+        Array<Array<Vector2>> matchPattern =
+                calculateMatchPattern(
+                        twoRowsAcrossDifferentRowsMatchGrid(TEST_GRID_WIDTH, TEST_GRID_HEIGHT));
         assertThat(matchPattern.size, is(equalTo(2)));
     }
 
     @Test
     public void diagonalsAcrossDifferentRowsMatchGrid() {
-        int[][] testReelGrid = diagonalsAcrossDifferentRowsMatchGrid(TEST_GRID_WIDTH, TEST_GRID_HEIGHT);
-        Array<Array<Vector2>> matchPattern = calculateMatches.process(testReelGrid, reelGrid);
+        Array<Array<Vector2>> matchPattern =
+                calculateMatchPattern(
+                        diagonalsAcrossDifferentRowsMatchGrid(TEST_GRID_WIDTH, TEST_GRID_HEIGHT));
         assertThat(matchPattern.size, is(equalTo(3)));
     }
 
     @Test
     public void interCrossRowsMatchGrid() {
-        int[][] testReelGrid = interCrossRowsMatchGrid(TEST_GRID_WIDTH, TEST_GRID_HEIGHT);
-        Array<Array<Vector2>> matchPattern = calculateMatches.process(testReelGrid, reelGrid);
+        Array<Array<Vector2>> matchPattern =
+                calculateMatchPattern(interCrossRowsMatchGrid(TEST_GRID_WIDTH, TEST_GRID_HEIGHT));
         assertThat(matchPattern.size, is(equalTo(5)));
+        printMatchPattern(matchPattern);
     }
+
+    @Test
+    public void interCrossRows2MatchGrid() {
+        Array<Array<Vector2>> matchPattern =
+                calculateMatchPattern(interCrossRows2MatchGrid(TEST_GRID_WIDTH, TEST_GRID_HEIGHT));
+        assertThat(matchPattern.size, is(equalTo(4)));
+        printMatchPattern(matchPattern);
+    }
+
+    private Array<Array<Vector2>> calculateMatchPattern(int[][] grid) {
+        int[][] testReelGrid = grid;
+        return calculateMatches.process(testReelGrid, reelGrid);
+    }
+
+    private void printMatchPattern(Array<Array<Vector2>> matchPattern) {
+        for (Array<Vector2> matchedRow : new Array.ArrayIterator<>(matchPattern)) {
+            for (Vector2 vector2 : new Array.ArrayIterator<>(matchedRow))
+                System.out.println(vector2);
+            System.out.println();
+        }
+    }
+
 
     private static int[][] onePairReelsMatchGrid(int testGridWidth, int testGridHeight) {
         String matrixToInput = getMatrixSizeAsString(testGridWidth, testGridHeight)
@@ -138,6 +165,17 @@ public class TestCalculateMatches {
                 + " 2  2  2  3  3\n"
                 + " 3  3  3  2  2\n"
                 + " 4  4  4  4  4\n";
+        return
+                new InputMatrix(matrixToInput).readMatrix();
+    }
+
+    private static int[][] interCrossRows2MatchGrid(int testGridWidth, int testGridHeight) {
+        String matrixToInput = getMatrixSizeAsString(testGridWidth, testGridHeight)
+                + " 1  1  2  2  1\n"
+                + " 2  2  3  3  2\n"
+                + " 3  3  4  4  3\n"
+                + " 4  4  5  5  4\n"
+                + " 5  5  6  6  5\n";
         return
                 new InputMatrix(matrixToInput).readMatrix();
     }

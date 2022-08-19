@@ -32,6 +32,7 @@ import static net.mostlyoriginal.api.operation.OperationFactory.*;
 public class AnimatedReelSystem extends EntityProcessingSystem {
     public static final int MIN_REEL_SPIN_RANGE = 28000;
     public static final int MAX_REEL_SPIN_RANGE = 32768;
+    public static final String REEL_GRID_MATCHED_ROW = "ReelGridMatchedRow";
     private static int numberOfReelsSpinning = 0;
     private LevelCreatorSystem levelCreatorSystem;
     private OrthographicCamera camera;
@@ -279,6 +280,6 @@ public class AnimatedReelSystem extends EntityProcessingSystem {
         E.E()
                 .vector2ShapeVectors(matchedRow)
                 .colorRed(255)
-                .group("ReelGridMatchedRow");
+                .group(REEL_GRID_MATCHED_ROW);
     }
 }
