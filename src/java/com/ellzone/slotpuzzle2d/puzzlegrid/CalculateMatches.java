@@ -53,11 +53,11 @@ public class CalculateMatches {
     private Array<Vector2> getRowMatchPattern(
             Array<ReelTileGridValue> depthSearchResults, ReelGrid reelGrid) {
         int x_offset = (int) reelGrid.getX();
-        int y_offset = (int) reelGrid.getY();
+        int y_offset = (int) (reelGrid.getY() + reelGrid.getHeight());
         Array<Vector2> rowMatchPattern = new Array<>();
         for (ReelTileGridValue cell : new Array.ArrayIterator<>(depthSearchResults)) {
             rowMatchPattern.add(new Vector2(
-                    x_offset + 20 +  cell.c * 40, y_offset + 20 + cell.r * 40));
+                    x_offset + 20 +  cell.c * 40, y_offset - 20 - cell.r * 40));
         }
         return rowMatchPattern;
     }
