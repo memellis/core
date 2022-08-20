@@ -30,7 +30,7 @@ public class InputMatrix {
 
     public int[][] readMatrix() throws InputMismatchException {
         int matrixWidth = scanner.nextInt();
-        String ByX = scanner.next("x");
+        String byX = scanner.next("x");
         int matrixHeight = scanner.nextByte();
         int[][] matrixInput = new int[matrixHeight][matrixWidth];
         for (int r = 0; r < matrixHeight; r++)
