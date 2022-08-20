@@ -5,6 +5,7 @@ import com.badlogic.gdx.utils.Array;
 import com.ellzone.slotpuzzle2d.level.reel.ReelGrid;
 import com.ellzone.slotpuzzle2d.physics.Vector;
 import com.ellzone.slotpuzzle2d.utils.InputMatrix;
+import com.ellzone.slotpuzzle2d.utils.InputVector2AsArray;
 
 import org.junit.After;
 import org.junit.Before;
@@ -27,7 +28,6 @@ public class TestCalculateMatches {
         reelGrid = createReel();
         calculateMatches = new CalculateMatches();
     }
-
 
     @After
     public void tearDown() {
@@ -77,16 +77,16 @@ public class TestCalculateMatches {
     public void interCrossRowsMatchGrid() {
         Array<Array<Vector2>> matchPattern =
                 calculateMatchPattern(interCrossRowsMatchGrid(TEST_GRID_WIDTH, TEST_GRID_HEIGHT));
-        assertThat(matchPattern.size, is(equalTo(5)));
-        printMatchPattern(matchPattern);
+        Array<Array<Vector2>> expectedMatchPattern = getExpectedInterCrossRows();
+        assertMatchedPattern(matchPattern, expectedMatchPattern);
     }
 
     @Test
     public void interCrossRows2MatchGrid() {
         Array<Array<Vector2>> matchPattern =
                 calculateMatchPattern(interCrossRows2MatchGrid(TEST_GRID_WIDTH, TEST_GRID_HEIGHT));
-        assertThat(matchPattern.size, is(equalTo(4)));
-        printMatchPattern(matchPattern);
+        Array<Array<Vector2>> expectedMatchPattern = getExpectedInterCrossRows2();
+        assertMatchedPattern(matchPattern, expectedMatchPattern);
     }
 
     private Array<Array<Vector2>> calculateMatchPattern(int[][] grid) {
@@ -101,7 +101,6 @@ public class TestCalculateMatches {
             System.out.println();
         }
     }
-
 
     private static int[][] onePairReelsMatchGrid(int testGridWidth, int testGridHeight) {
         String matrixToInput = getMatrixSizeAsString(testGridWidth, testGridHeight)
@@ -187,5 +186,48 @@ public class TestCalculateMatches {
 
     private ReelGrid createReel() {
         return new ReelGrid(120, 400,  200, 200);
+    }
+
+    private Array<Array<Vector2>> getExpectedInterCrossRows() {
+        Array<Array<Vector2>> expectedPattern = new Array<>();
+        expectedPattern.add(
+                new InputVector2AsArray("140 580 180 580 220 580 260 540 300 540")
+                        .readVector2s());
+        expectedPattern.add(
+                new InputVector2AsArray("140 540 180 540 220 540 260 580 300 580")
+                        .readVector2s());
+        expectedPattern.add(
+                new InputVector2AsArray("140 500 180 500 220 500 260 460 300 460")
+                        .readVector2s());
+        expectedPattern.add(
+                new InputVector2AsArray("140 460 180 460 220 460 260 500 300 500")
+                        .readVector2s());
+        expectedPattern.add(
+                new InputVector2AsArray("140 420 180 420 220 420 260 420 300 420")
+                        .readVector2s());
+        return expectedPattern;
+    }
+
+    private Array<Array<Vector2>> getExpectedInterCrossRows2() {
+        Array<Array<Vector2>> expectedPattern = new Array<>();
+        expectedPattern.add(
+                new InputVector2AsArray("140 540 180 540 220 580 260 580 300 540")
+                        .readVector2s());
+        expectedPattern.add(
+                new InputVector2AsArray("140 500 180 500 220 540 260 540 300 500")
+                        .readVector2s());
+        expectedPattern.add(
+                new InputVector2AsArray("140 460 180 460 220 500 260 500 300 460")
+                        .readVector2s());
+        expectedPattern.add(
+                new InputVector2AsArray("140 420 180 420 220 460 260 460 300 420")
+                        .readVector2s());
+        return expectedPattern;
+    }
+
+    private void assertMatchedPattern(
+            Array<Array<Vector2>> matchPattern,
+            Array<Array<Vector2>> expectedMatchPattern) {
+        assertThat(matchPattern.equals(expectedMatchPattern), is(true));
     }
 }
