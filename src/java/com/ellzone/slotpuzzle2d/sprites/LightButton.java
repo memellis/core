@@ -41,7 +41,15 @@ public class LightButton {
     private String buttonTextUsingFrameBuffer;
     private Color buttonColorBorder, buttonColorTop, buttonLightColor;
 
-    public LightButton(World world, RayHandler rayHandler, float positionX, float positionY, int buttonWidth, int buttonHeight, BitmapFont buttonFont, String buttonText) {
+    public LightButton(
+            World world,
+            RayHandler rayHandler,
+            float positionX,
+            float positionY,
+            int buttonWidth,
+            int buttonHeight,
+            BitmapFont buttonFont,
+            String buttonText) {
         this.world = world;
         this.rayHandler = rayHandler;
         this.positionX = positionX;
@@ -54,7 +62,16 @@ public class LightButton {
         initialiseLightButton();
     }
 
-    public LightButton(World world, RayHandler rayHandler, float positionX, float positionY, int buttonWidth, int buttonHeight, BitmapFont buttonFont, String buttonText, String buttonTextUsingFrameBuffer) {
+    public LightButton(
+            World world,
+            RayHandler rayHandler,
+            float positionX,
+            float positionY,
+            int buttonWidth,
+            int buttonHeight,
+            BitmapFont buttonFont,
+            String buttonText,
+            String buttonTextUsingFrameBuffer) {
         this.world = world;
         this.rayHandler = rayHandler;
         this.positionX = positionX;
@@ -68,9 +85,17 @@ public class LightButton {
         initialiseLightButton();
     }
 
-    public LightButton(World world, RayHandler rayHandler, float positionX, float positionY,
-                       int buttonWidth, int buttonHeight, BitmapFont buttonFont, String buttonText,
-                       String buttonTextUsingFrameBuffer, boolean pixelsPerMeter) {
+    public LightButton(
+            World world,
+            RayHandler rayHandler,
+            float positionX,
+            float positionY,
+            int buttonWidth,
+            int buttonHeight,
+            BitmapFont buttonFont,
+            String buttonText,
+            String buttonTextUsingFrameBuffer,
+            boolean pixelsPerMeter) {
         this.world = world;
         this.rayHandler = rayHandler;
         this.positionX = positionX;
@@ -105,9 +130,9 @@ public class LightButton {
 
     private void initialiseLightButton(boolean pixelPerMeter) {
         if (pixelPerMeter)
-            initialiseLightButton();
-        else
             initialiseLightButtonbyPixelsPerMeter();
+        else
+            initialiseLightButton();
     }
 
     private void initialiseLightButtonbyPixelsPerMeter() {

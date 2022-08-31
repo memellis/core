@@ -29,6 +29,7 @@ import com.ellzone.slotpuzzle2d.level.creator.LevelCreatorInjectionInterface;
 import com.ellzone.slotpuzzle2d.level.creator.LevelObjectCreatorEntityHolder;
 import com.ellzone.slotpuzzle2d.level.reel.ReelGrid;
 import com.ellzone.slotpuzzle2d.spin.SpinWheelSlotPuzzleTileMap;
+import com.ellzone.slotpuzzle2d.sprites.HoldLightButton;
 import com.ellzone.slotpuzzle2d.sprites.reel.AnimatedPredictedReel;
 import com.ellzone.slotpuzzle2d.sprites.reel.AnimatedReel;
 import com.ellzone.slotpuzzle2d.sprites.reel.AnimatedReelECS;
@@ -123,6 +124,7 @@ public class LevelCreatorSystem extends BaseSystem {
         setUpSpinWheels();
         setUpReelGrids();
         setUpAnimatedReelsWithinReelGrids();
+        setUpLightButtons();
     }
 
     private void setUpAnimatedReels() {
@@ -164,18 +166,18 @@ public class LevelCreatorSystem extends BaseSystem {
         AnimatedReelECS animatedReelECS =
                 createAnimatedReeECSFromAnimatedReel(animatedReel);
         animatedReelsECS.add(animatedReelECS);
-        E.E()
+        E e = E.E()
                 .positionX(animatedReelECS.getReel().getX())
                 .positionY(animatedReelECS.getReel().getY())
                 .spinScrollSY(animatedReelECS.getReel().getSy())
                 .animatedReelComponent();
-        entities.add(animatedReelECS);
+        entities.insert(e.id(), animatedReelECS);
 
-        E e = E.E()
+        e = E.E()
             .positionX(animatedReelECS.getReel().getX())
             .positionY(animatedReelECS.getReel().getY())
             .textureRegionRender();
-        entities.add(animatedReelECS.getReel().getRegion());
+        entities.insert(e.id(), animatedReelECS.getReel().getRegion());
         entityIds.add(e.id());
         animatedReelECS.getReel().setEntityIds(entityIds);
     }
@@ -196,34 +198,34 @@ public class LevelCreatorSystem extends BaseSystem {
 
     private void processAnimatedPredictedReel(AnimatedPredictedReel animatedPredictedReel) {
         Array<Integer> entityIds = new Array<>();
-        E.E()
+        E e = E.E()
                 .positionX(animatedPredictedReel.getReel().getX())
                 .positionY(animatedPredictedReel.getReel().getY())
                 .tag("AnimatedPredictedReel")
                 .animatedPredictedReelComponent();
-        entities.add(animatedPredictedReel);
+        entities.insert(e.id(), animatedPredictedReel);
 
-        E e = E.E()
+        e = E.E()
                 .positionX(animatedPredictedReel.getReel().getX())
                 .positionY(animatedPredictedReel.getReel().getY())
                 .textureRegionRender();
-        entities.add(animatedPredictedReel.getReel().getRegion());
+        entities.insert(e.id(), animatedPredictedReel.getReel().getRegion());
         entityIds.add(e.id());
         animatedPredictedReel.getReel().setEntityIds(entityIds);
     }
 
     private void processSlotHandle(SlotHandleSprite handle) {
         Array<Integer> entityIds = new Array<>();
-        E.E()
-           .slotHandle();
-        entities.add(handle);
-
         E e = E.E()
+           .slotHandle();
+        entities.insert(e.id(), handle);
+
+        e = E.E()
             .positionX(handle.getSlotHandleBaseSprite().getX())
             .positionY(handle.getSlotHandleBaseSprite().getY())
             .textureRegionRender();
         entityIds.add(e.id());
-        entities.add(handle.getSlotHandleBaseSprite());
+        entities.insert(e.id(), handle.getSlotHandleBaseSprite());
 
         e = E.E()
             .positionX(handle.getSlotHandleSprite().getX())
@@ -232,40 +234,41 @@ public class LevelCreatorSystem extends BaseSystem {
             .textureRegionRender();
         entityIds.add(e.id());
         handle.setEntityIds(entityIds);
-        entities.add(handle.getSlotHandleSprite());
+        entities.insert(e.id(), handle.getSlotHandleSprite());
     }
 
     private void processSpinWheel(SpinWheelSlotPuzzleTileMap spinWheel) {
         spinWheel.setUpSpinWheel();
-        E.E()
-         .spinWheel();
-        entities.add(spinWheel);
+        E e = E.E()
+               .spinWheel();
+        entities.insert(e.id(), spinWheel);
 
-        E.E()
+        e = E.E()
             .positionX(spinWheel.getWheelImage().getImageX())
             .positionY(spinWheel.getWheelImage().getImageY())
             .boxedBody(spinWheel.getWheelBody())
             .imageRender();
-        entities.add(spinWheel.getWheelImage());
+        entities.insert(e.id(), spinWheel.getWheelImage());
 
-        E.E()
+        e = E.E()
             .positionX(spinWheel.getNeedleImage().getImageX())
             .positionY(spinWheel.getNeedleImage().getImageY())
             .boxedBody(spinWheel.getNeedleBody())
             .imageRender();
-        entities.add(spinWheel.getNeedleImage());
+        entities.insert(e.id(), spinWheel.getNeedleImage());
 
-        E.E()
+        e = E.E()
                 .positionX(spinWheel.getSpinButton().getImageX())
                 .positionY(spinWheel.getSpinButton().getImageY())
                 .imageRender();
-        entities.add(spinWheel.getSpinButton());
+        entities.insert(e.id(), spinWheel.getSpinButton());
     }
 
     private void processReelGrid(ReelGrid reelGrid) {
-        E.E()
+        E e = E.E()
                 .positionX(reelGrid.getX())
                 .positionY(reelGrid.getY());
+        entities.insert(e.id(), reelGrid);
     }
 
     private void setUpAnimatedReelsWithinReelGrids() {
@@ -302,5 +305,28 @@ public class LevelCreatorSystem extends BaseSystem {
                     }
                 }
         );
+    }
+
+    private void setUpLightButtons() {
+        for (HoldLightButton holdLightButton :
+                new Array.ArrayIterator<>(levelObjectCreatorEntityHolder.getHoldLightButtons()))
+            processLightButton(holdLightButton);
+    }
+
+    private void processLightButton(HoldLightButton holdLightButton) {
+        Array<Integer> entityIds = new Array<>();
+        E e = E.E()
+                .positionX(holdLightButton.getLight().getX())
+                .positionY(holdLightButton.getLight().getY())
+                .holdLightButtonComponent();
+        entities.insert(e.id(), holdLightButton);
+
+        e = E.E()
+                .positionX(holdLightButton.getLight().getX())
+                .positionY(holdLightButton.getLight().getY())
+                .textureRegionRender();
+        entityIds.add(e.id());
+        entities.insert(e.id(), holdLightButton.getSprite());
+        holdLightButton.setEntityIds(entityIds);
     }
 }
