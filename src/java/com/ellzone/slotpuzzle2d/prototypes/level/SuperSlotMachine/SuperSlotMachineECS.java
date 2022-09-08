@@ -32,6 +32,7 @@ import com.ellzone.slotpuzzle2d.systems.artemisodb.AnimatedReelSystem;
 import com.ellzone.slotpuzzle2d.systems.artemisodb.Box2DPhysicsSystem;
 import com.ellzone.slotpuzzle2d.systems.artemisodb.ClearScreenSystem;
 import com.ellzone.slotpuzzle2d.systems.artemisodb.DebugPointRenderSystem;
+import com.ellzone.slotpuzzle2d.systems.artemisodb.HoldLightButtonSystem;
 import com.ellzone.slotpuzzle2d.systems.artemisodb.InputSystem;
 import com.ellzone.slotpuzzle2d.systems.artemisodb.LevelCreatorSystem;
 import com.ellzone.slotpuzzle2d.systems.artemisodb.RenderImagesSystem;
@@ -46,6 +47,7 @@ import com.ellzone.slotpuzzle2d.tweenengine.TweenManager;
 import com.ellzone.slotpuzzle2d.utils.convert.TileMapToWorldConvert;
 import com.ellzone.slotpuzzle2d.utils.tilemap.TileMapAttributes;
 
+import net.mostlyoriginal.api.system.camera.CameraSystem;
 import net.mostlyoriginal.plugin.ProfilerPlugin;
 import net.mostlyoriginal.plugin.OperationsPlugin;
 
@@ -92,6 +94,7 @@ public class SuperSlotMachineECS extends SPPrototype {
                         new GroupManager()
                 )
                 .with(
+                        new CameraSystem(1),
                         new TiledMapSystem(tileMapAttributes),
                         new LevelCreatorSystem(
                                 levelCreatorInjectorExtended,
@@ -108,7 +111,8 @@ public class SuperSlotMachineECS extends SPPrototype {
                         new RenderTextureRegionRotationSystem(),
                         new RenderImagesSystem(),
                         new RenderVectorsSystem(),
-                        new DebugPointRenderSystem(isDebugPointRenderSystemEnabled)
+                        new DebugPointRenderSystem(isDebugPointRenderSystemEnabled),
+                        new HoldLightButtonSystem(worldBuilder.getRayHandler())
                 )
                 .build());
     }

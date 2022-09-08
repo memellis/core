@@ -20,15 +20,13 @@ import com.artemis.Aspect;
 import com.artemis.Entity;
 import com.artemis.annotations.Wire;
 import com.artemis.systems.EntityProcessingSystem;
-import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.ellzone.slotpuzzle2d.component.artemis.Position;
 import com.ellzone.slotpuzzle2d.component.artemis.Rotation;
 import com.ellzone.slotpuzzle2d.component.artemis.TextureRegionRender;
-
 import net.mostlyoriginal.api.plugin.extendedcomponentmapper.M;
+import net.mostlyoriginal.api.system.camera.CameraSystem;
 
 @Wire
 public class RenderTextureRegionSystem extends EntityProcessingSystem {
@@ -36,6 +34,7 @@ public class RenderTextureRegionSystem extends EntityProcessingSystem {
     protected M<Position> mPosition;
     private SpriteBatch batch;
     private LevelCreatorSystem levelCreatorSystem;
+    private CameraSystem cameraSystem;
 
     public RenderTextureRegionSystem() {
         super(Aspect.all(Position.class, TextureRegionRender.class).exclude(Rotation.class));
@@ -49,6 +48,7 @@ public class RenderTextureRegionSystem extends EntityProcessingSystem {
 
     @Override
     protected void begin() {
+        batch.setProjectionMatrix(cameraSystem.camera.combined);
         batch.begin();
    }
 

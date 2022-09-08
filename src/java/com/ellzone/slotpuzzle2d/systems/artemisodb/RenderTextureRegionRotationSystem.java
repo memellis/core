@@ -10,12 +10,14 @@ import com.ellzone.slotpuzzle2d.component.artemis.Rotation;
 import com.ellzone.slotpuzzle2d.component.artemis.TextureRegionRender;
 
 import net.mostlyoriginal.api.plugin.extendedcomponentmapper.M;
+import net.mostlyoriginal.api.system.camera.CameraSystem;
 
 public class RenderTextureRegionRotationSystem extends EntityProcessingSystem {
     private SpriteBatch batch;
     private LevelCreatorSystem levelCreatorSystem;
     protected M<Position> mPosition;
     protected M<Rotation> mRotate;
+    private CameraSystem cameraSystem;
 
     public RenderTextureRegionRotationSystem() {
         super(Aspect.all(Position.class, TextureRegionRender.class, Rotation.class));
@@ -29,6 +31,7 @@ public class RenderTextureRegionRotationSystem extends EntityProcessingSystem {
 
     @Override
     protected void begin() {
+        batch.setProjectionMatrix(cameraSystem.camera.combined);
         batch.begin();
     }
 

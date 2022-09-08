@@ -27,7 +27,7 @@ public class HoldLightButton extends LightButton {
             new BitmapFont(),
             "",
              "Hold",
-              false);
+              true);
     }
 
     public void setEntityIds(Array<Integer> entityIds) {

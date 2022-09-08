@@ -27,6 +27,7 @@ import com.ellzone.slotpuzzle2d.component.artemis.Position;
 import com.ellzone.slotpuzzle2d.component.artemis.Vector2Shape;
 
 import net.mostlyoriginal.api.plugin.extendedcomponentmapper.M;
+import net.mostlyoriginal.api.system.camera.CameraSystem;
 
 
 @All({Vector2Shape.class, Color.class})
@@ -36,6 +37,7 @@ public class RenderVectorsSystem extends EntityProcessingSystem {
     private ShapeRenderer shapeRenderer;
     protected M<Vector2Shape> mVector2Shape;
     protected M<Color> mColor;
+    private CameraSystem cameraSystem;
 
     @Override
     protected void initialize() {
@@ -46,6 +48,7 @@ public class RenderVectorsSystem extends EntityProcessingSystem {
 
     @Override
     protected void begin() {
+        batch.setProjectionMatrix(cameraSystem.camera.combined);
         batch.begin();
     }
 
@@ -59,7 +62,7 @@ public class RenderVectorsSystem extends EntityProcessingSystem {
     protected void process(Entity e) {
         final Vector2Shape vector2Shape = mVector2Shape.get(e);
         final Color color = mColor.get(e);
-        if (vector2Shape.getVectors().size<2)
+        if (vector2Shape.getVectors().size < 2)
             return;
         shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
         shapeRenderer.setColor(new com.badlogic.gdx.graphics.Color(

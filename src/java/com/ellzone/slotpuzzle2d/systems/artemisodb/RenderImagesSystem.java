@@ -47,11 +47,12 @@ public class RenderImagesSystem extends EntityProcessingSystem {
         camera.setToOrtho(false,
                 Gdx.graphics.getWidth() / SpinWheel.PPM,
                 Gdx.graphics.getHeight() / SpinWheel.PPM);
-        batch.setProjectionMatrix(camera.combined);
+
     }
 
     @Override
     protected void begin() {
+        batch.setProjectionMatrix(camera.combined);
         batch.begin();
     }
 

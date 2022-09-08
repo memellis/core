@@ -322,8 +322,8 @@ public class LevelCreatorSystem extends BaseSystem {
         entities.insert(e.id(), holdLightButton);
 
         e = E.E()
-                .positionX(holdLightButton.getLight().getX())
-                .positionY(holdLightButton.getLight().getY())
+                .positionX(holdLightButton.getSprite().getX())
+                .positionY(holdLightButton.getSprite().getY())
                 .textureRegionRender();
         entityIds.add(e.id());
         entities.insert(e.id(), holdLightButton.getSprite());
