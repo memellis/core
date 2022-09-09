@@ -8,7 +8,8 @@ import com.artemis.annotations.All;
 import com.artemis.systems.EntityProcessingSystem;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.OrthographicCamera;
-import com.badlogic.gdx.utils.viewport.FitViewport;
+import com.badlogic.gdx.math.Rectangle;
+import com.badlogic.gdx.math.Vector3;
 import com.ellzone.slotpuzzle2d.component.artemis.HoldLightButtonComponent;
 import com.ellzone.slotpuzzle2d.sprites.HoldLightButton;
 
@@ -20,10 +21,11 @@ import static com.ellzone.slotpuzzle2d.SlotPuzzleConstants.PIXELS_PER_METER;
 public class HoldLightButtonSystem extends EntityProcessingSystem {
 
     private final RayHandler rayHandler;
-    private FitViewport lightViewport;
     private LevelCreatorSystem levelCreatorSystem;
     private float flashTime;
-    private OrthographicCamera camera;
+    private OrthographicCamera ppmCamera, camera;
+    private Vector3 unProjectTouch;
+    private boolean touched;
 
     public HoldLightButtonSystem(RayHandler rayHandler) {
         this.rayHandler = rayHandler;
@@ -31,20 +33,22 @@ public class HoldLightButtonSystem extends EntityProcessingSystem {
     }
 
     private void setUp() {
-        setupViewport(
+        ppmCamera =  setupViewport(
                 Gdx.graphics.getWidth() / PIXELS_PER_METER,
-                Gdx.graphics.getHeight() / PIXELS_PER_METER
+                Gdx.graphics.getHeight() / PIXELS_PER_METER,
+                false
         );
-        rayHandler.setCombinedMatrix(camera);
+        camera = setupViewport(Gdx.graphics.getWidth(), Gdx.graphics.getHeight(), true);
+        rayHandler.setCombinedMatrix(ppmCamera);
         rayHandler.setAmbientLight(0.7f);
     }
 
-    private void setupViewport(float width, float height) {
-        camera = new OrthographicCamera(width, height);
-        camera.setToOrtho(false, width, height);
+    private OrthographicCamera setupViewport(float width, float height, boolean yDown) {
+        OrthographicCamera camera = new OrthographicCamera(width, height);
+        camera.setToOrtho(yDown, width, height);
         camera.update();
+        return camera;
     }
-
 
     @Override
     protected void begin() {
@@ -53,15 +57,36 @@ public class HoldLightButtonSystem extends EntityProcessingSystem {
     }
 
     @Override
+    protected void end() {
+        touched = false;
+    }
+
+    @Override
     protected void process(Entity e) {
         HoldLightButton holdLightButton =
                 (HoldLightButton) levelCreatorSystem.getEntities().get(e.getId());
-        flashTime += Gdx.graphics.getDeltaTime();
-        if (flashTime > 1.0f) {
-           holdLightButton.getLight().setActive(!holdLightButton.getLight().isActive());
-           System.out.println("flash: "+ holdLightButton.getLight().isActive());
-           System.out.println(holdLightButton.getLight().getPosition());
-           flashTime = 0.0f;
-        }
+        if (touched)
+            processTouched(holdLightButton);
+    }
+
+    public void touched(Vector3 unProjectTouch) {
+        this.unProjectTouch = unProjectTouch;
+        camera.unproject(unProjectTouch);
+        touched = true;
+    }
+
+    private void processTouched(HoldLightButton holdLightButton) {
+        Rectangle rectangle = new Rectangle(
+                holdLightButton.getSprite().getX(),
+                holdLightButton.getSprite().getY(),
+                holdLightButton.getSprite().getWidth(),
+                holdLightButton.getSprite().getHeight()
+        );
+        if (rectangle.contains(unProjectTouch.x, unProjectTouch.y))
+            processHoldLightButtonTouched(holdLightButton);
+    }
+
+    private void processHoldLightButtonTouched(HoldLightButton holdLightButton) {
+         holdLightButton.getLight().setActive(!holdLightButton.getLight().isActive());
     }
 }

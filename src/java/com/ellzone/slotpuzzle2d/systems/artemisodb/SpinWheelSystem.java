@@ -65,7 +65,6 @@ public class SpinWheelSystem extends EntityProcessingSystem  {
         touched = true;
     }
 
-
     @Override
     protected void process(Entity e) {
         SpinWheelSlotPuzzleTileMap spinWheel =

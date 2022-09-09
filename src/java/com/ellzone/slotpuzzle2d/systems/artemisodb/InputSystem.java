@@ -27,6 +27,7 @@ public class InputSystem extends BaseSystem {
     private AnimatedReelSystem animatedReelSystem;
     private SpinWheelSystem spinWheelSystem;
     private SlotHandleSystem slotHandleSystem;
+    private HoldLightButtonSystem holdLightButtonSystem;
 
     @Override
     protected void processSystem() {
@@ -40,5 +41,6 @@ public class InputSystem extends BaseSystem {
         slotHandleSystem.touched(unProjectTouch);
         animatedReelSystem.touched(unProjectTouch);
         spinWheelSystem.touched(unProjectTouch);
+        holdLightButtonSystem.touched(unProjectTouch);
     }
 }
