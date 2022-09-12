@@ -23,8 +23,7 @@ import com.badlogic.gdx.physics.box2d.World;
 import com.ellzone.slotpuzzle2d.components.LightButtonComponent;
 import com.ellzone.slotpuzzle2d.components.LightVisualComponent;
 import com.ellzone.slotpuzzle2d.components.PlayerComponent;
-import com.ellzone.slotpuzzle2d.level.creator.LevelHoldLightButtonCallback;
-import com.ellzone.slotpuzzle2d.sprites.HoldLightButton;
+import com.ellzone.slotpuzzle2d.sprites.lights.HoldLightButton;
 
 import box2dLight.RayHandler;
 

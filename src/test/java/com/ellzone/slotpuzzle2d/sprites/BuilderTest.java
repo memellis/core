@@ -17,6 +17,7 @@
 package com.ellzone.slotpuzzle2d.sprites;
 
 import com.ellzone.slotpuzzle2d.GameTest;
+import com.ellzone.slotpuzzle2d.sprites.lights.LightButtonBuilder;
 
 import org.junit.Rule;
 import org.junit.Test;
@@ -30,6 +31,6 @@ public class BuilderTest extends GameTest {
     @Test
     public void lightButtonBuild() {
         thrown.expect(IllegalStateException.class);
-        LightButtonBuilder lightButton = new LightButtonBuilder.Builder().build();
+        com.ellzone.slotpuzzle2d.sprites.lights.LightButtonBuilder lightButton = new LightButtonBuilder.Builder().build();
     }
 }

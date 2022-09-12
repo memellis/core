@@ -2,7 +2,6 @@
 
 package com.ellzone.slotpuzzle2d.systems.artemisodb;
 
-import com.artemis.E;
 import com.artemis.Entity;
 import com.artemis.annotations.All;
 import com.artemis.systems.EntityProcessingSystem;
@@ -11,7 +10,7 @@ import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector3;
 import com.ellzone.slotpuzzle2d.component.artemis.HoldLightButtonComponent;
-import com.ellzone.slotpuzzle2d.sprites.HoldLightButton;
+import com.ellzone.slotpuzzle2d.sprites.lights.HoldLightButton;
 
 import box2dLight.RayHandler;
 
@@ -22,7 +21,6 @@ public class HoldLightButtonSystem extends EntityProcessingSystem {
 
     private final RayHandler rayHandler;
     private LevelCreatorSystem levelCreatorSystem;
-    private float flashTime;
     private OrthographicCamera ppmCamera, camera;
     private Vector3 unProjectTouch;
     private boolean touched;
@@ -40,7 +38,7 @@ public class HoldLightButtonSystem extends EntityProcessingSystem {
         );
         camera = setupViewport(Gdx.graphics.getWidth(), Gdx.graphics.getHeight(), true);
         rayHandler.setCombinedMatrix(ppmCamera);
-        rayHandler.setAmbientLight(0.7f);
+        rayHandler.setAmbientLight(0.9f);
     }
 
     private OrthographicCamera setupViewport(float width, float height, boolean yDown) {

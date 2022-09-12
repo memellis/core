@@ -14,7 +14,7 @@
  limitations under the License.
  */
 
-package com.ellzone.slotpuzzle2d.sprites;
+package com.ellzone.slotpuzzle2d.sprites.lights;
 
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Pixmap;

@@ -34,7 +34,7 @@ import com.ellzone.slotpuzzle2d.components.SlothandleSpriteComponent;
 import com.ellzone.slotpuzzle2d.components.VisualComponent;
 import com.ellzone.slotpuzzle2d.physics.DampenedSineParticle;
 import com.ellzone.slotpuzzle2d.sprites.reel.AnimatedReel;
-import com.ellzone.slotpuzzle2d.sprites.LightButton;
+import com.ellzone.slotpuzzle2d.sprites.lights.LightButton;
 import com.ellzone.slotpuzzle2d.sprites.reel.ReelHelper;
 import com.ellzone.slotpuzzle2d.sprites.slothandle.SlotHandleSprite;
 import com.ellzone.slotpuzzle2d.utils.assets.AssetsAnnotation;

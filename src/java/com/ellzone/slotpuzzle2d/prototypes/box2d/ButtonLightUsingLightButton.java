@@ -17,7 +17,7 @@
 package com.ellzone.slotpuzzle2d.prototypes.box2d;
 
 import com.ellzone.slotpuzzle2d.prototypes.SPPrototype;
-import com.ellzone.slotpuzzle2d.sprites.LightButton;
+import com.ellzone.slotpuzzle2d.sprites.lights.LightButton;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;

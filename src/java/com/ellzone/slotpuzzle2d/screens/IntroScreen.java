@@ -48,7 +48,7 @@ import com.ellzone.slotpuzzle2d.effects.ReelLetterAccessor;
 import com.ellzone.slotpuzzle2d.effects.SpriteAccessor;
 import com.ellzone.slotpuzzle2d.messaging.MessageType;
 import com.ellzone.slotpuzzle2d.sprites.reel.AnimatedReel;
-import com.ellzone.slotpuzzle2d.sprites.LightButtonBuilder;
+import com.ellzone.slotpuzzle2d.sprites.lights.LightButtonBuilder;
 import com.ellzone.slotpuzzle2d.sprites.reel.ReelLetter;
 import com.ellzone.slotpuzzle2d.sprites.reel.ReelLetterTile;
 import com.ellzone.slotpuzzle2d.sprites.reel.ReelSprites;

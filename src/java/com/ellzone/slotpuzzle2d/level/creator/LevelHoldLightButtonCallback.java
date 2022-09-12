@@ -17,7 +17,7 @@
 package com.ellzone.slotpuzzle2d.level.creator;
 
 import com.badlogic.ashley.core.Component;
-import com.ellzone.slotpuzzle2d.sprites.HoldLightButton;
+import com.ellzone.slotpuzzle2d.sprites.lights.HoldLightButton;
 
 public interface LevelHoldLightButtonCallback {
     public void onEvent(HoldLightButton source);

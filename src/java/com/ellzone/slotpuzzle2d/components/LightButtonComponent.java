@@ -17,7 +17,7 @@
 package com.ellzone.slotpuzzle2d.components;
 
 import com.badlogic.ashley.core.Component;
-import com.ellzone.slotpuzzle2d.sprites.LightButton;
+import com.ellzone.slotpuzzle2d.sprites.lights.LightButton;
 
 public class LightButtonComponent implements Component {
     public LightButton lightButton;

@@ -29,7 +29,7 @@ import com.ellzone.slotpuzzle2d.components.LightButtonComponent;
 import com.ellzone.slotpuzzle2d.components.LightVisualComponent;
 import com.ellzone.slotpuzzle2d.components.PositionComponent;
 import com.ellzone.slotpuzzle2d.prototypes.SPPrototype;
-import com.ellzone.slotpuzzle2d.sprites.HoldLightButton;
+import com.ellzone.slotpuzzle2d.sprites.lights.HoldLightButton;
 import com.ellzone.slotpuzzle2d.systems.LightSystem;
 import com.ellzone.slotpuzzle2d.systems.RenderSystem;
 import box2dLight.RayHandler;
