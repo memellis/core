@@ -32,8 +32,8 @@ public class HoldLightButtonSystem extends EntityProcessingSystem {
 
     private void setUp() {
         ppmCamera =  setupViewport(
-                Gdx.graphics.getWidth() / PIXELS_PER_METER,
-                Gdx.graphics.getHeight() / PIXELS_PER_METER,
+                (Gdx.graphics.getWidth() / (float) PIXELS_PER_METER),
+                (Gdx.graphics.getHeight() / (float) PIXELS_PER_METER),
                 false
         );
         camera = setupViewport(Gdx.graphics.getWidth(), Gdx.graphics.getHeight(), true);
@@ -51,6 +51,7 @@ public class HoldLightButtonSystem extends EntityProcessingSystem {
     @Override
     protected void begin() {
         super.begin();
+        rayHandler.setCombinedMatrix(ppmCamera);
         rayHandler.updateAndRender();
     }
 

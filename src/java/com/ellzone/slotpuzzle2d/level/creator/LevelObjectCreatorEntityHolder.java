@@ -25,9 +25,10 @@ import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.utils.Array;
 import com.ellzone.slotpuzzle2d.level.reel.ReelGrid;
 import com.ellzone.slotpuzzle2d.spin.SpinWheelSlotPuzzleTileMap;
+import com.ellzone.slotpuzzle2d.sprites.lights.HoldLightButtonTileMap;
 import com.ellzone.slotpuzzle2d.sprites.reel.AnimatedPredictedReel;
 import com.ellzone.slotpuzzle2d.sprites.reel.AnimatedReel;
-import com.ellzone.slotpuzzle2d.sprites.HoldLightButton;
+import com.ellzone.slotpuzzle2d.sprites.lights.HoldLightButton;
 import com.ellzone.slotpuzzle2d.sprites.reel.ReelHelper;
 import com.ellzone.slotpuzzle2d.sprites.reel.ReelSprites;
 import com.ellzone.slotpuzzle2d.sprites.reel.ReelTile;
@@ -55,7 +56,6 @@ public class LevelObjectCreatorEntityHolder extends LevelObjectCreator {
     private LevelSpinWheelCallback levelSpinWheelCallback;
     private LevelReelGridCallback levelReelGridCallback;
     private final Array<ReelTile> reelTiles = new Array<>();
-    private final Array<HoldLightButton> lightButtons = new Array<>();
     private final Array<AnimatedReel> reels = new Array<>();
     private final Array<AnimatedReelTileMap> animatedReels = new Array<>();
     private final Array<AnimatedPredictedReel> animatedPredictedReels = new Array<>();
@@ -65,6 +65,7 @@ public class LevelObjectCreatorEntityHolder extends LevelObjectCreator {
     private final Array<SlotHandleTileMap> slotHandles = new Array<>();
     private final Array<SpinWheelSlotPuzzleTileMap> spinWheels = new Array<>();
     private final Array<ReelGrid> reelGrids = new Array<>();
+    private final Array<HoldLightButton> holdLightButtons = new Array<>();
     private LevelAnimatedReelTileMapCallback levelAnimatedReelTileMapCallback;
     private LevelAnimatedPredictedReelCallback levelAnimatedPredictedReelCallback;
 
@@ -135,7 +136,7 @@ public class LevelObjectCreatorEntityHolder extends LevelObjectCreator {
     }
 
     public void addTo(HoldLightButton holdLightButton) {
-        lightButtons.add(holdLightButton);
+        holdLightButtons.add(holdLightButton);
     }
 
     public void addTo(AnimatedReel reel) {
@@ -205,12 +206,23 @@ public class LevelObjectCreatorEntityHolder extends LevelObjectCreator {
             levelHoldLightButtonCallback.onEvent(holdLightButton);
     }
 
+    public void delegateToCallback(HoldLightButtonTileMap holdLightButton) {
+        if (levelHoldLightButtonCallback != null)
+            levelHoldLightButtonCallback.onEvent((HoldLightButton) holdLightButton.getHoldLightButton());
+    }
+
+
     public void addComponentToEntity(PointLight pointLight, Component component) {
         if (levelPointLightCallback != null)
             levelPointLightCallback.addComponent(component);
     }
 
     public void addComponentToEntity(HoldLightButton holdLightButton, Component component) {
+        if (levelHoldLightButtonCallback != null)
+            levelHoldLightButtonCallback.addComponent(component);
+    }
+
+    public void addComponentToEntity(HoldLightButtonTileMap holdLightButton, Component component) {
         if (levelHoldLightButtonCallback != null)
             levelHoldLightButtonCallback.addComponent(component);
     }
@@ -268,11 +280,10 @@ public class LevelObjectCreatorEntityHolder extends LevelObjectCreator {
     public void delegateToCallback(ReelGrid reelGrid) {
         if (levelReelGridCallback != null)
             levelReelGridCallback.onEvent(reelGrid);
-
     }
 
     public Array<HoldLightButton> getHoldLightButtons() {
-        return lightButtons;
+        return holdLightButtons;
     }
 
     public Array<AnimatedReel> getAnimatedReels() {
