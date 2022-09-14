@@ -30,6 +30,16 @@ public class HoldLightButtonSystem extends EntityProcessingSystem {
         setUp();
     }
 
+    public void touched(Vector3 unProjectTouch) {
+        this.unProjectTouch = unProjectTouch;
+        camera.unproject(unProjectTouch);
+        touched = true;
+    }
+
+    public boolean[] getLightButtonsState() {
+        return null;
+    }
+
     private void setUp() {
         ppmCamera =  setupViewport(
                 (Gdx.graphics.getWidth() / (float) PIXELS_PER_METER),
@@ -66,12 +76,6 @@ public class HoldLightButtonSystem extends EntityProcessingSystem {
                 (HoldLightButton) levelCreatorSystem.getEntities().get(e.getId());
         if (touched)
             processTouched(holdLightButton);
-    }
-
-    public void touched(Vector3 unProjectTouch) {
-        this.unProjectTouch = unProjectTouch;
-        camera.unproject(unProjectTouch);
-        touched = true;
     }
 
     private void processTouched(HoldLightButton holdLightButton) {

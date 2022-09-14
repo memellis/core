@@ -27,6 +27,7 @@ import com.badlogic.gdx.utils.Array;
 import com.ellzone.slotpuzzle2d.component.artemis.Position;
 import com.ellzone.slotpuzzle2d.level.creator.LevelCreatorInjectionInterface;
 import com.ellzone.slotpuzzle2d.level.creator.LevelObjectCreatorEntityHolder;
+import com.ellzone.slotpuzzle2d.level.light.LightGrid;
 import com.ellzone.slotpuzzle2d.level.reel.ReelGrid;
 import com.ellzone.slotpuzzle2d.spin.SpinWheelSlotPuzzleTileMap;
 import com.ellzone.slotpuzzle2d.sprites.lights.HoldLightButton;
@@ -34,6 +35,8 @@ import com.ellzone.slotpuzzle2d.sprites.reel.AnimatedPredictedReel;
 import com.ellzone.slotpuzzle2d.sprites.reel.AnimatedReel;
 import com.ellzone.slotpuzzle2d.sprites.reel.AnimatedReelECS;
 import com.ellzone.slotpuzzle2d.sprites.slothandle.SlotHandleSprite;
+
+import org.w3c.dom.css.Rect;
 
 import java.util.Comparator;
 
@@ -125,6 +128,8 @@ public class LevelCreatorSystem extends BaseSystem {
         setUpReelGrids();
         setUpAnimatedReelsWithinReelGrids();
         setUpLightButtons();
+        setUpLightGrids();
+        setUpLightButtonsWithinLightGrids();
     }
 
     private void setUpAnimatedReels() {
@@ -159,6 +164,12 @@ public class LevelCreatorSystem extends BaseSystem {
         for (ReelGrid reelGrid :
             new Array.ArrayIterator<>(levelObjectCreatorEntityHolder.getReelGrids()))
                 processReelGrid(reelGrid);
+    }
+
+    private void setUpLightGrids() {
+        for (LightGrid lightGrid :
+            new Array.ArrayIterator<>(levelObjectCreatorEntityHolder.getLightGrids()))
+                processLightGrid(lightGrid);
     }
 
     private void processAnimatedReel(AnimatedReel animatedReel) {
@@ -271,6 +282,13 @@ public class LevelCreatorSystem extends BaseSystem {
         entities.insert(e.id(), reelGrid);
     }
 
+    private void processLightGrid(LightGrid lightGrid) {
+        E e = E.E()
+                .positionX(lightGrid.getX())
+                .positionY(lightGrid.getY());
+        entities.insert(e.id(), lightGrid);
+    }
+
     private void setUpAnimatedReelsWithinReelGrids() {
           for (AnimatedReelECS animatedReel :
                   new Array.ArrayIterator<>(getAnimatedReelsECS()))
@@ -328,5 +346,40 @@ public class LevelCreatorSystem extends BaseSystem {
         entityIds.add(e.id());
         entities.insert(e.id(), holdLightButton.getSprite());
         holdLightButton.setEntityIds(entityIds);
+    }
+
+    private void setUpLightButtonsWithinLightGrids() {
+        for (HoldLightButton holdLightButton :
+                new Array.ArrayIterator<>(levelObjectCreatorEntityHolder.getHoldLightButtons()))
+            checkLightButtonWithinLightGrids(holdLightButton);
+    }
+
+    private void checkLightButtonWithinLightGrids(HoldLightButton holdLightButton) {
+        for (LightGrid lightGrid :
+            new Array.ArrayIterator<>(levelObjectCreatorEntityHolder.getLightGrids()))
+            checkLightButtonWithinLightGrid(holdLightButton, lightGrid);
+    }
+
+    private void checkLightButtonWithinLightGrid(HoldLightButton holdLightButton, LightGrid lightGrid) {
+        Rectangle holdLightButtonRectangle = new Rectangle(
+                holdLightButton.getSprite().getX(),
+                holdLightButton.getSprite().getY(),
+                holdLightButton.getSprite().getWidth(),
+                holdLightButton.getSprite().getHeight());
+        Rectangle lightGridRectangle = new Rectangle(
+                lightGrid.getX(),
+                lightGrid.getY(),
+                lightGrid.getWidth(),
+                lightGrid.getHeight());
+        if (holdLightButtonRectangle.overlaps(lightGridRectangle))
+            lightGrid.addHoldLightButton(holdLightButton);
+        lightGrid.getHoldLightButtonsWithinLightGrid().sort(
+                new Comparator<HoldLightButton>() {
+                    @Override
+                    public int compare(HoldLightButton b1, HoldLightButton b2) {
+                        return (int) (b1.getSprite().getX() - b2.getSprite().getX());
+                    }
+                }
+        );
     }
 }
