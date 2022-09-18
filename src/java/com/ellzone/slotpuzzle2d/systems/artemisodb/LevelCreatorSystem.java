@@ -36,9 +36,8 @@ import com.ellzone.slotpuzzle2d.sprites.reel.AnimatedReel;
 import com.ellzone.slotpuzzle2d.sprites.reel.AnimatedReelECS;
 import com.ellzone.slotpuzzle2d.sprites.slothandle.SlotHandleSprite;
 
-import org.w3c.dom.css.Rect;
-
 import java.util.Comparator;
+import java.util.HashMap;
 
 import box2dLight.RayHandler;
 
@@ -53,6 +52,7 @@ public class LevelCreatorSystem extends BaseSystem {
     private final LevelCreatorInjectionInterface levelCreatorInjectionInterface;
     private Array<Object> entities = new Array<>();
     private Array<AnimatedReelECS> animatedReelsECS = new Array<>();
+    private HashMap <AnimatedReelECS, HoldLightButton> animatedReelHoldLightButton = new HashMap<>();
     private boolean isReelSpinDirectionClockwise = false;
     private boolean isSetup;
 
@@ -104,6 +104,10 @@ public class LevelCreatorSystem extends BaseSystem {
         return animatedReelsECS;
     }
 
+    public HashMap <AnimatedReelECS, HoldLightButton> getAnimatedReelHoldLightButton() {
+        return animatedReelHoldLightButton;
+    }
+
     private void setup() {
         createLevelEntities();
         setEntityComponents();
@@ -130,6 +134,8 @@ public class LevelCreatorSystem extends BaseSystem {
         setUpLightButtons();
         setUpLightGrids();
         setUpLightButtonsWithinLightGrids();
+        setUpAnimatedReelsWithinLightGrids();
+        populateAnimatedReelHoldLightButton();
     }
 
     private void setUpAnimatedReels() {
@@ -301,18 +307,36 @@ public class LevelCreatorSystem extends BaseSystem {
                     checkAnimatedReelWithinReelGrid(animatedReel, reelGrid);
     }
 
-    private void checkAnimatedReelWithinReelGrid(AnimatedReelECS animatedReel, ReelGrid reelGrid) {
-        Rectangle animatedReelRectangle = new Rectangle(
-                animatedReel.getX(),
-                animatedReel.getY(),
-                animatedReel.getTileWidth(),
-                animatedReel.getTileHeight());
-        Rectangle reelGridRectangle = new Rectangle(
-                reelGrid.getX(),
-                reelGrid.getY(),
-                reelGrid.getWidth(),
-                reelGrid.getHeight()
+    private void setUpAnimatedReelsWithinLightGrids() {
+        for (AnimatedReelECS animatedReel :
+                new Array.ArrayIterator<>(getAnimatedReelsECS()))
+            checkAnimatedReelsWithinLightGrids(animatedReel);
+    }
+
+    private void checkAnimatedReelsWithinLightGrids(AnimatedReelECS animatedReel) {
+        for (LightGrid lightGrid :
+                new Array.ArrayIterator<>(levelObjectCreatorEntityHolder.getLightGrids()))
+            checkAnimatedReelsWithinLightGrid(animatedReel, lightGrid);
+    }
+
+    public void checkAnimatedReelsWithinLightGrid(AnimatedReelECS animatedReel, LightGrid lightGrid) {
+        Rectangle animatedReelRectangle = getRectangle(animatedReel.getX(), animatedReel.getY(), animatedReel.getTileWidth(), animatedReel.getTileHeight());
+        Rectangle lightGridRectangle = getRectangle(lightGrid.getX(), lightGrid.getY(), lightGrid.getWidth(), lightGrid.getHeight());
+        if (animatedReelRectangle.overlaps(lightGridRectangle))
+            lightGrid.addAnimatedReel(animatedReel);
+        lightGrid.getAnimatedReelsWithinLightGrid().sort(
+                new Comparator<AnimatedReelECS>() {
+                    @Override
+                    public int compare(AnimatedReelECS reel1, AnimatedReelECS reel2) {
+                        return (int) (reel1.getReel().getX() - reel2.getReel().getX());
+                    }
+                }
         );
+    }
+
+    private void checkAnimatedReelWithinReelGrid(AnimatedReelECS animatedReel, ReelGrid reelGrid) {
+        Rectangle animatedReelRectangle = getRectangle(animatedReel.getX(), animatedReel.getY(), animatedReel.getTileWidth(), animatedReel.getTileHeight());
+        Rectangle reelGridRectangle = getRectangle(reelGrid.getX(), reelGrid.getY(), reelGrid.getWidth(), reelGrid.getHeight());
         if (animatedReelRectangle.overlaps(reelGridRectangle))
             reelGrid.addAnimatedReel(animatedReel);
         reelGrid.getAnimatedReelsWithinReelGrid().sort(
@@ -323,6 +347,14 @@ public class LevelCreatorSystem extends BaseSystem {
                     }
                 }
         );
+    }
+
+    private Rectangle getRectangle(float x, float y, float tileWidth, float tileHeight) {
+        return new Rectangle(
+                x,
+                y,
+                tileWidth,
+                tileHeight);
     }
 
     private void setUpLightButtons() {
@@ -361,16 +393,8 @@ public class LevelCreatorSystem extends BaseSystem {
     }
 
     private void checkLightButtonWithinLightGrid(HoldLightButton holdLightButton, LightGrid lightGrid) {
-        Rectangle holdLightButtonRectangle = new Rectangle(
-                holdLightButton.getSprite().getX(),
-                holdLightButton.getSprite().getY(),
-                holdLightButton.getSprite().getWidth(),
-                holdLightButton.getSprite().getHeight());
-        Rectangle lightGridRectangle = new Rectangle(
-                lightGrid.getX(),
-                lightGrid.getY(),
-                lightGrid.getWidth(),
-                lightGrid.getHeight());
+        Rectangle holdLightButtonRectangle = getRectangle(holdLightButton.getSprite().getX(), holdLightButton.getSprite().getY(), holdLightButton.getSprite().getWidth(), holdLightButton.getSprite().getHeight());
+        Rectangle lightGridRectangle = getRectangle(lightGrid.getX(), lightGrid.getY(), lightGrid.getWidth(), lightGrid.getHeight());
         if (holdLightButtonRectangle.overlaps(lightGridRectangle))
             lightGrid.addHoldLightButton(holdLightButton);
         lightGrid.getHoldLightButtonsWithinLightGrid().sort(
@@ -381,5 +405,20 @@ public class LevelCreatorSystem extends BaseSystem {
                     }
                 }
         );
+    }
+
+    private void populateAnimatedReelHoldLightButton() {
+        for (LightGrid lightGrid :
+                new Array.ArrayIterator<>(levelObjectCreatorEntityHolder.getLightGrids()))
+            populateAnimatedReelHoldLightButton(lightGrid);
+    }
+
+    private void populateAnimatedReelHoldLightButton(LightGrid lightGrid) {
+        for (int i = 0; i < lightGrid.getAnimatedReelsWithinLightGrid().size; i++) {
+            animatedReelHoldLightButton.put(
+                    lightGrid.getAnimatedReelsWithinLightGrid().get(i),
+                    lightGrid.getHoldLightButtonsWithinLightGrid().get(i)
+            );
+        }
     }
 }

@@ -18,6 +18,7 @@ package com.ellzone.slotpuzzle2d.level.light;
 
 import com.badlogic.gdx.utils.Array;
 import com.ellzone.slotpuzzle2d.sprites.lights.HoldLightButton;
+import com.ellzone.slotpuzzle2d.sprites.reel.AnimatedReelECS;
 
 public class LightGrid {
     private float x;
@@ -25,6 +26,7 @@ public class LightGrid {
     private float width;
     private float height;
     private Array<HoldLightButton> holdLightButtonsWithinLightGrid = new Array<>();
+    private Array<AnimatedReelECS> animatedReelsWithinLightGrid = new Array<>();
 
     public LightGrid(float x, float y, float width, float height) {
         this.setX(x);
@@ -72,4 +74,12 @@ public class LightGrid {
     public Array<HoldLightButton> getHoldLightButtonsWithinLightGrid() {
         return holdLightButtonsWithinLightGrid;
     }
- }
+
+    public void addAnimatedReel(AnimatedReelECS animatedReel) {
+        animatedReelsWithinLightGrid.add(animatedReel);
+    }
+
+    public Array<AnimatedReelECS> getAnimatedReelsWithinLightGrid() {
+        return animatedReelsWithinLightGrid;
+    }
+}

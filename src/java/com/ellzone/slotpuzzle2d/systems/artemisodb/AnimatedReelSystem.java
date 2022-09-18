@@ -17,6 +17,7 @@ import com.ellzone.slotpuzzle2d.component.artemis.Position;
 import com.ellzone.slotpuzzle2d.component.artemis.SpinScroll;
 import com.ellzone.slotpuzzle2d.level.reel.ReelGrid;
 import com.ellzone.slotpuzzle2d.puzzlegrid.CalculateMatches;
+import com.ellzone.slotpuzzle2d.sprites.lights.HoldLightButton;
 import com.ellzone.slotpuzzle2d.sprites.reel.AnimatedPredictedReel;
 import com.ellzone.slotpuzzle2d.sprites.reel.AnimatedReelECS;
 import com.ellzone.slotpuzzle2d.sprites.reel.ReelTile;
@@ -119,10 +120,11 @@ public class AnimatedReelSystem extends EntityProcessingSystem {
     }
 
     private ReelTile getReelTile(Entity e) {
-        AnimatedReelECS animatedReel =
-                (AnimatedReelECS) levelCreatorSystem.getEntities().get(e.getId());
+        return getAnimatedReelFromEntity(e).getReel();
+    }
 
-        return animatedReel.getReel();
+    private AnimatedReelECS getAnimatedReelFromEntity(Entity e) {
+        return (AnimatedReelECS) levelCreatorSystem.getEntities().get(e.getId());
     }
 
     private void processReelTouched(
@@ -131,7 +133,8 @@ public class AnimatedReelSystem extends EntityProcessingSystem {
         if (reelTile.isSpinning())
             setEndReelWhenReelFinishedSpinning(reelTile);
         else
-            startReelSpinning(animatedReelEntity, reelTile);
+            if (isReelAllowedToSpin(animatedReelEntity, reelTile))
+                startReelSpinning(animatedReelEntity, reelTile);
         isTouched = false;
     }
 
@@ -233,8 +236,21 @@ public class AnimatedReelSystem extends EntityProcessingSystem {
 
     private void processSlotHandlePulled(Entity e) {
          ReelTile reelTile = getReelTile(e);
-         if (!reelTile.isSpinning())
+        if (isReelAllowedToSpin(e, reelTile))
             startReelSpinning(e, getReelTile(e));
+    }
+
+    private boolean isReelAllowedToSpin(Entity e, ReelTile reelTile) {
+        if (reelTile.isSpinning())
+            return false;
+        return !isReelHeld(e);
+    }
+
+    private boolean isReelHeld(Entity e) {
+        AnimatedReelECS animatedReel = getAnimatedReelFromEntity(e);
+        HoldLightButton holdLightButton =
+                levelCreatorSystem.getAnimatedReelHoldLightButton().get(animatedReel);
+        return holdLightButton.getLight().isActive();
     }
 
     private void checkForMatches() {
@@ -246,7 +262,6 @@ public class AnimatedReelSystem extends EntityProcessingSystem {
                 setMatchesToBeDisplayed(matchedRows);
         }
     }
-
 
     private Array<Array<Vector2>> checkForMatchesForReelGrid(ReelGrid reelGrid) {
         int reelGridMatrixWidth = (int)
