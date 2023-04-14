@@ -16,7 +16,7 @@
 
 package com.ellzone.slotpuzzle2d.finitestatemachine;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.junit.runner.RunWith;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;

@@ -19,12 +19,9 @@ package com.ellzone.slotpuzzle2d.finitestatemachine;
 import com.badlogic.gdx.Application;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
-
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Ignore;
-import org.junit.Test;
-
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import static junit.framework.TestCase.assertEquals;
 import static org.powermock.api.easymock.PowerMock.createMock;
 
@@ -32,7 +29,7 @@ public class TestPlayStateMachine {
     private Input mockInput;
     private Application mockApplication;
 
-    @Before
+    @BeforeEach
     public void setUp() {
         setUpMocks();
         mockGdx();
@@ -48,7 +45,7 @@ public class TestPlayStateMachine {
         Gdx.app = mockApplication;
     }
 
-    @After
+    @AfterEach
     public  void tearDown() {
         tearDownMocks();
         tearDownGdx();

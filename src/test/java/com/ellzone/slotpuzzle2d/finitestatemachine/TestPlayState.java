@@ -17,15 +17,13 @@
 package com.ellzone.slotpuzzle2d.finitestatemachine;
 
 import com.badlogic.gdx.ai.fsm.StateMachine;
-
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.junit.runner.RunWith;
 import org.powermock.api.easymock.PowerMock;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
-
 import static org.easymock.EasyMock.expect;
 
 @RunWith(PowerMockRunner.class)
@@ -35,14 +33,14 @@ public class TestPlayState {
     private StateMachine stateMachineMock;
     private PlaySimulator playSimulatorMock;
 
-    @Before
+    @BeforeEach
     public void setUp() {
         playStateMachineMock = PowerMock.createMock(PlayStateMachine.class);
         stateMachineMock = PowerMock.createMock(StateMachine.class);
         playSimulatorMock = PowerMock.createMock(PlaySimulator.class);
     }
 
-    @After
+    @AfterEach
     public void tearDown() {
         playStateMachineMock = null;
         stateMachineMock = null;
