@@ -24,7 +24,11 @@ import net.dermetfan.gdx.assets.AnnotationAssetManager;
 
 import org.junit.After;
 import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.junit.runner.RunWith;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
@@ -49,12 +53,12 @@ public class TestAudioManager {
     private Sound soundMock;
     private MessageManager messageManager;
 
-    @Before
+    @BeforeEach
     public void setUp() {
         createMocks();
     }
 
-    @After
+    @AfterEach
     public void tearDown() {
         annotationAssetManagerMock = null;
         soundMock = null;
