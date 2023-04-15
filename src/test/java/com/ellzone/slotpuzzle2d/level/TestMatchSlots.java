@@ -7,16 +7,14 @@ import com.ellzone.slotpuzzle2d.level.fixtures.ReelPrepare;
 import com.ellzone.slotpuzzle2d.prototypes.box2d.collisions.AnimatedReelsMatrixCreator;
 import com.ellzone.slotpuzzle2d.prototypes.box2d.collisions.SlotPuzzleMatrices;
 import com.ellzone.slotpuzzle2d.puzzlegrid.GridSize;
-import com.ellzone.slotpuzzle2d.puzzlegrid.PuzzleGridTypeReelTile;
 import com.ellzone.slotpuzzle2d.puzzlegrid.ReelTileGridValue;
 import com.ellzone.slotpuzzle2d.sprites.reel.AnimatedReel;
 import com.ellzone.slotpuzzle2d.sprites.reel.ReelTile;
-
-import org.junit.Test;
-
+import org.hamcrest.MatcherAssert;
+import org.junit.jupiter.api.Test;
 import static org.hamcrest.core.Is.is;
 import static org.hamcrest.core.IsEqual.equalTo;
-import static org.junit.Assert.assertThat;
+
 
 public class TestMatchSlots {
 
@@ -26,15 +24,12 @@ public class TestMatchSlots {
     public void testMatchSlotsWithZeroMatches() {
         Gdx.app = new MyGDXApplication();
         int[][] matrix = getMatrix(SlotPuzzleMatrices.createMatrixWithNoBoxes());
-        PuzzleGridTypeReelTile.printMatchGrid(
-                reelTiles,
-                new GridSize(matrix[0].length, matrix.length));
         MatchSlots matchSlots = new MatchSlots(
                 reelTiles,
                 new GridSize(matrix[0].length, matrix.length)
         ).invoke();
         Array<ReelTileGridValue> matchedSlots = matchSlots.getMatchedSlots();
-        assertThat(matchedSlots.size, is(equalTo(0)));
+        MatcherAssert.assertThat(matchedSlots.size, is(equalTo(0)));
     }
 
     @Test
@@ -45,8 +40,8 @@ public class TestMatchSlots {
                 new GridSize(matrix[0].length, matrix.length)
         ).invoke();
         Array<ReelTileGridValue> matchedSlots = matchSlots.getMatchedSlots();
-        assertThat(matchedSlots.get(0).reelTile.getIndex(), is(equalTo(84)));
-        assertThat(matchedSlots.get(1).reelTile.getIndex(), is(equalTo(96)));
+        MatcherAssert.assertThat(matchedSlots.get(0).reelTile.getIndex(), is(equalTo(84)));
+        MatcherAssert.assertThat(matchedSlots.get(1).reelTile.getIndex(), is(equalTo(96)));
     }
 
     @Test
@@ -56,15 +51,12 @@ public class TestMatchSlots {
         int[][] matrix = getMatrix(SlotPuzzleMatrices.createMatrixWithTwoBoxes());
         reelPrepare.prepareTestWithReelAction(
                 reelPrepare.reelSetNotSpinningAction, reelTiles, 84);
-        PuzzleGridTypeReelTile.printMatchGrid(
-                reelTiles,
-                new GridSize(matrix[0].length, matrix.length));
         MatchSlots matchSlots = new MatchSlots(
                 reelTiles,
                 new GridSize(matrix[0].length, matrix.length)
         ).invoke();
         Array<ReelTileGridValue> matchedSlots = matchSlots.getMatchedSlots();
-        assertThat(matchedSlots.size, is(equalTo(0)));
+        MatcherAssert.assertThat(matchedSlots.size, is(equalTo(0)));
     }
 
     @Test
@@ -74,16 +66,13 @@ public class TestMatchSlots {
         int[][] matrix = getMatrix(SlotPuzzleMatrices.createMatrixWithThreeBoxes());
         reelPrepare.prepareTestWithReelAction(
                 reelPrepare.reelSetNotSpinningAction, reelTiles, 84, 96);
-        PuzzleGridTypeReelTile.printMatchGrid(
-                reelTiles,
-                new GridSize(matrix[0].length, matrix.length));
         MatchSlots matchSlots = new MatchSlots(
                 reelTiles,
                 new GridSize(matrix[0].length, matrix.length)
         ).invoke();
         Array<ReelTileGridValue> matchedSlots = matchSlots.getMatchedSlots();
-        assertThat(matchedSlots.get(0).reelTile.getIndex(), is(equalTo(84)));
-        assertThat(matchedSlots.get(1).reelTile.getIndex(), is(equalTo(96)));
+        MatcherAssert.assertThat(matchedSlots.get(0).reelTile.getIndex(), is(equalTo(84)));
+        MatcherAssert.assertThat(matchedSlots.get(1).reelTile.getIndex(), is(equalTo(96)));
     }
 
     private int[][] prepareMatchSlotsTestWithTwoMatches() {
@@ -92,9 +81,6 @@ public class TestMatchSlots {
         int[][] matrix = getMatrix(SlotPuzzleMatrices.createMatrixWithTwoBoxes());
         reelPrepare.prepareTestWithReelAction(
                 reelPrepare.reelSetNotSpinningAction, reelTiles, 84, 96);
-        PuzzleGridTypeReelTile.printMatchGrid(
-                reelTiles,
-                new GridSize(matrix[0].length, matrix.length));
         return matrix;
     }
 

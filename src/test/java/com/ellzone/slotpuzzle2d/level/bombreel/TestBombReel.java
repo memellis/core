@@ -12,9 +12,7 @@ import com.ellzone.slotpuzzle2d.puzzlegrid.PuzzleGridTypeReelTile;
 import com.ellzone.slotpuzzle2d.puzzlegrid.ReelTileGridValue;
 import com.ellzone.slotpuzzle2d.puzzlegrid.TupleValueIndex;
 import com.ellzone.slotpuzzle2d.sprites.reel.AnimatedReel;
-
-import org.junit.Test;
-
+import org.junit.jupiter.api.Test;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
@@ -65,7 +63,6 @@ public class TestBombReel {
         AnimatedReelsMatrixCreator animatedReelsMatrixCreator = new AnimatedReelsMatrixCreator();
         animatedReels = animatedReelsMatrixCreator.createAnimatedReelsFromSlotPuzzleMatrix(
                 matrixWithOneBomb, false);
-        PuzzleGridTypeReelTile.printSlotMatrix(animatedReels);
         return animatedReels;
     }
 

@@ -27,9 +27,7 @@ import com.ellzone.slotpuzzle2d.sprites.reel.AnimatedReel;
 import com.ellzone.slotpuzzle2d.sprites.reel.ReelTile;
 import com.ellzone.slotpuzzle2d.tweenengine.SlotPuzzleTween;
 import com.ellzone.slotpuzzle2d.tweenengine.TweenManager;
-
-import org.junit.Test;
-
+import org.junit.jupiter.api.Test;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;

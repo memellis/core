@@ -2,8 +2,7 @@ package com.ellzone.slotpuzzle2d.level.utils;
 
 import com.badlogic.gdx.utils.Array;
 import com.ellzone.slotpuzzle2d.level.creator.utils.FilterReelBoxes;
-
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 public class TestFilterReelBoxes {
 

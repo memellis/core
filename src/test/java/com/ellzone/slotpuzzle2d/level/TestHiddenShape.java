@@ -17,9 +17,9 @@ import com.ellzone.slotpuzzle2d.screens.PlayScreen;
 import com.ellzone.slotpuzzle2d.sprites.reel.ReelTile;
 import com.ellzone.slotpuzzle2d.utils.InputMatrix;
 
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.junit.runner.RunWith;
 import org.powermock.api.easymock.PowerMock;
 import org.powermock.core.classloader.annotations.PrepareForTest;
@@ -30,6 +30,7 @@ import static org.easymock.EasyMock.expect;
 import static org.easymock.EasyMock.verify;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.powermock.api.easymock.PowerMock.createMock;
 import static org.powermock.api.easymock.PowerMock.replay;
 
@@ -49,7 +50,7 @@ public class TestHiddenShape {
     private Array<ReelTile> reelTiles;
     private int[][] hiddenShapeMatrix;
 
-    @Before
+    @BeforeEach
     public void setUp() {
         setUpMocks();
     }
@@ -63,7 +64,7 @@ public class TestHiddenShape {
         mapPropertiesMock = createMock(MapProperties.class);
     }
 
-    @After
+    @AfterEach
     public void tearDown() {
         tearDownMocks();
     }
@@ -110,8 +111,8 @@ public class TestHiddenShape {
         verifyAll();
     }
 
-    @Test(expected = HiddenPattern.HiddenPatternPuzzleGridException.class)
-    public void isHiddenPlayingShapeRevealeThrowsHiddenPlayingCardPuzzleGridException() {
+    @Test
+    public void isHiddenPlayingShapeRevealedThrowsHiddenPlayingCardPuzzleGridException() {
         testMatrix = createMatrixPatternRevealed();
         createGrid(testMatrix);
         rectangleMapObjects = createMockLevelHiddenShape();
@@ -120,35 +121,43 @@ public class TestHiddenShape {
         setExpectations(true);
         replayAll();
         HiddenPattern hiddenPattern = new HiddenShape(levelMock);
-        assertThat(hiddenPattern.isHiddenPatternRevealed(testGrid,
-                                                         reelTiles,
-                                                         testGrid[0].length,
-                                                         testGrid.length),
-                is(true));
-        verifyAll();
+        assertThrows(HiddenPattern.HiddenPatternPuzzleGridException.class, () -> {
+                    hiddenPattern.isHiddenPatternRevealed(testGrid,
+                            reelTiles,
+                            testGrid[0].length,
+                            testGrid.length);
+        });
     }
 
-    @Test(expected = HiddenPattern.HiddenPatternPuzzleGridException.class)
-    public void isHiddenPlayingCardRevealeThrowsHiddenPlayingCardPuzzleGridExceptionForGridColumnLessThan0() {
-        testAMapRectangleisOutOfRange(40, 0);
+    @Test
+    public void isHiddenPlayingCardRevealedThrowsHiddenPlayingCardPuzzleGridExceptionForGridColumnLessThan0() {
+        assertThrows(HiddenPattern.HiddenPatternPuzzleGridException.class, () -> {
+            testAMapRectangleIsOutOfRange(40, 0);
+        });
     }
 
-    @Test(expected = HiddenPattern.HiddenPatternPuzzleGridException.class)
-    public void isHiddenPlayingCardRevealeThrowsHiddenPlayingCardPuzzleGridExceptionForGridColumnGreaterThanGridWidth() {
-        testAMapRectangleisOutOfRange(640, 0);
+    @Test
+    public void isHiddenPlayingCardRevealedThrowsHiddenPlayingCardPuzzleGridExceptionForGridColumnGreaterThanGridWidth() {
+        assertThrows(HiddenPattern.HiddenPatternPuzzleGridException.class, () -> {
+            testAMapRectangleIsOutOfRange(640, 0);
+        });
     }
 
-    @Test(expected = HiddenPattern.HiddenPatternPuzzleGridException.class)
-    public void isHiddenPlayingCardRevealeThrowsHiddenPlayingCardPuzzleGridExceptionForGridRowGreaterLessThanGridWidth() {
-        testAMapRectangleisOutOfRange(160, -40);
+    @Test
+    public void isHiddenPlayingCardRevealedThrowsHiddenPlayingCardPuzzleGridExceptionForGridRowGreaterLessThanGridWidth() {
+        assertThrows(HiddenPattern.HiddenPatternPuzzleGridException.class, () -> {
+            testAMapRectangleIsOutOfRange(160, -40);
+        });
     }
 
-    @Test(expected = HiddenPattern.HiddenPatternPuzzleGridException.class)
-    public void isHiddenPlayingCardRevealeThrowsHiddenPlayingCardPuzzleGridExceptionForGridRowGreaterThanGridWidth() {
-        testAMapRectangleisOutOfRange(160, 480);
+    @Test
+    public void isHiddenPlayingCardRevealedThrowsHiddenPlayingCardPuzzleGridExceptionForGridRowGreaterThanGridWidth() {
+        assertThrows(HiddenPattern.HiddenPatternPuzzleGridException.class, () -> {
+            testAMapRectangleIsOutOfRange(160, 480);
+        });
     }
 
-    private void testAMapRectangleisOutOfRange(int cardX, int cardY) {
+    private void testAMapRectangleIsOutOfRange(int cardX, int cardY) {
         testMatrix = createMatrixPatternRevealed();
         createGrid(testMatrix);
         rectangleMapObjects = createMockLevelHiddenShape();
