@@ -17,10 +17,8 @@
 package com.ellzone.slotpuzzle2d.puzzlegrid;
 
 import static org.junit.Assert.*;
-
 import com.badlogic.gdx.utils.Array;
-
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 public class TestPuzzleGrid {
 

@@ -25,9 +25,7 @@ import com.ellzone.slotpuzzle2d.prototypes.box2d.collisions.AnimatedReelsMatrixC
 import com.ellzone.slotpuzzle2d.prototypes.box2d.collisions.SlotPuzzleMatrices;
 import com.ellzone.slotpuzzle2d.sprites.reel.AnimatedReel;
 import com.ellzone.slotpuzzle2d.sprites.reel.ReelTile;
-
-import org.junit.Test;
-
+import org.junit.jupiter.api.Test;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.is;
@@ -44,7 +42,8 @@ public class TestGetSurroundingReelTiles {
     @Test
     public void testGetSurroundingReelTilesWithEmptyParameter() {
         Array<ReelTileGridValue> surroundingReelTiles =
-                PuzzleGridTypeReelTile.getSurroundingReelTiles(new Array<ReelTileGridValue>(), null);
+                PuzzleGridTypeReelTile.getSurroundingReelTiles(new Array<>(), null);
+        assert surroundingReelTiles != null;
         assertThat(surroundingReelTiles.size, is(equalTo(0)));
     }
 
@@ -86,7 +85,8 @@ public class TestGetSurroundingReelTiles {
 
         Array<ReelTileGridValue> expectedSurroundingTiles = getExpectedSurroundingTiles(matchGrid);
         int index=0;
-        for (ReelTileGridValue surroundingReeTile : surroundingReelTiles) {
+        assert surroundingReelTiles != null;
+        for (ReelTileGridValue surroundingReeTile : new Array.ArrayIterator<>(surroundingReelTiles)) {
             assertSurroundingReelTile(surroundingReeTile, expectedSurroundingTiles.get(index++));
         }
     }

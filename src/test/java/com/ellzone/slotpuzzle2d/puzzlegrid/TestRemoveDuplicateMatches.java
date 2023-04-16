@@ -18,9 +18,7 @@ package com.ellzone.slotpuzzle2d.puzzlegrid;
 
 import com.badlogic.gdx.utils.Array;
 import com.ellzone.slotpuzzle2d.utils.Random;
-
-import org.junit.Test;
-
+import org.junit.jupiter.api.Test;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -43,15 +41,15 @@ public class TestRemoveDuplicateMatches {
 
     private Array<ReelTileGridValue> setUpCreateDuplicateMatches(Array<ReelTileGridValue> reels) {
         Array<ReelTileGridValue> duplicateMatches = new Array<>();
-        for (int index = 0; index < reels.size; index++)
-            duplicateMatches = addDuplicateEntries(duplicateMatches, reels.get(index));
+        for (int index = 0; index < reels.size; index++) {
+            addDuplicateEntries(duplicateMatches, reels.get(index));
+        }
         return duplicateMatches;
     }
 
-    private Array<ReelTileGridValue> addDuplicateEntries(Array<ReelTileGridValue> duplicateMatches, ReelTileGridValue reel) {
+    private void addDuplicateEntries(Array<ReelTileGridValue> duplicateMatches, ReelTileGridValue reel) {
         duplicateMatches.add(new ReelTileGridValue(reel.r, reel.c, reel.index * 2, reel.value));
         duplicateMatches.add(new ReelTileGridValue(reel.r, reel.c, reel.index * 2 + 1, reel.value));
-        return duplicateMatches;
     }
 
     private Array<ReelTileGridValue> setUpReels() {
@@ -74,7 +72,7 @@ public class TestRemoveDuplicateMatches {
 
     private boolean isEntryExists(Array<ReelTileGridValue> reels, int row, int column) {
         boolean isEntryExists = false;
-        for (ReelTileGridValue reel : reels) {
+        for (ReelTileGridValue reel : new Array.ArrayIterator<>(reels)) {
             if ((reel.r == row) & ( reel.c == column)) {
                 isEntryExists = true;
                 break;

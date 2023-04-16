@@ -23,19 +23,17 @@ import com.ellzone.slotpuzzle2d.SlotPuzzleConstants;
 import com.ellzone.slotpuzzle2d.screens.PlayScreen;
 import com.ellzone.slotpuzzle2d.sprites.reel.ReelTile;
 import com.ellzone.slotpuzzle2d.utils.InputMatrix;
-
 import org.easymock.Capture;
 import org.easymock.EasyMock;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Ignore;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
 import org.junit.runner.RunWith;
 import org.powermock.api.easymock.PowerMock;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
 import org.powermock.reflect.Whitebox;
-
 import static org.easymock.EasyMock.capture;
 import static org.easymock.EasyMock.expect;
 import static org.hamcrest.CoreMatchers.equalTo;
@@ -52,19 +50,17 @@ public class TestPuzzleGridTypeReelTile {
 
     private PuzzleGridTypeReelTile puzzleGridTypeReelTile;
     private ReelTileGridValue[][] puzzleGrid;
-    private ReelTileGridValue[][] resultsGrid;
     private TupleValueIndex[][] lonelyTestGrid;
     private Array<ReelTile> reelTiles;
     private Application applicationMock;
-    private Capture<String> logCaptureArgument1, logCaptureArgument2;
     private Capture<String> debugCaptureArgument1, debugCaptureArgument2;
 
-    @Before
+    @BeforeEach
     public void setUp() {
         puzzleGridTypeReelTile = new PuzzleGridTypeReelTile();
     }
 
-    @After
+    @AfterEach
     public void tearDown() {
         puzzleGridTypeReelTile = null;
     }
@@ -72,7 +68,7 @@ public class TestPuzzleGridTypeReelTile {
     @Test
     public void testCreateGridLinks() {
         setUpGrid1();
-        resultsGrid = puzzleGridTypeReelTile.createGridLinks(puzzleGrid);
+        ReelTileGridValue[][] resultsGrid = puzzleGridTypeReelTile.createGridLinks(puzzleGrid);
         assertThat(resultsGrid[0][0].getCompassPoint(ReelTileGridValue.Compass.SOUTHEAST), is(resultsGrid[1][1]));
         assertThat(resultsGrid[1][1].getCompassPoint(ReelTileGridValue.Compass.NORTHWEST), is(resultsGrid[0][0]));
         assertThat(resultsGrid[0][1].getCompassPoint(ReelTileGridValue.Compass.SOUTHWEST), is(resultsGrid[1][0]));
@@ -127,16 +123,16 @@ public class TestPuzzleGridTypeReelTile {
         assertThat(reelTileGridValues[2].getValue(), is(1));
     }
 
-    @Ignore
     @Test
+    @Disabled
     public void testAdjustForAnyLonelyReels() {
         setUpMocks();
         mockGdx();
         int[][] lonelytTilesMatrix = createLonelyTilesMatrix();
         createLonelyTilesGrid(lonelytTilesMatrix);
         int[][] expectedLonelyTiles = createExpectedLonelyTilesMatrix();
-        int[][] expectedLonelyReels =  setLonleyReelsExpectations(expectedLonelyTiles);
-        relayAll(expectedLonelyTiles);
+        int[][] expectedLonelyReels =  setLonelyReelsExpectations(expectedLonelyTiles);
+        relayAll();
         Array<ReelTile> levelAdjustedForLonelyReels =
                 puzzleGridTypeReelTile.adjustForAnyLonelyReels(
                         reelTiles,
@@ -148,7 +144,7 @@ public class TestPuzzleGridTypeReelTile {
                       "endReel"),
                     is(equalTo(Whitebox.getInternalState(levelAdjustedForLonelyReels.get(expectedLonelyReel[1]),
                               "endReel"))));
-        verifyAll(expectedLonelyTiles);
+        verifyAll();
     }
 
     private void setUpMocks() {
@@ -162,13 +158,11 @@ public class TestPuzzleGridTypeReelTile {
     }
 
     private void setUpCaptureArguments() {
-        logCaptureArgument1 = EasyMock.newCapture();
-        logCaptureArgument2 = EasyMock.newCapture();
         debugCaptureArgument1 = EasyMock.newCapture();
         debugCaptureArgument2 = EasyMock.newCapture();
     }
 
-    private int[][] setLonleyReelsExpectations(int[][] expectedLonelyTileMatrix) {
+    private int[][] setLonelyReelsExpectations(int[][] expectedLonelyTileMatrix) {
         setReelTilesExpectations();
         return setExpectedLonleyTiles(expectedLonelyTileMatrix);
     }
@@ -293,7 +287,7 @@ public class TestPuzzleGridTypeReelTile {
         return inputMatrix.readMatrix();
     }
 
-    private void relayAll(int[][] expectedLonelyTileMatrix) {
+    private void relayAll() {
         replay(ReelTile.class,
                applicationMock);
         for (int i = 0 ; i < reelTiles.size; i++) {
@@ -301,7 +295,7 @@ public class TestPuzzleGridTypeReelTile {
         }
     }
 
-    private void verifyAll(int[][] expectedLonelyTileMatrix) {
+    private void verifyAll() {
         verify(ReelTile.class,
                applicationMock);
     }

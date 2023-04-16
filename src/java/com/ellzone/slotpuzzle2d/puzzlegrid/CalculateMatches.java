@@ -29,9 +29,7 @@ public class CalculateMatches {
         PuzzleGridTypeReelTile puzzleGrid = new PuzzleGridTypeReelTile();
         ReelTileGridValue[][] matchGrid = puzzleGrid.populateMatchGrid(reelGridMatrix);
         PuzzleGridTypeReelTile puzzleGridTypeReelTile = new PuzzleGridTypeReelTile();
-        PuzzleGridTypeReelTile.printGrid(matchGrid);
         matchGrid = puzzleGridTypeReelTile.createGridLinks(matchGrid);
-        System.out.println();
         return matchRowsToDraw(matchGrid, puzzleGridTypeReelTile, reelGrid);
      }
 

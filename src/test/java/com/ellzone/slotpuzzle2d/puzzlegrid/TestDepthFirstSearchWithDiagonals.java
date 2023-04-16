@@ -18,11 +18,9 @@ package com.ellzone.slotpuzzle2d.puzzlegrid;
 
 import com.badlogic.gdx.utils.Array;
 import com.ellzone.slotpuzzle2d.utils.InputMatrix;
-
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
-
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
@@ -38,7 +36,7 @@ public class TestDepthFirstSearchWithDiagonals {
     private Array<ReelTileGridValue> depthSearchResults;
     private int[][] expectedDepthSearchResults3;
 
-    @Before
+    @BeforeEach
     public void setUp() {
         initialiseFields();
     }
@@ -131,7 +129,7 @@ public class TestDepthFirstSearchWithDiagonals {
         puzzleGrid2[3][3] = new ReelTileGridValue(3 , 3, 15, 0);
     }
 
-    @After
+    @AfterEach
     public void tearDown() {
         puzzleGridTypeReelTile = null;
         puzzleGrid1 = null;

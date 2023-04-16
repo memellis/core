@@ -23,11 +23,10 @@ import com.ellzone.slotpuzzle2d.prototypes.box2d.collisions.AnimatedReelsMatrixC
 import com.ellzone.slotpuzzle2d.prototypes.box2d.collisions.SlotPuzzleMatrices;
 import com.ellzone.slotpuzzle2d.sprites.reel.AnimatedReel;
 import com.ellzone.slotpuzzle2d.sprites.reel.ReelTile;
-
+import org.hamcrest.MatcherAssert;
 import org.junit.jupiter.api.Test;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.core.IsEqual.equalTo;
-import static org.junit.Assert.assertThat;
 
 public class TestPuzzleGridWithSpinningReels {
 
@@ -45,11 +44,8 @@ public class TestPuzzleGridWithSpinningReels {
                 reelTiles,
             new GridSize(matrix[0].length, matrix.length)
         );
-        assertThat(grid[7][0].value, is(equalTo(-2)));
-        assertThat(grid[8][0].value, is(equalTo(-2)));
-        PuzzleGridTypeReelTile.printMatchGrid(
-                reelTiles,
-                new GridSize(matrix[0].length, matrix.length));
+        MatcherAssert.assertThat(grid[7][0].value, is(equalTo(-2)));
+        MatcherAssert.assertThat(grid[8][0].value, is(equalTo(-2)));
     }
 
     private void prepareTestWithReelAction(
@@ -64,10 +60,5 @@ public class TestPuzzleGridWithSpinningReels {
         void action(Array<ReelTile> reel, int reelToAction);
     }
 
-    private final ReelAction reelSetSpinningAction = new ReelAction() {
-        @Override
-        public void action(Array<ReelTile> reels, int reelToAction) {
-            reels.get(reelToAction).setSpinning(true);
-        }
-    };
+    private final ReelAction reelSetSpinningAction = (reels, reelToAction) -> reels.get(reelToAction).setSpinning(true);
 }

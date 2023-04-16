@@ -23,9 +23,7 @@ import com.ellzone.slotpuzzle2d.prototypes.box2d.collisions.AnimatedReelsMatrixC
 import com.ellzone.slotpuzzle2d.prototypes.box2d.collisions.SlotPuzzleMatrices;
 import com.ellzone.slotpuzzle2d.sprites.reel.AnimatedReel;
 import com.ellzone.slotpuzzle2d.sprites.reel.ReelTile;
-
-import org.junit.Test;
-
+import org.junit.jupiter.api.Test;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.is;
@@ -60,7 +58,6 @@ public class TestNonMatchGridLinks {
         AnimatedReelsMatrixCreator animatedReelsMatrixCreator = new AnimatedReelsMatrixCreator();
         animatedReels = animatedReelsMatrixCreator.createAnimatedReelsFromSlotPuzzleMatrix(
                 matrixFWithOneBomb, false);
-        PuzzleGridTypeReelTile.printSlotMatrix(animatedReels);
         return animatedReels;
     }
 
