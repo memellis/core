@@ -18,13 +18,9 @@ package com.ellzone.slotpuzzle2d.physics;
 
 import static org.junit.Assert.assertTrue;
 
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
-
-import com.ellzone.slotpuzzle2d.physics.DampenedSine;
-import com.ellzone.slotpuzzle2d.physics.SPPhysicsCallback;
-import com.ellzone.slotpuzzle2d.physics.SPPhysicsEvent;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 public class TestDampenedSine {
 	private static final int TEST_NUM_REELS = 8;
@@ -38,11 +34,11 @@ public class TestDampenedSine {
 	private DampenedSine dampenedSine;
 	private boolean dampenedSineEnd;
 
-	@Before
+	@BeforeEach
 	public void setUp() throws Exception {
 	}
 	
-	@After
+	@AfterEach
 	public void tearDown() throws Exception {
 	}
 	
